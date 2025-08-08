@@ -1,30 +1,17 @@
 import type { Metadata } from 'next';
-import { useTranslations } from 'next-intl';
-import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 
-export async function generateMetadata(props: {
-  params: Promise<{ locale: string }>;
-}): Promise<Metadata> {
-  const { locale } = await props.params;
-  const t = await getTranslations({
-    locale,
-    namespace: 'Counter',
-  });
-
-  return {
-    title: t('meta_title'),
-    description: t('meta_description'),
-  };
-}
+export const metadata: Metadata = {
+  title: 'Counter',
+  description: 'Counter page',
+};
 
 export default function Counter() {
-  const t = useTranslations('Counter');
-
   return (
     <>
       <div className="mt-5 text-center text-sm">
-        {`${t('security_powered_by')} `}
+        Security, bot detection and rate limiting powered by
+        {' '}
         <a
           className="text-blue-700 hover:border-b-2 hover:border-blue-700"
           href="https://launch.arcjet.com/Q6eLbRE"

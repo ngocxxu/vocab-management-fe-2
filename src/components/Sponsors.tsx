@@ -19,16 +19,7 @@ export const Sponsors = () => (
             />
           </a>
         </td>
-        <td className="border-2 border-gray-300 p-3">
-          <a href="https://www.coderabbit.ai?utm_source=next_js_starter&utm_medium=github&utm_campaign=next_js_starter_oss_2025" target="_blank" rel="noopener">
-            <Image
-              src="/assets/images/coderabbit-logo-light.svg"
-              alt="CodeRabbit"
-              width={260}
-              height={224}
-            />
-          </a>
-        </td>
+
         <td className="border-2 border-gray-300 p-3">
           <a
             href="https://sentry.io/for/nextjs/?utm_source=github&utm_medium=paid-community&utm_campaign=general-fy25q1-nextjs&utm_content=github-banner-nextjsboilerplate-logo"

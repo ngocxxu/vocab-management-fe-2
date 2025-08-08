@@ -1,32 +1,12 @@
 import type { Metadata } from 'next';
-import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Sponsors } from '@/components/Sponsors';
 
-type IIndexProps = {
-  params: Promise<{ locale: string }>;
+export const metadata: Metadata = {
+  title: 'Next.js Boilerplate Presentation',
+  description: 'Next js Boilerplate is the perfect starter code for your project. Build your React application with the Next.js framework.',
 };
 
-export async function generateMetadata(props: IIndexProps): Promise<Metadata> {
-  const { locale } = await props.params;
-  const t = await getTranslations({
-    locale,
-    namespace: 'Index',
-  });
-
-  return {
-    title: t('meta_title'),
-    description: t('meta_description'),
-  };
-}
-
-export default async function Index(props: IIndexProps) {
-  const { locale } = await props.params;
-  setRequestLocale(locale);
-  const t = await getTranslations({
-    locale,
-    namespace: 'Index',
-  });
-
+export default async function Index() {
   return (
     <>
       <p>
@@ -58,31 +38,11 @@ export default async function Index(props: IIndexProps) {
         <li>🔥 TypeScript for type checking</li>
         <li>💎 Tailwind CSS integration</li>
 
-        <li>
-          🌐 Multi-language support (i18n) with next-intl and
-          {' '}
-          <a
-            className="font-bold text-blue-700 hover:border-b-2 hover:border-blue-700"
-            href="https://l.crowdin.com/next-js"
-          >
-            Crowdin
-          </a>
-        </li>
         <li>🔴 Form handling (React Hook Form) and validation (Zod)</li>
         <li>📏 Linting and formatting (ESLint, Prettier)</li>
         <li>🦊 Git hooks and commit linting (Husky, Commitlint)</li>
         <li>🦺 Testing suite (Vitest, React Testing Library, Playwright)</li>
-        <li>🎉 Storybook for UI development</li>
-        <li>
-          🐰 AI-powered code reviews with
-          {' '}
-          <a
-            className="font-bold text-blue-700 hover:border-b-2 hover:border-blue-700"
-            href="https://www.coderabbit.ai?utm_source=next_js_starter&utm_medium=github&utm_campaign=next_js_starter_oss_2025"
-          >
-            CodeRabbit
-          </a>
-        </li>
+
         <li>
           🚨 Error monitoring (
           <a
@@ -93,7 +53,7 @@ export default async function Index(props: IIndexProps) {
           </a>
           ) and logging (LogTape, an alternative to Pino.js)
         </li>
-        <li>🖥️ Monitoring as Code (Checkly)</li>
+
         <li>
           🔐 Security and bot protection (
           <a
@@ -112,7 +72,7 @@ export default async function Index(props: IIndexProps) {
         Their services integrate seamlessly with the boilerplate, and we
         recommend trying them out.
       </p>
-      <h2 className="mt-5 text-2xl font-bold">{t('sponsors_title')}</h2>
+      <h2 className="mt-5 text-2xl font-bold">Sponsors</h2>
       <Sponsors />
     </>
   );

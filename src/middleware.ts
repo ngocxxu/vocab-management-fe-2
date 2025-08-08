@@ -1,11 +1,7 @@
 import type { NextFetchEvent, NextRequest } from 'next/server';
 import { detectBot } from '@arcjet/next';
-import createMiddleware from 'next-intl/middleware';
 import { NextResponse } from 'next/server';
 import arcjet from '@/libs/Arcjet';
-import { routing } from './libs/I18nRouting';
-
-const handleI18nRouting = createMiddleware(routing);
 
 // Improve security with Arcjet
 const aj = arcjet.withRule(
@@ -35,7 +31,7 @@ export default async function middleware(
     }
   }
 
-  return handleI18nRouting(request);
+  return NextResponse.next();
 }
 
 export const config = {
