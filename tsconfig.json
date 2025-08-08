@@ -55,13 +55,13 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "useUnknownInCatchVariables": true,
-    "isolatedModules": true,
 
     "noEmit": true, // Skip emitting files (Next.js handles this)
     "preserveConstEnums": true,
     "removeComments": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
     // ======================================================================
     // Build & Performance
     // Settings that affect compilation output and build performance
