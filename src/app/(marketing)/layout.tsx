@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { DemoBanner } from '@/components/DemoBanner';
 import { BaseTemplate } from '@/templates/BaseTemplate';
 
 export default async function Layout(props: {
@@ -7,7 +6,6 @@ export default async function Layout(props: {
 }) {
   return (
     <>
-      <DemoBanner />
       <BaseTemplate
         leftNav={(
           <>

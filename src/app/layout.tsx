@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { PostHogProvider } from '@/components/analytics/PostHogProvider';
-import { DemoBadge } from '@/components/DemoBadge';
 import '@/styles/global.css';
 
 export const metadata: Metadata = {
@@ -37,7 +36,6 @@ export default async function RootLayout(props: {
         <PostHogProvider>
           {props.children}
         </PostHogProvider>
-        <DemoBadge />
       </body>
     </html>
   );
