@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { PostHogProvider } from '@/components/analytics/PostHogProvider';
+import { Toaster } from '@/components/ui/sonner';
 import '@/styles/global.css';
 
 export const metadata: Metadata = {
@@ -35,6 +36,7 @@ export default async function RootLayout(props: {
       <body>
         <PostHogProvider>
           {props.children}
+          <Toaster />
         </PostHogProvider>
       </body>
     </html>
