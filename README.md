@@ -18,10 +18,6 @@ Developer experience first, extremely flexible code structure and only keep what
 - 📓 Write standard compliant commit messages with Commitizen
 - 🔍 Unused files and dependencies detection with Knip
 
-- 🦺 Unit Testing with Vitest and Browser mode (replacing React Testing Library)
-- 🧪 Integration and E2E Testing with Playwright
-- 👷 Run tests on pull request with GitHub Actions
-
 - 🚨 Error Monitoring with [Sentry](https://sentry.io/for/nextjs/?utm_source=github&utm_medium=paid-community&utm_campaign=general-fy25q1-nextjs&utm_content=github-banner-nextjsboilerplate-logo)
 - 🔍 Local development error monitoring with Sentry Spotlight
 - ☂️ Code coverage with [Codecov](https://about.codecov.io/codecov-free-trial/?utm_source=github&utm_medium=paid-community&utm_campaign=general-fy25q1-nextjs&utm_content=github-banner-nextjsboilerplate-logo)
@@ -30,7 +26,7 @@ Developer experience first, extremely flexible code structure and only keep what
 - 🔐 Security and bot protection ([Arcjet](https://launch.arcjet.com/Q6eLbRE))
 - 📊 Analytics with PostHog
 - 🎁 Automatic changelog generation with Semantic Release
-- 🔍 Visual regression testing
+
 - 💡 Absolute Imports using `@` prefix
 - 🗂 VSCode configuration: Debug, Settings, Tasks and Extensions
 - 🤖 SEO metadata, JSON-LD and Open Graph tags
@@ -104,9 +100,6 @@ Open http://localhost:3000 with your favorite browser to see your project.
 │   ├── types                       # Type definitions
 │   ├── utils                       # Utilities folder
 
-├── tests
-│   ├── e2e                         # E2E tests, also includes Monitoring as Code
-│   └── integration                 # Integration tests
 ├── next.config.ts                  # Next JS configuration
 └── tsconfig.json                   # TypeScript configuration
 ```
@@ -132,25 +125,6 @@ pnpm run commit
 ```
 
 One of the benefits of using Conventional Commits is the ability to automatically generate GitHub releases. It also allows us to automatically determine the next version number based on the types of commits that are included in a release.
-
-### Testing
-
-All unit tests are located alongside the source code in the same directory, making them easier to find. The unit test files follow this format: `*.test.ts` or `*.test.tsx`. The project uses Vitest and React Testing Library for unit testing. You can run the tests with the following command:
-
-```shell
-pnpm run test
-```
-
-[![Run the command in Warp](public/assets/images/warp-banner.png)](https://go.warp.dev/nextjs-bp)
-
-### Integration & E2E Testing
-
-The project uses Playwright for integration and end-to-end (E2E) testing. Integration test files use the `*.spec.ts` extension, while E2E test files use the `*.e2e.ts` extension. You can run the tests with the following commands:
-
-```shell
-npx playwright install # Only for the first time in a new environment
-pnpm run test:e2e
-```
 
 ### Deploy to production
 

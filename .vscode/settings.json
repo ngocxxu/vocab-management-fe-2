@@ -21,9 +21,6 @@
     "@sentry/nextjs"
   ],
 
-  // Vitest
-  "testing.automaticallyOpenTestResults": "neverOpen", // Don't open the test results automatically
-
   // Disable the default formatter, use ESLint instead
   "prettier.enable": false,
   "editor.formatOnSave": false,
