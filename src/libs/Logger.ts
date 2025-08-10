@@ -1,16 +1,10 @@
 import type { AsyncSink } from '@logtape/logtape';
 import { configure, fromAsyncSink, getConsoleSink, getJsonLinesFormatter, getLogger } from '@logtape/logtape';
+import axiosInstance from './axios';
 import { Env } from './Env';
 
 const betterStackSink: AsyncSink = async (record) => {
-  await fetch(`https://${Env.NEXT_PUBLIC_BETTER_STACK_INGESTING_HOST}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${Env.NEXT_PUBLIC_BETTER_STACK_SOURCE_TOKEN}`,
-    },
-    body: JSON.stringify(record),
-  });
+  await axiosInstance.post(`https://${Env.NEXT_PUBLIC_BETTER_STACK_INGESTING_HOST}`, record);
 };
 
 await configure({
