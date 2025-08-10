@@ -1,4 +1,4 @@
-import { Bell, ChevronDown, Flag, Menu, Moon, Search, ShoppingCart, User } from 'lucide-react';
+import { Bell, ChevronDown, Menu, Moon, Search, User } from 'lucide-react';
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -54,19 +54,6 @@ export const Header: React.FC<HeaderProps> = ({ onSidebarToggle }) => {
 
         {/* Right Section */}
         <div className="flex items-center space-x-4">
-          {/* UK Flag */}
-          <div className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-200">
-            <Flag className="h-4 w-4 text-slate-600" />
-          </div>
-
-          {/* Shopping Cart */}
-          <Button variant="ghost" size="icon" className="relative h-10 w-10 rounded-xl hover:bg-slate-100">
-            <ShoppingCart className="h-5 w-5 text-slate-600" />
-            <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-orange-500 text-xs font-medium text-white">
-              0
-            </span>
-          </Button>
-
           {/* Dark Mode Toggle */}
           <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-slate-100">
             <Moon className="h-5 w-5 text-slate-600" />

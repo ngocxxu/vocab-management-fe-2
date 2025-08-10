@@ -2,18 +2,13 @@ import {
   Calendar,
   ChevronDown,
   CreditCard,
-  DollarSign,
   FileText,
-  Globe,
-  HelpCircle,
   Kanban,
-  Layers,
-  LayoutDashboard,
   Mail,
   Power,
   User,
 } from 'lucide-react';
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 
 type MenuItem = {
@@ -37,20 +32,6 @@ const menuItems: MenuItem[] = [
   { id: 'tickets', label: 'Tickets', icon: <CreditCard className="h-5 w-5" /> },
   { id: 'kanban', label: 'Kanban', icon: <Kanban className="h-5 w-5" />, hasArrow: true },
   { id: 'invoice', label: 'Invoice', icon: <FileText className="h-5 w-5" />, hasArrow: true },
-
-  // Pages section
-  { id: 'pricing', label: 'Pricing', icon: <DollarSign className="h-5 w-5" />, category: 'PAGES' },
-  { id: 'account-setting', label: 'Account Setting', icon: <User className="h-5 w-5" />, category: 'PAGES' },
-  { id: 'faq', label: 'FAQ', icon: <HelpCircle className="h-5 w-5" />, category: 'PAGES' },
-  { id: 'landingpage', label: 'Landingpage', icon: <Globe className="h-5 w-5" />, category: 'PAGES' },
-  { id: 'widgets', label: 'Widgets', icon: <Layers className="h-5 w-5" />, category: 'PAGES', hasArrow: true },
-
-  // Forms section
-  { id: 'form-elements', label: 'Form Elements', icon: <LayoutDashboard className="h-5 w-5" />, category: 'FORMS', hasArrow: true },
-  { id: 'form-layout', label: 'Form Layout', icon: <FileText className="h-5 w-5" />, category: 'FORMS' },
-  { id: 'form-horizontal', label: 'Form Horizontal', icon: <FileText className="h-5 w-5" />, category: 'FORMS' },
-  { id: 'form-vertical', label: 'Form Vertical', icon: <FileText className="h-5 w-5" />, category: 'FORMS' },
-  { id: 'form-custom', label: 'Form Custom', icon: <FileText className="h-5 w-5" />, category: 'FORMS' },
 ];
 
 type SidebarProps = {
@@ -58,6 +39,12 @@ type SidebarProps = {
 };
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
+  const [isChosenButton, setIsChosenButton] = useState<string | null>(menuItems[0]?.id ?? null);
+
+  const handleButtonClick = (buttonId: string) => {
+    setIsChosenButton(buttonId);
+  };
+
   return (
     <aside
       className={`fixed top-0 left-0 z-40 flex h-screen w-72 flex-col border-r border-slate-200/60 bg-white shadow-sm transition-all duration-300 ease-in-out ${
@@ -82,45 +69,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
             <div key={item.id}>
               <Button
                 variant="ghost"
-                className="h-11 w-full justify-between rounded-xl px-4 text-slate-700 hover:bg-slate-100 hover:text-slate-900"
-              >
-                <div className="flex items-center space-x-3">
-                  {item.icon}
-                  <span className="font-medium">{item.label}</span>
-                </div>
-                {item.hasArrow && <ChevronDown className="h-4 w-4" />}
-              </Button>
-            </div>
-          ))}
-        </div>
-
-        {/* Pages section */}
-        <div className="space-y-2">
-          <h3 className="px-4 text-xs font-bold tracking-wider text-slate-500 uppercase">PAGES</h3>
-          {menuItems.filter(item => item.category === 'PAGES').map(item => (
-            <div key={item.id}>
-              <Button
-                variant="ghost"
-                className="h-11 w-full justify-between rounded-xl px-4 text-slate-700 hover:bg-slate-100 hover:text-slate-900"
-              >
-                <div className="flex items-center space-x-3">
-                  {item.icon}
-                  <span className="font-medium">{item.label}</span>
-                </div>
-                {item.hasArrow && <ChevronDown className="h-4 w-4" />}
-              </Button>
-            </div>
-          ))}
-        </div>
-
-        {/* Forms section */}
-        <div className="space-y-2">
-          <h3 className="px-4 text-xs font-bold tracking-wider text-slate-500 uppercase">FORMS</h3>
-          {menuItems.filter(item => item.category === 'FORMS').map(item => (
-            <div key={item.id}>
-              <Button
-                variant="ghost"
-                className="h-11 w-full justify-between rounded-xl px-4 text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+                className={`h-11 w-full cursor-pointer justify-between rounded-xl px-4 text-slate-700 transition-all duration-300 ease-in-out hover:bg-blue-50 hover:text-blue-500 ${
+                  isChosenButton === item.id ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:bg-blue-600 hover:text-white ' : 'text-slate-700'
+                }`}
+                onClick={() => handleButtonClick(item.id)}
               >
                 <div className="flex items-center space-x-3">
                   {item.icon}
