@@ -2,17 +2,16 @@ import React from 'react';
 import { AlertCard } from './cards/AlertCard';
 import { GraphsAnalysis } from './cards/GraphsAnalysis';
 import { MetricsGrid } from './cards/MetricsGrid';
-import { OngoingTasks } from './cards/OngoingTasks';
-import { TopPerformance } from './cards/TopPerformance';
+import { OngoingTasks } from './cards/TestListToday';
 
 export const DashboardContent: React.FC = () => {
   return (
-    <main className="flex-1 overflow-y-auto bg-slate-50 p-8">
+    <main className="flex-1 overflow-y-auto bg-slate-50 p-8 dark:bg-slate-900">
       <div className="mx-auto max-w-7xl space-y-8">
         {/* Page Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900">Dashboard Overview</h1>
-          <p className="mt-2 text-slate-600">Welcome back! Here's what's happening with your projects today.</p>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Dashboard Overview</h1>
+          <p className="mt-2 text-slate-600 dark:text-slate-400">Welcome back! Here's what's happening with your projects today.</p>
         </div>
 
         {/* Alert Card */}
@@ -33,9 +32,6 @@ export const DashboardContent: React.FC = () => {
             <GraphsAnalysis />
           </div>
         </div>
-
-        {/* Top Performance */}
-        <TopPerformance />
       </div>
     </main>
   );

@@ -11,16 +11,16 @@ export const GraphsAnalysis: React.FC = () => {
   const maxValue = Math.max(...data);
 
   return (
-    <Card className="h-full overflow-hidden border-0 bg-white shadow-lg">
-      <CardHeader className="border-b border-slate-100 pb-4">
+    <Card className="h-full overflow-hidden border-0 bg-white shadow-lg dark:bg-slate-800">
+      <CardHeader className="border-b border-slate-100 pb-4 dark:border-slate-700">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="text-xl font-bold text-slate-900">Graphs and Analysis</CardTitle>
-            <p className="text-sm text-slate-600">Projects completed per month based on trends.</p>
+            <CardTitle className="text-xl font-bold text-slate-900 dark:text-white">Graphs and Analysis</CardTitle>
+            <p className="text-sm text-slate-600 dark:text-slate-400">Projects completed per month based on trends.</p>
           </div>
           <div className="flex items-center space-x-3">
             <Select defaultValue="month">
-              <SelectTrigger className="h-10 w-28 rounded-xl border-slate-200 focus:border-blue-500">
+              <SelectTrigger className="h-10 w-28 rounded-xl border-slate-200 focus:border-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:placeholder:text-slate-500 dark:focus:border-blue-400 dark:focus:bg-slate-700 dark:focus:ring-blue-400">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -29,8 +29,8 @@ export const GraphsAnalysis: React.FC = () => {
                 <SelectItem value="year">Year</SelectItem>
               </SelectContent>
             </Select>
-            <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl border-slate-200 hover:bg-slate-50">
-              <Download className="h-4 w-4 text-slate-600" />
+            <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl border-slate-200 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700">
+              <Download className="h-4 w-4 text-slate-600 dark:text-slate-400" />
             </Button>
           </div>
         </div>
@@ -73,13 +73,13 @@ export const GraphsAnalysis: React.FC = () => {
                     )}
                   </div>
                 </div>
-                <span className="text-sm font-medium text-slate-600">{months[index]}</span>
+                <span className="text-sm font-medium text-slate-600 dark:text-slate-400">{months[index]}</span>
               </div>
             ))}
           </div>
 
           {/* Legend */}
-          <div className="flex items-center justify-center space-x-6 text-sm text-slate-600">
+          <div className="flex items-center justify-center space-x-6 text-sm text-slate-600 dark:rounded-xl dark:bg-slate-800 dark:p-4 dark:text-slate-400 dark:shadow-lg">
             <div className="flex items-center space-x-2">
               <div className="h-3 w-3 rounded-full bg-blue-400"></div>
               <span className="font-medium">Project Done</span>

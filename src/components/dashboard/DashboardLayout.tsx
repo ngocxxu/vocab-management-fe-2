@@ -13,7 +13,7 @@ export const DashboardLayout: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen bg-slate-50">
+    <div className="flex h-screen bg-slate-50 dark:bg-slate-900">
       <Sidebar isOpen={isSidebarOpen} />
       <div
         className={`flex flex-1 flex-col overflow-hidden transition-all duration-300 ease-in-out ${
