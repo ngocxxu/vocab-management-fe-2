@@ -54,10 +54,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
       {/* Logo Section - Fixed at top */}
       <div className="flex-shrink-0 border-b border-slate-200/60 p-4">
         <div className="flex items-center space-x-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 shadow-lg">
-            <span className="text-lg font-bold text-white">M</span>
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 shadow-lg">
+            <span className="text-lg font-bold text-white">V</span>
           </div>
-          <h1 className="text-xl font-bold text-slate-900">Modernize</h1>
+          <h1 className="text-xl font-bold text-slate-900">Vocabulary</h1>
         </div>
       </div>
 
