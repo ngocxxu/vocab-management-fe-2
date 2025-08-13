@@ -98,7 +98,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
               <p className="text-sm text-slate-600 dark:text-slate-400">Designer</p>
             </div>
           </div>
-          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-slate-100 dark:hover:bg-slate-700">
             <Power className="h-4 w-4 text-slate-600 dark:text-slate-400" />
           </Button>
         </div>

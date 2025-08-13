@@ -71,7 +71,7 @@ export const OngoingTasks: React.FC = () => {
               <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
               <Input placeholder="Search..." className="h-10 w-48 rounded-xl border-slate-200 pl-10 focus:border-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:placeholder:text-slate-500 dark:focus:border-blue-400 dark:focus:bg-slate-700 dark:focus:ring-blue-400" />
             </div>
-            <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl border-slate-200 hover:bg-slate-50">
+            <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl border-slate-200 hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-700">
               <Filter className="h-4 w-4 text-slate-600 dark:text-slate-400" />
             </Button>
           </div>
