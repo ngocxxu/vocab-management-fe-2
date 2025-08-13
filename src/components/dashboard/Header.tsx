@@ -9,7 +9,7 @@ type HeaderProps = {
 };
 
 export const Header: React.FC<HeaderProps> = ({ onSidebarToggle }) => {
-  const { theme, toggleTheme, mounted } = useTheme();
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <header className="border-b border-slate-200/60 bg-white px-6 py-4 shadow-sm dark:border-slate-700/60 dark:bg-slate-900">
@@ -58,21 +58,19 @@ export const Header: React.FC<HeaderProps> = ({ onSidebarToggle }) => {
         {/* Right Section */}
         <div className="flex items-center space-x-4">
           {/* Dark Mode Toggle */}
-          {mounted && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-10 w-10 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800"
-              onClick={toggleTheme}
-              title={
-                theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
-              }
-            >
-              {theme === 'dark'
-                ? <Sun className="h-5 w-5 text-slate-400" />
-                : <Moon className="h-5 w-5 text-slate-600" />}
-            </Button>
-          )}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-10 w-10 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800"
+            onClick={toggleTheme}
+            title={
+              theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
+            }
+          >
+            {theme === 'dark'
+              ? <Sun className="h-5 w-5 text-slate-400" />
+              : <Moon className="h-5 w-5 text-slate-600" />}
+          </Button>
 
           {/* Notifications */}
           <Button variant="ghost" size="icon" className="relative h-10 w-10 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800">

@@ -7,7 +7,7 @@ import { OngoingTasks } from './cards/TestListToday';
 export const DashboardContent: React.FC = () => {
   return (
     <main className="flex-1 overflow-y-auto bg-slate-50 p-8 dark:bg-slate-900">
-      <div className="mx-auto max-w-7xl space-y-8">
+      <div className="container mx-auto space-y-8">
         {/* Page Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Dashboard Overview</h1>
