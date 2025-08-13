@@ -1,112 +1,142 @@
 'use client';
 
 import type { ColumnDef } from '@tanstack/react-table';
-import { CheckCircle, ChevronDown, Clock, Edit, Filter, MoreVertical, Plus, XCircle } from 'lucide-react';
+import type { TVocab } from '@/types/vocab-list';
+import { ChevronDown, Edit, Filter, MoreVertical, Plus } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DataTable } from '@/components/ui/table';
 
-type VocabItem = {
-  id: string;
-  word: string;
-  translation: string;
-  difficulty: 'Easy' | 'Medium' | 'Hard';
-  lastReviewed: string;
-  status: 'Mastered' | 'Learning' | 'Not Started';
-  category: string[];
-  progress: number;
-};
-
 const VocabList: React.FC = () => {
   const [globalFilter, setGlobalFilter] = useState('');
 
-  // Memoize the data to prevent unnecessary re-renders
-  const data = useMemo<VocabItem[]>(() => [
+  // Memoize the data to prevent unnecessary re-renders - using the actual TVocab structure
+  const data = useMemo<TVocab[]>(() => [
     {
-      id: '1',
-      word: 'Bonjour',
-      translation: 'Hello',
-      difficulty: 'Easy',
-      lastReviewed: 'July 15, 2026',
-      status: 'Mastered',
-      category: ['Greetings', 'Basic'],
-      progress: 95,
+      id: 'cme9s70fv000cqh1s1ick06db',
+      sourceLanguageCode: 'ko',
+      targetLanguageCode: 'vi',
+      textSource: '안녕하세요',
+      textTargets: [
+        {
+          textTarget: 'Xin chào',
+          wordType: { id: '1', name: 'Greeting', description: 'A greeting expression' },
+          explanationSource: 'Korean greeting',
+          explanationTarget: 'Vietnamese greeting',
+          vocabExamples: [
+            { source: '안녕하세요, 만나서 반갑습니다', target: 'Xin chào, rất vui được gặp bạn' },
+          ],
+          grammar: 'Interjection',
+          textTargetSubjects: [
+            {
+              id: '1',
+              subject: { id: '1', name: 'Basic Greetings', order: 1 },
+            },
+          ],
+        },
+      ],
     },
     {
-      id: '2',
-      word: 'Merci',
-      translation: 'Thank you',
-      difficulty: 'Easy',
-      lastReviewed: 'July 14, 2026',
-      status: 'Learning',
-      category: ['Politeness', 'Basic'],
-      progress: 75,
+      id: 'cme9s70fv000cqh1s1ick06dc',
+      sourceLanguageCode: 'ko',
+      targetLanguageCode: 'vi',
+      textSource: '감사합니다',
+      textTargets: [
+        {
+          textTarget: 'Cảm ơn',
+          wordType: { id: '2', name: 'Expression', description: 'A thank you expression' },
+          explanationSource: 'Korean thank you',
+          explanationTarget: 'Vietnamese thank you',
+          vocabExamples: [
+            { source: '정말 감사합니다', target: 'Thực sự cảm ơn bạn' },
+          ],
+          grammar: 'Interjection',
+          textTargetSubjects: [
+            {
+              id: '2',
+              subject: { id: '2', name: 'Politeness', order: 2 },
+            },
+          ],
+        },
+      ],
     },
     {
-      id: '3',
-      word: 'Au revoir',
-      translation: 'Goodbye',
-      difficulty: 'Easy',
-      lastReviewed: 'July 13, 2026',
-      status: 'Mastered',
-      category: ['Greetings', 'Basic'],
-      progress: 90,
+      id: 'cme9s70fv000cqh1s1ick06dd',
+      sourceLanguageCode: 'ko',
+      targetLanguageCode: 'vi',
+      textSource: '안녕히 가세요',
+      textTargets: [
+        {
+          textTarget: 'Tạm biệt',
+          wordType: { id: '3', name: 'Farewell', description: 'A goodbye expression' },
+          explanationSource: 'Korean goodbye',
+          explanationTarget: 'Vietnamese goodbye',
+          vocabExamples: [
+            { source: '안녕히 가세요, 또 만나요', target: 'Tạm biệt, hẹn gặp lại' },
+          ],
+          grammar: 'Interjection',
+          textTargetSubjects: [
+            {
+              id: '3',
+              subject: { id: '3', name: 'Farewells', order: 3 },
+            },
+          ],
+        },
+      ],
     },
     {
-      id: '4',
-      word: 'S\'il vous plaît',
-      translation: 'Please',
-      difficulty: 'Medium',
-      lastReviewed: 'July 12, 2026',
-      status: 'Learning',
-      category: ['Politeness', 'Formal'],
-      progress: 60,
+      id: 'cme9s70fv000cqh1s1ick06de',
+      sourceLanguageCode: 'ko',
+      targetLanguageCode: 'vi',
+      textSource: '제발',
+      textTargets: [
+        {
+          textTarget: 'Làm ơn',
+          wordType: { id: '4', name: 'Request', description: 'A please expression' },
+          explanationSource: 'Korean please',
+          explanationTarget: 'Vietnamese please',
+          vocabExamples: [
+            { source: '제발 도와주세요', target: 'Làm ơn giúp tôi' },
+          ],
+          grammar: 'Adverb',
+          textTargetSubjects: [
+            {
+              id: '4',
+              subject: { id: '4', name: 'Requests', order: 4 },
+            },
+          ],
+        },
+      ],
     },
     {
-      id: '5',
-      word: 'Excusez-moi',
-      translation: 'Excuse me',
-      difficulty: 'Medium',
-      lastReviewed: 'July 11, 2026',
-      status: 'Not Started',
-      category: ['Politeness', 'Formal'],
-      progress: 25,
-    },
-    {
-      id: '6',
-      word: 'Comment allez-vous?',
-      translation: 'How are you?',
-      difficulty: 'Medium',
-      lastReviewed: 'July 10, 2026',
-      status: 'Learning',
-      category: ['Greetings', 'Conversation'],
-      progress: 70,
-    },
-    {
-      id: '7',
-      word: 'Je m\'appelle',
-      translation: 'My name is',
-      difficulty: 'Medium',
-      lastReviewed: 'July 9, 2026',
-      status: 'Mastered',
-      category: ['Introduction', 'Basic'],
-      progress: 85,
-    },
-    {
-      id: '8',
-      word: 'Enchanté',
-      translation: 'Nice to meet you',
-      difficulty: 'Hard',
-      lastReviewed: 'July 8, 2026',
-      status: 'Not Started',
-      category: ['Introduction', 'Formal'],
-      progress: 15,
+      id: 'cme9s70fv000cqh1s1ick06df',
+      sourceLanguageCode: 'ko',
+      targetLanguageCode: 'vi',
+      textSource: '실례합니다',
+      textTargets: [
+        {
+          textTarget: 'Xin lỗi',
+          wordType: { id: '5', name: 'Apology', description: 'An excuse me expression' },
+          explanationSource: 'Korean excuse me',
+          explanationTarget: 'Vietnamese excuse me',
+          vocabExamples: [
+            { source: '실례합니다, 길을 비켜주세요', target: 'Xin lỗi, làm ơn nhường đường' },
+          ],
+          grammar: 'Interjection',
+          textTargetSubjects: [
+            {
+              id: '5',
+              subject: { id: '5', name: 'Apologies', order: 5 },
+            },
+          ],
+        },
+      ],
     },
   ], []);
 
   // Memoize columns to prevent unnecessary re-renders
-  const columns = useMemo<ColumnDef<VocabItem>[]>(() => [
+  const columns = useMemo<ColumnDef<TVocab>[]>(() => [
     {
       id: 'select',
       header: ({ table }) => (
@@ -128,100 +158,109 @@ const VocabList: React.FC = () => {
       size: 50,
     },
     {
-      accessorKey: 'word',
+      accessorKey: 'textSource',
       header: ({ column }) => (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
           className="h-auto p-0 font-semibold text-slate-700 dark:text-slate-300"
         >
-          Word
+          Source Text
           <ChevronDown className="ml-2 h-4 w-4" />
         </Button>
       ),
-      cell: ({ row }) => (
-        <div className="flex items-center space-x-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-400 via-blue-500 to-indigo-600 text-sm font-bold text-white shadow-lg">
-            {row.original.word.charAt(0).toUpperCase()}
-          </div>
-          <div>
-            <div className="font-semibold text-slate-900 dark:text-white">{row.original.word}</div>
-            <div className="text-sm text-slate-500 dark:text-slate-400">{row.original.translation}</div>
-          </div>
-        </div>
-      ),
-      enableSorting: true,
-      enableHiding: false,
-    },
-    {
-      accessorKey: 'progress',
-      header: 'Progress',
-      cell: ({ row }) => (
-        <div className="w-full">
-          <div className="mb-1 flex items-center justify-between">
-            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-              {row.original.progress}
-              %
-            </span>
-          </div>
-          <div className="h-2 w-full rounded-full bg-slate-200 dark:bg-slate-700">
-            <div
-              className="h-2 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 transition-all duration-300"
-              style={{ width: `${row.original.progress}%` }}
-            />
-          </div>
-        </div>
-      ),
-      enableSorting: true,
-      enableHiding: true,
-    },
-    {
-      accessorKey: 'lastReviewed',
-      header: 'Last Reviewed',
-      cell: ({ row }) => (
-        <div className="text-sm text-slate-600 dark:text-slate-400">{row.original.lastReviewed}</div>
-      ),
-      enableSorting: true,
-      enableHiding: true,
-    },
-    {
-      accessorKey: 'category',
-      header: 'Categories',
-      cell: ({ row }) => (
-        <div className="flex flex-wrap gap-1">
-          {row.original.category.map(cat => (
-            <span
-              key={cat}
-              className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-800 dark:bg-slate-700 dark:text-slate-200"
-            >
-              {cat}
-            </span>
-          ))}
-        </div>
-      ),
-      enableSorting: false,
-      enableHiding: true,
-    },
-    {
-      accessorKey: 'status',
-      header: 'Status',
-      cell: ({ row: _row }) => {
-        const statusConfig = {
-          'Mastered': { icon: CheckCircle, color: 'text-emerald-600 bg-emerald-100 dark:bg-emerald-900/20' },
-          'Learning': { icon: Clock, color: 'text-blue-600 bg-blue-100 dark:bg-blue-900/20' },
-          'Not Started': { icon: XCircle, color: 'text-slate-600 bg-slate-100 dark:bg-slate-700' },
-        };
-        const config = statusConfig[_row.original.status];
-        const Icon = config.icon;
-
+      cell: ({ row }) => {
+        const firstTarget = row.original.textTargets[0];
         return (
-          <div className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${config.color}`}>
-            <Icon className="mr-2 h-4 w-4" />
-            {_row.original.status}
+          <div className="flex items-center space-x-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-400 via-blue-500 to-indigo-600 text-sm font-bold text-white shadow-lg">
+              {row.original.textSource.charAt(0).toUpperCase()}
+            </div>
+            <div>
+              <div className="font-semibold text-slate-900 dark:text-white">{row.original.textSource}</div>
+              <div className="text-sm text-slate-500 dark:text-slate-400">
+                {firstTarget?.textTarget || 'No translation'}
+              </div>
+            </div>
           </div>
         );
       },
       enableSorting: true,
+      enableHiding: false,
+    },
+    {
+      accessorKey: 'sourceLanguageCode',
+      header: 'Source Language',
+      cell: ({ row }) => (
+        <div className="text-sm text-slate-600 dark:text-slate-400">
+          {row.original.sourceLanguageCode.toUpperCase()}
+        </div>
+      ),
+      enableSorting: true,
+      enableHiding: true,
+    },
+    {
+      accessorKey: 'targetLanguageCode',
+      header: 'Target Language',
+      cell: ({ row }) => (
+        <div className="text-sm text-slate-600 dark:text-slate-400">
+          {row.original.targetLanguageCode.toUpperCase()}
+        </div>
+      ),
+      enableSorting: true,
+      enableHiding: true,
+    },
+    {
+      accessorKey: 'textTargets',
+      header: 'Word Type',
+      cell: ({ row }) => {
+        const firstTarget = row.original.textTargets[0];
+        return (
+          <div className="text-sm text-slate-600 dark:text-slate-400">
+            {firstTarget?.wordType?.name || 'N/A'}
+          </div>
+        );
+      },
+      enableSorting: false,
+      enableHiding: true,
+    },
+    {
+      accessorKey: 'textTargets',
+      header: 'Subjects',
+      cell: ({ row }) => {
+        const firstTarget = row.original.textTargets[0];
+        const subjects = firstTarget?.textTargetSubjects || [];
+
+        return (
+          <div className="flex flex-wrap gap-1">
+            {subjects.map(subject => (
+              <span
+                key={subject.id}
+                className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-800 dark:bg-slate-700 dark:text-slate-200"
+              >
+                {subject.subject.name}
+              </span>
+            ))}
+          </div>
+        );
+      },
+      enableSorting: false,
+      enableHiding: true,
+    },
+    {
+      accessorKey: 'textTargets',
+      header: 'Examples',
+      cell: ({ row }) => {
+        const firstTarget = row.original.textTargets[0];
+        const examples = firstTarget?.vocabExamples || [];
+
+        return (
+          <div className="text-sm text-slate-600 dark:text-slate-400">
+            {examples.length > 0 ? `${examples.length} example(s)` : 'No examples'}
+          </div>
+        );
+      },
+      enableSorting: false,
       enableHiding: true,
     },
     {
