@@ -168,13 +168,18 @@ export function DataTable<TData, TValue>({
             results
           </div>
 
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-3">
             <Button
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
-              className="rounded-lg border border-slate-200 bg-white/80 px-3 py-2 text-sm backdrop-blur-sm transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:bg-slate-800/80 dark:hover:bg-slate-700/80"
+              variant="ghost"
+              size="sm"
+              className="flex items-center space-x-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200"
             >
-              Previous
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              <span>Previous</span>
             </Button>
 
             <div className="flex items-center space-x-1">
@@ -184,10 +189,12 @@ export function DataTable<TData, TValue>({
                   <Button
                     key={pageIndex}
                     onClick={() => table.setPageIndex(i)}
-                    className={`h-8 w-8 rounded-lg p-0 text-sm transition-colors ${
+                    variant={table.getState().pagination.pageIndex === i ? 'default' : 'ghost'}
+                    size="sm"
+                    className={`h-8 w-8 rounded-full p-0 text-sm font-medium transition-colors ${
                       table.getState().pagination.pageIndex === i
-                        ? 'bg-blue-600 text-white'
-                        : 'border border-slate-200 bg-white/80 backdrop-blur-sm hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800/80 dark:hover:bg-slate-700/80'
+                        ? 'bg-purple-600 text-white hover:bg-purple-700'
+                        : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200'
                     }`}
                   >
                     {pageIndex}
@@ -195,16 +202,31 @@ export function DataTable<TData, TValue>({
                 );
               })}
               {table.getPageCount() > 5 && (
-                <span className="px-2 text-slate-500">...</span>
+                <span className="px-2 text-slate-500 dark:text-slate-400">...</span>
+              )}
+              {table.getPageCount() > 5 && (
+                <Button
+                  onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 rounded-full p-0 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200"
+                >
+                  {table.getPageCount()}
+                </Button>
               )}
             </div>
 
             <Button
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
-              className="rounded-lg border border-slate-200 bg-white/80 px-3 py-2 text-sm backdrop-blur-sm transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:bg-slate-800/80 dark:hover:bg-slate-700/80"
+              variant="ghost"
+              size="sm"
+              className="flex items-center space-x-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200"
             >
-              Next
+              <span>Next</span>
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
             </Button>
           </div>
         </div>
