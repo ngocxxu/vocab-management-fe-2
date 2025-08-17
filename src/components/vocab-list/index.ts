@@ -1,3 +1,10 @@
+export { default as AddVocabDialog } from './AddVocabDialog';
+export { default as BasicInfoForm } from './BasicInfoForm';
+export { default as ExamplesSection } from './ExamplesSection';
+export { default as SubjectsSection } from './SubjectsSection';
+export { default as TextTargetForm } from './TextTargetForm';
+export { default as TextTargetTabs } from './TextTargetTabs';
 export { default as VocabList } from './VocabList';
-export { VocabListContent } from './VocabListContent';
-export { VocabListLayout } from './VocabListLayout';
+export { default as VocabListContent } from './VocabListContent';
+export { default as VocabListHeader } from './VocabListHeader';
+export { default as VocabListLayout } from './VocabListLayout';

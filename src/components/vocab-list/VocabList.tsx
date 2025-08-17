@@ -2,14 +2,143 @@
 
 import type { ColumnDef } from '@tanstack/react-table';
 import type { TVocab } from '@/types/vocab-list';
-import { ChevronDown, Edit, Filter, MoreVertical, Plus } from 'lucide-react';
+import { ChevronDown, Edit, MoreVertical } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DataTable } from '@/components/ui/table';
+import AddVocabDialog from './AddVocabDialog';
+import VocabListHeader from './VocabListHeader';
 
 const VocabList: React.FC = () => {
+  const [open, setOpen] = React.useState(false);
   const [globalFilter, setGlobalFilter] = useState('');
+  const [formData, setFormData] = useState({
+    textSource: '',
+    sourceLanguageCode: '',
+    targetLanguageCode: '',
+    textTargets: [{
+      wordTypeId: '',
+      textTarget: '',
+      grammar: '',
+      explanationSource: '',
+      explanationTarget: '',
+      subjectIds: [] as string[],
+      vocabExamples: [{ source: '', target: '' }],
+    }],
+  });
+
+  const [activeTab, setActiveTab] = useState('0');
+
+  const addTextTarget = () => {
+    const newIndex = formData.textTargets.length;
+    setFormData(prev => ({
+      ...prev,
+      textTargets: [...prev.textTargets, {
+        wordTypeId: '',
+        textTarget: '',
+        grammar: '',
+        explanationSource: '',
+        explanationTarget: '',
+        subjectIds: [],
+        vocabExamples: [{ source: '', target: '' }],
+      }],
+    }));
+    setActiveTab(newIndex.toString());
+  };
+
+  const removeTextTarget = (index: number) => {
+    if (formData.textTargets.length > 1) {
+      setFormData(prev => ({
+        ...prev,
+        textTargets: prev.textTargets.filter((_, i) => i !== index),
+      }));
+      // Switch to the previous tab if removing the current one
+      if (activeTab === index.toString()) {
+        setActiveTab(Math.max(0, index - 1).toString());
+      }
+    }
+  };
+
+  const handleInputChange = (field: string, value: string, targetIndex?: number) => {
+    if (targetIndex !== undefined) {
+      setFormData(prev => ({
+        ...prev,
+        textTargets: prev.textTargets.map((target, index) =>
+          index === targetIndex
+            ? { ...target, [field]: value }
+            : target,
+        ),
+      }));
+    } else {
+      setFormData(prev => ({ ...prev, [field]: value }));
+    }
+  };
+
+  const handleExampleChange = (exampleIndex: number, field: 'source' | 'target', value: string, targetIndex: number = 0) => {
+    setFormData(prev => ({
+      ...prev,
+      textTargets: prev.textTargets.map((target, index) =>
+        index === targetIndex
+          ? {
+              ...target,
+              vocabExamples: target.vocabExamples.map((example, exIndex) =>
+                exIndex === exampleIndex
+                  ? { ...example, [field]: value }
+                  : example,
+              ),
+            }
+          : target,
+      ),
+    }));
+  };
+
+  const addExample = (targetIndex: number = 0) => {
+    setFormData(prev => ({
+      ...prev,
+      textTargets: prev.textTargets.map((target, index) =>
+        index === targetIndex
+          ? { ...target, vocabExamples: [...target.vocabExamples, { source: '', target: '' }] }
+          : target,
+      ),
+    }));
+  };
+
+  const removeExample = (exampleIndex: number, targetIndex: number = 0) => {
+    setFormData(prev => ({
+      ...prev,
+      textTargets: prev.textTargets.map((target, index) =>
+        index === targetIndex
+          ? {
+              ...target,
+              vocabExamples: target.vocabExamples.filter((_, exIndex) => exIndex !== exampleIndex),
+            }
+          : target,
+      ),
+    }));
+  };
+
+  const handleSubjectChange = (subjectId: string, targetIndex: number = 0) => {
+    setFormData(prev => ({
+      ...prev,
+      textTargets: prev.textTargets.map((target, index) =>
+        index === targetIndex
+          ? {
+              ...target,
+              subjectIds: target.subjectIds.includes(subjectId)
+                ? target.subjectIds.filter(id => id !== subjectId)
+                : [...target.subjectIds, subjectId],
+            }
+          : target,
+      ),
+    }));
+  };
+
+  const handleSubmit = () => {
+    // Here you would send the data to your backend
+    // The formData matches the TCreateVocab type structure
+    // You can access the data via formData variable
+  };
 
   // Memoize the data to prevent unnecessary re-renders - using the actual TVocab structure
   const data = useMemo<TVocab[]>(() => [
@@ -283,33 +412,26 @@ const VocabList: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header Section */}
-      <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
-        <div className="space-y-1">
-          <div className="flex items-center space-x-3">
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Vocab List</h1>
-            <span className="inline-flex items-center rounded-full bg-purple-100 px-2.5 py-0.5 text-sm font-medium text-purple-800 dark:bg-purple-900/20 dark:text-purple-200">
-              {data.length}
-              {' '}
-              Total
-            </span>
-          </div>
-          <p className="text-slate-600 dark:text-slate-400">
-            Track your vocabulary learning progress and review history.
-          </p>
-        </div>
+      <VocabListHeader
+        totalCount={data.length}
+        onAddVocab={() => setOpen(true)}
+      />
 
-        <div className="flex items-center space-x-3">
-          <Button variant="outline" className="border-slate-200 bg-white/80 backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/80">
-            <Filter className="mr-2 h-4 w-4" />
-            Filter
-          </Button>
-          <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg hover:from-blue-700 hover:to-indigo-700 dark:from-blue-500 dark:to-indigo-500 dark:hover:from-blue-600 dark:hover:to-indigo-600">
-            <Plus className="mr-2 h-4 w-4" />
-            Add Vocab
-          </Button>
-        </div>
-      </div>
+      <AddVocabDialog
+        formData={formData}
+        activeTab={activeTab}
+        onInputChange={handleInputChange}
+        onSubjectChange={handleSubjectChange}
+        onExampleChange={handleExampleChange}
+        onAddExample={addExample}
+        onRemoveExample={removeExample}
+        onAddTextTarget={addTextTarget}
+        onRemoveTextTarget={removeTextTarget}
+        onActiveTabChange={setActiveTab}
+        onSubmit={handleSubmit}
+        open={open}
+        setOpen={setOpen}
+      />
 
       {/* Reusable DataTable Component */}
       <DataTable

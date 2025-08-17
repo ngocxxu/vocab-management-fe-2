@@ -1,8 +1,10 @@
 import React from 'react';
-import { VocabListContent } from './VocabListContent';
+import VocabListContent from './VocabListContent';
 
-export const VocabListLayout: React.FC = () => {
+const VocabListLayout: React.FC = () => {
   return (
     <VocabListContent />
   );
 };
+
+export default VocabListLayout;

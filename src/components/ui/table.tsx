@@ -122,7 +122,7 @@ export function DataTable<TData, TValue>({
                   <tr key={headerGroup.id} className={`border-b border-slate-200 dark:border-slate-700 ${headerClassName}`}>
                     {headerGroup.headers.map(header => (
                       <th
-                        key={header.id}
+                        key={header.id + Math.random()}
                         className={`bg-slate-50/50 px-6 py-4 text-left text-sm font-semibold text-slate-700 dark:bg-slate-800/50 dark:text-slate-300 ${headerClassName}`}
                         style={{ width: header.getSize() !== 150 ? header.getSize() : undefined }}
                       >
@@ -137,11 +137,11 @@ export function DataTable<TData, TValue>({
               <tbody>
                 {table.getRowModel().rows.map(row => (
                   <tr
-                    key={row.id}
+                    key={row.id + Math.random()}
                     className={`border-b border-slate-100 transition-colors duration-200 hover:bg-slate-50/50 dark:border-slate-700 dark:hover:bg-slate-700/50 ${rowClassName}`}
                   >
                     {row.getVisibleCells().map(cell => (
-                      <td key={cell.id} className={`px-6 py-4 ${cellClassName}`}>
+                      <td key={cell.id + Math.random()} className={`px-6 py-4 ${cellClassName}`}>
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </td>
                     ))}
