@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import {
   FormControl,
@@ -35,12 +35,32 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = ({
   targetIndex,
 }) => {
   const form = useFormContext();
+  const [isMounted, setIsMounted] = useState(false);
+
+  // Prevent hydration mismatch by only rendering on client
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Convert subjects to the format expected by MultiSelect
   const subjectOptions = SUBJECTS.map(subject => ({
     value: subject.id,
     label: subject.name,
   }));
+
+  // Don't render until component is mounted on client
+  if (!isMounted) {
+    return (
+      <div className="space-y-4">
+        <h4 className="text-sm font-medium">
+          Subjects for Vocab
+          {' '}
+          {targetIndex + 1}
+        </h4>
+        <div className="h-10 animate-pulse rounded-md border bg-muted" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -58,7 +78,7 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = ({
             <FormControl>
               <MultiSelect
                 options={subjectOptions}
-                defaultValue={field.value || []}
+                value={field.value || []}
                 onValueChange={(newValue) => {
                   field.onChange(newValue);
                   // Clear validation error for this field when value changes

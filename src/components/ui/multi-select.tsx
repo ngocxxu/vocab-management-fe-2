@@ -793,7 +793,7 @@ export const MultiSelect = (
               getAllOptions().length
             } options selected. ${placeholder}`}
             className={cn(
-              'flex p-1 rounded-md border min-h-10 h-auto items-center justify-between bg-inherit hover:bg-inherit [&_svg]:pointer-events-auto',
+              'flex p-1 rounded-md border min-h-10 h-auto items-center justify-between dark:bg-input/30 dark:hover:bg-input/50 bg-inherit hover:bg-inherit [&_svg]:pointer-events-auto',
               autoSize ? 'w-auto' : 'w-full',
               responsiveSettings.compactMode && 'min-h-8 text-sm',
               screenSize === 'mobile' && 'min-h-12 text-base',

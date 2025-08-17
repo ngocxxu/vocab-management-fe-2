@@ -4,7 +4,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import type { TVocab } from '@/types/vocab-list';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronDown, Edit, MoreVertical } from 'lucide-react';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
@@ -38,6 +38,7 @@ type FormData = z.infer<typeof FormSchema>;
 const VocabList: React.FC = () => {
   const [open, setOpen] = React.useState(false);
   const [globalFilter, setGlobalFilter] = useState('');
+  const [isMounted, setIsMounted] = useState(false);
 
   const form = useForm<FormData>({
     resolver: zodResolver(FormSchema),
@@ -59,6 +60,11 @@ const VocabList: React.FC = () => {
   });
 
   const [activeTab, setActiveTab] = useState('0');
+
+  // Prevent hydration mismatch by only rendering on client
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Function to reset form to default values
   const resetForm = () => {
@@ -448,37 +454,41 @@ const VocabList: React.FC = () => {
           onAddVocab={() => setOpen(true)}
         />
 
-        <AddVocabDialog
-          formData={form.watch()}
-          activeTab={activeTab}
-          onInputChange={handleInputChange}
-          onExampleChange={handleExampleChange}
-          onAddExample={addExample}
-          onRemoveExample={removeExample}
-          onAddTextTarget={addTextTarget}
-          onRemoveTextTarget={removeTextTarget}
-          onActiveTabChange={setActiveTab}
-          onSubmit={handleSubmit}
-          onReset={resetForm}
-          open={open}
-          setOpen={setOpen}
-        />
+        {isMounted && (
+          <>
+            <AddVocabDialog
+              formData={form.watch()}
+              activeTab={activeTab}
+              onInputChange={handleInputChange}
+              onExampleChange={handleExampleChange}
+              onAddExample={addExample}
+              onRemoveExample={removeExample}
+              onAddTextTarget={addTextTarget}
+              onRemoveTextTarget={removeTextTarget}
+              onActiveTabChange={setActiveTab}
+              onSubmit={handleSubmit}
+              onReset={resetForm}
+              open={open}
+              setOpen={setOpen}
+            />
 
-        {/* Reusable DataTable Component */}
-        <DataTable
-          columns={columns}
-          data={data}
-          searchPlaceholder="Search vocab..."
-          searchValue={globalFilter}
-          onSearchChangeAction={setGlobalFilter}
-          showSearch={true}
-          showPagination={true}
-          pageSize={8}
-          className=""
-          headerClassName=""
-          rowClassName=""
-          cellClassName=""
-        />
+            {/* Reusable DataTable Component */}
+            <DataTable
+              columns={columns}
+              data={data}
+              searchPlaceholder="Search vocab..."
+              searchValue={globalFilter}
+              onSearchChangeAction={setGlobalFilter}
+              showSearch={true}
+              showPagination={true}
+              pageSize={8}
+              className=""
+              headerClassName=""
+              rowClassName=""
+              cellClassName=""
+            />
+          </>
+        )}
       </div>
     </Form>
   );
