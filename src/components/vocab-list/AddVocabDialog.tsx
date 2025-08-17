@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import { Loader2 } from 'lucide-react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import BasicInfoForm from './BasicInfoForm';
@@ -31,7 +32,8 @@ type AddVocabDialogProps = {
   onAddTextTarget: () => void;
   onRemoveTextTarget: (index: number) => void;
   onActiveTabChange: (value: string) => void;
-  onSubmit: () => void;
+  onSubmit: () => Promise<void>;
+  onReset: () => void; // Add reset function prop
   open: boolean;
   setOpen: (open: boolean) => void;
 };
@@ -47,11 +49,33 @@ const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
   onRemoveTextTarget,
   onActiveTabChange,
   onSubmit,
+  onReset,
   open,
   setOpen,
 }) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    try {
+      await onSubmit();
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleOpenChange = (newOpen: boolean) => {
+    if (!newOpen) {
+      // Reset form when modal is closed
+      onReset();
+      // Reset active tab to first tab
+      onActiveTabChange('0');
+    }
+    setOpen(newOpen);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[1000px]">
         <div className="mx-auto w-full">
           <DialogHeader>
@@ -59,10 +83,7 @@ const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
             <DialogDescription>Enter the details for your new vocabulary item</DialogDescription>
           </DialogHeader>
           <div className="space-y-6 p-6 pb-0">
-            <BasicInfoForm
-              formData={formData}
-              onInputChange={onInputChange}
-            />
+            <BasicInfoForm />
 
             <TextTargetTabs
               textTargets={formData.textTargets}
@@ -78,10 +99,25 @@ const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
           </div>
           <DialogFooter className="pt-4">
             <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
+              <Button variant="outline" disabled={isSubmitting}>
+                Cancel
+              </Button>
             </DialogClose>
-            <Button onClick={onSubmit} className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700">
-              Add Vocabulary
+            <Button
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+              className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700"
+            >
+              {isSubmitting
+                ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Validating...
+                    </>
+                  )
+                : (
+                    'Add Vocabulary'
+                  )}
             </Button>
           </DialogFooter>
         </div>

@@ -57,9 +57,13 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = ({
             <FormLabel className="sr-only">Subjects</FormLabel>
             <FormControl>
               <MultiSelect
-                defaultValue={field.value || []}
                 options={subjectOptions}
-                onValueChange={field.onChange}
+                defaultValue={field.value || []}
+                onValueChange={(newValue) => {
+                  field.onChange(newValue);
+                  // Clear validation error for this field when value changes
+                  form.clearErrors(`textTargets.${targetIndex}.subjectIds`);
+                }}
                 placeholder="Choose subjects..."
                 maxCount={4}
                 searchable={true}
@@ -68,8 +72,8 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = ({
               >
                 <div className="flex h-auto min-h-10 cursor-pointer items-center justify-between rounded-md border bg-inherit p-1 hover:bg-inherit">
                   <span className="text-sm text-muted-foreground">
-                    {field.value.length > 0
-                      ? `${field.value.length} subject(s) selected`
+                    {(field.value || []).length > 0
+                      ? `${(field.value || []).length} subject(s) selected`
                       : 'Choose subjects...'}
                   </span>
                   <svg className="h-4 w-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">

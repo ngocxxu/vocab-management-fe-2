@@ -25,7 +25,7 @@ const FormSchema = z.object({
     grammar: z.string(),
     explanationSource: z.string(),
     explanationTarget: z.string(),
-    subjectIds: z.array(z.string()),
+    subjectIds: z.array(z.string()).min(1, 'At least one subject must be selected'),
     vocabExamples: z.array(z.object({
       source: z.string(),
       target: z.string(),
@@ -41,6 +41,7 @@ const VocabList: React.FC = () => {
 
   const form = useForm<FormData>({
     resolver: zodResolver(FormSchema),
+    mode: 'onChange', // Re-validate on change for better UX
     defaultValues: {
       textSource: '',
       sourceLanguageCode: '',
@@ -51,13 +52,19 @@ const VocabList: React.FC = () => {
         grammar: '',
         explanationSource: '',
         explanationTarget: '',
-        subjectIds: [],
+        subjectIds: [], // Ensure this is always initialized as an empty array
         vocabExamples: [{ source: '', target: '' }],
       }],
     },
   });
 
   const [activeTab, setActiveTab] = useState('0');
+
+  // Function to reset form to default values
+  const resetForm = () => {
+    form.reset();
+    setActiveTab('0');
+  };
 
   const addTextTarget = () => {
     const newIndex = form.watch('textTargets').length;
@@ -137,10 +144,30 @@ const VocabList: React.FC = () => {
     form.setValue('textTargets', updatedTargets);
   };
 
-  const handleSubmit = () => {
-    // Here you would send the data to your backend
-    // The formData matches the TCreateVocab type structure
-    // You can access the data via formData variable
+  const handleSubmit = async () => {
+    try {
+      // Validate the form
+      const isValid = await form.trigger();
+
+      if (!isValid) {
+        // Form validation failed, errors will be displayed automatically
+        return;
+      }
+
+      // Get the validated form data
+      form.getValues();
+
+      // Here you would send the data to your backend
+      // const response = await api.createVocab(_formData);
+
+      // If successful, close the dialog and show success message
+      setOpen(false);
+
+      // Reset the form after successful submission
+      resetForm();
+    } catch {
+      // Handle any other errors here
+    }
   };
 
   // Memoize the data to prevent unnecessary re-renders - using the actual TVocab structure
@@ -432,6 +459,7 @@ const VocabList: React.FC = () => {
           onRemoveTextTarget={removeTextTarget}
           onActiveTabChange={setActiveTab}
           onSubmit={handleSubmit}
+          onReset={resetForm}
           open={open}
           setOpen={setOpen}
         />
