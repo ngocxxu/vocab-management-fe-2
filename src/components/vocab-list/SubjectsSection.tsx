@@ -34,7 +34,7 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = ({
   return (
     <div className="space-y-4">
       <h4 className="text-sm font-medium">
-        Subjects for Target
+        Subjects for Vocab
         {' '}
         {targetIndex + 1}
       </h4>

@@ -63,7 +63,7 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
           <Label htmlFor={`grammar-${targetIndex}`}>Grammar</Label>
           <Input
             id={`grammar-${targetIndex}`}
-            placeholder="e.g., Interjection, Noun, Verb..."
+            placeholder="e.g., Grammar..."
             value={target.grammar}
             onChange={e => onInputChange('grammar', e.target.value, targetIndex)}
             className="mt-1"

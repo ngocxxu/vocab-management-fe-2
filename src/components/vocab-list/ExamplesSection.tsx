@@ -30,7 +30,7 @@ const ExamplesSection: React.FC<ExamplesSectionProps> = ({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h4 className="text-sm font-medium">
-          Vocabulary Examples for Target
+          Vocabulary Examples for Vocab
           {' '}
           {targetIndex + 1}
         </h4>
@@ -46,7 +46,7 @@ const ExamplesSection: React.FC<ExamplesSectionProps> = ({
       </div>
       <div className="space-y-3">
         {examples.map((example, exampleIndex) => (
-          <div key={`${example.source}-${example.target}`} className="flex items-center space-x-3 rounded-lg border p-3">
+          <div key={`${example.source}-${example.target}-${Math.random()}`} className="flex items-center space-x-3 rounded-lg border p-3">
             <div className="grid flex-1 grid-cols-2 gap-3">
               <div>
                 <Label htmlFor={`example-source-${targetIndex}-${exampleIndex}`} className="text-sm">Source</Label>

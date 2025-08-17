@@ -79,13 +79,13 @@ const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
               onRemoveTextTarget={onRemoveTextTarget}
             />
           </div>
-          <DialogFooter className="p-6 pt-0">
-            <Button onClick={onSubmit} className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700">
-              Add Vocabulary
-            </Button>
+          <DialogFooter className="pt-4">
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
+            <Button onClick={onSubmit} className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700">
+              Add Vocabulary
+            </Button>
           </DialogFooter>
         </div>
       </DialogContent>

@@ -51,6 +51,7 @@ const TextTargetTabs: React.FC<TextTargetTabsProps> = ({
           variant="outline"
           size="sm"
           onClick={onAddTextTarget}
+          disabled={textTargets.length >= 5}
         >
           <Plus className="mr-1 h-4 w-4" />
           Add Target
@@ -58,27 +59,29 @@ const TextTargetTabs: React.FC<TextTargetTabsProps> = ({
       </div>
 
       <Tabs value={activeTab} onValueChange={onActiveTabChange} className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           {textTargets.map((target, index) => (
             <TabsTrigger
               key={target.textTarget + Math.random()}
               value={index.toString()}
               className={cn(
-                'relative',
+                'relative flex-shrink-0 flex items-center justify-between',
                 activeTab === index.toString() ? 'bg-background text-foreground shadow-sm' : '',
               )}
               onClick={() => onActiveTabChange(index.toString())}
             >
-              Target
-              {' '}
-              {index + 1}
+              <p className="text-sm">
+                Vocab
+                {' '}
+                {index + 1}
+              </p>
               {textTargets.length > 1 && (
                 <div
                   onClick={(e: React.MouseEvent<HTMLDivElement>) => {
                     e.stopPropagation();
                     onRemoveTextTarget(index);
                   }}
-                  className="ml-2 flex h-4 w-4 cursor-pointer items-center justify-center rounded-sm p-0 text-muted-foreground hover:bg-destructive hover:text-red-600"
+                  className="ml-2 flex h-4 w-4 cursor-pointer items-center justify-center rounded-sm p-0 text-muted-foreground"
                   role="button"
                   tabIndex={0}
                   onKeyDown={(e) => {
