@@ -1,5 +1,6 @@
 'use client';
 
+import type { TVocab } from '@/types/vocab-list';
 import { Loader2 } from 'lucide-react';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -36,6 +37,8 @@ type AddVocabDialogProps = {
   onReset: () => void; // Add reset function prop
   open: boolean;
   setOpen: (open: boolean) => void;
+  editMode?: boolean;
+  editingItem?: TVocab | null;
 };
 
 const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
@@ -52,6 +55,7 @@ const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
   onReset,
   open,
   setOpen,
+  editMode = false,
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -79,8 +83,12 @@ const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[1000px]">
         <div className="mx-auto w-full">
           <DialogHeader>
-            <DialogTitle>Add New Vocabulary</DialogTitle>
-            <DialogDescription>Enter the details for your new vocabulary item</DialogDescription>
+            <DialogTitle>{editMode ? 'Edit Vocabulary' : 'Add New Vocabulary'}</DialogTitle>
+            <DialogDescription>
+              {editMode
+                ? `Update the details for your vocabulary item`
+                : 'Enter the details for your new vocabulary item'}
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-6 p-6 pb-0">
             <BasicInfoForm />

@@ -49,6 +49,8 @@ type FormData = z.infer<typeof FormSchema>;
 
 const VocabList: React.FC = () => {
   const [open, setOpen] = React.useState(false);
+  const [editMode, setEditMode] = React.useState(false);
+  const [editingItem, setEditingItem] = React.useState<TVocab | null>(null);
   const [globalFilter, setGlobalFilter] = useState('');
   const [isMounted, setIsMounted] = useState(false);
 
@@ -106,6 +108,35 @@ const VocabList: React.FC = () => {
         setActiveTab(Math.max(0, index - 1).toString());
       }
     }
+  };
+
+  const handleEdit = (item: TVocab) => {
+    setEditingItem(item);
+    setEditMode(true);
+    setOpen(true);
+
+    // Populate the form with the item data, mapping the structure correctly
+    form.reset({
+      textSource: item.textSource,
+      sourceLanguageCode: item.sourceLanguageCode,
+      targetLanguageCode: item.targetLanguageCode,
+      textTargets: item.textTargets.map(textTarget => ({
+        wordTypeId: textTarget.wordType?.id || '', // Extract ID from wordType object
+        textTarget: textTarget.textTarget,
+        grammar: textTarget.grammar,
+        explanationSource: textTarget.explanationSource,
+        explanationTarget: textTarget.explanationTarget,
+        subjectIds: textTarget.textTargetSubjects?.map(tts => tts.subject.id) || [], // Extract subject IDs
+        vocabExamples: textTarget.vocabExamples || [{ source: '', target: '' }],
+      })),
+    });
+  };
+
+  const handleCloseDialog = () => {
+    setOpen(false);
+    setEditMode(false);
+    setEditingItem(null);
+    resetForm();
   };
 
   const handleInputChange = (field: string, value: string, targetIndex?: number) => {
@@ -375,7 +406,12 @@ const VocabList: React.FC = () => {
       header: '',
       cell: ({ row: _row }) => (
         <div className="flex items-center space-x-2">
-          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700"
+            onClick={() => handleEdit(_row.original)}
+          >
             <Edit className="h-4 w-4 text-slate-500" />
           </Button>
           <AlertDialog>
@@ -428,7 +464,9 @@ const VocabList: React.FC = () => {
               onSubmit={handleSubmit}
               onReset={resetForm}
               open={open}
-              setOpen={setOpen}
+              setOpen={handleCloseDialog}
+              editMode={editMode}
+              editingItem={editingItem}
             />
 
             {/* Reusable DataTable Component */}

@@ -78,7 +78,7 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = ({
             <FormControl>
               <MultiSelect
                 options={subjectOptions}
-                value={field.value || []}
+                defaultValue={field.value || []}
                 onValueChange={(newValue) => {
                   field.onChange(newValue);
                   // Clear validation error for this field when value changes
