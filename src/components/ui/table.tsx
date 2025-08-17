@@ -130,16 +130,24 @@ export function DataTable<TData, TValue>({
                         {header.isPlaceholder
                           ? null
                           : (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className={`border-0 p-0 text-left font-semibold text-slate-700 hover:bg-transparent hover:text-slate-500 dark:hover:text-slate-300 ${
+                              <div
+                                className={`w-full cursor-pointer p-0 text-left font-semibold text-slate-700 select-none dark:text-slate-300 ${
                                   header.column.getCanSort()
-                                    ? 'cursor-pointer select-none'
-                                    : ''
+                                    ? 'hover:text-slate-900 dark:hover:text-slate-100'
+                                    : 'cursor-default'
                                 }`}
-                                onClick={header.column.getToggleSortingHandler()}
-                                // disabled={!header.column.getCanSort()}
+                                onClick={header.column.getCanSort() ? header.column.getToggleSortingHandler() : undefined}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    const handler = header.column.getToggleSortingHandler();
+                                    if (handler) {
+                                      handler(e);
+                                    }
+                                  }
+                                }}
+                                role={header.column.getCanSort() ? 'button' : undefined}
+                                tabIndex={header.column.getCanSort() ? 0 : undefined}
                                 title={
                                   header.column.getCanSort()
                                     ? header.column.getNextSortingOrder() === 'asc'
@@ -159,7 +167,7 @@ export function DataTable<TData, TValue>({
                                     }[header.column.getIsSorted() as string] ?? <ArrowUpDown className="h-4 w-4" />}
                                   </span>
                                 )}
-                              </Button>
+                              </div>
                             )}
                       </th>
                     ))}

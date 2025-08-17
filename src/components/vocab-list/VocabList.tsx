@@ -3,10 +3,22 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import type { TVocab } from '@/types/vocab-list';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Edit, MoreVertical } from 'lucide-react';
+import { Edit, Trash } from 'lucide-react';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Form } from '@/components/ui/form';
@@ -320,11 +332,10 @@ const VocabList: React.FC = () => {
       ),
       enableSorting: false,
       enableHiding: false,
-      size: 50,
     },
     {
       accessorKey: 'textSource',
-      header: 'Source Text',
+      header: 'Text Source',
       cell: ({ row }) => {
         return (
           <div className="flex items-center space-x-3">
@@ -334,50 +345,22 @@ const VocabList: React.FC = () => {
       },
       enableSorting: true,
       enableHiding: false,
+      size: 1000,
     },
     {
       accessorKey: 'textTargets',
-      header: 'Target Text',
+      header: 'Text Targets',
       cell: ({ row }) => {
-        const firstTarget = row.original.textTargets[0];
-        return (
-          <div className="text-sm text-slate-600 dark:text-slate-400">
-            {firstTarget?.textTarget || 'No translation'}
-          </div>
-        );
-      },
-      enableSorting: false,
-      enableHiding: true,
-    },
-    {
-      accessorKey: 'textTargets',
-      header: 'Word Type',
-      cell: ({ row }) => {
-        const firstTarget = row.original.textTargets[0];
-        return (
-          <div className="text-sm text-slate-600 dark:text-slate-400">
-            {firstTarget?.wordType?.name || 'N/A'}
-          </div>
-        );
-      },
-      enableSorting: false,
-      enableHiding: true,
-    },
-    {
-      accessorKey: 'textTargets',
-      header: 'Subjects',
-      cell: ({ row }) => {
-        const firstTarget = row.original.textTargets[0];
-        const subjects = firstTarget?.textTargetSubjects || [];
+        const textTargets = row.original.textTargets;
 
         return (
           <div className="flex flex-wrap gap-1">
-            {subjects.map(subject => (
+            {textTargets.map(textTarget => (
               <span
-                key={subject.id}
+                key={textTarget.textTarget + Math.random()}
                 className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-800 dark:bg-slate-700 dark:text-slate-200"
               >
-                {subject.subject.name}
+                {textTarget.textTarget}
               </span>
             ))}
           </div>
@@ -385,22 +368,7 @@ const VocabList: React.FC = () => {
       },
       enableSorting: false,
       enableHiding: true,
-    },
-    {
-      accessorKey: 'textTargets',
-      header: 'Examples',
-      cell: ({ row }) => {
-        const firstTarget = row.original.textTargets[0];
-        const examples = firstTarget?.vocabExamples || [];
-
-        return (
-          <div className="text-sm text-slate-600 dark:text-slate-400">
-            {examples.length > 0 ? `${examples.length} example(s)` : 'No examples'}
-          </div>
-        );
-      },
-      enableSorting: false,
-      enableHiding: true,
+      size: 1000,
     },
     {
       id: 'actions',
@@ -410,13 +378,30 @@ const VocabList: React.FC = () => {
           <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700">
             <Edit className="h-4 w-4 text-slate-500" />
           </Button>
-          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700">
-            <MoreVertical className="h-4 w-4 text-slate-500" />
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-red-100 dark:hover:bg-red-700">
+                <Trash className="h-4 w-4 text-slate-500" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete this vocabulary item and remove it from your list.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction className="bg-red-500 hover:bg-red-600">Delete</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       ),
       enableSorting: false,
       enableHiding: false,
+      size: 50,
     },
   ], []);
 
