@@ -2,39 +2,50 @@
 
 import type { ColumnDef } from '@tanstack/react-table';
 import type { TVocab } from '@/types/vocab-list';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronDown, Edit, MoreVertical } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Form } from '@/components/ui/form';
 import { DataTable } from '@/components/ui/table';
 import AddVocabDialog from './AddVocabDialog';
 import VocabListHeader from './VocabListHeader';
 
+// Define the form schema
+const FormSchema = z.object({
+  textSource: z.string().min(1, 'Source text is required'),
+  sourceLanguageCode: z.string().min(1, 'Source language is required'),
+  targetLanguageCode: z.string().min(1, 'Target language is required'),
+  textTargets: z.array(z.object({
+    wordTypeId: z.string().min(1, 'Word type is required'),
+    textTarget: z.string().min(1, 'Target text is required'),
+    grammar: z.string(),
+    explanationSource: z.string(),
+    explanationTarget: z.string(),
+    subjectIds: z.array(z.string()),
+    vocabExamples: z.array(z.object({
+      source: z.string(),
+      target: z.string(),
+    })),
+  })).min(1, 'At least one text target is required'),
+});
+
+type FormData = z.infer<typeof FormSchema>;
+
 const VocabList: React.FC = () => {
   const [open, setOpen] = React.useState(false);
   const [globalFilter, setGlobalFilter] = useState('');
-  const [formData, setFormData] = useState({
-    textSource: '',
-    sourceLanguageCode: '',
-    targetLanguageCode: '',
-    textTargets: [{
-      wordTypeId: '',
-      textTarget: '',
-      grammar: '',
-      explanationSource: '',
-      explanationTarget: '',
-      subjectIds: [] as string[],
-      vocabExamples: [{ source: '', target: '' }],
-    }],
-  });
 
-  const [activeTab, setActiveTab] = useState('0');
-
-  const addTextTarget = () => {
-    const newIndex = formData.textTargets.length;
-    setFormData(prev => ({
-      ...prev,
-      textTargets: [...prev.textTargets, {
+  const form = useForm<FormData>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      textSource: '',
+      sourceLanguageCode: '',
+      targetLanguageCode: '',
+      textTargets: [{
         wordTypeId: '',
         textTarget: '',
         grammar: '',
@@ -43,16 +54,28 @@ const VocabList: React.FC = () => {
         subjectIds: [],
         vocabExamples: [{ source: '', target: '' }],
       }],
-    }));
+    },
+  });
+
+  const [activeTab, setActiveTab] = useState('0');
+
+  const addTextTarget = () => {
+    const newIndex = form.watch('textTargets').length;
+    form.setValue('textTargets', [...form.watch('textTargets'), {
+      wordTypeId: '',
+      textTarget: '',
+      grammar: '',
+      explanationSource: '',
+      explanationTarget: '',
+      subjectIds: [], // Ensure this is always initialized as an empty array
+      vocabExamples: [{ source: '', target: '' }],
+    }]);
     setActiveTab(newIndex.toString());
   };
 
   const removeTextTarget = (index: number) => {
-    if (formData.textTargets.length > 1) {
-      setFormData(prev => ({
-        ...prev,
-        textTargets: prev.textTargets.filter((_, i) => i !== index),
-      }));
+    if (form.watch('textTargets').length > 1) {
+      form.setValue('textTargets', form.watch('textTargets').filter((_, i) => i !== index));
       // Switch to the previous tab if removing the current one
       if (activeTab === index.toString()) {
         setActiveTab(Math.max(0, index - 1).toString());
@@ -62,74 +85,56 @@ const VocabList: React.FC = () => {
 
   const handleInputChange = (field: string, value: string, targetIndex?: number) => {
     if (targetIndex !== undefined) {
-      setFormData(prev => ({
-        ...prev,
-        textTargets: prev.textTargets.map((target, index) =>
-          index === targetIndex
-            ? { ...target, [field]: value }
-            : target,
-        ),
-      }));
+      const currentTargets = form.watch('textTargets');
+      const updatedTargets = currentTargets.map((target, index) =>
+        index === targetIndex
+          ? { ...target, [field]: value }
+          : target,
+      );
+      form.setValue('textTargets', updatedTargets);
     } else {
-      setFormData(prev => ({ ...prev, [field]: value }));
+      form.setValue(field as keyof FormData, value);
     }
   };
 
   const handleExampleChange = (exampleIndex: number, field: 'source' | 'target', value: string, targetIndex: number = 0) => {
-    setFormData(prev => ({
-      ...prev,
-      textTargets: prev.textTargets.map((target, index) =>
-        index === targetIndex
-          ? {
-              ...target,
-              vocabExamples: target.vocabExamples.map((example, exIndex) =>
-                exIndex === exampleIndex
-                  ? { ...example, [field]: value }
-                  : example,
-              ),
-            }
-          : target,
-      ),
-    }));
+    const currentTargets = form.watch('textTargets');
+    const updatedTargets = currentTargets.map((target, index) =>
+      index === targetIndex
+        ? {
+            ...target,
+            vocabExamples: target.vocabExamples.map((example, exIndex) =>
+              exIndex === exampleIndex
+                ? { ...example, [field]: value }
+                : example,
+            ),
+          }
+        : target,
+    );
+    form.setValue('textTargets', updatedTargets);
   };
 
   const addExample = (targetIndex: number = 0) => {
-    setFormData(prev => ({
-      ...prev,
-      textTargets: prev.textTargets.map((target, index) =>
-        index === targetIndex
-          ? { ...target, vocabExamples: [...target.vocabExamples, { source: '', target: '' }] }
-          : target,
-      ),
-    }));
+    const currentTargets = form.watch('textTargets');
+    const updatedTargets = currentTargets.map((target, index) =>
+      index === targetIndex
+        ? { ...target, vocabExamples: [...target.vocabExamples, { source: '', target: '' }] }
+        : target,
+    );
+    form.setValue('textTargets', updatedTargets);
   };
 
   const removeExample = (exampleIndex: number, targetIndex: number = 0) => {
-    setFormData(prev => ({
-      ...prev,
-      textTargets: prev.textTargets.map((target, index) =>
-        index === targetIndex
-          ? {
-              ...target,
-              vocabExamples: target.vocabExamples.filter((_, exIndex) => exIndex !== exampleIndex),
-            }
-          : target,
-      ),
-    }));
-  };
-
-  const handleSubjectChange = (subjectIds: string[], targetIndex: number = 0) => {
-    setFormData(prev => ({
-      ...prev,
-      textTargets: prev.textTargets.map((target, index) =>
-        index === targetIndex
-          ? {
-              ...target,
-              subjectIds,
-            }
-          : target,
-      ),
-    }));
+    const currentTargets = form.watch('textTargets');
+    const updatedTargets = currentTargets.map((target, index) =>
+      index === targetIndex
+        ? {
+            ...target,
+            vocabExamples: target.vocabExamples.filter((_, exIndex) => exIndex !== exampleIndex),
+          }
+        : target,
+    );
+    form.setValue('textTargets', updatedTargets);
   };
 
   const handleSubmit = () => {
@@ -409,44 +414,45 @@ const VocabList: React.FC = () => {
   ], []);
 
   return (
-    <div className="space-y-6">
-      <VocabListHeader
-        totalCount={data.length}
-        onAddVocab={() => setOpen(true)}
-      />
+    <Form {...form}>
+      <div className="space-y-6">
+        <VocabListHeader
+          totalCount={data.length}
+          onAddVocab={() => setOpen(true)}
+        />
 
-      <AddVocabDialog
-        formData={formData}
-        activeTab={activeTab}
-        onInputChange={handleInputChange}
-        onSubjectChange={handleSubjectChange}
-        onExampleChange={handleExampleChange}
-        onAddExample={addExample}
-        onRemoveExample={removeExample}
-        onAddTextTarget={addTextTarget}
-        onRemoveTextTarget={removeTextTarget}
-        onActiveTabChange={setActiveTab}
-        onSubmit={handleSubmit}
-        open={open}
-        setOpen={setOpen}
-      />
+        <AddVocabDialog
+          formData={form.watch()}
+          activeTab={activeTab}
+          onInputChange={handleInputChange}
+          onExampleChange={handleExampleChange}
+          onAddExample={addExample}
+          onRemoveExample={removeExample}
+          onAddTextTarget={addTextTarget}
+          onRemoveTextTarget={removeTextTarget}
+          onActiveTabChange={setActiveTab}
+          onSubmit={handleSubmit}
+          open={open}
+          setOpen={setOpen}
+        />
 
-      {/* Reusable DataTable Component */}
-      <DataTable
-        columns={columns}
-        data={data}
-        searchPlaceholder="Search vocab..."
-        searchValue={globalFilter}
-        onSearchChangeAction={setGlobalFilter}
-        showSearch={true}
-        showPagination={true}
-        pageSize={8}
-        className=""
-        headerClassName=""
-        rowClassName=""
-        cellClassName=""
-      />
-    </div>
+        {/* Reusable DataTable Component */}
+        <DataTable
+          columns={columns}
+          data={data}
+          searchPlaceholder="Search vocab..."
+          searchValue={globalFilter}
+          onSearchChangeAction={setGlobalFilter}
+          showSearch={true}
+          showPagination={true}
+          pageSize={8}
+          className=""
+          headerClassName=""
+          rowClassName=""
+          cellClassName=""
+        />
+      </div>
+    </Form>
   );
 };
 

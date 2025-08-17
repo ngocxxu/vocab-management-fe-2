@@ -22,7 +22,6 @@ type TextTargetTabsProps = {
   activeTab: string;
   onActiveTabChange: (value: string) => void;
   onInputChange: (field: string, value: string, targetIndex?: number) => void;
-  onSubjectChange: (subjectIds: string[]) => void;
   onExampleChange: (exampleIndex: number, field: 'source' | 'target', value: string, targetIndex: number) => void;
   onAddExample: (targetIndex: number) => void;
   onRemoveExample: (exampleIndex: number, targetIndex: number) => void;
@@ -35,7 +34,6 @@ const TextTargetTabs: React.FC<TextTargetTabsProps> = ({
   activeTab,
   onActiveTabChange,
   onInputChange,
-  onSubjectChange,
   onExampleChange,
   onAddExample,
   onRemoveExample,
@@ -112,7 +110,6 @@ const TextTargetTabs: React.FC<TextTargetTabsProps> = ({
               targetIndex={index}
               target={target}
               onInputChange={onInputChange}
-              onSubjectChange={onSubjectChange}
               onExampleChange={onExampleChange}
               onAddExample={onAddExample}
               onRemoveExample={onRemoveExample}

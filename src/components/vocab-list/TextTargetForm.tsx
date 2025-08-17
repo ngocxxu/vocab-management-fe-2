@@ -22,7 +22,6 @@ type TextTargetFormProps = {
   targetIndex: number;
   target: TextTarget;
   onInputChange: (field: string, value: string, targetIndex: number) => void;
-  onSubjectChange: (subjectIds: string[]) => void;
   onExampleChange: (exampleIndex: number, field: 'source' | 'target', value: string, targetIndex: number) => void;
   onAddExample: (targetIndex: number) => void;
   onRemoveExample: (exampleIndex: number, targetIndex: number) => void;
@@ -32,7 +31,6 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
   targetIndex,
   target,
   onInputChange,
-  onSubjectChange,
   onExampleChange,
   onAddExample,
   onRemoveExample,
@@ -99,8 +97,6 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
 
       <SubjectsSection
         targetIndex={targetIndex}
-        selectedSubjectIds={target.subjectIds}
-        onSubjectChange={onSubjectChange}
       />
 
       <ExamplesSection

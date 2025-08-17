@@ -25,7 +25,6 @@ type AddVocabDialogProps = {
   formData: VocabFormData;
   activeTab: string;
   onInputChange: (field: string, value: string, targetIndex?: number) => void;
-  onSubjectChange: (subjectIds: string[]) => void;
   onExampleChange: (exampleIndex: number, field: 'source' | 'target', value: string, targetIndex: number) => void;
   onAddExample: (targetIndex: number) => void;
   onRemoveExample: (exampleIndex: number, targetIndex: number) => void;
@@ -41,7 +40,6 @@ const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
   formData,
   activeTab,
   onInputChange,
-  onSubjectChange,
   onExampleChange,
   onAddExample,
   onRemoveExample,
@@ -71,7 +69,6 @@ const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
               activeTab={activeTab}
               onActiveTabChange={onActiveTabChange}
               onInputChange={onInputChange}
-              onSubjectChange={onSubjectChange}
               onExampleChange={onExampleChange}
               onAddExample={onAddExample}
               onRemoveExample={onRemoveExample}
