@@ -22,7 +22,7 @@ type TextTargetTabsProps = {
   activeTab: string;
   onActiveTabChange: (value: string) => void;
   onInputChange: (field: string, value: string, targetIndex?: number) => void;
-  onSubjectChange: (subjectId: string, targetIndex: number) => void;
+  onSubjectChange: (subjectIds: string[]) => void;
   onExampleChange: (exampleIndex: number, field: 'source' | 'target', value: string, targetIndex: number) => void;
   onAddExample: (targetIndex: number) => void;
   onRemoveExample: (exampleIndex: number, targetIndex: number) => void;

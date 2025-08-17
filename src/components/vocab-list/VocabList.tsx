@@ -118,16 +118,14 @@ const VocabList: React.FC = () => {
     }));
   };
 
-  const handleSubjectChange = (subjectId: string, targetIndex: number = 0) => {
+  const handleSubjectChange = (subjectIds: string[], targetIndex: number = 0) => {
     setFormData(prev => ({
       ...prev,
       textTargets: prev.textTargets.map((target, index) =>
         index === targetIndex
           ? {
               ...target,
-              subjectIds: target.subjectIds.includes(subjectId)
-                ? target.subjectIds.filter(id => id !== subjectId)
-                : [...target.subjectIds, subjectId],
+              subjectIds,
             }
           : target,
       ),
