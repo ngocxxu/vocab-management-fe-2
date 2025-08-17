@@ -3,8 +3,8 @@
 import { Plus, X } from 'lucide-react';
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '../ui/textarea';
 
 type VocabExample = {
   source: string;
@@ -50,7 +50,7 @@ const ExamplesSection: React.FC<ExamplesSectionProps> = ({
             <div className="grid flex-1 grid-cols-2 gap-3">
               <div>
                 <Label htmlFor={`example-source-${targetIndex}-${exampleIndex}`} className="text-sm">Source</Label>
-                <Input
+                <Textarea
                   id={`example-source-${targetIndex}-${exampleIndex}`}
                   placeholder="Source text example..."
                   value={example.source}
@@ -60,7 +60,7 @@ const ExamplesSection: React.FC<ExamplesSectionProps> = ({
               </div>
               <div>
                 <Label htmlFor={`example-target-${targetIndex}-${exampleIndex}`} className="text-sm">Target</Label>
-                <Input
+                <Textarea
                   id={`example-target-${targetIndex}-${exampleIndex}`}
                   placeholder="Target text example..."
                   value={example.target}

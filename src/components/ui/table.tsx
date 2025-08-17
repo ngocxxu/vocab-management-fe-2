@@ -15,6 +15,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from './button';
@@ -128,7 +129,38 @@ export function DataTable<TData, TValue>({
                       >
                         {header.isPlaceholder
                           ? null
-                          : flexRender(header.column.columnDef.header, header.getContext())}
+                          : (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className={`border-0 p-0 text-left font-semibold text-slate-700 hover:bg-transparent hover:text-slate-500 dark:hover:text-slate-300 ${
+                                  header.column.getCanSort()
+                                    ? 'cursor-pointer select-none'
+                                    : ''
+                                }`}
+                                onClick={header.column.getToggleSortingHandler()}
+                                // disabled={!header.column.getCanSort()}
+                                title={
+                                  header.column.getCanSort()
+                                    ? header.column.getNextSortingOrder() === 'asc'
+                                      ? 'Sort ascending'
+                                      : header.column.getNextSortingOrder() === 'desc'
+                                        ? 'Sort descending'
+                                        : 'Clear sort'
+                                    : undefined
+                                }
+                              >
+                                {flexRender(header.column.columnDef.header, header.getContext())}
+                                {header.column.getCanSort() && (
+                                  <span className="ml-2 inline-block">
+                                    {{
+                                      asc: <ArrowUp className="h-4 w-4" />,
+                                      desc: <ArrowDown className="h-4 w-4" />,
+                                    }[header.column.getIsSorted() as string] ?? <ArrowUpDown className="h-4 w-4" />}
+                                  </span>
+                                )}
+                              </Button>
+                            )}
                       </th>
                     ))}
                   </tr>
@@ -187,7 +219,7 @@ export function DataTable<TData, TValue>({
                 const pageIndex = i + 1;
                 return (
                   <Button
-                    key={pageIndex}
+                    key={pageIndex + Math.random()}
                     onClick={() => table.setPageIndex(i)}
                     variant={table.getState().pagination.pageIndex === i ? 'default' : 'ghost'}
                     size="sm"
@@ -206,6 +238,7 @@ export function DataTable<TData, TValue>({
               )}
               {table.getPageCount() > 5 && (
                 <Button
+                  key={table.getPageCount() + Math.random()}
                   onClick={() => table.setPageIndex(table.getPageCount() - 1)}
                   variant="ghost"
                   size="sm"
@@ -217,6 +250,7 @@ export function DataTable<TData, TValue>({
             </div>
 
             <Button
+              key={table.getPageCount() + Math.random()}
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
               variant="ghost"

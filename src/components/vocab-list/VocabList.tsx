@@ -3,7 +3,7 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import type { TVocab } from '@/types/vocab-list';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ChevronDown, Edit, MoreVertical } from 'lucide-react';
+import { Edit, MoreVertical } from 'lucide-react';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -324,29 +324,11 @@ const VocabList: React.FC = () => {
     },
     {
       accessorKey: 'textSource',
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          className="h-auto p-0 font-semibold text-slate-700 dark:text-slate-300"
-        >
-          Source Text
-          <ChevronDown className="ml-2 h-4 w-4" />
-        </Button>
-      ),
+      header: 'Source Text',
       cell: ({ row }) => {
-        const firstTarget = row.original.textTargets[0];
         return (
           <div className="flex items-center space-x-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-400 via-blue-500 to-indigo-600 text-sm font-bold text-white shadow-lg">
-              {row.original.textSource.charAt(0).toUpperCase()}
-            </div>
-            <div>
-              <div className="font-semibold text-slate-900 dark:text-white">{row.original.textSource}</div>
-              <div className="text-sm text-slate-500 dark:text-slate-400">
-                {firstTarget?.textTarget || 'No translation'}
-              </div>
-            </div>
+            <div className="font-semibold text-slate-900 dark:text-white">{row.original.textSource}</div>
           </div>
         );
       },
@@ -354,25 +336,17 @@ const VocabList: React.FC = () => {
       enableHiding: false,
     },
     {
-      accessorKey: 'sourceLanguageCode',
-      header: 'Source Language',
-      cell: ({ row }) => (
-        <div className="text-sm text-slate-600 dark:text-slate-400">
-          {row.original.sourceLanguageCode.toUpperCase()}
-        </div>
-      ),
-      enableSorting: true,
-      enableHiding: true,
-    },
-    {
-      accessorKey: 'targetLanguageCode',
-      header: 'Target Language',
-      cell: ({ row }) => (
-        <div className="text-sm text-slate-600 dark:text-slate-400">
-          {row.original.targetLanguageCode.toUpperCase()}
-        </div>
-      ),
-      enableSorting: true,
+      accessorKey: 'textTargets',
+      header: 'Target Text',
+      cell: ({ row }) => {
+        const firstTarget = row.original.textTargets[0];
+        return (
+          <div className="text-sm text-slate-600 dark:text-slate-400">
+            {firstTarget?.textTarget || 'No translation'}
+          </div>
+        );
+      },
+      enableSorting: false,
       enableHiding: true,
     },
     {
