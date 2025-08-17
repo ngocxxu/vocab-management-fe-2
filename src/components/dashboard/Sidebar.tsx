@@ -7,7 +7,7 @@ import {
   Settings,
   User,
 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 
@@ -38,8 +38,9 @@ type SidebarProps = {
 };
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
-  const [isChosenButton, setIsChosenButton] = useState<string | null>(menuItems[0]?.id ?? null);
   const router = useRouter();
+  const pathname = usePathname();
+  const [isChosenButton, setIsChosenButton] = useState<string | null>(pathname.split('/')[1] || null);
 
   const handleButtonClick = (buttonId: string) => {
     setIsChosenButton(buttonId);
