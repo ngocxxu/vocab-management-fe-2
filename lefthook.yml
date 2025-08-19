@@ -2,7 +2,7 @@
 commit-msg:
   commands:
     commitlint:
-      run: npx --no -- commitlint --edit {1}
+      run: sh -c 'cd "$(git rev-parse --show-toplevel)" && node ./node_modules/.pnpm/@commitlint+cli*/node_modules/@commitlint/cli/cli.js --edit {1}'
 
 # Validate content before committing
 pre-commit:

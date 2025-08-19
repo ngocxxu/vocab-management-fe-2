@@ -86,7 +86,7 @@ export const MetricsGrid: React.FC = () => {
 
       <div className="grid grid-cols-1 gap-8 p-1 md:grid-cols-2 lg:grid-cols-4">
         {metrics.map((metric, index) => (
-          <div key={index} className="relative">
+          <div key={`metric-${metric.title}-${index}`} className="relative">
             {/* Subtle glow effect on hover */}
             <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100" />
             <MetricCard {...metric} />

@@ -40,7 +40,7 @@ export const GraphsAnalysis: React.FC = () => {
           {/* Chart */}
           <div className="flex h-48 items-end justify-between space-x-2">
             {data.map((value, index) => (
-              <div key={index} className="flex flex-col items-center space-y-3">
+              <div key={`month-${months[index]}-${value}`} className="flex flex-col items-center space-y-3">
                 <div className="group relative">
                   <div
                     className={`w-10 rounded-t-lg transition-all duration-300 ${

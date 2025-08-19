@@ -130,7 +130,7 @@ export const OngoingTasks: React.FC = () => {
                   </span>
                   <div className="flex items-center space-x-1">
                     {Array.from({ length: task.teamMembers }).map((_, index) => (
-                      <div key={index} className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-slate-200 to-slate-300 shadow-sm">
+                      <div key={`team-member-${task.id}-${index}`} className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-slate-200 to-slate-300 shadow-sm">
                         <User className="h-4 w-4 text-slate-600" />
                       </div>
                     ))}
