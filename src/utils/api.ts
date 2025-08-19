@@ -44,22 +44,22 @@ export class ApiClient {
 // Vocabulary Management API endpoints
 export const vocabApi = {
   // Get all vocabularies
-  getAll: () => ApiClient.get<TVocab[]>('/vocab'),
+  getAll: () => ApiClient.get<TVocab[]>('/vocabs'),
 
   // Get vocabulary by ID
-  getById: (id: string) => ApiClient.get<TVocab>(`/vocab/${id}`),
+  getById: (id: string) => ApiClient.get<TVocab>(`/vocabs/${id}`),
 
   // Create new vocabulary
-  create: (vocabData: TCreateVocab) => ApiClient.post<TVocab>('/vocab', vocabData),
+  create: (vocabData: TCreateVocab) => ApiClient.post<TVocab>('/vocabs', vocabData),
 
   // Update vocabulary
-  update: (id: string, vocabData: Partial<TCreateVocab>) => ApiClient.put<TVocab>(`/vocab/${id}`, vocabData),
+  update: (id: string, vocabData: Partial<TCreateVocab>) => ApiClient.put<TVocab>(`/vocabs/${id}`, vocabData),
 
   // Delete vocabulary
-  delete: (id: string) => ApiClient.delete(`/vocab/${id}`),
+  delete: (id: string) => ApiClient.delete(`/vocabs/${id}`),
 
   // Search vocabularies
-  search: (query: string) => ApiClient.get<TVocab[]>('/vocab/search', {
+  search: (query: string) => ApiClient.get<TVocab[]>('/vocabs/search', {
     params: { q: query },
   }),
 };
@@ -67,28 +67,28 @@ export const vocabApi = {
 // Vocabulary Trainer API endpoints
 export const vocabTrainerApi = {
   // Get all vocab trainers
-  getAll: () => ApiClient.get<TVocabTrainer[]>('/vocab-trainer'),
+  getAll: () => ApiClient.get<TVocabTrainer[]>('/vocab-trainers'),
 
   // Get vocab trainer by ID
-  getById: (id: string) => ApiClient.get<TVocabTrainer>(`/vocab-trainer/${id}`),
+  getById: (id: string) => ApiClient.get<TVocabTrainer>(`/vocab-trainers/${id}`),
 
   // Create new vocab trainer
-  create: (trainerData: TCreateVocabTrainer) => ApiClient.post<TVocabTrainer>('/vocab-trainer', trainerData),
+  create: (trainerData: TCreateVocabTrainer) => ApiClient.post<TVocabTrainer>('/vocab-trainers', trainerData),
 
   // Update vocab trainer
-  update: (id: string, trainerData: Partial<TCreateVocabTrainer>) => ApiClient.put<TVocabTrainer>(`/vocab-trainer/${id}`, trainerData),
+  update: (id: string, trainerData: Partial<TCreateVocabTrainer>) => ApiClient.put<TVocabTrainer>(`/vocab-trainers/${id}`, trainerData),
 
   // Delete vocab trainer
-  delete: (id: string) => ApiClient.delete(`/vocab-trainer/${id}`),
+  delete: (id: string) => ApiClient.delete(`/vocab-trainers/${id}`),
 
   // Get questions for a trainer
-  getQuestions: (id: string) => ApiClient.get<TQuestionAPI>(`/vocab-trainer/${id}/questions`),
+  getQuestions: (id: string) => ApiClient.get<TQuestionAPI>(`/vocab-trainers/${id}/questions`),
 
   // Submit test results
-  submitTest: (id: string, testData: TFormTestVocabTrainer) => ApiClient.post(`/vocab-trainer/${id}/test`, testData),
+  submitTest: (id: string, testData: TFormTestVocabTrainer) => ApiClient.post(`/vocab-trainers/${id}/test`, testData),
 
   // Get trainer results
-  getResults: (id: string) => ApiClient.get(`/vocab-trainer/${id}/results`),
+  getResults: (id: string) => ApiClient.get(`/vocab-trainers/${id}/results`),
 };
 
 // Subjects API endpoints
