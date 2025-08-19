@@ -22,6 +22,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Form } from '@/components/ui/form';
 import { DataTable } from '@/components/ui/table';
+import { useVocabs, vocabMutations } from '@/hooks';
 import AddVocabDialog from './AddVocabDialog';
 import ExpandedRowContent from './ExpandedRowContent';
 import VocabListHeader from './VocabListHeader';
@@ -54,6 +55,9 @@ const VocabList: React.FC = () => {
   const [globalFilter, setGlobalFilter] = useState('');
   const [isMounted, setIsMounted] = useState(false);
   const [expanded, setExpanded] = React.useState<Record<string, boolean>>({});
+
+  // Use SWR hook to fetch vocabularies
+  const { vocabs, isLoading, isError, mutate } = useVocabs();
 
   const form = useForm<FormData>({
     resolver: zodResolver(FormSchema),
@@ -205,165 +209,32 @@ const VocabList: React.FC = () => {
       }
 
       // Get the validated form data
-      form.getValues();
+      const formData = form.getValues();
 
-      // Here you would send the data to your backend
-      // const response = await api.createVocab(_formData);
+      if (editMode && editingItem) {
+        // Update existing vocabulary
+        await vocabMutations.update(editingItem.id, formData as any);
+      } else {
+        // Create new vocabulary
+        await vocabMutations.create(formData as any);
+      }
+
+      // Refresh the data
+      await mutate();
 
       // If successful, close the dialog and show success message
       setOpen(false);
 
       // Reset the form after successful submission
       resetForm();
-    } catch {
+    } catch (error) {
+      console.error('Failed to save vocabulary:', error);
       // Handle any other errors here
     }
   };
 
-  // Memoize the data to prevent unnecessary re-renders - using the actual TVocab structure
-  const data = useMemo<TVocab[]>(() => [
-    {
-      id: 'cme9s70fv000cqh1s1ick06db',
-      sourceLanguageCode: 'ko',
-      targetLanguageCode: 'vi',
-      textSource: '안녕하세요',
-      textTargets: [
-        {
-          textTarget: 'Xin chào',
-          wordType: { id: '1', name: 'Noun', description: 'A greeting expression' },
-          explanationSource: 'Korean greeting',
-          explanationTarget: 'Vietnamese greeting',
-          vocabExamples: [
-            { source: '안녕하세요, 만나서 반갑습니다', target: 'Xin chào, rất vui được gặp bạn' },
-            { source: '안녕하세요, 만나서 반갑습니다', target: 'Xin chào, rất vui được gặp bạn' },
-          ],
-          grammar: 'Interjection',
-          textTargetSubjects: [
-            {
-              id: '1',
-              subject: { id: '1', name: 'Basic Greetings', order: 1 },
-            },
-            {
-              id: '2',
-              subject: { id: '2', name: 'Basic Greetings 2', order: 2 },
-            },
-          ],
-        },
-        {
-          textTarget: 'Xin chào 2',
-          wordType: { id: '1', name: 'Adverb', description: 'A greeting expression' },
-          explanationSource: 'Korean greeting',
-          explanationTarget: 'Vietnamese greeting',
-          vocabExamples: [
-            { source: '안녕하세요, 만나서 반갑습니다', target: 'Xin chào, rất vui được gặp bạn' },
-          ],
-          grammar: 'Interjection',
-          textTargetSubjects: [
-            {
-              id: '1',
-              subject: { id: '1', name: 'Basic Greetings', order: 1 },
-            },
-          ],
-        },
-      ],
-    },
-    {
-      id: 'cme9s70fv000cqh1s1ick06dc',
-      sourceLanguageCode: 'ko',
-      targetLanguageCode: 'vi',
-      textSource: '감사합니다',
-      textTargets: [
-        {
-          textTarget: 'Cảm ơn',
-          wordType: { id: '2', name: 'Expression', description: 'A thank you expression' },
-          explanationSource: 'Korean thank you',
-          explanationTarget: 'Vietnamese thank you',
-          vocabExamples: [
-            { source: '정말 감사합니다', target: 'Thực sự cảm ơn bạn' },
-          ],
-          grammar: 'Interjection',
-          textTargetSubjects: [
-            {
-              id: '2',
-              subject: { id: '2', name: 'Politeness', order: 2 },
-            },
-          ],
-        },
-      ],
-    },
-    {
-      id: 'cme9s70fv000cqh1s1ick06dd',
-      sourceLanguageCode: 'ko',
-      targetLanguageCode: 'vi',
-      textSource: '안녕히 가세요',
-      textTargets: [
-        {
-          textTarget: 'Tạm biệt',
-          wordType: { id: '3', name: 'Farewell', description: 'A goodbye expression' },
-          explanationSource: 'Korean goodbye',
-          explanationTarget: 'Vietnamese goodbye',
-          vocabExamples: [
-            { source: '안녕히 가세요, 또 만나요', target: 'Tạm biệt, hẹn gặp lại' },
-          ],
-          grammar: 'Interjection',
-          textTargetSubjects: [
-            {
-              id: '3',
-              subject: { id: '3', name: 'Farewells', order: 3 },
-            },
-          ],
-        },
-      ],
-    },
-    {
-      id: 'cme9s70fv000cqh1s1ick06de',
-      sourceLanguageCode: 'ko',
-      targetLanguageCode: 'vi',
-      textSource: '제발',
-      textTargets: [
-        {
-          textTarget: 'Làm ơn',
-          wordType: { id: '4', name: 'Request', description: 'A please expression' },
-          explanationSource: 'Korean please',
-          explanationTarget: 'Vietnamese please',
-          vocabExamples: [
-            { source: '제발 도와주세요', target: 'Làm ơn giúp tôi' },
-          ],
-          grammar: 'Adverb',
-          textTargetSubjects: [
-            {
-              id: '4',
-              subject: { id: '4', name: 'Requests', order: 4 },
-            },
-          ],
-        },
-      ],
-    },
-    {
-      id: 'cme9s70fv000cqh1s1ick06df',
-      sourceLanguageCode: 'ko',
-      targetLanguageCode: 'vi',
-      textSource: '실례합니다',
-      textTargets: [
-        {
-          textTarget: 'Xin lỗi',
-          wordType: { id: '5', name: 'Apology', description: 'An excuse me expression' },
-          explanationSource: 'Korean excuse me',
-          explanationTarget: 'Vietnamese excuse me',
-          vocabExamples: [
-            { source: '실례합니다, 길을 비켜주세요', target: 'Xin lỗi, làm ơn nhường đường' },
-          ],
-          grammar: 'Interjection',
-          textTargetSubjects: [
-            {
-              id: '5',
-              subject: { id: '5', name: 'Apologies', order: 5 },
-            },
-          ],
-        },
-      ],
-    },
-  ], []);
+  // Use the vocabs from SWR hook
+  const data = useMemo<TVocab[]>(() => vocabs, [vocabs]);
 
   // Memoize columns to prevent unnecessary re-renders
   const columns = useMemo<ColumnDef<TVocab>[]>(() => [
@@ -483,7 +354,19 @@ const VocabList: React.FC = () => {
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction className="bg-red-500 hover:bg-red-600">Delete</AlertDialogAction>
+                <AlertDialogAction
+                  className="bg-red-500 hover:bg-red-600"
+                  onClick={async () => {
+                    try {
+                      await vocabMutations.delete(_row.original.id);
+                      await mutate();
+                    } catch (error) {
+                      console.error('Failed to delete vocabulary:', error);
+                    }
+                  }}
+                >
+                  Delete
+                </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
@@ -502,6 +385,19 @@ const VocabList: React.FC = () => {
           totalCount={data.length}
           onAddVocab={() => setOpen(true)}
         />
+
+        {/* Loading and Error States */}
+        {isLoading && (
+          <div className="flex items-center justify-center p-8">
+            <div className="text-lg">Loading vocabularies...</div>
+          </div>
+        )}
+
+        {isError && (
+          <div className="flex items-center justify-center p-8">
+            <div className="text-lg text-red-600">Error loading vocabularies. Please try again.</div>
+          </div>
+        )}
 
         {isMounted && (
           <>
