@@ -230,7 +230,7 @@ const VocabList: React.FC = () => {
       textTargets: [
         {
           textTarget: 'Xin chào',
-          wordType: { id: '1', name: 'Greeting', description: 'A greeting expression' },
+          wordType: { id: '1', name: 'Noun', description: 'A greeting expression' },
           explanationSource: 'Korean greeting',
           explanationTarget: 'Vietnamese greeting',
           vocabExamples: [
@@ -243,11 +243,15 @@ const VocabList: React.FC = () => {
               id: '1',
               subject: { id: '1', name: 'Basic Greetings', order: 1 },
             },
+            {
+              id: '2',
+              subject: { id: '2', name: 'Basic Greetings 2', order: 2 },
+            },
           ],
         },
         {
           textTarget: 'Xin chào 2',
-          wordType: { id: '1', name: 'Greeting', description: 'A greeting expression' },
+          wordType: { id: '1', name: 'Adverb', description: 'A greeting expression' },
           explanationSource: 'Korean greeting',
           explanationTarget: 'Vietnamese greeting',
           vocabExamples: [
@@ -372,7 +376,7 @@ const VocabList: React.FC = () => {
           <Button
             variant="ghost"
             size="icon"
-            className="h-6 w-6 p-0"
+            className="h-6 w-6 p-0 hover:bg-slate-100 dark:hover:bg-slate-700"
             onClick={(e) => {
               e.stopPropagation();
               setExpanded(prev => ({
@@ -382,8 +386,12 @@ const VocabList: React.FC = () => {
             }}
           >
             {isExpanded
-              ? <ChevronDown className="h-4 w-4" />
-              : <ChevronRight className="h-4 w-4" />}
+              ? (
+                  <ChevronDown className="h-4 w-4" />
+                )
+              : (
+                  <ChevronRight className="h-4 w-4" />
+                )}
           </Button>
         );
       },
