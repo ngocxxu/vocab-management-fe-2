@@ -3,7 +3,7 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import type { TVocab } from '@/types/vocab-list';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Edit, Trash } from 'lucide-react';
+import { ChevronDown, ChevronRight, Edit, Trash } from 'lucide-react';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -11,7 +11,6 @@ import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
-
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -24,6 +23,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Form } from '@/components/ui/form';
 import { DataTable } from '@/components/ui/table';
 import AddVocabDialog from './AddVocabDialog';
+import ExpandedRowContent from './ExpandedRowContent';
 import VocabListHeader from './VocabListHeader';
 
 // Define the form schema
@@ -53,6 +53,7 @@ const VocabList: React.FC = () => {
   const [editingItem, setEditingItem] = React.useState<TVocab | null>(null);
   const [globalFilter, setGlobalFilter] = useState('');
   const [isMounted, setIsMounted] = useState(false);
+  const [expanded, setExpanded] = React.useState<Record<string, boolean>>({});
 
   const form = useForm<FormData>({
     resolver: zodResolver(FormSchema),
@@ -234,6 +235,23 @@ const VocabList: React.FC = () => {
           explanationTarget: 'Vietnamese greeting',
           vocabExamples: [
             { source: '안녕하세요, 만나서 반갑습니다', target: 'Xin chào, rất vui được gặp bạn' },
+            { source: '안녕하세요, 만나서 반갑습니다', target: 'Xin chào, rất vui được gặp bạn' },
+          ],
+          grammar: 'Interjection',
+          textTargetSubjects: [
+            {
+              id: '1',
+              subject: { id: '1', name: 'Basic Greetings', order: 1 },
+            },
+          ],
+        },
+        {
+          textTarget: 'Xin chào 2',
+          wordType: { id: '1', name: 'Greeting', description: 'A greeting expression' },
+          explanationSource: 'Korean greeting',
+          explanationTarget: 'Vietnamese greeting',
+          vocabExamples: [
+            { source: '안녕하세요, 만나서 반갑습니다', target: 'Xin chào, rất vui được gặp bạn' },
           ],
           grammar: 'Interjection',
           textTargetSubjects: [
@@ -345,6 +363,34 @@ const VocabList: React.FC = () => {
 
   // Memoize columns to prevent unnecessary re-renders
   const columns = useMemo<ColumnDef<TVocab>[]>(() => [
+    {
+      id: 'expand',
+      header: () => null,
+      cell: ({ row }) => {
+        const isExpanded = expanded[row.original.id];
+        return (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6 p-0"
+            onClick={(e) => {
+              e.stopPropagation();
+              setExpanded(prev => ({
+                ...prev,
+                [row.original.id]: !prev[row.original.id],
+              }));
+            }}
+          >
+            {isExpanded
+              ? <ChevronDown className="h-4 w-4" />
+              : <ChevronRight className="h-4 w-4" />}
+          </Button>
+        );
+      },
+      enableSorting: false,
+      enableHiding: false,
+      size: 40,
+    },
     {
       id: 'select',
       header: ({ table }) => (
@@ -483,6 +529,14 @@ const VocabList: React.FC = () => {
               headerClassName=""
               rowClassName=""
               cellClassName=""
+              expandedState={expanded}
+              onExpandedChange={setExpanded}
+              renderExpandedRow={row => (
+                <ExpandedRowContent
+                  vocab={row.original}
+                  columnsCount={columns.length}
+                />
+              )}
             />
           </>
         )}

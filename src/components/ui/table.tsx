@@ -33,6 +33,9 @@ type DataTableProps<TData, TValue> = {
   headerClassName?: string;
   rowClassName?: string;
   cellClassName?: string;
+  renderExpandedRow?: (row: any) => React.ReactNode;
+  expandedState?: Record<string, boolean>;
+  onExpandedChange?: (expanded: Record<string, boolean>) => void;
 };
 
 export function DataTable<TData, TValue>({
@@ -48,6 +51,9 @@ export function DataTable<TData, TValue>({
   headerClassName = '',
   rowClassName = '',
   cellClassName = '',
+  renderExpandedRow,
+  expandedState = {},
+  onExpandedChange,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -176,16 +182,29 @@ export function DataTable<TData, TValue>({
               </thead>
               <tbody>
                 {table.getRowModel().rows.map(row => (
-                  <tr
-                    key={row.id + Math.random()}
-                    className={`border-b border-slate-100 transition-colors duration-200 hover:bg-slate-50/50 dark:border-slate-700 dark:hover:bg-slate-700/50 ${rowClassName}`}
-                  >
-                    {row.getVisibleCells().map(cell => (
-                      <td key={cell.id + Math.random()} className={`px-6 py-4 ${cellClassName}`}>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </td>
-                    ))}
-                  </tr>
+                  <React.Fragment key={row.id + Math.random()}>
+                    <tr
+                      className={`cursor-pointer border-b border-slate-100 transition-colors duration-200 hover:bg-slate-50/50 dark:border-slate-700 dark:hover:bg-slate-700/50 ${rowClassName}`}
+                      onClick={() => {
+                        if (renderExpandedRow && onExpandedChange) {
+                          const rowId = (row.original as any).id;
+                          onExpandedChange({
+                            ...expandedState,
+                            [rowId]: !expandedState[rowId],
+                          });
+                        }
+                      }}
+                    >
+                      {row.getVisibleCells().map(cell => (
+                        <td key={cell.id + Math.random()} className={`px-6 py-4 ${cellClassName}`}>
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </td>
+                      ))}
+                    </tr>
+                    {renderExpandedRow && expandedState[(row.original as any).id] && (
+                      renderExpandedRow(row)
+                    )}
+                  </React.Fragment>
                 ))}
               </tbody>
             </table>
