@@ -5,7 +5,7 @@
   },
   "scripts": {
     "dev:spotlight": "npx @spotlightjs/spotlight",
-    "dev:next": "next dev --turbopack",
+    "dev:next": "next dev --turbopack --port 3001",
     "dev": "run-p dev:*",
     "build:next": "next build",
     "build": "run-p build:* --race",

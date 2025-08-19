@@ -1,7 +1,6 @@
-export default async function Index() {
-  return (
-    <div>
+import React from 'react';
+import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 
-    </div>
-  );
+export default function Index() {
+  return <DashboardLayout />;
 }

@@ -76,7 +76,7 @@ pnpm run dev
 
 [![Run the command in Warp](public/assets/images/warp-banner.png)](https://go.warp.dev/nextjs-bp)
 
-Open http://localhost:3000 with your favorite browser to see your project.
+Open http://localhost:3001 with your favorite browser to see your project.
 
 ### Project structure
 
@@ -142,7 +142,7 @@ It generates an optimized production build of the boilerplate. To test the gener
 $ pnpm run start
 ```
 
-This command starts a local server using the production build. You can now open http://localhost:3000 in your preferred browser to see the result.
+This command starts a local server using the production build. You can now open http://localhost:3001 in your preferred browser to see the result.
 
 ### Deploy to Sevalla
 
