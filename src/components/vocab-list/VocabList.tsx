@@ -363,7 +363,7 @@ const VocabList: React.FC = () => {
         },
       ],
     },
-  ], []);
+  ], [expanded]);
 
   // Memoize columns to prevent unnecessary re-renders
   const columns = useMemo<ColumnDef<TVocab>[]>(() => [
@@ -493,7 +493,7 @@ const VocabList: React.FC = () => {
       enableHiding: false,
       size: 50,
     },
-  ], []);
+  ], [expanded]);
 
   return (
     <Form {...form}>
