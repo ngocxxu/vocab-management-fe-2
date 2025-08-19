@@ -59,9 +59,15 @@ export const vocabApi = {
   delete: (id: string) => ApiClient.delete(`/vocabs/${id}`),
 
   // Search vocabularies
-  search: (query: string) => ApiClient.get<TVocab[]>('/vocabs/search', {
+  search: (query: string) => ApiClient.get<TVocab[]>('/vocabs', {
     params: { q: query },
   }),
+
+  // Create bulk vocabularies
+  createBulk: (vocabData: TCreateVocab[]) => ApiClient.post(`/vocabs/bulk/create`, { data: { vocabData } }),
+
+  // Delete bulk vocabularies
+  deleteBulk: (ids: string[]) => ApiClient.post(`/vocabs/bulk/delete`, { data: { ids } }),
 };
 
 // Vocabulary Trainer API endpoints
@@ -75,20 +81,17 @@ export const vocabTrainerApi = {
   // Create new vocab trainer
   create: (trainerData: TCreateVocabTrainer) => ApiClient.post<TVocabTrainer>('/vocab-trainers', trainerData),
 
-  // Update vocab trainer
-  update: (id: string, trainerData: Partial<TCreateVocabTrainer>) => ApiClient.put<TVocabTrainer>(`/vocab-trainers/${id}`, trainerData),
-
   // Delete vocab trainer
   delete: (id: string) => ApiClient.delete(`/vocab-trainers/${id}`),
 
   // Get questions for a trainer
-  getQuestions: (id: string) => ApiClient.get<TQuestionAPI>(`/vocab-trainers/${id}/questions`),
+  getExam: (id: string) => ApiClient.get<TQuestionAPI>(`/vocab-trainers/${id}/exam`),
 
   // Submit test results
-  submitTest: (id: string, testData: TFormTestVocabTrainer) => ApiClient.post(`/vocab-trainers/${id}/test`, testData),
+  submitExam: (id: string, testData: TFormTestVocabTrainer) => ApiClient.patch(`/vocab-trainers/${id}/exam`, testData),
 
-  // Get trainer results
-  getResults: (id: string) => ApiClient.get(`/vocab-trainers/${id}/results`),
+  // Delete bulk vocab trainers
+  deleteBulk: (ids: string[]) => ApiClient.post(`/vocab-trainers/bulk/delete`, { data: { ids } }),
 };
 
 // Subjects API endpoints
@@ -107,6 +110,9 @@ export const subjectsApi = {
 
   // Delete subject
   delete: (id: string) => ApiClient.delete(`/subjects/${id}`),
+
+  // Reorder subjects
+  reorder: (subjectIds: string[]) => ApiClient.post('/subjects/reorder', subjectIds),
 };
 
 // Word Types API endpoints
@@ -132,8 +138,17 @@ export const languagesApi = {
   // Get all languages
   getAll: () => ApiClient.get('/languages'),
 
-  // Get language by code
-  getByCode: (code: string) => ApiClient.get(`/languages/${code}`),
+  // Get language by ID
+  getById: (id: string) => ApiClient.get(`/languages/${id}`),
+
+  // Create new language
+  create: (languageData: { name: string; code: string }) => ApiClient.post('/languages', languageData),
+
+  // Update language
+  update: (id: string, languageData: { name: string; code: string }) => ApiClient.put(`/languages/${id}`, languageData),
+
+  // Delete language
+  delete: (id: string) => ApiClient.delete(`/languages/${id}`),
 };
 
 // Main API object for easy access
