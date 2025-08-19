@@ -185,7 +185,13 @@ export function DataTable<TData, TValue>({
                   <React.Fragment key={row.id + Math.random()}>
                     <tr
                       className={`cursor-pointer border-b border-slate-100 transition-colors duration-200 hover:bg-slate-50/50 dark:border-slate-700 dark:hover:bg-slate-700/50 ${rowClassName}`}
-                      onClick={() => {
+                      onClick={(e) => {
+                        // Don't expand if clicking on interactive elements
+                        const target = e.target as HTMLElement;
+                        if (target.closest('input[type="checkbox"], button, [role="button"], [data-no-expand]')) {
+                          return;
+                        }
+
                         if (renderExpandedRow && onExpandedChange) {
                           const rowId = (row.original as any).id;
                           onExpandedChange({

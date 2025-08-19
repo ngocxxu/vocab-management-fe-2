@@ -3,7 +3,7 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import type { TVocab } from '@/types/vocab-list';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ChevronDown, ChevronRight, Edit, Trash } from 'lucide-react';
+import { ChevronDown, ChevronLeft, Edit, Trash } from 'lucide-react';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -367,38 +367,7 @@ const VocabList: React.FC = () => {
 
   // Memoize columns to prevent unnecessary re-renders
   const columns = useMemo<ColumnDef<TVocab>[]>(() => [
-    {
-      id: 'expand',
-      header: () => null,
-      cell: ({ row }) => {
-        const isExpanded = expanded[row.original.id];
-        return (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-6 w-6 p-0 hover:bg-slate-100 dark:hover:bg-slate-700"
-            onClick={(e) => {
-              e.stopPropagation();
-              setExpanded(prev => ({
-                ...prev,
-                [row.original.id]: !prev[row.original.id],
-              }));
-            }}
-          >
-            {isExpanded
-              ? (
-                  <ChevronDown className="h-4 w-4" />
-                )
-              : (
-                  <ChevronRight className="h-4 w-4" />
-                )}
-          </Button>
-        );
-      },
-      enableSorting: false,
-      enableHiding: false,
-      size: 40,
-    },
+
     {
       id: 'select',
       header: ({ table }) => (
@@ -454,6 +423,37 @@ const VocabList: React.FC = () => {
       enableSorting: false,
       enableHiding: true,
       size: 1000,
+    },
+    {
+      id: 'expand',
+      header: () => null,
+      cell: ({ row }) => {
+        const isExpanded = expanded[row.original.id];
+        return (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6 p-0 hover:bg-slate-100 dark:hover:bg-slate-700"
+            onClick={(e) => {
+              e.stopPropagation();
+              setExpanded(prev => ({
+                ...prev,
+                [row.original.id]: !prev[row.original.id],
+              }));
+            }}
+          >
+            {isExpanded
+              ? (
+                  <ChevronDown className="h-4 w-4" />
+                )
+              : (
+                  <ChevronLeft className="h-4 w-4" />
+                )}
+          </Button>
+        );
+      },
+      enableSorting: false,
+      enableHiding: false,
     },
     {
       id: 'actions',
