@@ -1,4 +1,11 @@
 import type { AxiosRequestConfig } from 'axios';
+import type { TCreateVocab, TVocab } from '@/types/vocab-list';
+import type {
+  TCreateVocabTrainer,
+  TFormTestVocabTrainer,
+  TQuestionAPI,
+  TVocabTrainer,
+} from '@/types/vocab-trainer';
 import axiosInstance from '@/libs/axios';
 
 // Generic API client with common methods
@@ -34,24 +41,108 @@ export class ApiClient {
   }
 }
 
-// Example usage functions for common API patterns
-export const api = {
-  // Example: Get user data
-  getUser: (userId: string) => ApiClient.get(`/api/users/${userId}`),
+// Vocabulary Management API endpoints
+export const vocabApi = {
+  // Get all vocabularies
+  getAll: () => ApiClient.get<TVocab[]>('/vocab'),
 
-  // Example: Create a new user
-  createUser: (userData: any) => ApiClient.post('/api/users', userData),
+  // Get vocabulary by ID
+  getById: (id: string) => ApiClient.get<TVocab>(`/vocab/${id}`),
 
-  // Example: Update user data
-  updateUser: (userId: string, userData: any) => ApiClient.put(`/api/users/${userId}`, userData),
+  // Create new vocabulary
+  create: (vocabData: TCreateVocab) => ApiClient.post<TVocab>('/vocab', vocabData),
 
-  // Example: Delete user
-  deleteUser: (userId: string) => ApiClient.delete(`/api/users/${userId}`),
+  // Update vocabulary
+  update: (id: string, vocabData: Partial<TCreateVocab>) => ApiClient.put<TVocab>(`/vocab/${id}`, vocabData),
 
-  // Example: Search with query parameters
-  searchUsers: (query: string) => ApiClient.get('/api/users/search', {
+  // Delete vocabulary
+  delete: (id: string) => ApiClient.delete(`/vocab/${id}`),
+
+  // Search vocabularies
+  search: (query: string) => ApiClient.get<TVocab[]>('/vocab/search', {
     params: { q: query },
   }),
+};
+
+// Vocabulary Trainer API endpoints
+export const vocabTrainerApi = {
+  // Get all vocab trainers
+  getAll: () => ApiClient.get<TVocabTrainer[]>('/vocab-trainer'),
+
+  // Get vocab trainer by ID
+  getById: (id: string) => ApiClient.get<TVocabTrainer>(`/vocab-trainer/${id}`),
+
+  // Create new vocab trainer
+  create: (trainerData: TCreateVocabTrainer) => ApiClient.post<TVocabTrainer>('/vocab-trainer', trainerData),
+
+  // Update vocab trainer
+  update: (id: string, trainerData: Partial<TCreateVocabTrainer>) => ApiClient.put<TVocabTrainer>(`/vocab-trainer/${id}`, trainerData),
+
+  // Delete vocab trainer
+  delete: (id: string) => ApiClient.delete(`/vocab-trainer/${id}`),
+
+  // Get questions for a trainer
+  getQuestions: (id: string) => ApiClient.get<TQuestionAPI>(`/vocab-trainer/${id}/questions`),
+
+  // Submit test results
+  submitTest: (id: string, testData: TFormTestVocabTrainer) => ApiClient.post(`/vocab-trainer/${id}/test`, testData),
+
+  // Get trainer results
+  getResults: (id: string) => ApiClient.get(`/vocab-trainer/${id}/results`),
+};
+
+// Subjects API endpoints
+export const subjectsApi = {
+  // Get all subjects
+  getAll: () => ApiClient.get('/subjects'),
+
+  // Get subject by ID
+  getById: (id: string) => ApiClient.get(`/subjects/${id}`),
+
+  // Create new subject
+  create: (subjectData: { name: string; order: number }) => ApiClient.post('/subjects', subjectData),
+
+  // Update subject
+  update: (id: string, subjectData: { name: string; order: number }) => ApiClient.put(`/subjects/${id}`, subjectData),
+
+  // Delete subject
+  delete: (id: string) => ApiClient.delete(`/subjects/${id}`),
+};
+
+// Word Types API endpoints
+export const wordTypesApi = {
+  // Get all word types
+  getAll: () => ApiClient.get('/word-types'),
+
+  // Get word type by ID
+  getById: (id: string) => ApiClient.get(`/word-types/${id}`),
+
+  // Create new word type
+  create: (wordTypeData: { name: string; description: string }) => ApiClient.post('/word-types', wordTypeData),
+
+  // Update word type
+  update: (id: string, wordTypeData: { name: string; description: string }) => ApiClient.put(`/word-types/${id}`, wordTypeData),
+
+  // Delete word type
+  delete: (id: string) => ApiClient.delete(`/word-types/${id}`),
+};
+
+// Languages API endpoints
+export const languagesApi = {
+  // Get all languages
+  getAll: () => ApiClient.get('/languages'),
+
+  // Get language by code
+  getByCode: (code: string) => ApiClient.get(`/languages/${code}`),
+};
+
+// Main API object for easy access
+export const api = {
+  vocab: vocabApi,
+  vocabTrainer: vocabTrainerApi,
+  subjects: subjectsApi,
+  wordTypes: wordTypesApi,
+  languages: languagesApi,
 };
 
 // Export the axios instance for direct use when needed
