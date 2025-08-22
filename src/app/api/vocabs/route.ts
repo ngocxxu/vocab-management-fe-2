@@ -3,9 +3,25 @@ import { NextResponse } from 'next/server';
 import { vocabApi } from '@/utils/api';
 
 // GET /api/vocabs - Get all vocabularies
-export async function GET(_request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
-    const vocabs = await vocabApi.getAll();
+    const { searchParams } = new URL(request.url);
+    const sourceLanguageCode = searchParams.get('source');
+    const targetLanguageCode = searchParams.get('target');
+
+    let vocabs;
+    if (sourceLanguageCode && targetLanguageCode) {
+      // Filter by source and target language
+      vocabs = await vocabApi.getAll();
+      vocabs = vocabs.filter(vocab =>
+        vocab.sourceLanguageCode === sourceLanguageCode
+        && vocab.targetLanguageCode === targetLanguageCode,
+      );
+    } else {
+      // Get all vocabularies
+      vocabs = await vocabApi.getAll();
+    }
+
     return NextResponse.json(vocabs);
   } catch (error) {
     return NextResponse.json(

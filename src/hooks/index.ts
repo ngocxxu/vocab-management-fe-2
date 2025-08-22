@@ -2,4 +2,5 @@ export * from './useLanguages';
 export * from './useSubjects';
 // Export all custom hooks
 export * from './useVocabs';
+export * from './useVocabsByLanguage';
 export * from './useWordTypes';

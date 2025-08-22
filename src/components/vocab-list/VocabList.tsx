@@ -4,9 +4,11 @@ import type { ColumnDef } from '@tanstack/react-table';
 import type { TVocab } from '@/types/vocab-list';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronDown, ChevronLeft, Edit, Trash } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { getLanguageName } from '@/components/library/utils';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,7 +24,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Form } from '@/components/ui/form';
 import { DataTable } from '@/components/ui/table';
-import { useVocabs, vocabMutations } from '@/hooks';
+import { useVocabs, useVocabsByLanguage, vocabMutations } from '@/hooks';
 import AddVocabDialog from './AddVocabDialog';
 import ExpandedRowContent from './ExpandedRowContent';
 import VocabListHeader from './VocabListHeader';
@@ -49,15 +51,28 @@ const FormSchema = z.object({
 type FormData = z.infer<typeof FormSchema>;
 
 const VocabList: React.FC = () => {
+  const router = useRouter();
   const [open, setOpen] = React.useState(false);
   const [editMode, setEditMode] = React.useState(false);
   const [editingItem, setEditingItem] = React.useState<TVocab | null>(null);
   const [globalFilter, setGlobalFilter] = useState('');
   const [isMounted, setIsMounted] = useState(false);
   const [expanded, setExpanded] = React.useState<Record<string, boolean>>({});
+  const searchParams = useSearchParams();
 
-  // Use SWR hook to fetch vocabularies
-  const { vocabs, isLoading, isError, mutate } = useVocabs();
+  // Get source and target language from URL params
+  const sourceLanguageCode = searchParams.get('source') || undefined;
+  const targetLanguageCode = searchParams.get('target') || undefined;
+
+  // Use both hooks to avoid conditional hook calls
+  const { vocabs: allVocabs, isLoading: isLoadingAll, isError: isErrorAll, mutate: mutateAll } = useVocabs();
+  const { vocabs: filteredVocabs, isLoading: isLoadingFiltered, isError: isErrorFiltered, mutate: mutateFiltered } = useVocabsByLanguage(sourceLanguageCode, targetLanguageCode);
+
+  // Use appropriate data based on whether we have language filters
+  const vocabs = sourceLanguageCode && targetLanguageCode ? filteredVocabs : allVocabs;
+  const isLoading = sourceLanguageCode && targetLanguageCode ? isLoadingFiltered : isLoadingAll;
+  const isError = sourceLanguageCode && targetLanguageCode ? isErrorFiltered : isErrorAll;
+  const mutate = sourceLanguageCode && targetLanguageCode ? mutateFiltered : mutateAll;
 
   const form = useForm<FormData>({
     resolver: zodResolver(FormSchema),
@@ -82,6 +97,7 @@ const VocabList: React.FC = () => {
 
   // Prevent hydration mismatch by only rendering on client
   useEffect(() => {
+    // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
     setIsMounted(true);
   }, []);
 
@@ -376,6 +392,7 @@ const VocabList: React.FC = () => {
       enableHiding: false,
       size: 50,
     },
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   ], []);
 
   return (
@@ -385,6 +402,44 @@ const VocabList: React.FC = () => {
           totalCount={data.length}
           onAddVocab={() => setOpen(true)}
         />
+
+        {/* Language Filter Header */}
+        {sourceLanguageCode && targetLanguageCode && (
+          <div className="relative overflow-hidden rounded-2xl border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 p-2.5 dark:border-blue-700 dark:from-blue-950/30 dark:to-indigo-950/30">
+            {/* Background Pattern */}
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute inset-0 scale-150 rotate-12 transform bg-gradient-to-br from-blue-400 to-indigo-400"></div>
+            </div>
+
+            <div className="relative flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="border-blue-200 pl-4 dark:border-blue-700">
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                    Language Filter Active
+                  </h3>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                    Showing vocabularies for
+                    {' '}
+                    {getLanguageName(sourceLanguageCode)}
+                    {' '}
+                    →
+                    {' '}
+                    {getLanguageName(targetLanguageCode)}
+                  </p>
+                </div>
+              </div>
+
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => router.push('/library')}
+                className="border border-blue-200 bg-white/80 text-blue-600 transition-all duration-300 hover:border-blue-300 hover:bg-white hover:text-blue-700 dark:border-blue-700 dark:bg-slate-800/80 dark:hover:border-blue-600 dark:hover:bg-slate-800"
+              >
+                Back to Library
+              </Button>
+            </div>
+          </div>
+        )}
 
         {/* Loading and Error States */}
         {isLoading && (

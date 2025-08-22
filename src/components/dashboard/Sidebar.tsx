@@ -1,8 +1,8 @@
 import {
-  BookOpen,
   ChevronDown,
   GraduationCap,
   LayoutDashboard,
+  Library,
   Power,
   Settings,
   User,
@@ -28,7 +28,7 @@ type MenuItem = {
 const menuItems: MenuItem[] = [
   // Main navigation items
   { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="h-5 w-5" /> },
-  { id: 'vocab-list', label: 'Vocab List', icon: <BookOpen className="h-5 w-5" /> },
+  { id: 'library', label: 'Library', icon: <Library className="h-5 w-5" /> },
   { id: 'vocab-trainer', label: 'Vocab Trainer', icon: <GraduationCap className="h-5 w-5" /> },
   { id: 'settings', label: 'Settings', icon: <Settings className="h-5 w-5" /> },
 ];
