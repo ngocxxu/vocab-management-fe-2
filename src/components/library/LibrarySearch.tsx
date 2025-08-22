@@ -22,7 +22,7 @@ const LibrarySearch: React.FC<LibrarySearchProps> = ({
         placeholder={placeholder}
         value={searchQuery}
         onChange={e => onSearchChange(e.target.value)}
-        className="h-14 rounded-xl border-2 border-slate-200 pl-12 text-lg shadow-sm transition-all duration-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:border-slate-600 dark:focus:ring-blue-800"
+        className="h-14 rounded-xl border-2 border-slate-200 pl-12 text-lg shadow-xs transition-all duration-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:border-slate-600 dark:focus:ring-blue-800"
       />
     </div>
   );

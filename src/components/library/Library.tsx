@@ -27,17 +27,14 @@ const Library: React.FC = () => {
         const existing = languageMap.get(key);
 
         if (existing) {
-          existing.count += vocab.textTargets.length;
+          // Folder already exists, no need to track count
         } else {
           languageMap.set(key, {
             id: key,
-            sourceLanguage: getLanguageName(vocab.sourceLanguageCode),
-            targetLanguage: getLanguageName(vocab.targetLanguageCode),
+            name: `${getLanguageName(vocab.sourceLanguageCode)} → ${getLanguageName(vocab.targetLanguageCode)}`,
             sourceLanguageCode: vocab.sourceLanguageCode,
             targetLanguageCode: vocab.targetLanguageCode,
-            count: vocab.textTargets.length,
             color: generateFolderColor(key),
-            tags: ['A', 'B'], // Mock tags for now
           });
         }
       });
@@ -69,11 +66,12 @@ const Library: React.FC = () => {
 
   const filteredFolders = useMemo(() => {
     return folders.filter((folder) => {
-      const matchesSearch = folder.sourceLanguage.toLowerCase().includes(searchQuery.toLowerCase())
-        || folder.targetLanguage.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSearch = folder.name.toLowerCase().includes(searchQuery.toLowerCase())
+        || folder.sourceLanguageCode.toLowerCase().includes(searchQuery.toLowerCase())
+        || folder.targetLanguageCode.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesFilter = filterType === 'all'
-        || (filterType === 'active' && folder.count > 0)
-        || (filterType === 'empty' && folder.count === 0);
+        || (filterType === 'active' && true) // All folders are considered active now
+        || (filterType === 'empty' && false); // No folders are considered empty
 
       return matchesSearch && matchesFilter;
     });

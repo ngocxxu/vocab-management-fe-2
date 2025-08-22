@@ -4,13 +4,10 @@ import { Button } from '../ui/button';
 
 export type TLanguageFolder = {
   id: string;
-  sourceLanguage: string;
-  targetLanguage: string;
+  name: string;
   sourceLanguageCode: string;
   targetLanguageCode: string;
-  count: number;
   color: string;
-  tags: string[];
 };
 
 type LanguageFolderProps = {
@@ -42,14 +39,14 @@ const LanguageFolder = ({ folder, onFolderClick }: LanguageFolderProps) => {
         {/* Name Column */}
         <div className="min-w-0 flex-1">
           <div className="text-sm font-medium text-slate-900 dark:text-white">
-            Maplestory
+            {folder.name}
           </div>
           <div className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-            {folder.sourceLanguage}
+            {folder.sourceLanguageCode.toUpperCase()}
             {' '}
             →
             {' '}
-            {folder.targetLanguage}
+            {folder.targetLanguageCode.toUpperCase()}
           </div>
         </div>
 
