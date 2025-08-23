@@ -27,6 +27,12 @@ export default antfu(
     // Ignored paths
     ignores: [
       'migrations/**/*',
+      '.pnpm-store/**/*',
+      'node_modules/**/*',
+      '.next/**/*',
+      'dist/**/*',
+      'build/**/*',
+      'coverage/**/*',
     ],
   },
   // --- Accessibility Rules ---
