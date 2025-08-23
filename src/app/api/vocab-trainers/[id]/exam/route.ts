@@ -5,10 +5,10 @@ import { vocabTrainerApi } from '@/utils/api';
 // GET /api/vocab-trainers/[id]/exam - Get exam for a trainer
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const exam = await vocabTrainerApi.getExam(id);
     return NextResponse.json(exam);
   } catch (error) {
@@ -22,10 +22,10 @@ export async function GET(
 // PATCH /api/vocab-trainers/[id]/exam - Submit exam results
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
     const examResults = await vocabTrainerApi.submitExam(id, body);
     return NextResponse.json(examResults);

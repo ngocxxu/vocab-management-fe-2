@@ -5,10 +5,10 @@ import { subjectsApi } from '@/utils/api';
 // GET /api/subjects/[id] - Get subject by ID
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const subject = await subjectsApi.getById(id);
     return NextResponse.json(subject);
   } catch (error) {
@@ -22,10 +22,10 @@ export async function GET(
 // PUT /api/subjects/[id] - Update subject
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
     const updatedSubject = await subjectsApi.update(id, body);
     return NextResponse.json(updatedSubject);
@@ -40,10 +40,10 @@ export async function PUT(
 // DELETE /api/subjects/[id] - Delete subject
 export async function DELETE(
   _request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     await subjectsApi.delete(id);
     return NextResponse.json({ message: 'Subject deleted successfully' });
   } catch (error) {

@@ -5,10 +5,10 @@ import { wordTypesApi } from '@/utils/api';
 // GET /api/word-types/[id] - Get word type by ID
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const wordType = await wordTypesApi.getById(id);
     return NextResponse.json(wordType);
   } catch (error) {
@@ -22,10 +22,10 @@ export async function GET(
 // PUT /api/word-types/[id] - Update word type
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
     const updatedWordType = await wordTypesApi.update(id, body);
     return NextResponse.json(updatedWordType);
@@ -40,10 +40,10 @@ export async function PUT(
 // DELETE /api/word-types/[id] - Delete word type
 export async function DELETE(
   _request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     await wordTypesApi.delete(id);
     return NextResponse.json({ message: 'Word type deleted successfully' });
   } catch (error) {

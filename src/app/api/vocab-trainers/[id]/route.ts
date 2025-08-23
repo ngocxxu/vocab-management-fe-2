@@ -5,10 +5,10 @@ import { vocabTrainerApi } from '@/utils/api';
 // GET /api/vocab-trainers/[id] - Get vocab trainer by ID
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const trainer = await vocabTrainerApi.getById(id);
     return NextResponse.json(trainer);
   } catch (error) {
@@ -22,10 +22,10 @@ export async function GET(
 // DELETE /api/vocab-trainers/[id] - Delete vocab trainer
 export async function DELETE(
   _request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     await vocabTrainerApi.delete(id);
     return NextResponse.json({ message: 'Vocab trainer deleted successfully' });
   } catch (error) {

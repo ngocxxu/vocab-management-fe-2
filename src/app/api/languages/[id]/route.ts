@@ -5,10 +5,10 @@ import { languagesApi } from '@/utils/api';
 // GET /api/languages/[id] - Get language by ID
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const language = await languagesApi.getById(id);
     return NextResponse.json(language);
   } catch (error) {
@@ -22,10 +22,10 @@ export async function GET(
 // PUT /api/languages/[id] - Update language
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
     const updatedLanguage = await languagesApi.update(id, body);
     return NextResponse.json(updatedLanguage);
@@ -40,10 +40,10 @@ export async function PUT(
 // DELETE /api/languages/[id] - Delete language
 export async function DELETE(
   _request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     await languagesApi.delete(id);
     return NextResponse.json({ message: 'Language deleted successfully' });
   } catch (error) {

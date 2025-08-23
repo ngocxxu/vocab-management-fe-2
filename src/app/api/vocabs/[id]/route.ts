@@ -5,10 +5,10 @@ import { vocabApi } from '@/utils/api';
 // GET /api/vocabs/[id] - Get vocabulary by ID
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const vocab = await vocabApi.getById(id);
     return NextResponse.json(vocab);
   } catch (error) {
@@ -22,10 +22,10 @@ export async function GET(
 // PUT /api/vocabs/[id] - Update vocabulary
 export async function PUT(
   _request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const body = await _request.json();
     const updatedVocab = await vocabApi.update(id, body);
     return NextResponse.json(updatedVocab);
@@ -40,10 +40,10 @@ export async function PUT(
 // DELETE /api/vocabs/[id] - Delete vocabulary
 export async function DELETE(
   _request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     await vocabApi.delete(id);
     return NextResponse.json({ message: 'Vocabulary deleted successfully' });
   } catch (error) {
