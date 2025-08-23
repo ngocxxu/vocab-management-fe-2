@@ -27,6 +27,9 @@ if (!process.env.NEXT_PUBLIC_SENTRY_DISABLED) {
     org: process.env.SENTRY_ORGANIZATION,
     project: process.env.SENTRY_PROJECT,
 
+    // Auth tokens can be obtained from https://sentry.io/orgredirect/organizations/:orgslug/settings/auth-tokens/
+    authToken: process.env.SENTRY_AUTH_TOKEN,
+
     // Only print logs for uploading source maps in CI
     silent: !process.env.CI,
 
