@@ -45,6 +45,7 @@ export async function DELETE(
   try {
     const { id } = await params;
     await languagesApi.delete(id);
+
     return NextResponse.json({ message: 'Language deleted successfully' });
   } catch (error) {
     return NextResponse.json(
