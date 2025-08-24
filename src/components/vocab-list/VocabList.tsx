@@ -24,7 +24,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Form } from '@/components/ui/form';
 import { DataTable } from '@/components/ui/table';
-import { useVocabs, useVocabsByLanguage, vocabMutations } from '@/hooks';
+import { useVocabs, vocabMutations } from '@/hooks';
 import AddVocabDialog from './AddVocabDialog';
 import ExpandedRowContent from './ExpandedRowContent';
 import VocabListHeader from './VocabListHeader';
@@ -64,15 +64,7 @@ const VocabList: React.FC = () => {
   const sourceLanguageCode = searchParams.get('source') || undefined;
   const targetLanguageCode = searchParams.get('target') || undefined;
 
-  // Use both hooks to avoid conditional hook calls
-  const { vocabs: allVocabs, isLoading: isLoadingAll, isError: isErrorAll, mutate: mutateAll } = useVocabs();
-  const { vocabs: filteredVocabs, isLoading: isLoadingFiltered, isError: isErrorFiltered, mutate: mutateFiltered } = useVocabsByLanguage(sourceLanguageCode, targetLanguageCode);
-
-  // Use appropriate data based on whether we have language filters
-  const vocabs = sourceLanguageCode && targetLanguageCode ? filteredVocabs : allVocabs;
-  const isLoading = sourceLanguageCode && targetLanguageCode ? isLoadingFiltered : isLoadingAll;
-  const isError = sourceLanguageCode && targetLanguageCode ? isErrorFiltered : isErrorAll;
-  const mutate = sourceLanguageCode && targetLanguageCode ? mutateFiltered : mutateAll;
+  const { vocabs, isLoading, isError, mutate } = useVocabs();
 
   const form = useForm<FormData>({
     resolver: zodResolver(FormSchema),

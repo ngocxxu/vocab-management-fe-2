@@ -8,6 +8,19 @@ import type {
 } from '@/types/vocab-trainer';
 import axiosInstance from '@/libs/axios';
 
+// Query parameters type for vocabularies
+export type VocabQueryParams = {
+  page?: number;
+  pageSize?: number;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+  textSource?: string;
+  sourceLanguageCode?: string;
+  targetLanguageCode?: string;
+  subjectIds?: string[];
+  userId?: string;
+};
+
 // Generic API client with common methods
 export class ApiClient {
   // GET request
@@ -43,8 +56,8 @@ export class ApiClient {
 
 // Vocabulary Management API endpoints
 export const vocabApi = {
-  // Get all vocabularies
-  getAll: () => ApiClient.get<TVocab[]>('/vocabs'),
+  // Get all vocabularies with query parameters
+  getAll: (params?: VocabQueryParams) => ApiClient.get<TVocab[]>('/vocabs', { params }),
 
   // Get vocabulary by ID
   getById: (id: string) => ApiClient.get<TVocab>(`/vocabs/${id}`),
@@ -57,11 +70,6 @@ export const vocabApi = {
 
   // Delete vocabulary
   delete: (id: string) => ApiClient.delete(`/vocabs/${id}`),
-
-  // Search vocabularies
-  search: (query: string) => ApiClient.get<TVocab[]>('/vocabs', {
-    params: { q: query },
-  }),
 
   // Create bulk vocabularies
   createBulk: (vocabData: TCreateVocab[]) => ApiClient.post(`/vocabs/bulk/create`, { data: { vocabData } }),
