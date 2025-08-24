@@ -1,6 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import { vocabTrainerApi } from '@/utils/client-api';
+import { vocabTrainerApi } from '@/utils/server-api';
 
 // GET /api/vocab-trainers - Get all vocab trainers
 export async function GET(_request: NextRequest) {

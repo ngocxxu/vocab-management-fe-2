@@ -1,16 +1,12 @@
 import useSWR from 'swr';
-import axiosInstance from '@/libs/axios';
 import { languageFoldersApi } from '@/utils/client-api';
-
-// SWR fetcher function using axios
-const fetcher = (url: string) => axiosInstance.get(url).then(res => res.data);
 
 // Hook for getting user's language folders
 export const useLanguageFolders = () => {
-  const { data, error, isLoading, mutate } = useSWR('/api/language-folders/my', fetcher);
+  const { data, error, isLoading, mutate } = useSWR('languageFolders', () => languageFoldersApi.getMy());
 
   return {
-    languageFolders: data?.data || [],
+    languageFolders: data || [],
     isLoading,
     isError: error,
     mutate,
@@ -20,12 +16,12 @@ export const useLanguageFolders = () => {
 // Hook for getting a single language folder by ID
 export const useLanguageFolder = (id: string | null) => {
   const { data, error, isLoading, mutate } = useSWR(
-    id ? `/api/language-folders/${id}` : null,
-    fetcher,
+    id ? ['languageFolder', id] : null,
+    () => languageFoldersApi.getById(id!),
   );
 
   return {
-    languageFolder: data?.data,
+    languageFolder: data,
     isLoading,
     isError: error,
     mutate,
@@ -41,8 +37,7 @@ export const languageFolderMutations = {
     sourceLanguageCode: string;
     targetLanguageCode: string;
   }) => {
-    const response = await languageFoldersApi.create(languageFolderData);
-    return response;
+    return await languageFoldersApi.create(languageFolderData);
   },
 
   // Update language folder
@@ -52,13 +47,11 @@ export const languageFolderMutations = {
     sourceLanguageCode: string;
     targetLanguageCode: string;
   }) => {
-    const response = await languageFoldersApi.update(id, languageFolderData);
-    return response;
+    return await languageFoldersApi.update(id, languageFolderData);
   },
 
   // Delete language folder
   delete: async (id: string) => {
-    const response = await languageFoldersApi.delete(id);
-    return response;
+    return await languageFoldersApi.delete(id);
   },
 };

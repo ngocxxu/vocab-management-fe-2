@@ -9,7 +9,7 @@ class ServerApiClient {
     endpoint: string,
     options: RequestInit = {},
   ): Promise<T> {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
 
     const response = await fetch(`${this.baseURL}${endpoint}`, {
       ...options,

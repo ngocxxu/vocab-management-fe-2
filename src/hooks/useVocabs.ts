@@ -1,17 +1,13 @@
 import type { TCreateVocab, TVocab } from '@/types/vocab-list';
 import type { VocabQueryParams } from '@/utils/api-config';
 import useSWR from 'swr';
-import axiosInstance from '@/libs/axios';
-
-// SWR fetcher function using axios
-const fetcher = (url: string) => axiosInstance.get(url).then(res => res.data);
+import { vocabApi } from '@/utils/client-api';
 
 // Hook for getting vocabularies with query parameters
 export const useVocabs = (queryParams?: VocabQueryParams) => {
-  const queryString = queryParams ? `?${new URLSearchParams(queryParams as Record<string, string>).toString()}` : '';
   const { data, error, isLoading, mutate } = useSWR(
-    `/api/vocabs${queryString}`,
-    fetcher,
+    queryParams ? ['vocabs', queryParams] : 'vocabs',
+    () => vocabApi.getAll(queryParams),
   );
 
   return {
@@ -25,8 +21,8 @@ export const useVocabs = (queryParams?: VocabQueryParams) => {
 // Hook for getting a single vocabulary by ID
 export const useVocab = (id: string | null) => {
   const { data, error, isLoading, mutate } = useSWR(
-    id ? `/api/vocabs/${id}` : null,
-    fetcher,
+    id ? ['vocab', id] : null,
+    () => vocabApi.getById(id!),
   );
 
   return {
@@ -41,33 +37,26 @@ export const useVocab = (id: string | null) => {
 export const vocabMutations = {
   // Create new vocabulary
   create: async (vocabData: TCreateVocab) => {
-    const response = await axiosInstance.post('/api/vocabs', vocabData);
-    return response.data;
+    return await vocabApi.create(vocabData);
   },
 
   // Update vocabulary
   update: async (id: string, vocabData: Partial<TCreateVocab>) => {
-    const response = await axiosInstance.put(`/api/vocabs/${id}`, vocabData);
-    return response.data;
+    return await vocabApi.update(id, vocabData);
   },
 
   // Delete vocabulary
   delete: async (id: string) => {
-    const response = await axiosInstance.delete(`/api/vocabs/${id}`);
-    return response.data;
+    return await vocabApi.delete(id);
   },
 
   // Bulk create vocabularies
   createBulk: async (vocabData: TCreateVocab[]) => {
-    const response = await axiosInstance.post('/api/vocabs/bulk/create', vocabData);
-    return response.data;
+    return await vocabApi.createBulk(vocabData);
   },
 
   // Bulk delete vocabularies
   deleteBulk: async (ids: string[]) => {
-    const response = await axiosInstance.delete('/api/vocabs/bulk/delete', {
-      data: { ids },
-    });
-    return response.data;
+    return await vocabApi.deleteBulk(ids);
   },
 };

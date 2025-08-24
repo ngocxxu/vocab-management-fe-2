@@ -1,6 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import { languageFoldersApi } from '@/utils/client-api';
+import { languageFoldersApi } from '@/utils/server-api';
 
 // GET /api/language-folders/my - Get current user's language folders
 export async function GET(_request: NextRequest) {

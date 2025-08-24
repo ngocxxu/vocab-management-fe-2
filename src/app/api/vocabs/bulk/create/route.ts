@@ -1,6 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import { vocabApi } from '@/utils/client-api';
+import { vocabApi } from '@/utils/server-api';
 
 // POST /api/vocabs/bulk/create - Create bulk vocabularies
 export async function POST(request: NextRequest) {

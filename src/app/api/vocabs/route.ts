@@ -1,28 +1,7 @@
 import type { NextRequest } from 'next/server';
 import type { VocabQueryParams } from '@/utils/api-config';
 import { NextResponse } from 'next/server';
-
-// Mock data for demonstration - replace with your actual data source
-const mockVocabs = [
-  {
-    id: '1',
-    sourceLanguageCode: 'vi',
-    targetLanguageCode: 'en',
-    textSource: 'Xin chào',
-    textTargets: [
-      {
-        textTarget: 'Hello',
-        wordType: { id: '1', name: 'Greeting', description: 'A greeting expression' },
-        explanationSource: 'Lời chào hỏi',
-        explanationTarget: 'A greeting',
-        vocabExamples: [{ source: 'Xin chào bạn', target: 'Hello friend' }],
-        grammar: 'Interjection',
-        textTargetSubjects: [{ id: '1', subject: { id: '1', name: 'Basic', order: 1 } }],
-      },
-    ],
-  },
-  // Add more mock data as needed
-];
+import { vocabApi } from '@/utils/server-api';
 
 // GET /api/vocabs - Get all vocabularies with query parameters
 export async function GET(request: NextRequest) {
@@ -65,65 +44,9 @@ export async function GET(request: NextRequest) {
       queryParams.userId = searchParams.get('userId')!;
     }
 
-    // Filter and process the data based on query parameters
-    let filteredVocabs = [...mockVocabs];
-
-    // Apply text source filter
-    if (queryParams.textSource) {
-      filteredVocabs = filteredVocabs.filter(vocab =>
-        vocab.textSource.toLowerCase().includes(queryParams.textSource!.toLowerCase()),
-      );
-    }
-
-    // Apply language filters
-    if (queryParams.sourceLanguageCode) {
-      filteredVocabs = filteredVocabs.filter(vocab =>
-        vocab.sourceLanguageCode === queryParams.sourceLanguageCode,
-      );
-    }
-
-    if (queryParams.targetLanguageCode) {
-      filteredVocabs = filteredVocabs.filter(vocab =>
-        vocab.targetLanguageCode === queryParams.targetLanguageCode,
-      );
-    }
-
-    // Apply subject filter
-    if (queryParams.subjectIds && queryParams.subjectIds.length > 0) {
-      filteredVocabs = filteredVocabs.filter(vocab =>
-        vocab.textTargets.some(textTarget =>
-          textTarget.textTargetSubjects.some(subject =>
-            queryParams.subjectIds!.includes(subject.subject.id),
-          ),
-        ),
-      );
-    }
-
-    // Apply sorting
-    if (queryParams.sortBy) {
-      const sortOrder = queryParams.sortOrder === 'asc' ? 1 : -1;
-      filteredVocabs.sort((a, b) => {
-        const aValue = a[queryParams.sortBy as keyof typeof a];
-        const bValue = b[queryParams.sortBy as keyof typeof b];
-
-        if (aValue < bValue) {
-          return -1 * sortOrder;
-        }
-        if (aValue > bValue) {
-          return 1 * sortOrder;
-        }
-        return 0;
-      });
-    }
-
-    // Apply pagination
-    if (queryParams.page && queryParams.pageSize) {
-      const startIndex = (queryParams.page - 1) * queryParams.pageSize;
-      const endIndex = startIndex + queryParams.pageSize;
-      filteredVocabs = filteredVocabs.slice(startIndex, endIndex);
-    }
-
-    return NextResponse.json(filteredVocabs);
+    // Call NestJS backend for vocabularies
+    const vocabs = await vocabApi.getAll(queryParams);
+    return NextResponse.json(vocabs);
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to fetch vocabularies' },
@@ -133,19 +56,12 @@ export async function GET(request: NextRequest) {
 }
 
 // POST /api/vocabs - Create new vocabulary
-export async function POST(_request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
-    const body = await _request.json();
+    const body = await request.json();
 
-    // Create new vocab with generated ID
-    const newVocab = {
-      id: Date.now().toString(),
-      ...body,
-    };
-
-    // Add to mock data (in real app, save to database)
-    mockVocabs.push(newVocab);
-
+    // Call NestJS backend to create vocabulary
+    const newVocab = await vocabApi.create(body);
     return NextResponse.json(newVocab, { status: 201 });
   } catch (error) {
     return NextResponse.json(

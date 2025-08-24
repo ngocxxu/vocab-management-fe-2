@@ -1,6 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import { wordTypesApi } from '@/utils/client-api';
+import { wordTypesApi } from '@/utils/server-api';
 
 // GET /api/word-types/[id] - Get word type by ID
 export async function GET(

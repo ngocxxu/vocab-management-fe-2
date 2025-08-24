@@ -1,6 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import { languagesApi } from '@/utils/client-api';
+import { languagesApi } from '@/utils/server-api';
 
 // GET /api/languages/[id] - Get language by ID
 export async function GET(

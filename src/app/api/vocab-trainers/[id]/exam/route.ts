@@ -1,6 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import { vocabTrainerApi } from '@/utils/client-api';
+import { vocabTrainerApi } from '@/utils/server-api';
 
 // GET /api/vocab-trainers/[id]/exam - Get exam for a trainer
 export async function GET(
