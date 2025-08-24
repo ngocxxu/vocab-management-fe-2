@@ -1,5 +1,6 @@
 import type { AxiosRequestConfig } from 'axios';
-import type { EQuestionType } from '@/enum/vocab-trainer';
+import type { VocabQueryParams } from './api-config';
+import type { TAuthResponse } from '@/types/auth';
 import type { TCreateVocab, TVocab } from '@/types/vocab-list';
 import type {
   TCreateVocabTrainer,
@@ -8,31 +9,7 @@ import type {
   TVocabTrainer,
 } from '@/types/vocab-trainer';
 import axiosInstance from '@/libs/axios';
-
-// Query parameters type for vocabularies
-export type VocabQueryParams = {
-  page?: number;
-  pageSize?: number;
-  sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
-  textSource?: string;
-  sourceLanguageCode?: string;
-  targetLanguageCode?: string;
-  subjectIds?: string[];
-  userId?: string;
-};
-
-// Query parameters type for vocab trainers
-export type VocabTrainerQueryParams = {
-  page?: number;
-  pageSize?: number;
-  sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
-  name?: string;
-  status?: string | string[];
-  questionType?: EQuestionType;
-  userId?: string;
-};
+import { API_METHODS } from './api-config';
 
 // Generic API client with common methods
 export class ApiClient {
@@ -69,79 +46,194 @@ export class ApiClient {
 
 // Auth API endpoints
 export const authApi = {
-  signin: (data: { email: string; password: string }) => ApiClient.post('/auth/signin', data),
-  signup: (data: {
-    email: string;
-    password: string;
-    firstName: string;
-    lastName: string;
-    phone: string;
-    avatar: string;
-    role: string;
-  }) => ApiClient.post('/auth/signup', data),
-  refresh: (data: { refreshToken: string }) => ApiClient.post('/auth/refresh', data),
-  signout: () => ApiClient.post('/auth/signout'),
-  resetPassword: (data: { email: string }) => ApiClient.post('/auth/reset-password', data),
-  verify: () => ApiClient.get('/auth/verify'),
+  signin: (data: { email: string; password: string }) => {
+    const config = API_METHODS.auth.signin(data);
+    return ApiClient.post<TAuthResponse>(config.endpoint, config.data);
+  },
+  signup: (data: { email: string; password: string; firstName: string; lastName: string; phone: string; avatar: string; role: string }) => {
+    const config = API_METHODS.auth.signup(data);
+    return ApiClient.post<TAuthResponse>(config.endpoint, config.data);
+  },
+  refresh: (data: { refreshToken: string }) => {
+    const config = API_METHODS.auth.refresh(data);
+    return ApiClient.post(config.endpoint, config.data);
+  },
+  signout: () => {
+    const config = API_METHODS.auth.signout();
+    return ApiClient.post(config.endpoint);
+  },
+  resetPassword: (data: { email: string }) => {
+    const config = API_METHODS.auth.resetPassword(data);
+    return ApiClient.post(config.endpoint, config.data);
+  },
+  verify: () => {
+    const config = API_METHODS.auth.verify();
+    return ApiClient.get(config.endpoint);
+  },
 };
 
 // Vocabulary Management API endpoints
 export const vocabApi = {
-  getAll: (params?: VocabQueryParams) => ApiClient.get<TVocab[]>('/vocabs', { params }),
-  getById: (id: string) => ApiClient.get<TVocab>(`/vocabs/${id}`),
-  create: (vocabData: TCreateVocab) => ApiClient.post<TVocab>('/vocabs', vocabData),
-  update: (id: string, vocabData: Partial<TCreateVocab>) => ApiClient.put<TVocab>(`/vocabs/${id}`, vocabData),
-  delete: (id: string) => ApiClient.delete(`/vocabs/${id}`),
-  createBulk: (vocabData: TCreateVocab[]) => ApiClient.post(`/vocabs/bulk/create`, { data: { vocabData } }),
-  deleteBulk: (ids: string[]) => ApiClient.post(`/vocabs/bulk/delete`, { data: { ids } }),
+  getAll: (params?: VocabQueryParams) => {
+    const config = API_METHODS.vocabs.getAll(params);
+    return ApiClient.get<TVocab[]>(config.endpoint, { params: config.params });
+  },
+  getById: (id: string) => {
+    const config = API_METHODS.vocabs.getById(id);
+    return ApiClient.get<TVocab>(config.endpoint);
+  },
+  create: (vocabData: TCreateVocab) => {
+    const config = API_METHODS.vocabs.create(vocabData);
+    return ApiClient.post<TVocab>(config.endpoint, config.data);
+  },
+  update: (id: string, vocabData: Partial<TCreateVocab>) => {
+    const config = API_METHODS.vocabs.update(id, vocabData);
+    return ApiClient.put<TVocab>(config.endpoint, config.data);
+  },
+  delete: (id: string) => {
+    const config = API_METHODS.vocabs.delete(id);
+    return ApiClient.delete(config.endpoint);
+  },
+  createBulk: (vocabData: TCreateVocab[]) => {
+    const config = API_METHODS.vocabs.createBulk(vocabData);
+    return ApiClient.post(config.endpoint, config.data);
+  },
+  deleteBulk: (ids: string[]) => {
+    const config = API_METHODS.vocabs.deleteBulk(ids);
+    return ApiClient.post(config.endpoint, config.data);
+  },
 };
 
 // Vocabulary Trainer API endpoints
 export const vocabTrainerApi = {
-  getAll: () => ApiClient.get<TVocabTrainer[]>('/vocab-trainers'),
-  getById: (id: string) => ApiClient.get<TVocabTrainer>(`/vocab-trainers/${id}`),
-  create: (trainerData: TCreateVocabTrainer) => ApiClient.post<TVocabTrainer>('/vocab-trainers', trainerData),
-  delete: (id: string) => ApiClient.delete(`/vocab-trainers/${id}`),
-  getExam: (id: string) => ApiClient.get<TQuestionAPI>(`/vocab-trainers/${id}/exam`),
-  submitExam: (id: string, testData: TFormTestVocabTrainer) => ApiClient.patch(`/vocab-trainers/${id}/exam`, testData),
-  deleteBulk: (ids: string[]) => ApiClient.post(`/vocab-trainers/bulk/delete`, { data: { ids } }),
+  getAll: () => {
+    const config = API_METHODS.vocabTrainers.getAll();
+    return ApiClient.get<TVocabTrainer[]>(config.endpoint);
+  },
+  getById: (id: string) => {
+    const config = API_METHODS.vocabTrainers.getById(id);
+    return ApiClient.get<TVocabTrainer>(config.endpoint);
+  },
+  create: (trainerData: TCreateVocabTrainer) => {
+    const config = API_METHODS.vocabTrainers.create(trainerData);
+    return ApiClient.post<TVocabTrainer>(config.endpoint, config.data);
+  },
+  delete: (id: string) => {
+    const config = API_METHODS.vocabTrainers.delete(id);
+    return ApiClient.delete(config.endpoint);
+  },
+  getExam: (id: string) => {
+    const config = API_METHODS.vocabTrainers.getExam(id);
+    return ApiClient.get<TQuestionAPI>(config.endpoint);
+  },
+  submitExam: (id: string, testData: TFormTestVocabTrainer) => {
+    const config = API_METHODS.vocabTrainers.submitExam(id, testData);
+    return ApiClient.patch(config.endpoint, config.data);
+  },
+  deleteBulk: (ids: string[]) => {
+    const config = API_METHODS.vocabTrainers.deleteBulk(ids);
+    return ApiClient.post(config.endpoint, config.data);
+  },
 };
 
 // Subjects API endpoints
 export const subjectsApi = {
-  getAll: () => ApiClient.get('/subjects'),
-  getById: (id: string) => ApiClient.get(`/subjects/${id}`),
-  create: (subjectData: { name: string; order: number }) => ApiClient.post('/subjects', subjectData),
-  update: (id: string, subjectData: { name: string; order: number }) => ApiClient.put(`/subjects/${id}`, subjectData),
-  delete: (id: string) => ApiClient.delete(`/subjects/${id}`),
-  reorder: (subjectIds: string[]) => ApiClient.post('/subjects/reorder', subjectIds),
+  getAll: () => {
+    const config = API_METHODS.subjects.getAll();
+    return ApiClient.get(config.endpoint);
+  },
+  getById: (id: string) => {
+    const config = API_METHODS.subjects.getById(id);
+    return ApiClient.get(config.endpoint);
+  },
+  create: (subjectData: { name: string; order: number }) => {
+    const config = API_METHODS.subjects.create(subjectData);
+    return ApiClient.post(config.endpoint, config.data);
+  },
+  update: (id: string, subjectData: { name: string; order: number }) => {
+    const config = API_METHODS.subjects.update(id, subjectData);
+    return ApiClient.put(config.endpoint, config.data);
+  },
+  delete: (id: string) => {
+    const config = API_METHODS.subjects.delete(id);
+    return ApiClient.delete(config.endpoint);
+  },
+  reorder: (subjectIds: string[]) => {
+    const config = API_METHODS.subjects.reorder(subjectIds);
+    return ApiClient.post(config.endpoint, config.data);
+  },
 };
 
 // Word Types API endpoints
 export const wordTypesApi = {
-  getAll: () => ApiClient.get('/word-types'),
-  getById: (id: string) => ApiClient.get(`/word-types/${id}`),
-  create: (wordTypeData: { name: string; description: string }) => ApiClient.post('/word-types', wordTypeData),
-  update: (id: string, wordTypeData: { name: string; description: string }) => ApiClient.put(`/word-types/${id}`, wordTypeData),
-  delete: (id: string) => ApiClient.delete(`/word-types/${id}`),
+  getAll: () => {
+    const config = API_METHODS.wordTypes.getAll();
+    return ApiClient.get(config.endpoint);
+  },
+  getById: (id: string) => {
+    const config = API_METHODS.wordTypes.getById(id);
+    return ApiClient.get(config.endpoint);
+  },
+  create: (wordTypeData: { name: string; description: string }) => {
+    const config = API_METHODS.wordTypes.create(wordTypeData);
+    return ApiClient.post(config.endpoint, config.data);
+  },
+  update: (id: string, wordTypeData: { name: string; description: string }) => {
+    const config = API_METHODS.wordTypes.update(id, wordTypeData);
+    return ApiClient.put(config.endpoint, config.data);
+  },
+  delete: (id: string) => {
+    const config = API_METHODS.wordTypes.delete(id);
+    return ApiClient.delete(config.endpoint);
+  },
 };
 
 // Languages API endpoints
 export const languagesApi = {
-  getAll: () => ApiClient.get('/languages'),
-  getById: (id: string) => ApiClient.get(`/languages/${id}`),
-  create: (languageData: { name: string; code: string }) => ApiClient.post('/languages', languageData),
-  update: (id: string, languageData: { name: string; code: string }) => ApiClient.put(`/languages/${id}`, languageData),
-  delete: (id: string) => ApiClient.delete(`/languages/${id}`),
+  getAll: () => {
+    const config = API_METHODS.languages.getAll();
+    return ApiClient.get(config.endpoint);
+  },
+  getById: (id: string) => {
+    const config = API_METHODS.languages.getById(id);
+    return ApiClient.get(config.endpoint);
+  },
+  create: (languageData: { name: string; code: string }) => {
+    const config = API_METHODS.languages.create(languageData);
+    return ApiClient.post(config.endpoint, config.data);
+  },
+  update: (id: string, languageData: { name: string; code: string }) => {
+    const config = API_METHODS.languages.update(id, languageData);
+    return ApiClient.put(config.endpoint, config.data);
+  },
+  delete: (id: string) => {
+    const config = API_METHODS.languages.delete(id);
+    return ApiClient.delete(config.endpoint);
+  },
 };
 
 // Language Folders API endpoints
 export const languageFoldersApi = {
-  getMy: () => ApiClient.get('/language-folders/my'),
-  getById: (id: string) => ApiClient.get(`/language-folders/${id}`),
-  create: (languageFolderData: { name: string; folderColor: string; sourceLanguageCode: string; targetLanguageCode: string }) => ApiClient.post('/language-folders', languageFolderData),
-  update: (id: string, languageFolderData: { name: string; folderColor: string; sourceLanguageCode: string; targetLanguageCode: string }) => ApiClient.put(`/language-folders/${id}`, languageFolderData),
-  delete: (id: string) => ApiClient.delete(`/language-folders/${id}`),
+  getMy: () => {
+    const config = API_METHODS.languageFolders.getMy();
+    return ApiClient.get(config.endpoint);
+  },
+  getById: (id: string) => {
+    const config = API_METHODS.languageFolders.getById(id);
+    return ApiClient.get(config.endpoint);
+  },
+  create: (languageFolderData: { name: string; folderColor: string; sourceLanguageCode: string; targetLanguageCode: string }) => {
+    const config = API_METHODS.languageFolders.create(languageFolderData);
+    return ApiClient.post(config.endpoint, config.data);
+  },
+  update: (id: string, languageFolderData: { name: string; folderColor: string; sourceLanguageCode: string; targetLanguageCode: string }) => {
+    const config = API_METHODS.languageFolders.update(id, languageFolderData);
+    return ApiClient.put(config.endpoint, config.data);
+  },
+  delete: (id: string) => {
+    const config = API_METHODS.languageFolders.delete(id);
+    return ApiClient.delete(config.endpoint);
+  },
 };
 
 // Main API object for easy access

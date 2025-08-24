@@ -1,5 +1,5 @@
 import type { TCreateVocab, TVocab } from '@/types/vocab-list';
-import type { VocabQueryParams } from '@/utils/client-api';
+import type { VocabQueryParams } from '@/utils/api-config';
 import useSWR from 'swr';
 import axiosInstance from '@/libs/axios';
 
