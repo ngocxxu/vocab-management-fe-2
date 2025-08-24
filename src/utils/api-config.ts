@@ -58,7 +58,7 @@ export const API_METHODS = {
     verify: () => ({ endpoint: API_ENDPOINTS.auth.verify }),
   },
   vocabs: {
-    getAll: (params?: VocabQueryParams) => ({ endpoint: API_ENDPOINTS.vocabs, params }),
+    getAll: (params?: VocabQueryParams) => ({ endpoint: params ? `${API_ENDPOINTS.vocabs}?${new URLSearchParams(params as Record<string, string>).toString()}` : API_ENDPOINTS.vocabs }),
     getById: (id: string) => ({ endpoint: `${API_ENDPOINTS.vocabs}/${id}` }),
     create: (vocabData: TCreateVocab) => ({ endpoint: API_ENDPOINTS.vocabs, data: vocabData }),
     update: (id: string, vocabData: Partial<TCreateVocab>) => ({ endpoint: `${API_ENDPOINTS.vocabs}/${id}`, data: vocabData }),
@@ -67,7 +67,7 @@ export const API_METHODS = {
     deleteBulk: (ids: string[]) => ({ endpoint: `${API_ENDPOINTS.vocabs}/bulk/delete`, data: { data: { ids } } }),
   },
   vocabTrainers: {
-    getAll: () => ({ endpoint: API_ENDPOINTS.vocabTrainers }),
+    getAll: (params?: VocabTrainerQueryParams) => ({ endpoint: params ? `${API_ENDPOINTS.vocabTrainers}?${new URLSearchParams(params as Record<string, string>).toString()}` : API_ENDPOINTS.vocabTrainers }),
     getById: (id: string) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}` }),
     create: (trainerData: TCreateVocabTrainer) => ({ endpoint: API_ENDPOINTS.vocabTrainers, data: trainerData }),
     delete: (id: string) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}` }),

@@ -1,8 +1,10 @@
+import type { VocabQueryParams, VocabTrainerQueryParams } from './api-config';
+import type { TVocab } from '@/types/vocab-list';
 import { cookies } from 'next/headers';
 import { Env } from '@/libs/Env';
 import { API_METHODS } from './api-config';
 
-class ServerApiClient {
+class ServerAPI {
   private baseURL = Env.NESTJS_API_URL || 'http://localhost:5433/api/v1';
 
   private async request<T>(
@@ -50,7 +52,7 @@ class ServerApiClient {
   }
 }
 
-export const serverApi = new ServerApiClient();
+export const serverApi = new ServerAPI();
 
 // Auth API endpoints
 export const authApi = {
@@ -82,13 +84,13 @@ export const authApi = {
 
 // Vocabulary Management API endpoints
 export const vocabApi = {
-  getAll: (params?: any) => {
+  getAll: (params?: VocabQueryParams) => {
     const config = API_METHODS.vocabs.getAll(params);
-    return serverApi.get<any[]>(config.endpoint);
+    return serverApi.get<TVocab[]>(config.endpoint);
   },
   getById: (id: string) => {
     const config = API_METHODS.vocabs.getById(id);
-    return serverApi.get<any>(config.endpoint);
+    return serverApi.get<TVocab>(config.endpoint);
   },
   create: (vocabData: any) => {
     const config = API_METHODS.vocabs.create(vocabData);
@@ -114,8 +116,8 @@ export const vocabApi = {
 
 // Vocabulary Trainer API endpoints
 export const vocabTrainerApi = {
-  getAll: () => {
-    const config = API_METHODS.vocabTrainers.getAll();
+  getAll: (params?: VocabTrainerQueryParams) => {
+    const config = API_METHODS.vocabTrainers.getAll(params);
     return serverApi.get(config.endpoint);
   },
   getById: (id: string) => {
