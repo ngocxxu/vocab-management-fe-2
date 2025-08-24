@@ -1,7 +1,8 @@
 import useSWR from 'swr';
+import axiosInstance from '@/libs/axios';
 
-// SWR fetcher function
-const fetcher = (url: string) => fetch(url).then(res => res.json());
+// SWR fetcher function using axios
+const fetcher = (url: string) => axiosInstance.get(url).then(res => res.data);
 
 // Hook for getting all word types
 export const useWordTypes = () => {
@@ -34,48 +35,19 @@ export const useWordType = (id: string | null) => {
 export const wordTypeMutations = {
   // Create new word type
   create: async (wordTypeData: { name: string; description: string }) => {
-    const response = await fetch('/api/word-types', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(wordTypeData),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to create word type');
-    }
-
-    return response.json();
+    const response = await axiosInstance.post('/api/word-types', wordTypeData);
+    return response.data;
   },
 
   // Update word type
   update: async (id: string, wordTypeData: { name: string; description: string }) => {
-    const response = await fetch(`/api/word-types/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(wordTypeData),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to update word type');
-    }
-
-    return response.json();
+    const response = await axiosInstance.put(`/api/word-types/${id}`, wordTypeData);
+    return response.data;
   },
 
   // Delete word type
   delete: async (id: string) => {
-    const response = await fetch(`/api/word-types/${id}`, {
-      method: 'DELETE',
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to delete word type');
-    }
-
-    return response.json();
+    const response = await axiosInstance.delete(`/api/word-types/${id}`);
+    return response.data;
   },
 };

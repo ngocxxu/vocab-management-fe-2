@@ -1,7 +1,8 @@
 import useSWR from 'swr';
+import axiosInstance from '@/libs/axios';
 
-// SWR fetcher function
-const fetcher = (url: string) => fetch(url).then(res => res.json());
+// SWR fetcher function using axios
+const fetcher = (url: string) => axiosInstance.get(url).then(res => res.data);
 
 // Hook for getting all languages
 export const useLanguages = () => {
@@ -34,48 +35,19 @@ export const useLanguage = (id: string | null) => {
 export const languageMutations = {
   // Create new language
   create: async (languageData: { name: string; code: string }) => {
-    const response = await fetch('/api/languages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(languageData),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to create language');
-    }
-
-    return response.json();
+    const response = await axiosInstance.post('/api/languages', languageData);
+    return response.data;
   },
 
   // Update language
   update: async (id: string, languageData: { name: string; code: string }) => {
-    const response = await fetch(`/api/languages/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(languageData),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to update language');
-    }
-
-    return response.json();
+    const response = await axiosInstance.put(`/api/languages/${id}`, languageData);
+    return response.data;
   },
 
   // Delete language
   delete: async (id: string) => {
-    const response = await fetch(`/api/languages/${id}`, {
-      method: 'DELETE',
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to delete language');
-    }
-
-    return response.json();
+    const response = await axiosInstance.delete(`/api/languages/${id}`);
+    return response.data;
   },
 };

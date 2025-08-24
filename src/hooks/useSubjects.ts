@@ -1,7 +1,8 @@
 import useSWR from 'swr';
+import axiosInstance from '@/libs/axios';
 
-// SWR fetcher function
-const fetcher = (url: string) => fetch(url).then(res => res.json());
+// SWR fetcher function using axios
+const fetcher = (url: string) => axiosInstance.get(url).then(res => res.data);
 
 // Hook for getting all subjects
 export const useSubjects = () => {
@@ -34,65 +35,25 @@ export const useSubject = (id: string | null) => {
 export const subjectMutations = {
   // Create new subject
   create: async (subjectData: { name: string; order: number }) => {
-    const response = await fetch('/api/subjects', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(subjectData),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to create subject');
-    }
-
-    return response.json();
+    const response = await axiosInstance.post('/api/subjects', subjectData);
+    return response.data;
   },
 
   // Update subject
   update: async (id: string, subjectData: { name: string; order: number }) => {
-    const response = await fetch(`/api/subjects/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(subjectData),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to update subject');
-    }
-
-    return response.json();
+    const response = await axiosInstance.put(`/api/subjects/${id}`, subjectData);
+    return response.data;
   },
 
   // Delete subject
   delete: async (id: string) => {
-    const response = await fetch(`/api/subjects/${id}`, {
-      method: 'DELETE',
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to delete subject');
-    }
-
-    return response.json();
+    const response = await axiosInstance.delete(`/api/subjects/${id}`);
+    return response.data;
   },
 
   // Reorder subjects
   reorder: async (subjectIds: string[]) => {
-    const response = await fetch('/api/subjects/reorder', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(subjectIds),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to reorder subjects');
-    }
-
-    return response.json();
+    const response = await axiosInstance.post('/api/subjects/reorder', subjectIds);
+    return response.data;
   },
 };

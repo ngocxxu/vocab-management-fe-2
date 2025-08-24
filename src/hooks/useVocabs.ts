@@ -1,8 +1,9 @@
 import type { TCreateVocab, TVocab } from '@/types/vocab-list';
 import useSWR from 'swr';
+import axiosInstance from '@/libs/axios';
 
-// SWR fetcher function
-const fetcher = (url: string) => fetch(url).then(res => res.json());
+// SWR fetcher function using axios
+const fetcher = (url: string) => axiosInstance.get(url).then(res => res.data);
 
 // Hook for getting all vocabularies
 export const useVocabs = () => {
@@ -50,82 +51,33 @@ export const useVocabSearch = (query: string | null) => {
 export const vocabMutations = {
   // Create new vocabulary
   create: async (vocabData: TCreateVocab) => {
-    const response = await fetch('/api/vocabs', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(vocabData),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to create vocabulary');
-    }
-
-    return response.json();
+    const response = await axiosInstance.post('/api/vocabs', vocabData);
+    return response.data;
   },
 
   // Update vocabulary
   update: async (id: string, vocabData: Partial<TCreateVocab>) => {
-    const response = await fetch(`/api/vocabs/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(vocabData),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to update vocabulary');
-    }
-
-    return response.json();
+    const response = await axiosInstance.put(`/api/vocabs/${id}`, vocabData);
+    return response.data;
   },
 
   // Delete vocabulary
   delete: async (id: string) => {
-    const response = await fetch(`/api/vocabs/${id}`, {
-      method: 'DELETE',
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to delete vocabulary');
-    }
-
-    return response.json();
+    const response = await axiosInstance.delete(`/api/vocabs/${id}`);
+    return response.data;
   },
 
   // Bulk create vocabularies
   createBulk: async (vocabData: TCreateVocab[]) => {
-    const response = await fetch('/api/vocabs/bulk/create', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ data: { vocabData } }),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to create bulk vocabularies');
-    }
-
-    return response.json();
+    const response = await axiosInstance.post('/api/vocabs/bulk/create', vocabData);
+    return response.data;
   },
 
   // Bulk delete vocabularies
   deleteBulk: async (ids: string[]) => {
-    const response = await fetch('/api/vocabs/bulk/delete', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ data: { ids } }),
+    const response = await axiosInstance.delete('/api/vocabs/bulk/delete', {
+      data: { ids },
     });
-
-    if (!response.ok) {
-      throw new Error('Failed to delete bulk vocabularies');
-    }
-
-    return response.json();
+    return response.data;
   },
 };

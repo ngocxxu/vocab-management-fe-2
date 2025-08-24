@@ -1,7 +1,8 @@
 import useSWR from 'swr';
+import axiosInstance from '@/libs/axios';
 
-// SWR fetcher function
-const fetcher = (url: string) => fetch(url).then(res => res.json());
+// SWR fetcher function using axios
+const fetcher = (url: string) => axiosInstance.get(url).then(res => res.data);
 
 // Hook for getting user's language folders
 export const useLanguageFolders = () => {
@@ -39,19 +40,8 @@ export const languageFolderMutations = {
     sourceLanguageCode: string;
     targetLanguageCode: string;
   }) => {
-    const response = await fetch('/api/language-folders', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(languageFolderData),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to create language folder');
-    }
-
-    return response.json();
+    const response = await axiosInstance.post('/api/language-folders', languageFolderData);
+    return response.data;
   },
 
   // Update language folder
@@ -61,31 +51,13 @@ export const languageFolderMutations = {
     sourceLanguageCode: string;
     targetLanguageCode: string;
   }) => {
-    const response = await fetch(`/api/language-folders/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(languageFolderData),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to update language folder');
-    }
-
-    return response.json();
+    const response = await axiosInstance.put(`/api/language-folders/${id}`, languageFolderData);
+    return response.data;
   },
 
   // Delete language folder
   delete: async (id: string) => {
-    const response = await fetch(`/api/language-folders/${id}`, {
-      method: 'DELETE',
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to delete language folder');
-    }
-
-    return response.json();
+    const response = await axiosInstance.delete(`/api/language-folders/${id}`);
+    return response.data;
   },
 };
