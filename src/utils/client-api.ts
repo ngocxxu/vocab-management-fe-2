@@ -146,11 +146,13 @@ export const languageFoldersApi = {
 
 // Main API object for easy access
 export const api = {
+  auth: authApi,
   vocab: vocabApi,
   vocabTrainer: vocabTrainerApi,
   subjects: subjectsApi,
   wordTypes: wordTypesApi,
   languages: languagesApi,
+  languageFolders: languageFoldersApi,
 };
 
 // Export the axios instance for direct use when needed

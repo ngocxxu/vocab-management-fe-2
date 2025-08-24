@@ -1,3 +1,4 @@
+export * from './useAuth';
 export * from './useLanguageFolders';
 export * from './useLanguages';
 export * from './useSubjects';

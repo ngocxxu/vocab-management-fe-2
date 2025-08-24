@@ -1,5 +1,6 @@
 import useSWR from 'swr';
 import axiosInstance from '@/libs/axios';
+import { languagesApi } from '@/utils/client-api';
 
 // SWR fetcher function using axios
 const fetcher = (url: string) => axiosInstance.get(url).then(res => res.data);
@@ -35,19 +36,19 @@ export const useLanguage = (id: string | null) => {
 export const languageMutations = {
   // Create new language
   create: async (languageData: { name: string; code: string }) => {
-    const response = await axiosInstance.post('/api/languages', languageData);
-    return response.data;
+    const response = await languagesApi.create(languageData);
+    return response;
   },
 
   // Update language
   update: async (id: string, languageData: { name: string; code: string }) => {
-    const response = await axiosInstance.put(`/api/languages/${id}`, languageData);
-    return response.data;
+    const response = await languagesApi.update(id, languageData);
+    return response;
   },
 
   // Delete language
   delete: async (id: string) => {
-    const response = await axiosInstance.delete(`/api/languages/${id}`);
-    return response.data;
+    const response = await languagesApi.delete(id);
+    return response;
   },
 };

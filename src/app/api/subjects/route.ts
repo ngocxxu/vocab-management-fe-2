@@ -1,6 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import { subjectsApi } from '@/utils/api';
+import { subjectsApi } from '@/utils/client-api';
 
 // GET /api/subjects - Get all subjects
 export async function GET(_request: NextRequest) {

@@ -1,6 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import { vocabTrainerApi } from '@/utils/api';
+import { vocabTrainerApi } from '@/utils/client-api';
 
 // POST /api/vocab-trainers/bulk/delete - Delete bulk vocab trainers
 export async function POST(request: NextRequest) {

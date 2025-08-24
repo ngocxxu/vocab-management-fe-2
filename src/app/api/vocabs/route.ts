@@ -1,5 +1,5 @@
 import type { NextRequest } from 'next/server';
-import type { VocabQueryParams } from '@/utils/api';
+import type { VocabQueryParams } from '@/utils/client-api';
 import { NextResponse } from 'next/server';
 
 // Mock data for demonstration - replace with your actual data source

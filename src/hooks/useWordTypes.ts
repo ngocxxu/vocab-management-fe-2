@@ -1,5 +1,6 @@
 import useSWR from 'swr';
 import axiosInstance from '@/libs/axios';
+import { wordTypesApi } from '@/utils/client-api';
 
 // SWR fetcher function using axios
 const fetcher = (url: string) => axiosInstance.get(url).then(res => res.data);
@@ -35,19 +36,19 @@ export const useWordType = (id: string | null) => {
 export const wordTypeMutations = {
   // Create new word type
   create: async (wordTypeData: { name: string; description: string }) => {
-    const response = await axiosInstance.post('/api/word-types', wordTypeData);
-    return response.data;
+    const response = await wordTypesApi.create(wordTypeData);
+    return response;
   },
 
   // Update word type
   update: async (id: string, wordTypeData: { name: string; description: string }) => {
-    const response = await axiosInstance.put(`/api/word-types/${id}`, wordTypeData);
-    return response.data;
+    const response = await wordTypesApi.update(id, wordTypeData);
+    return response;
   },
 
   // Delete word type
   delete: async (id: string) => {
-    const response = await axiosInstance.delete(`/api/word-types/${id}`);
-    return response.data;
+    const response = await wordTypesApi.delete(id);
+    return response;
   },
 };

@@ -2,6 +2,7 @@ import type { EQuestionType } from '@/enum/vocab-trainer';
 import type { TCreateVocabTrainer, TFormTestVocabTrainer, TQuestionAPI, TVocabTrainer } from '@/types/vocab-trainer';
 import useSWR from 'swr';
 import axiosInstance from '@/libs/axios';
+import { vocabTrainerApi } from '@/utils/client-api';
 
 // Query parameters type for vocab trainers
 export type VocabTrainerQueryParams = {
@@ -68,45 +69,31 @@ export const useVocabTrainerExam = (id: string | null) => {
 export const vocabTrainerMutations = {
   // Create new vocab trainer
   create: async (trainerData: TCreateVocabTrainer) => {
-    const response = await axiosInstance.post('/api/vocab-trainers', trainerData);
-    return response.data;
-  },
-
-  // Update vocab trainer
-  update: async (id: string, trainerData: Partial<TCreateVocabTrainer>) => {
-    const response = await axiosInstance.put(`/api/vocab-trainers/${id}`, trainerData);
-    return response.data;
+    const response = await vocabTrainerApi.create(trainerData);
+    return response;
   },
 
   // Delete vocab trainer
   delete: async (id: string) => {
-    const response = await axiosInstance.delete(`/api/vocab-trainers/${id}`);
-    return response.data;
+    const response = await vocabTrainerApi.delete(id);
+    return response;
   },
 
   // Bulk delete vocab trainers
   deleteBulk: async (ids: string[]) => {
-    const response = await axiosInstance.delete('/api/vocab-trainers/bulk/delete', {
-      data: { ids },
-    });
-    return response.data;
+    const response = await vocabTrainerApi.deleteBulk(ids);
+    return response;
   },
 
   // Submit exam results
   submitExam: async (id: string, examData: TFormTestVocabTrainer) => {
-    const response = await axiosInstance.patch(`/api/vocab-trainers/${id}/exam`, examData);
-    return response.data;
+    const response = await vocabTrainerApi.submitExam(id, examData);
+    return response;
   },
 
-  // Get questions for a trainer
-  getQuestions: async (id: string) => {
-    const response = await axiosInstance.get(`/api/vocab-trainers/${id}/questions`);
-    return response.data;
-  },
-
-  // Start a test session
-  startTest: async (id: string) => {
-    const response = await axiosInstance.post(`/api/vocab-trainers/${id}/test`);
-    return response.data;
+  // Get exam questions for a trainer
+  getExam: async (id: string) => {
+    const response = await vocabTrainerApi.getExam(id);
+    return response;
   },
 };

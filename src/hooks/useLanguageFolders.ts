@@ -1,5 +1,6 @@
 import useSWR from 'swr';
 import axiosInstance from '@/libs/axios';
+import { languageFoldersApi } from '@/utils/client-api';
 
 // SWR fetcher function using axios
 const fetcher = (url: string) => axiosInstance.get(url).then(res => res.data);
@@ -40,8 +41,8 @@ export const languageFolderMutations = {
     sourceLanguageCode: string;
     targetLanguageCode: string;
   }) => {
-    const response = await axiosInstance.post('/api/language-folders', languageFolderData);
-    return response.data;
+    const response = await languageFoldersApi.create(languageFolderData);
+    return response;
   },
 
   // Update language folder
@@ -51,13 +52,13 @@ export const languageFolderMutations = {
     sourceLanguageCode: string;
     targetLanguageCode: string;
   }) => {
-    const response = await axiosInstance.put(`/api/language-folders/${id}`, languageFolderData);
-    return response.data;
+    const response = await languageFoldersApi.update(id, languageFolderData);
+    return response;
   },
 
   // Delete language folder
   delete: async (id: string) => {
-    const response = await axiosInstance.delete(`/api/language-folders/${id}`);
-    return response.data;
+    const response = await languageFoldersApi.delete(id);
+    return response;
   },
 };

@@ -35,3 +35,6 @@ export enum EUserRole {
   STAFF = 'STAFF',
   CUSTOMER = 'CUSTOMER',
 }
+
+// Export auth types
+export * from './auth';

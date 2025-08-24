@@ -1,6 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import { vocabApi } from '@/utils/api';
+import { vocabApi } from '@/utils/client-api';
 
 // GET /api/vocabs/[id] - Get vocabulary by ID
 export async function GET(

@@ -1,6 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import { vocabApi } from '@/utils/api';
+import { vocabApi } from '@/utils/client-api';
 
 // POST /api/vocabs/bulk/delete - Delete bulk vocabularies
 export async function POST(request: NextRequest) {

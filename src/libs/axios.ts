@@ -4,7 +4,7 @@ import { Env } from './Env';
 
 // Create axios instance with default configuration
 const axiosInstance: AxiosInstance = axios.create({
-  baseURL: Env.NEXT_PUBLIC_API_URL || 'http://localhost:3002/api/v1',
+  baseURL: Env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api',
   timeout: 30000, // 30 seconds timeout
   headers: {
     'Content-Type': 'application/json',
