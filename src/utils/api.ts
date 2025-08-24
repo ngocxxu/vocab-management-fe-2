@@ -1,4 +1,5 @@
 import type { AxiosRequestConfig } from 'axios';
+import type { EQuestionType } from '@/enum/vocab-trainer';
 import type { TCreateVocab, TVocab } from '@/types/vocab-list';
 import type {
   TCreateVocabTrainer,
@@ -18,6 +19,18 @@ export type VocabQueryParams = {
   sourceLanguageCode?: string;
   targetLanguageCode?: string;
   subjectIds?: string[];
+  userId?: string;
+};
+
+// Query parameters type for vocab trainers
+export type VocabTrainerQueryParams = {
+  page?: number;
+  pageSize?: number;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+  name?: string;
+  status?: string | string[];
+  questionType?: EQuestionType;
   userId?: string;
 };
 
