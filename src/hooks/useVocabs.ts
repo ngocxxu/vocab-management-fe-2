@@ -6,68 +6,11 @@ import axiosInstance from '@/libs/axios';
 // SWR fetcher function using axios
 const fetcher = (url: string) => axiosInstance.get(url).then(res => res.data);
 
-// Hook for getting all vocabularies
-export const useVocabs = () => {
-  const { data, error, isLoading, mutate } = useSWR('/api/vocabs', fetcher);
-
-  return {
-    vocabs: (data as TVocab[] | undefined) || [],
-    isLoading,
-    isError: error,
-    mutate,
-  };
-};
-
 // Hook for getting vocabularies with query parameters
-export const useVocabsWithParams = (queryParams?: VocabQueryParams) => {
+export const useVocabs = (queryParams?: VocabQueryParams) => {
   const queryString = queryParams ? `?${new URLSearchParams(queryParams as Record<string, string>).toString()}` : '';
   const { data, error, isLoading, mutate } = useSWR(
     `/api/vocabs${queryString}`,
-    fetcher,
-  );
-
-  return {
-    vocabs: (data as TVocab[] | undefined) || [],
-    isLoading,
-    isError: error,
-    mutate,
-  };
-};
-
-// Hook for getting vocabularies by language pair
-export const useVocabsByLanguage = (sourceLanguageCode: string, targetLanguageCode: string) => {
-  const { data, error, isLoading, mutate } = useSWR(
-    `/api/vocabs?sourceLanguageCode=${sourceLanguageCode}&targetLanguageCode=${targetLanguageCode}`,
-    fetcher,
-  );
-
-  return {
-    vocabs: (data as TVocab[] | undefined) || [],
-    isLoading,
-    isError: error,
-    mutate,
-  };
-};
-
-// Hook for getting vocabularies by subject
-export const useVocabsBySubject = (subjectIds: string[]) => {
-  const { data, error, isLoading, mutate } = useSWR(
-    subjectIds.length > 0 ? `/api/vocabs?subjectIds=${subjectIds.join(',')}` : null,
-    fetcher,
-  );
-
-  return {
-    vocabs: (data as TVocab[] | undefined) || [],
-    isLoading,
-    isError: error,
-    mutate,
-  };
-};
-
-// Hook for getting paginated vocabularies
-export const useVocabsPaginated = (page: number = 1, pageSize: number = 10, sortBy: string = 'createdAt', sortOrder: 'asc' | 'desc' = 'desc') => {
-  const { data, error, isLoading, mutate } = useSWR(
-    `/api/vocabs?page=${page}&pageSize=${pageSize}&sortBy=${sortBy}&sortOrder=${sortOrder}`,
     fetcher,
   );
 
@@ -88,21 +31,6 @@ export const useVocab = (id: string | null) => {
 
   return {
     vocab: data as TVocab | undefined,
-    isLoading,
-    isError: error,
-    mutate,
-  };
-};
-
-// Hook for searching vocabularies by text source
-export const useVocabSearch = (query: string | null) => {
-  const { data, error, isLoading, mutate } = useSWR(
-    query ? `/api/vocabs?textSource=${encodeURIComponent(query)}` : null,
-    fetcher,
-  );
-
-  return {
-    searchResults: (data as TVocab[] | undefined) || [],
     isLoading,
     isError: error,
     mutate,
