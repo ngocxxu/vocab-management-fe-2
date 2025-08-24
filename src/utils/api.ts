@@ -151,6 +151,24 @@ export const languagesApi = {
   delete: (id: string) => ApiClient.delete(`/languages/${id}`),
 };
 
+// Language Folders API endpoints
+export const languageFoldersApi = {
+  // Get my language folders
+  getMy: () => ApiClient.get('/language-folders/my'),
+
+  // Get language folder by ID
+  getById: (id: string) => ApiClient.get(`/language-folders/${id}`),
+
+  // Create new language folder
+  create: (languageFolderData: { name: string; folderColor: string; sourceLanguageCode: string; targetLanguageCode: string }) => ApiClient.post('/language-folders', languageFolderData),
+
+  // Update language folder
+  update: (id: string, languageFolderData: { name: string; folderColor: string; sourceLanguageCode: string; targetLanguageCode: string }) => ApiClient.put(`/language-folders/${id}`, languageFolderData),
+
+  // Delete language folder
+  delete: (id: string) => ApiClient.delete(`/language-folders/${id}`),
+};
+
 // Main API object for easy access
 export const api = {
   vocab: vocabApi,
