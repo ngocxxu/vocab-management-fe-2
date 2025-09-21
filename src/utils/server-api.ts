@@ -5,7 +5,7 @@ import { Env } from '@/libs/Env';
 import { API_METHODS } from './api-config';
 
 class ServerAPI {
-  private baseURL = Env.NESTJS_API_URL || 'http://localhost:5433/api/v1';
+  private baseURL = Env.NESTJS_API_URL || 'http://localhost:3002/api/v1';
 
   private async request<T>(
     endpoint: string,
@@ -13,20 +13,29 @@ class ServerAPI {
   ): Promise<T> {
     const cookieStore = await cookies();
 
-    const response = await fetch(`${this.baseURL}${endpoint}`, {
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        'Cookie': cookieStore.toString(), // Forward cookies for auth
-        ...options.headers,
-      },
-    });
+    try {
+      const response = await fetch(`${this.baseURL}${endpoint}`, {
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          'Cookie': cookieStore.toString(), // Forward cookies for auth
+          ...options.headers,
+        },
+      });
 
-    if (!response.ok) {
-      throw new Error(`API call failed: ${response.statusText}`);
+      if (!response.ok) {
+        throw new Error(`API call failed: ${response.status} ${response.statusText}`);
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error('🚨 Server API Error:', {
+        endpoint: `${this.baseURL}${endpoint}`,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        baseURL: this.baseURL,
+      });
+      throw error;
     }
-
-    return response.json();
   }
 
   get<T>(endpoint: string) {

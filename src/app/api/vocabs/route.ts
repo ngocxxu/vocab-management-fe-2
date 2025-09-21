@@ -44,6 +44,11 @@ export async function GET(request: NextRequest) {
       queryParams.userId = searchParams.get('userId')!;
     }
 
+    console.warn('🔍 Vocab API Request:', {
+      queryParams,
+      backendUrl: process.env.NESTJS_API_URL || 'http://localhost:3002/api/v1',
+    });
+
     // Call NestJS backend for vocabularies
     const vocabs = await vocabApi.getAll(queryParams);
     return NextResponse.json(vocabs);
