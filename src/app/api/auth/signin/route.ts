@@ -1,39 +1,27 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import { serverApi } from '@/utils/server-api';
 
-// POST /api/auth/signin - User signin
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { email, password } = body;
 
-    // Validate required fields
-    if (!email || !password) {
-      return NextResponse.json(
-        { error: 'Email and password are required' },
-        { status: 400 },
-      );
-    }
-
-    // Call NestJS backend for authentication
-    const authResponse = await serverApi.post<{ token?: string; user: any; message: string }>('/auth/signin', {
-      email,
-      password,
+    const nestResponse = await fetch(`${process.env.NESTJS_API_URL || 'http://localhost:3002/api/v1'}/auth/signin`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
     });
 
-    // Create Next.js response
-    const response = NextResponse.json(authResponse);
+    const data = await nestResponse.json();
 
-    // If the backend returns a token, set it as a cookie
-    if (authResponse.token) {
-      response.cookies.set('auth-token', authResponse.token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 60 * 60 * 24 * 7, // 7 days
-        path: '/',
-      });
+    const response = NextResponse.json(data, { status: nestResponse.status });
+
+    // forward Set-Cookie from NestJS
+    const setCookie = nestResponse.headers.get('set-cookie');
+    if (setCookie) {
+      response.headers.append('Set-Cookie', setCookie);
     }
 
     return response;

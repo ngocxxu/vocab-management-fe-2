@@ -41,8 +41,8 @@ export default async function middleware(
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
   const isAuthRoute = authRoutes.some(route => pathname.startsWith(route));
 
-  // Get the auth token from cookies
-  const token = request.cookies.get('auth-token')?.value;
+  // Get the accessToken from cookies
+  const token = request.cookies.get('accessToken')?.value;
 
   // If accessing a protected route without a token, redirect to signin
   if (isProtectedRoute && !token) {
