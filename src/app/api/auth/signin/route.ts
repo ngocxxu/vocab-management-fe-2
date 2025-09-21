@@ -1,12 +1,13 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import { API_ENDPOINTS } from '@/utils/api-config';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { email, password } = body;
 
-    const nestResponse = await fetch(`${process.env.NESTJS_API_URL || 'http://localhost:3002/api/v1'}/auth/signin`, {
+    const nestResponse = await fetch(`${process.env.NESTJS_API_URL || 'http://localhost:3002/api/v1'}${API_ENDPOINTS.auth.signin}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

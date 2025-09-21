@@ -1,13 +1,12 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import { serverApi } from '@/utils/server-api';
+import { API_ENDPOINTS } from '@/utils/api-config';
 
 // POST /api/auth/refresh - Refresh authentication token
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { refreshToken } = body;
-
+    // Get refresh token from cookies
+    const refreshToken = request.cookies.get('refreshToken')?.value;
     if (!refreshToken) {
       return NextResponse.json(
         { error: 'Refresh token is required' },
@@ -16,22 +15,23 @@ export async function POST(request: NextRequest) {
     }
 
     // Call NestJS backend to refresh token
-    const refreshResponse = await serverApi.post<{ token?: string; message: string }>('/auth/refresh', {
-      refreshToken,
+    const nestResponse = await fetch(`${process.env.NESTJS_API_URL || 'http://localhost:3002/api/v1'}${API_ENDPOINTS.auth.refresh}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ refreshToken }),
     });
 
-    // Create Next.js response
-    const response = NextResponse.json(refreshResponse);
+    const data = await nestResponse.json();
 
-    // If the backend returns a new token, set it as a cookie
-    if (refreshResponse.token) {
-      response.cookies.set('auth-token', refreshResponse.token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 60 * 60 * 24 * 7, // 7 days
-        path: '/',
-      });
+    // Create Next.js response
+    const response = NextResponse.json(data, { status: nestResponse.status });
+
+    // Forward Set-Cookie from NestJS for refresh token
+    const setCookie = nestResponse.headers.get('set-cookie');
+    if (setCookie) {
+      response.headers.append('Set-Cookie', setCookie);
     }
 
     return response;
