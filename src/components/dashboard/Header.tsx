@@ -1,7 +1,9 @@
-import { Bell, ChevronDown, Menu, Moon, Search, Sun, User } from 'lucide-react';
+import { Bell, ChevronDown, LogOut, Menu, Moon, Search, Sun, User } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { authMutations, useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/hooks/useTheme';
 
 type HeaderProps = {
@@ -10,6 +12,17 @@ type HeaderProps = {
 
 export const Header: React.FC<HeaderProps> = ({ onSidebarToggle }) => {
   const { theme, toggleTheme } = useTheme();
+  const router = useRouter();
+  const { user } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await authMutations.signout();
+      router.push('/');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
 
   return (
     <header className="border-b border-slate-200/60 bg-white px-6 py-4 shadow-sm dark:border-slate-700/60 dark:bg-slate-900">
@@ -78,9 +91,30 @@ export const Header: React.FC<HeaderProps> = ({ onSidebarToggle }) => {
             <span className="absolute -top-1 -right-1 flex h-3 w-3 items-center justify-center rounded-full bg-blue-500"></span>
           </Button>
 
-          {/* User Profile */}
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-blue-400 to-blue-600 shadow-sm">
-            <User className="h-5 w-5 text-white" />
+          {/* User Profile & Logout */}
+          <div className="flex items-center space-x-2">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-blue-400 to-blue-600 shadow-sm">
+              <User className="h-5 w-5 text-white" />
+            </div>
+            <div className="text-sm">
+              <div className="font-medium text-slate-900 dark:text-slate-100">
+                {user?.firstName}
+                {' '}
+                {user?.lastName}
+              </div>
+              <div className="text-slate-500 dark:text-slate-400">
+                {user?.email}
+              </div>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-10 w-10 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800"
+              onClick={handleLogout}
+              title="Sign out"
+            >
+              <LogOut className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+            </Button>
           </div>
         </div>
       </div>
