@@ -1,5 +1,6 @@
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import axios from 'axios';
+import { API_ENDPOINTS } from '@/utils/api-config';
 import { Env } from './Env';
 
 // Create axios instance with default configuration
@@ -58,7 +59,38 @@ axiosInstance.interceptors.response.use(
 
     return response;
   },
-  (error) => {
+  async (error) => {
+    const originalRequest = error.config;
+
+    // Handle 401 or 403 Unauthorized - token expired
+    if ((error.response?.status === 401 || error.response?.status === 403) && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        // Attempt to refresh the token
+        const refreshResponse = await fetch(`${Env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}${API_ENDPOINTS.auth.refresh}`, {
+          method: 'POST',
+          credentials: 'include',
+        });
+
+        if (refreshResponse.ok) {
+          const refreshData = await refreshResponse.json();
+
+          // Update the original request with new token
+          if (refreshData.accessToken || refreshData.token) {
+            // Retry the original request
+            return axiosInstance(originalRequest);
+          }
+        }
+      } catch (refreshError) {
+        console.error('Token refresh failed:', refreshError);
+        // Redirect to signin page
+        if (typeof window !== 'undefined') {
+          window.location.href = '/signin';
+        }
+      }
+    }
+
     // Handle common error scenarios
     if (error.response) {
       // Server responded with error status

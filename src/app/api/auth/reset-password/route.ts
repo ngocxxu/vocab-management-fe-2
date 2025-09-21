@@ -1,5 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import { API_ENDPOINTS } from '@/utils/api-config';
 import { serverApi } from '@/utils/server-api';
 
 // POST /api/auth/reset-password - Reset password
@@ -16,7 +17,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Call NestJS backend to reset password
-    const resetResponse = await serverApi.post<{ message: string }>('/auth/reset-password', {
+    const resetResponse = await serverApi.post<{ message: string }>(API_ENDPOINTS.auth.resetPassword, {
       email,
     });
 

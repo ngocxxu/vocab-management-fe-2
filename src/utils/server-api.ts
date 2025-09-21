@@ -2,32 +2,64 @@ import type { VocabQueryParams, VocabTrainerQueryParams } from './api-config';
 import type { TVocab } from '@/types/vocab-list';
 import { cookies } from 'next/headers';
 import { Env } from '@/libs/Env';
-import { API_METHODS } from './api-config';
+import { API_ENDPOINTS, API_METHODS } from './api-config';
 
 class ServerAPI {
   private baseURL = Env.NESTJS_API_URL || 'http://localhost:3002/api/v1';
+  private isRefreshing: Promise<Response> | null = null; // avoid race condition
 
-  private async request<T>(
-    endpoint: string,
-    options: RequestInit = {},
-  ): Promise<T> {
+  private async doFetch(endpoint: string, options: RequestInit): Promise<Response> {
     const cookieStore = await cookies();
 
-    try {
-      const response = await fetch(`${this.baseURL}${endpoint}`, {
-        ...options,
-        headers: {
-          'Content-Type': 'application/json',
-          'Cookie': cookieStore.toString(), // Forward cookies for auth
-          ...options.headers,
-        },
+    const response = await fetch(`${this.baseURL}${endpoint}`, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': cookieStore.toString(),
+        ...options.headers,
+      },
+    });
+
+    // If not 401 or 403, return normally
+    if (response.status !== 401 && response.status !== 403) {
+      return response;
+    }
+
+    // If 401 or 403 → try refresh
+    if (!this.isRefreshing) {
+      this.isRefreshing = fetch(`${Env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}${API_ENDPOINTS.auth.refresh}`, {
+        method: 'POST',
+        credentials: 'include',
+      }).finally(() => {
+        this.isRefreshing = null;
       });
+    }
+
+    const refreshRes = await this.isRefreshing;
+    if (!refreshRes.ok) {
+      throw new Error('Refresh failed - needs login again');
+    }
+
+    // Retry request after refresh successfully, with new cookie
+    return fetch(`${this.baseURL}${endpoint}`, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': cookieStore.toString(),
+        ...options.headers,
+      },
+    });
+  }
+
+  private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+    try {
+      const response = await this.doFetch(endpoint, options);
 
       if (!response.ok) {
         throw new Error(`API call failed: ${response.status} ${response.statusText}`);
       }
 
-      return response.json();
+      return response.json() as Promise<T>;
     } catch (error) {
       console.error('🚨 Server API Error:', {
         endpoint: `${this.baseURL}${endpoint}`,
