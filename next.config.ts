@@ -10,6 +10,10 @@ const baseConfig: NextConfig = {
   },
   poweredByHeader: false,
   reactStrictMode: true,
+  // Fix for Vercel deployment
+  serverExternalPackages: [],
+  // Ensure proper build output for Vercel
+  trailingSlash: false,
 };
 
 let configWithPlugins = baseConfig;
