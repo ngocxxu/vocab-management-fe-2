@@ -4,7 +4,7 @@ import type { SignInFormData } from '@/lib/validations/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -14,7 +14,7 @@ import { Input } from '@/components/ui/input';
 import { authMutations } from '@/hooks/useAuth';
 import { signInSchema } from '@/lib/validations/auth';
 
-export default function SignInPage() {
+function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [errorMessage, setErrorMessage] = useState('');
@@ -40,96 +40,104 @@ export default function SignInPage() {
   };
 
   return (
+    <Card className="shadow-xl">
+      <CardHeader className="space-y-1">
+        <div className="mb-4 flex items-center justify-center">
+          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-r from-purple-600 to-blue-600">
+            <span className="text-xl font-bold text-white">V</span>
+          </div>
+        </div>
+        <CardTitle className="text-center text-2xl">Welcome back</CardTitle>
+        <CardDescription className="text-center text-gray-600 dark:text-gray-400">
+          Sign in to your account to continue
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {errorMessage && (
+              <Alert variant="destructive">
+                <AlertDescription>{errorMessage}</AlertDescription>
+              </Alert>
+            )}
+
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="email"
+                      placeholder="Enter your email"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      placeholder="Enter your password"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="flex items-center justify-between">
+              <Link
+                href="/forgot-password"
+                className="text-sm text-purple-600 hover:text-purple-500 dark:text-purple-400"
+              >
+                Forgot password?
+              </Link>
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+              disabled={form.formState.isSubmitting}
+            >
+              {form.formState.isSubmitting ? 'Signing in...' : 'Sign In'}
+            </Button>
+
+            <div className="text-center text-sm text-gray-600 dark:text-gray-400">
+              Don't have an account?
+              {' '}
+              <Link
+                href="/signup"
+                className="font-medium text-purple-600 hover:text-purple-500 dark:text-purple-400"
+              >
+                Sign up
+              </Link>
+            </div>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
+  );
+}
+
+export default function SignInPage() {
+  return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 px-4 dark:from-slate-900 dark:to-slate-800">
       <div className="w-full max-w-md">
-        <Card className="shadow-xl">
-          <CardHeader className="space-y-1">
-            <div className="mb-4 flex items-center justify-center">
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-r from-purple-600 to-blue-600">
-                <span className="text-xl font-bold text-white">V</span>
-              </div>
-            </div>
-            <CardTitle className="text-center text-2xl">Welcome back</CardTitle>
-            <CardDescription className="text-center text-gray-600 dark:text-gray-400">
-              Sign in to your account to continue
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                {errorMessage && (
-                  <Alert variant="destructive">
-                    <AlertDescription>{errorMessage}</AlertDescription>
-                  </Alert>
-                )}
-
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="email"
-                          placeholder="Enter your email"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Password</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="password"
-                          placeholder="Enter your password"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="flex items-center justify-between">
-                  <Link
-                    href="/forgot-password"
-                    className="text-sm text-purple-600 hover:text-purple-500 dark:text-purple-400"
-                  >
-                    Forgot password?
-                  </Link>
-                </div>
-
-                <Button
-                  type="submit"
-                  className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-                  disabled={form.formState.isSubmitting}
-                >
-                  {form.formState.isSubmitting ? 'Signing in...' : 'Sign In'}
-                </Button>
-
-                <div className="text-center text-sm text-gray-600 dark:text-gray-400">
-                  Don't have an account?
-                  {' '}
-                  <Link
-                    href="/signup"
-                    className="font-medium text-purple-600 hover:text-purple-500 dark:text-purple-400"
-                  >
-                    Sign up
-                  </Link>
-                </div>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
+        <Suspense fallback={<div>Loading...</div>}>
+          <SignInForm />
+        </Suspense>
       </div>
     </div>
   );

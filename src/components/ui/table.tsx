@@ -20,6 +20,8 @@ import React, { useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from './button';
 
+const DEFAULT_EXPANDED_STATE = {};
+
 type DataTableProps<TData, TValue> = {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
@@ -52,7 +54,7 @@ export function DataTable<TData, TValue>({
   rowClassName = '',
   cellClassName = '',
   renderExpandedRow,
-  expandedState = {},
+  expandedState = DEFAULT_EXPANDED_STATE,
   onExpandedChange,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);

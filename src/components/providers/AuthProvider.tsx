@@ -1,7 +1,7 @@
 'use client';
 
 import type { TUser } from '@/types/auth';
-import { createContext, use, useEffect, useMemo, useState } from 'react';
+import { createContext, use, useCallback, useEffect, useMemo, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 
 type AuthContextType = {
@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [isLoading]);
 
-  const signin = async (email: string, password: string) => {
+  const signin = useCallback(async (email: string, password: string) => {
     try {
       const { authMutations } = await import('@/hooks/useAuth');
       await authMutations.signin({ email, password });
@@ -51,9 +51,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       console.error('Signin failed:', error);
       throw error;
     }
-  };
+  }, [mutate]);
 
-  const signup = async (userData: {
+  const signup = useCallback(async (userData: {
     email: string;
     password: string;
     firstName: string;
@@ -70,9 +70,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       console.error('Signup failed:', error);
       throw error;
     }
-  };
+  }, [mutate]);
 
-  const signout = async () => {
+  const signout = useCallback(async () => {
     try {
       const { authMutations } = await import('@/hooks/useAuth');
       await authMutations.signout();
@@ -81,7 +81,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       console.error('Signout failed:', error);
       throw error;
     }
-  };
+  }, [mutate]);
 
   const value: AuthContextType = useMemo(() => ({
     user,

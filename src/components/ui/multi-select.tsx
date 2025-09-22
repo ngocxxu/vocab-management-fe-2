@@ -297,8 +297,10 @@ export type MultiSelectRef = {
   focus: () => void;
 };
 
+const DEFAULT_OPTIONS: string[] = [];
+
 export const MultiSelect = (
-  { ref, options, onValueChange, variant, defaultValue = [], placeholder = 'Select options', animation = 0, animationConfig, maxCount = 3, modalPopover = false, asChild = false, className, hideSelectAll = false, searchable = true, emptyIndicator, autoSize = false, singleLine = false, popoverClassName, disabled = false, responsive, minWidth, maxWidth, deduplicateOptions = false, resetOnDefaultValueChange = true, closeOnSelect = false, ...props }: MultiSelectProps & { ref?: React.RefObject<MultiSelectRef | null> },
+  { ref, options, onValueChange, variant, defaultValue = DEFAULT_OPTIONS, placeholder = 'Select options', animation = 0, animationConfig, maxCount = 3, modalPopover = false, asChild = false, className, hideSelectAll = false, searchable = true, emptyIndicator, autoSize = false, singleLine = false, popoverClassName, disabled = false, responsive, minWidth, maxWidth, deduplicateOptions = false, resetOnDefaultValueChange = true, closeOnSelect = false, ...props }: MultiSelectProps & { ref?: React.RefObject<MultiSelectRef | null> },
 ) => {
   const [selectedValues, setSelectedValues] = React.useState<string[]>(defaultValue);
   const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);

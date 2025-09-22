@@ -4,6 +4,7 @@ import type * as LabelPrimitive from '@radix-ui/react-label';
 import type { ControllerProps, FieldPath, FieldValues } from 'react-hook-form';
 import { Slot } from '@radix-ui/react-slot';
 import * as React from 'react';
+import { useMemo } from 'react';
 import {
   Controller,
 
@@ -42,8 +43,9 @@ const FormField = <
 >({
   ...props
 }: ControllerProps<TFieldValues, TName>) => {
+  const fieldContextValue = useMemo(() => ({ name: props.name }), [props.name]);
   return (
-    <FormFieldContext value={{ name: props.name }}>
+    <FormFieldContext value={fieldContextValue}>
       <Controller {...props} />
     </FormFieldContext>
   );
