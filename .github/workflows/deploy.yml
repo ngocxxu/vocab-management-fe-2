@@ -27,7 +27,10 @@ jobs:
         with:
           context: .
           push: true
+          build-args: |
+            NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
           tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/vocab-fe:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/vocab-fe:${{ github.sha }}
 
       - name: Deploy to K3s via SSH

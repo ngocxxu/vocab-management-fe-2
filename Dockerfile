@@ -31,6 +31,12 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED 1
 ENV NODE_ENV production
 
+# Accept build arguments for NEXT_PUBLIC_* vars
+ARG NEXT_PUBLIC_API_URL
+
+# Set them as ENV for build process
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+
 # Build the application
 RUN pnpm run build
 
