@@ -14,6 +14,8 @@ const baseConfig: NextConfig = {
   serverExternalPackages: [],
   // Ensure proper build output for Vercel
   trailingSlash: false,
+  // Enable standalone output for Docker
+  output: 'standalone',
 };
 
 let configWithPlugins = baseConfig;
