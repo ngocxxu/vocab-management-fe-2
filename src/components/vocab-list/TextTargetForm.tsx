@@ -8,6 +8,12 @@ import { Textarea } from '@/components/ui/textarea';
 import ExamplesSection from './ExamplesSection';
 import SubjectsSection from './SubjectsSection';
 
+type WordType = {
+  id: string;
+  name: string;
+  description: string;
+};
+
 type TextTarget = {
   wordTypeId: string;
   textTarget: string;
@@ -21,6 +27,9 @@ type TextTarget = {
 type TextTargetFormProps = {
   targetIndex: number;
   target: TextTarget;
+  wordTypes: { items: WordType[] };
+  isLoading: boolean;
+  isError: any;
   onInputChange: (field: string, value: string, targetIndex: number) => void;
   onExampleChange: (exampleIndex: number, field: 'source' | 'target', value: string, targetIndex: number) => void;
   onAddExample: (targetIndex: number) => void;
@@ -30,6 +39,9 @@ type TextTargetFormProps = {
 const TextTargetForm: React.FC<TextTargetFormProps> = ({
   targetIndex,
   target,
+  wordTypes,
+  isLoading,
+  isError,
   onInputChange,
   onExampleChange,
   onAddExample,
@@ -48,11 +60,25 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
               <SelectValue placeholder="Select word type" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="1">Greeting</SelectItem>
-              <SelectItem value="2">Expression</SelectItem>
-              <SelectItem value="3">Farewell</SelectItem>
-              <SelectItem value="4">Request</SelectItem>
-              <SelectItem value="5">Apology</SelectItem>
+              {isLoading
+                ? (
+                    <SelectItem value="loading" disabled>
+                      Loading word types...
+                    </SelectItem>
+                  )
+                : isError
+                  ? (
+                      <SelectItem value="error" disabled>
+                        Error loading word types
+                      </SelectItem>
+                    )
+                  : (
+                      wordTypes.items.map((wordType: WordType) => (
+                        <SelectItem key={wordType.id} value={wordType.id}>
+                          {wordType.name}
+                        </SelectItem>
+                      ))
+                    )}
             </SelectContent>
           </Select>
         </div>
