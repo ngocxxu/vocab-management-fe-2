@@ -11,9 +11,16 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useLanguages } from '@/hooks/useLanguages';
+
+type Language = {
+  code: string;
+  name: string;
+};
 
 const BasicInfoForm: React.FC = () => {
   const form = useFormContext();
+  const { languages, isLoading, isError } = useLanguages();
 
   return (
     <div className="space-y-4">
@@ -38,9 +45,25 @@ const BasicInfoForm: React.FC = () => {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="ko">Korean</SelectItem>
-                  <SelectItem value="en">English</SelectItem>
-                  <SelectItem value="vi">Vietnamese</SelectItem>
+                  {isLoading
+                    ? (
+                        <SelectItem value="loading" disabled>
+                          Loading languages...
+                        </SelectItem>
+                      )
+                    : isError
+                      ? (
+                          <SelectItem value="error" disabled>
+                            Error loading languages
+                          </SelectItem>
+                        )
+                      : (
+                          languages.items.map((language: Language) => (
+                            <SelectItem key={language.code} value={language.code}>
+                              {language.name}
+                            </SelectItem>
+                          ))
+                        )}
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -67,9 +90,25 @@ const BasicInfoForm: React.FC = () => {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="ko">Korean</SelectItem>
-                  <SelectItem value="en">English</SelectItem>
-                  <SelectItem value="vi">Vietnamese</SelectItem>
+                  {isLoading
+                    ? (
+                        <SelectItem value="loading" disabled>
+                          Loading languages...
+                        </SelectItem>
+                      )
+                    : isError
+                      ? (
+                          <SelectItem value="error" disabled>
+                            Error loading languages
+                          </SelectItem>
+                        )
+                      : (
+                          languages.items.map((language: Language) => (
+                            <SelectItem key={language.code} value={language.code}>
+                              {language.name}
+                            </SelectItem>
+                          ))
+                        )}
                 </SelectContent>
               </Select>
               <FormMessage />
