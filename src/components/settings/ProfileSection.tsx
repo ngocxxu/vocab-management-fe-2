@@ -1,7 +1,7 @@
 'use client';
 
 import type { TUserProfile } from '@/types/settings';
-import { Camera, Loader2, User } from 'lucide-react';
+import { Camera, Check, Loader2, Pencil, User, X } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react';
 import { Button } from '@/components/ui/button';
@@ -18,9 +18,20 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
   onProfileChangeAction,
 }) => {
   const { user, isLoading, isError } = useAuth();
+  const [isEditing, setIsEditing] = React.useState(false);
+  const [formData, setFormData] = React.useState<TUserProfile>({
+    id: '',
+    email: '',
+    phone: '',
+    firstName: '',
+    lastName: '',
+    avatar: '',
+    role: '',
+    isActive: false,
+  });
 
   // Convert TUser to TUserProfile format
-  const profile: TUserProfile = user
+  const profile: TUserProfile = React.useMemo(() => user
     ? {
         id: user.id,
         email: user.email,
@@ -40,9 +51,36 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
         avatar: '',
         role: '',
         isActive: false,
-      };
+      }, [user]);
+
+  // Update form data when profile changes
+  React.useEffect(() => {
+    if (!isEditing) {
+      setFormData(() => profile);
+    }
+  }, [profile, isEditing]);
+
   const handleInputChange = (field: keyof TUserProfile, value: string | boolean) => {
-    onProfileChangeAction({ [field]: value });
+    if (isEditing) {
+      setFormData(prev => ({ ...prev, [field]: value }));
+    } else {
+      onProfileChangeAction({ [field]: value });
+    }
+  };
+
+  const handleEditClick = () => {
+    setIsEditing(true);
+    setFormData(profile);
+  };
+
+  const handleCancelClick = () => {
+    setIsEditing(false);
+    setFormData(profile);
+  };
+
+  const handleApplyClick = () => {
+    onProfileChangeAction(formData);
+    setIsEditing(false);
   };
 
   // Loading state
@@ -88,8 +126,23 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Profile</CardTitle>
-        <CardDescription>Set your account details</CardDescription>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>Profile</CardTitle>
+            <CardDescription>Set your account details</CardDescription>
+          </div>
+          {!isEditing && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleEditClick}
+              className="flex items-center gap-2"
+            >
+              <Pencil className="h-4 w-4" />
+              Edit Profile
+            </Button>
+          )}
+        </div>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
@@ -99,7 +152,7 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
               <Input
                 id="email"
                 type="email"
-                value={profile.email}
+                value={isEditing ? formData.email : profile.email}
                 onChange={e => handleInputChange('email', e.target.value)}
                 placeholder="Enter your email"
                 className="border-blue-500"
@@ -109,9 +162,10 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
                 <Label htmlFor="firstName">First Name</Label>
                 <Input
                   id="firstName"
-                  value={profile.firstName}
+                  value={isEditing ? formData.firstName : profile.firstName}
                   onChange={e => handleInputChange('firstName', e.target.value)}
                   placeholder="Enter your first name"
+                  disabled={!isEditing}
                 />
               </div>
             </div>
@@ -120,9 +174,10 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
               <Input
                 id="phone"
                 type="tel"
-                value={profile.phone}
+                value={isEditing ? formData.phone : profile.phone}
                 onChange={e => handleInputChange('phone', e.target.value)}
                 placeholder="Enter your phone number"
+                disabled={!isEditing}
               />
             </div>
           </div>
@@ -131,7 +186,7 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
               <Label htmlFor="role">Role</Label>
               <Input
                 id="role"
-                value={profile.role}
+                value={isEditing ? formData.role : profile.role}
                 onChange={e => handleInputChange('role', e.target.value)}
                 placeholder="Enter your role"
                 disabled
@@ -141,19 +196,20 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
               <Label htmlFor="lastName">Last Name</Label>
               <Input
                 id="lastName"
-                value={profile.lastName}
+                value={isEditing ? formData.lastName : profile.lastName}
                 onChange={e => handleInputChange('lastName', e.target.value)}
                 placeholder="Enter your last name"
+                disabled={!isEditing}
               />
             </div>
 
           </div>
           <div className="flex flex-col items-center space-y-4">
             <div className="relative">
-              {profile.avatar
+              {(isEditing ? formData.avatar : profile.avatar)
                 ? (
                     <Image
-                      src={profile.avatar}
+                      src={(isEditing ? formData.avatar : profile.avatar) || ''}
                       alt="Profile"
                       width={80}
                       height={80}
@@ -174,6 +230,27 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
             </div>
           </div>
         </div>
+
+        {/* Apply/Cancel buttons - only show when editing */}
+        {isEditing && (
+          <div className="mt-6 flex justify-end gap-3 border-t pt-6">
+            <Button
+              variant="outline"
+              onClick={handleCancelClick}
+              className="flex items-center gap-2"
+            >
+              <X className="h-4 w-4" />
+              Cancel
+            </Button>
+            <Button
+              onClick={handleApplyClick}
+              className="flex items-center gap-2"
+            >
+              <Check className="h-4 w-4" />
+              Apply Changes
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
