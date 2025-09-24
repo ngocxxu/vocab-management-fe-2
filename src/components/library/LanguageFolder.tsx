@@ -12,7 +12,7 @@ export type TLanguageFolder = {
   name: string;
   sourceLanguageCode: string;
   targetLanguageCode: string;
-  color: string;
+  folderColor: string;
 };
 
 type LanguageFolderProps = {
@@ -58,7 +58,7 @@ const LanguageFolder = ({ folder, onFolderClick, onFolderDeleted }: LanguageFold
       <div className="flex items-center space-x-4">
         {/* Icon Column */}
         <div className="flex w-12 items-center justify-center">
-          <div className={`flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br ${folder.color} shadow-sm`}>
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br shadow-sm" style={{ backgroundColor: folder.folderColor }}>
             <Folder className="h-5 w-5 text-white" />
           </div>
         </div>

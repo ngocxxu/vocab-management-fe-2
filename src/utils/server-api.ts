@@ -2,6 +2,7 @@ import type { VocabQueryParams, VocabTrainerQueryParams } from './api-config';
 import type { TVocab } from '@/types/vocab-list';
 import { cookies } from 'next/headers';
 import { Env } from '@/libs/Env';
+import { handleTokenExpiration } from '@/utils/auth-utils';
 import { API_ENDPOINTS, API_METHODS } from './api-config';
 
 class ServerAPI {
@@ -20,12 +21,12 @@ class ServerAPI {
       },
     });
 
-    // If not 401 or 403, return normally
-    if (response.status !== 401 && response.status !== 403) {
+    // If not 401, return normally
+    if (response.status !== 401) {
       return response;
     }
 
-    // If 401 or 403 → try refresh
+    // If 401 → try refresh
     if (!this.isRefreshing) {
       this.isRefreshing = fetch(`${Env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}${API_ENDPOINTS.auth.refresh}`, {
         method: 'POST',
@@ -47,6 +48,9 @@ class ServerAPI {
         statusText: refreshRes.statusText,
         error: errorText,
       });
+
+      // Handle token expiration (server-side)
+      handleTokenExpiration();
       throw new Error(`Refresh failed - needs login again (${refreshRes.status}: ${refreshRes.statusText})`);
     }
 

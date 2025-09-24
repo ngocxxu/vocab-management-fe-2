@@ -19,20 +19,6 @@ const Library: React.FC = () => {
   const [filterType, setFilterType] = useState('all');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
-  // Use language folders from API only
-  const folders = useMemo(() => {
-    if (languageFolders && languageFolders.length > 0) {
-      return languageFolders.map((folder: any) => ({
-        id: folder.id,
-        name: folder.name,
-        sourceLanguageCode: folder.sourceLanguageCode,
-        targetLanguageCode: folder.targetLanguageCode,
-        color: folder.folderColor,
-      }));
-    }
-    return [];
-  }, [languageFolders]);
-
   const handleFolderClick = useCallback((folder: LanguageFolderType) => {
     router.push(`/vocab-list?source=${folder.sourceLanguageCode}&target=${folder.targetLanguageCode}`);
   }, [router]);
@@ -74,7 +60,7 @@ const Library: React.FC = () => {
   }, []);
 
   const filteredFolders = useMemo(() => {
-    return folders.filter((folder: LanguageFolderType) => {
+    return languageFolders.filter((folder: LanguageFolderType) => {
       const matchesSearch = folder.name.toLowerCase().includes(searchQuery.toLowerCase())
         || folder.sourceLanguageCode.toLowerCase().includes(searchQuery.toLowerCase())
         || folder.targetLanguageCode.toLowerCase().includes(searchQuery.toLowerCase());
@@ -84,7 +70,7 @@ const Library: React.FC = () => {
 
       return matchesSearch && matchesFilter;
     });
-  }, [folders, searchQuery, filterType]);
+  }, [languageFolders, searchQuery, filterType]);
 
   return (
     <div className="h-full bg-gradient-to-br from-slate-50 via-white to-blue-50/30 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900/30">

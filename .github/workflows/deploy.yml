@@ -44,7 +44,7 @@ jobs:
             # Update deployment image
             kubectl set image deployment/vocab-fe \
               vocab-fe=${{ secrets.DOCKERHUB_USERNAME }}/vocab-fe:${{ github.sha }} \
-              -n vocab-fe --record
+              -n vocab-fe
 
             # Wait for rollout to complete
             kubectl rollout status deployment/vocab-fe -n vocab-fe

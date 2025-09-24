@@ -1,6 +1,7 @@
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import axios from 'axios';
 import { API_ENDPOINTS } from '@/utils/api-config';
+import { handleTokenExpiration } from '@/utils/auth-utils';
 import { Env } from './Env';
 
 // Create axios instance with default configuration
@@ -84,10 +85,8 @@ axiosInstance.interceptors.response.use(
         }
       } catch (refreshError) {
         console.error('Token refresh failed:', refreshError);
-        // Redirect to signin page
-        if (typeof window !== 'undefined') {
-          window.location.href = '/signin';
-        }
+        // Handle token expiration with toast notification
+        handleTokenExpiration();
       }
     }
 
