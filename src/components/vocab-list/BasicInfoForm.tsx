@@ -22,6 +22,10 @@ const BasicInfoForm: React.FC = () => {
   const form = useFormContext();
   const { languages, isLoading, isError } = useLanguages();
 
+  // Get current form values to filter options
+  const sourceLanguageCode = form.watch('sourceLanguageCode');
+  const targetLanguageCode = form.watch('targetLanguageCode');
+
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold">Basic Information</h3>
@@ -36,6 +40,10 @@ const BasicInfoForm: React.FC = () => {
                 onValueChange={(value) => {
                   field.onChange(value);
                   form.clearErrors('sourceLanguageCode');
+                  // Clear target language if it's the same as source
+                  if (value === targetLanguageCode) {
+                    form.setValue('targetLanguageCode', '');
+                  }
                 }}
                 value={field.value}
               >
@@ -58,7 +66,7 @@ const BasicInfoForm: React.FC = () => {
                           </SelectItem>
                         )
                       : (
-                          languages?.map((language: Language) => (
+                          languages?.filter(language => language.code !== targetLanguageCode).map((language: Language) => (
                             <SelectItem key={language.code} value={language.code}>
                               {language.name}
                             </SelectItem>
@@ -81,6 +89,10 @@ const BasicInfoForm: React.FC = () => {
                 onValueChange={(value) => {
                   field.onChange(value);
                   form.clearErrors('targetLanguageCode');
+                  // Clear source language if it's the same as target
+                  if (value === sourceLanguageCode) {
+                    form.setValue('sourceLanguageCode', '');
+                  }
                 }}
                 value={field.value}
               >
@@ -103,7 +115,7 @@ const BasicInfoForm: React.FC = () => {
                           </SelectItem>
                         )
                       : (
-                          languages?.map((language: Language) => (
+                          languages?.filter(language => language.code !== sourceLanguageCode).map((language: Language) => (
                             <SelectItem key={language.code} value={language.code}>
                               {language.name}
                             </SelectItem>

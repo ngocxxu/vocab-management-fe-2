@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import type { TSubject } from '@/types/subject';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import {
   FormControl,
@@ -9,44 +10,37 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { MultiSelect } from '@/components/ui/multi-select';
-
-type Subject = {
-  id: string;
-  name: string;
-};
+import MultiSelect from '@/components/ui/multi-select-react-select';
 
 type SubjectsSectionProps = {
   targetIndex: number;
+  subjects: TSubject[];
+  subjectsLoading: boolean;
+  subjectsError: boolean;
 };
 
-const SUBJECTS: Subject[] = [
-  { id: '1', name: 'Basic Greetings' },
-  { id: '2', name: 'Politeness' },
-  { id: '3', name: 'Farewells' },
-  { id: '4', name: 'Requests' },
-  { id: '5', name: 'Apologies' },
-  { id: '6', name: 'Numbers' },
-  { id: '7', name: 'Colors' },
-  { id: '8', name: 'Family' },
-];
-
-const SubjectsSection: React.FC<SubjectsSectionProps> = ({
+const SubjectsSection: React.FC<SubjectsSectionProps> = React.memo(({
   targetIndex,
+  subjects,
+  subjectsLoading,
+  subjectsError,
 }) => {
   const form = useFormContext();
   const [isMounted, setIsMounted] = useState(false);
 
   // Prevent hydration mismatch by only rendering on client
   useEffect(() => {
-    setIsMounted(true);
+    const timer = setTimeout(() => {
+      setIsMounted(true);
+    }, 0);
+    return () => clearTimeout(timer);
   }, []);
 
-  // Convert subjects to the format expected by MultiSelect
-  const subjectOptions = SUBJECTS.map(subject => ({
+  // Convert subjects to the format expected by MultiSelect (memoized to prevent re-renders)
+  const subjectOptions = useMemo(() => subjects.map(subject => ({
     value: subject.id,
     label: subject.name,
-  }));
+  })), [subjects]);
 
   // Don't render until component is mounted on client
   if (!isMounted) {
@@ -58,6 +52,36 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = ({
           {targetIndex + 1}
         </h4>
         <div className="h-10 animate-pulse rounded-md border bg-muted" />
+      </div>
+    );
+  }
+
+  // Show loading state while fetching subjects
+  if (subjectsLoading) {
+    return (
+      <div className="space-y-4">
+        <h4 className="text-sm font-medium">
+          Subjects for Vocab
+          {' '}
+          {targetIndex + 1}
+        </h4>
+        <div className="h-10 animate-pulse rounded-md border bg-muted" />
+      </div>
+    );
+  }
+
+  // Show error state if subjects failed to load
+  if (subjectsError) {
+    return (
+      <div className="space-y-4">
+        <h4 className="text-sm font-medium">
+          Subjects for Vocab
+          {' '}
+          {targetIndex + 1}
+        </h4>
+        <div className="h-10 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-600">
+          Failed to load subjects. Please try again.
+        </div>
       </div>
     );
   }
@@ -78,29 +102,18 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = ({
             <FormControl>
               <MultiSelect
                 options={subjectOptions}
-                defaultValue={field.value || []}
-                onValueChange={(newValue) => {
+                value={field.value || []}
+                onChange={(newValue) => {
                   field.onChange(newValue);
                   // Clear validation error for this field when value changes
                   form.clearErrors(`textTargets.${targetIndex}.subjectIds`);
                 }}
                 placeholder="Choose subjects..."
                 maxCount={4}
-                searchable={true}
+                isDisabled={subjectsLoading}
+                isLoading={subjectsLoading}
                 className="w-full"
-                asChild={true}
-              >
-                <div className="flex h-auto min-h-10 cursor-pointer items-center justify-between rounded-md border bg-inherit p-1 hover:bg-inherit">
-                  <span className="text-sm text-muted-foreground">
-                    {(field.value || []).length > 0
-                      ? `${(field.value || []).length} subject(s) selected`
-                      : 'Choose subjects...'}
-                  </span>
-                  <svg className="h-4 w-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </div>
-              </MultiSelect>
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -108,6 +121,8 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = ({
       />
     </div>
   );
-};
+});
+
+SubjectsSection.displayName = 'SubjectsSection';
 
 export default SubjectsSection;

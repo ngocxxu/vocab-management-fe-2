@@ -1,5 +1,6 @@
 'use client';
 
+import type { TSubject } from '@/types/subject';
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -29,19 +30,25 @@ type TextTargetFormProps = {
   target: TextTarget;
   wordTypes: { items: WordType[] };
   isLoading: boolean;
-  isError: any;
+  isError: boolean;
+  subjects: TSubject[];
+  subjectsLoading: boolean;
+  subjectsError: boolean;
   onInputChange: (field: string, value: string, targetIndex: number) => void;
   onExampleChange: (exampleIndex: number, field: 'source' | 'target', value: string, targetIndex: number) => void;
   onAddExample: (targetIndex: number) => void;
   onRemoveExample: (exampleIndex: number, targetIndex: number) => void;
 };
 
-const TextTargetForm: React.FC<TextTargetFormProps> = ({
+const TextTargetForm: React.FC<TextTargetFormProps> = React.memo(({
   targetIndex,
   target,
   wordTypes,
   isLoading,
   isError,
+  subjects,
+  subjectsLoading,
+  subjectsError,
   onInputChange,
   onExampleChange,
   onAddExample,
@@ -123,6 +130,9 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
 
       <SubjectsSection
         targetIndex={targetIndex}
+        subjects={subjects}
+        subjectsLoading={subjectsLoading}
+        subjectsError={subjectsError}
       />
 
       <ExamplesSection
@@ -134,6 +144,8 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
       />
     </div>
   );
-};
+});
+
+TextTargetForm.displayName = 'TextTargetForm';
 
 export default TextTargetForm;
