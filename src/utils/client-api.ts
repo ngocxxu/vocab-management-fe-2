@@ -1,5 +1,6 @@
 import type { AxiosRequestConfig } from 'axios';
 import type { VocabQueryParams, VocabTrainerQueryParams } from './api-config';
+import type { ResponseAPI, TLanguage, TLanguageFolder } from '@/types';
 import type { TAuthResponse } from '@/types/auth';
 import type { TCreateVocab, TVocab } from '@/types/vocab-list';
 import type {
@@ -192,11 +193,11 @@ export const wordTypesApi = {
 export const languagesApi = {
   getAll: () => {
     const config = API_METHODS.languages.getAll();
-    return ClientAPI.get(config.endpoint);
+    return ClientAPI.get<ResponseAPI<TLanguage[]>>(config.endpoint);
   },
   getById: (id: string) => {
     const config = API_METHODS.languages.getById(id);
-    return ClientAPI.get(config.endpoint);
+    return ClientAPI.get<TLanguage>(config.endpoint);
   },
   create: (languageData: { name: string; code: string }) => {
     const config = API_METHODS.languages.create(languageData);
@@ -216,11 +217,11 @@ export const languagesApi = {
 export const languageFoldersApi = {
   getMy: () => {
     const config = API_METHODS.languageFolders.getMy();
-    return ClientAPI.get(config.endpoint);
+    return ClientAPI.get<ResponseAPI<TLanguageFolder[]>>(config.endpoint);
   },
   getById: (id: string) => {
     const config = API_METHODS.languageFolders.getById(id);
-    return ClientAPI.get(config.endpoint);
+    return ClientAPI.get<TLanguageFolder>(config.endpoint);
   },
   create: (languageFolderData: { name: string; folderColor: string; sourceLanguageCode: string; targetLanguageCode: string }) => {
     const config = API_METHODS.languageFolders.create(languageFolderData);

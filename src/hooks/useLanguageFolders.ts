@@ -6,7 +6,7 @@ export const useLanguageFolders = () => {
   const { data, error, isLoading, mutate } = useSWR('languageFolders', () => languageFoldersApi.getMy());
 
   return {
-    languageFolders: data || [],
+    languageFolders: data?.items || [],
     isLoading,
     isError: error,
     mutate,

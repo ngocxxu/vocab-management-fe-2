@@ -58,7 +58,7 @@ const BasicInfoForm: React.FC = () => {
                           </SelectItem>
                         )
                       : (
-                          languages.map((language: Language) => (
+                          languages?.map((language: Language) => (
                             <SelectItem key={language.code} value={language.code}>
                               {language.name}
                             </SelectItem>
@@ -103,7 +103,7 @@ const BasicInfoForm: React.FC = () => {
                           </SelectItem>
                         )
                       : (
-                          languages.map((language: Language) => (
+                          languages?.map((language: Language) => (
                             <SelectItem key={language.code} value={language.code}>
                               {language.name}
                             </SelectItem>
