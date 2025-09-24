@@ -1,60 +1,83 @@
 'use client';
 
 import type { TLanguageFolder as LanguageFolderType } from './LanguageFolder';
+import type { TCreateLanguageFolder } from '@/types/language-folder';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useMemo, useState } from 'react';
-import { useVocabs } from '@/hooks/useVocabs';
+import { toast } from 'sonner';
+import { languageFolderMutations, useLanguageFolders } from '@/hooks/useLanguageFolders';
+import { useLanguages } from '@/hooks/useLanguages';
 import LanguageFolder from './LanguageFolder';
 import LibraryEmptyState from './LibraryEmptyState';
 import LibraryHeader from './LibraryHeader';
 import LibraryLoadingState from './LibraryLoadingState';
 import LibrarySearch from './LibrarySearch';
-import { generateFolderColor, generateMockFolders, getLanguageName } from './utils';
 
 const Library: React.FC = () => {
   const router = useRouter();
-  const { vocabs, isLoading } = useVocabs();
+  const { languageFolders, isLoading, mutate: refetchFolders } = useLanguageFolders();
+  const { languages } = useLanguages();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState('all');
 
-  // Memoize the folder generation to prevent infinite re-renders
+  // Use language folders from API only
   const folders = useMemo(() => {
-    if (vocabs && vocabs.length > 0) {
-      const languageMap = new Map<string, LanguageFolderType>();
-
-      vocabs.forEach((vocab) => {
-        const key = `${vocab.sourceLanguageCode}-${vocab.targetLanguageCode}`;
-        const existing = languageMap.get(key);
-
-        if (existing) {
-          // Folder already exists, no need to track count
-        } else {
-          languageMap.set(key, {
-            id: key,
-            name: `${getLanguageName(vocab.sourceLanguageCode)} → ${getLanguageName(vocab.targetLanguageCode)}`,
-            sourceLanguageCode: vocab.sourceLanguageCode,
-            targetLanguageCode: vocab.targetLanguageCode,
-            color: generateFolderColor(key),
-          });
-        }
-      });
-
-      const result = Array.from(languageMap.values());
-      return result;
-    } else {
-      // Use mock data for testing when no vocabularies exist
-      const mockFolders = generateMockFolders();
-      return mockFolders;
+    if (languageFolders && languageFolders.length > 0) {
+      return languageFolders.map((folder: any) => ({
+        id: folder.id,
+        name: folder.name,
+        sourceLanguageCode: folder.sourceLanguageCode,
+        targetLanguageCode: folder.targetLanguageCode,
+        color: folder.folderColor,
+      }));
     }
-  }, [vocabs]);
+    return [];
+  }, [languageFolders]);
 
   const handleFolderClick = useCallback((folder: LanguageFolderType) => {
     router.push(`/vocab-list?source=${folder.sourceLanguageCode}&target=${folder.targetLanguageCode}`);
   }, [router]);
 
-  const handleCreateFolder = useCallback(() => {
-    // TODO: Implement create folder functionality
-  }, []);
+  const handleCreateFolder = useCallback(async () => {
+    if (!languages || languages.length < 2) {
+      toast.error('Please ensure at least 2 languages are available');
+      return;
+    }
+
+    try {
+      // Generate a unique name for the new folder
+      const sourceLanguage = languages[0];
+      const targetLanguage = languages[1];
+      const folderName = `${sourceLanguage.name} → ${targetLanguage.name}`;
+
+      const newFolderData: TCreateLanguageFolder = {
+        name: folderName,
+        folderColor: 'from-blue-500 to-purple-600', // Default gradient color
+        sourceLanguageCode: sourceLanguage.code,
+        targetLanguageCode: targetLanguage.code,
+      };
+
+      await languageFolderMutations.create(newFolderData);
+
+      // Refresh the folders list
+      await refetchFolders();
+
+      toast.success('Language folder created successfully!');
+    } catch (error) {
+      console.error('Error creating language folder:', error);
+      toast.error('Failed to create language folder. Please try again.');
+    }
+  }, [languages, refetchFolders]);
+
+  const handleFolderUpdated = useCallback(() => {
+    // Refresh the folders list when a folder is updated
+    refetchFolders();
+  }, [refetchFolders]);
+
+  const handleFolderDeleted = useCallback(() => {
+    // Refresh the folders list when a folder is deleted
+    refetchFolders();
+  }, [refetchFolders]);
 
   const handleFilterChange = useCallback((value: string) => {
     setFilterType(value);
@@ -65,7 +88,7 @@ const Library: React.FC = () => {
   }, []);
 
   const filteredFolders = useMemo(() => {
-    return folders.filter((folder) => {
+    return folders.filter((folder: LanguageFolderType) => {
       const matchesSearch = folder.name.toLowerCase().includes(searchQuery.toLowerCase())
         || folder.sourceLanguageCode.toLowerCase().includes(searchQuery.toLowerCase())
         || folder.targetLanguageCode.toLowerCase().includes(searchQuery.toLowerCase());
@@ -96,11 +119,13 @@ const Library: React.FC = () => {
         {/* Folders Section */}
         <div className="space-y-4">
           <div className="flex flex-col space-y-4">
-            {filteredFolders.map(folder => (
+            {filteredFolders.map((folder: LanguageFolderType) => (
               <LanguageFolder
                 key={folder.id}
                 folder={folder}
                 onFolderClick={handleFolderClick}
+                onFolderUpdated={handleFolderUpdated}
+                onFolderDeleted={handleFolderDeleted}
               />
             ))}
           </div>
@@ -108,7 +133,10 @@ const Library: React.FC = () => {
 
         {/* Empty State */}
         {filteredFolders.length === 0 && !isLoading && (
-          <LibraryEmptyState searchQuery={searchQuery} />
+          <LibraryEmptyState
+            searchQuery={searchQuery}
+            onCreateFolder={handleCreateFolder}
+          />
         )}
 
         {/* Loading State */}

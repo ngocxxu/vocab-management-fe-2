@@ -38,3 +38,6 @@ export enum EUserRole {
 
 // Export auth types
 export * from './auth';
+
+// Export language folder types
+export * from './language-folder';

@@ -30,6 +30,10 @@ class ServerAPI {
       this.isRefreshing = fetch(`${Env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}${API_ENDPOINTS.auth.refresh}`, {
         method: 'POST',
         credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'Cookie': cookieStore.toString(),
+        },
       }).finally(() => {
         this.isRefreshing = null;
       });
@@ -37,15 +41,24 @@ class ServerAPI {
 
     const refreshRes = await this.isRefreshing;
     if (!refreshRes.ok) {
-      throw new Error('Refresh failed - needs login again');
+      const errorText = await refreshRes.text();
+      console.error('Refresh failed:', {
+        status: refreshRes.status,
+        statusText: refreshRes.statusText,
+        error: errorText,
+      });
+      throw new Error(`Refresh failed - needs login again (${refreshRes.status}: ${refreshRes.statusText})`);
     }
+
+    // Get updated cookies from refresh response
+    const updatedCookieStore = await cookies();
 
     // Retry request after refresh successfully, with new cookie
     return fetch(`${this.baseURL}${endpoint}`, {
       ...options,
       headers: {
         'Content-Type': 'application/json',
-        'Cookie': cookieStore.toString(),
+        'Cookie': updatedCookieStore.toString(),
         ...options.headers,
       },
     });

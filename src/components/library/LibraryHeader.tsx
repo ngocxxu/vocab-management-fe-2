@@ -1,5 +1,7 @@
+'use client';
+
 import { Plus } from 'lucide-react';
-import React, { memo } from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
@@ -14,6 +16,16 @@ const LibraryHeader: React.FC<LibraryHeaderProps> = memo(({
   onFilterChange,
   onCreateFolder,
 }) => {
+  const [isCreating, setIsCreating] = useState(false);
+
+  const handleCreateFolder = useCallback(async () => {
+    setIsCreating(true);
+    try {
+      await onCreateFolder();
+    } finally {
+      setIsCreating(false);
+    }
+  }, [onCreateFolder]);
   return (
     <div className="flex items-center justify-between text-center">
       <div className="flex items-center justify-center space-x-3">
@@ -30,11 +42,12 @@ const LibraryHeader: React.FC<LibraryHeaderProps> = memo(({
       {/* Action Buttons */}
       <div className="flex items-center justify-end space-x-4">
         <Button
-          onClick={onCreateFolder}
-          className="transform bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg transition-all duration-300 hover:scale-105 hover:from-blue-700 hover:to-indigo-700 hover:shadow-xl"
+          onClick={handleCreateFolder}
+          disabled={isCreating}
+          className="transform bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg transition-all duration-300 hover:scale-105 hover:from-blue-700 hover:to-indigo-700 hover:shadow-xl disabled:transform-none disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Plus className="mr-2 h-5 w-5" />
-          Create New Folder
+          {isCreating ? 'Creating...' : 'Create New Folder'}
         </Button>
 
         {/* Simplified Select to debug */}

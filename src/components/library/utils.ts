@@ -36,27 +36,3 @@ export const generateFolderColor = (seed?: string): string => {
   // Fallback to random color if no seed provided
   return colors[Math.floor(Math.random() * colors.length)] || 'from-blue-500 to-blue-600';
 };
-
-export const generateMockFolders = () => [
-  {
-    id: 'ko-vi',
-    sourceLanguageCode: 'ko',
-    targetLanguageCode: 'vi',
-    name: 'Maplestory',
-    color: 'from-blue-500 to-blue-600',
-  },
-  {
-    id: 'en-vi',
-    sourceLanguageCode: 'en',
-    targetLanguageCode: 'vi',
-    name: 'Maplestory',
-    color: 'from-purple-500 to-purple-600',
-  },
-  {
-    id: 'ja-vi',
-    sourceLanguageCode: 'ja',
-    targetLanguageCode: 'vi',
-    name: 'Maplestory',
-    color: 'from-green-500 to-green-600',
-  },
-];

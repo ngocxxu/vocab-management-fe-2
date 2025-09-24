@@ -1,6 +1,11 @@
-import { Folder, MoreVertical } from 'lucide-react';
-import React from 'react';
+'use client';
+
+import { Edit, Folder, MoreVertical, Trash2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { toast } from 'sonner';
+import { languageFolderMutations } from '@/hooks/useLanguageFolders';
 import { Button } from '../ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
 
 export type TLanguageFolder = {
   id: string;
@@ -13,9 +18,31 @@ export type TLanguageFolder = {
 type LanguageFolderProps = {
   folder: TLanguageFolder;
   onFolderClick: (folder: TLanguageFolder) => void;
+  onFolderUpdated?: () => void;
+  onFolderDeleted?: () => void;
 };
 
-const LanguageFolder = ({ folder, onFolderClick }: LanguageFolderProps) => {
+const LanguageFolder = ({ folder, onFolderClick, onFolderDeleted }: LanguageFolderProps) => {
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleEdit = async () => {
+    // TODO: Implement edit functionality with a dialog
+    toast.info('Edit functionality coming soon!');
+  };
+
+  const handleDelete = async () => {
+    try {
+      setIsDeleting(true);
+      await languageFolderMutations.delete(folder.id);
+      toast.success('Language folder deleted successfully!');
+      onFolderDeleted?.();
+    } catch (error) {
+      console.error('Error deleting language folder:', error);
+      toast.error('Failed to delete language folder. Please try again.');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
   return (
     <div
       className="group cursor-pointer border-b border-slate-100 bg-white px-6 py-4 transition-all duration-200 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700/50"
@@ -61,15 +88,40 @@ const LanguageFolder = ({ folder, onFolderClick }: LanguageFolderProps) => {
 
         {/* Options Column */}
         <div className="flex w-8 items-center justify-center">
-          <Button
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
-            variant="ghost"
-            className="rounded p-1 text-slate-400 transition-colors duration-200 hover:bg-slate-200 hover:text-slate-600 dark:hover:bg-slate-600 dark:hover:text-slate-300"
-          >
-            <MoreVertical className="h-4 w-4" />
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+                variant="ghost"
+                className="rounded p-1 text-slate-400 transition-colors duration-200 hover:bg-slate-200 hover:text-slate-600 dark:hover:bg-slate-600 dark:hover:text-slate-300"
+              >
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem onClick={(e) => {
+                e.stopPropagation();
+                handleEdit();
+              }}
+              >
+                <Edit className="mr-2 h-4 w-4" />
+                Edit Folder
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDelete();
+                }}
+                disabled={isDeleting}
+                className="text-red-600 focus:text-red-600 dark:text-red-400 dark:focus:text-red-400"
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                {isDeleting ? 'Deleting...' : 'Delete Folder'}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </div>
