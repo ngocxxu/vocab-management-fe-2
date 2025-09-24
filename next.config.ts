@@ -16,6 +16,17 @@ const baseConfig: NextConfig = {
   trailingSlash: false,
   // Enable standalone output for Docker
   output: 'standalone',
+  // Configure external image domains
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'i.pravatar.cc',
+        port: '',
+        pathname: '/**',
+      },
+    ],
+  },
 };
 
 let configWithPlugins = baseConfig;

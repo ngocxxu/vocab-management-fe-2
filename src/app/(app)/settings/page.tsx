@@ -1,6 +1,6 @@
 import React from 'react';
-import { VocabListLayout } from '@/components/vocab-list';
+import { SettingsLayout } from '@/components/settings';
 
-export default function VocabListPage() {
-  return <VocabListLayout />;
+export default function SettingsPage() {
+  return <SettingsLayout />;
 }

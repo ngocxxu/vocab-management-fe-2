@@ -1,4 +1,4 @@
-import type { TAuthResponse, TRefreshData, TResetPasswordData, TSigninData, TSignupData, TVerifyResponse } from '@/types/auth';
+import type { TAuthResponse, TRefreshData, TResetPasswordData, TSigninData, TSignupData } from '@/types/auth';
 import useSWR from 'swr';
 import { authApi } from '@/utils/client-api';
 
@@ -10,8 +10,8 @@ export const useAuth = () => {
   );
 
   return {
-    user: (data as TVerifyResponse)?.user,
-    isAuthenticated: (data as TVerifyResponse)?.isAuthenticated || false,
+    user: (data),
+    isAuthenticated: (data)?.isAuthenticated || false,
     isLoading,
     isError: error,
     mutate,
