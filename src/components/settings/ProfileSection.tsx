@@ -95,15 +95,6 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="firstName">First Name</Label>
-              <Input
-                id="firstName"
-                value={profile.firstName}
-                onChange={e => handleInputChange('firstName', e.target.value)}
-                placeholder="Enter your first name"
-              />
-            </div>
-            <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
@@ -112,7 +103,17 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
                 onChange={e => handleInputChange('email', e.target.value)}
                 placeholder="Enter your email"
                 className="border-blue-500"
+                disabled
               />
+              <div className="space-y-2">
+                <Label htmlFor="firstName">First Name</Label>
+                <Input
+                  id="firstName"
+                  value={profile.firstName}
+                  onChange={e => handleInputChange('firstName', e.target.value)}
+                  placeholder="Enter your first name"
+                />
+              </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="phone">Phone</Label>
@@ -127,15 +128,6 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
           </div>
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="lastName">Last Name</Label>
-              <Input
-                id="lastName"
-                value={profile.lastName}
-                onChange={e => handleInputChange('lastName', e.target.value)}
-                placeholder="Enter your last name"
-              />
-            </div>
-            <div className="space-y-2">
               <Label htmlFor="role">Role</Label>
               <Input
                 id="role"
@@ -145,6 +137,16 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
                 disabled
               />
             </div>
+            <div className="space-y-2">
+              <Label htmlFor="lastName">Last Name</Label>
+              <Input
+                id="lastName"
+                value={profile.lastName}
+                onChange={e => handleInputChange('lastName', e.target.value)}
+                placeholder="Enter your last name"
+              />
+            </div>
+
           </div>
           <div className="flex flex-col items-center space-y-4">
             <div className="relative">
