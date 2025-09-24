@@ -6,7 +6,7 @@ export const useSubjects = () => {
   const { data, error, isLoading, mutate } = useSWR('subjects', () => subjectsApi.getAll());
 
   return {
-    subjects: data || [],
+    subjects: data?.items || [],
     isLoading,
     isError: error,
     mutate,
@@ -31,7 +31,7 @@ export const useSubject = (id: string | null) => {
 // API functions for mutations
 export const subjectMutations = {
   // Create new subject
-  create: async (subjectData: { name: string; order: number }) => {
+  create: async (subjectData: { name: string }) => {
     return await subjectsApi.create(subjectData);
   },
 
@@ -46,7 +46,7 @@ export const subjectMutations = {
   },
 
   // Reorder subjects
-  reorder: async (subjectIds: string[]) => {
-    return await subjectsApi.reorder(subjectIds);
+  reorder: async (subjects: { id: string; order: number }[]) => {
+    return await subjectsApi.reorder(subjects);
   },
 };

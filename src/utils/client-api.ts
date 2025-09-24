@@ -141,13 +141,13 @@ export const vocabTrainerApi = {
 export const subjectsApi = {
   getAll: () => {
     const config = API_METHODS.subjects.getAll();
-    return ClientAPI.get(config.endpoint);
+    return ClientAPI.get<{ items: any[]; statusCode: number }>(config.endpoint);
   },
   getById: (id: string) => {
     const config = API_METHODS.subjects.getById(id);
     return ClientAPI.get(config.endpoint);
   },
-  create: (subjectData: { name: string; order: number }) => {
+  create: (subjectData: { name: string }) => {
     const config = API_METHODS.subjects.create(subjectData);
     return ClientAPI.post(config.endpoint, config.data);
   },
@@ -159,8 +159,8 @@ export const subjectsApi = {
     const config = API_METHODS.subjects.delete(id);
     return ClientAPI.delete(config.endpoint);
   },
-  reorder: (subjectIds: string[]) => {
-    const config = API_METHODS.subjects.reorder(subjectIds);
+  reorder: (subjects: { id: string; order: number }[]) => {
+    const config = API_METHODS.subjects.reorder(subjects);
     return ClientAPI.post(config.endpoint, config.data);
   },
 };

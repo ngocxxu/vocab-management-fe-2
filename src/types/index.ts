@@ -44,3 +44,6 @@ export * from './language';
 
 // Export language folder types
 export * from './language-folder';
+
+// Export subject types
+export * from './subject';

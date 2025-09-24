@@ -226,8 +226,8 @@ export const subjectsApi = {
     const config = API_METHODS.subjects.delete(id);
     return serverApi.delete(config.endpoint);
   },
-  reorder: (subjectIds: string[]) => {
-    const config = API_METHODS.subjects.reorder(subjectIds);
+  reorder: (subjects: { id: string; order: number }[]) => {
+    const config = API_METHODS.subjects.reorder(subjects);
     return serverApi.post(config.endpoint, config.data);
   },
 };

@@ -4,6 +4,7 @@ import type { TSettings, TSettingsTab } from '@/types/settings';
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ProfileSection } from './ProfileSection';
+import { SubjectSection } from './SubjectSection';
 
 const defaultSettings: TSettings = {
   profile: {
@@ -91,6 +92,10 @@ export const SettingsLayout: React.FC = () => {
                 Notification preferences will be available here.
               </p>
             </div>
+          </TabsContent>
+
+          <TabsContent value="subjects" className="space-y-6">
+            <SubjectSection />
           </TabsContent>
         </Tabs>
       </div>
