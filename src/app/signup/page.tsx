@@ -1,6 +1,6 @@
 'use client';
 
-import type { SignUpFormData } from '@/lib/validations/auth';
+import type { SignUpFormData } from '@/libs/validations/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -12,7 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { authMutations } from '@/hooks/useAuth';
-import { signUpSchema } from '@/lib/validations/auth';
+import { signUpSchema } from '@/libs/validations/auth';
 
 export default function SignUpPage() {
   const router = useRouter();

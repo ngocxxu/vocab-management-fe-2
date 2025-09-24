@@ -1,6 +1,6 @@
 'use client';
 
-import type { ForgotPasswordFormData } from '@/lib/validations/auth';
+import type { ForgotPasswordFormData } from '@/libs/validations/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { authMutations } from '@/hooks/useAuth';
-import { forgotPasswordSchema } from '@/lib/validations/auth';
+import { forgotPasswordSchema } from '@/libs/validations/auth';
 
 export default function ForgotPasswordPage() {
   const [error, setError] = useState('');
