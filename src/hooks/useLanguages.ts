@@ -1,3 +1,4 @@
+import type { TLanguage } from '@/types/language';
 import useSWR from 'swr';
 import { languagesApi } from '@/utils/client-api';
 
@@ -6,7 +7,7 @@ export const useLanguages = () => {
   const { data, error, isLoading, mutate } = useSWR('languages', () => languagesApi.getAll());
 
   return {
-    languages: data || [],
+    languages: data as TLanguage[],
     isLoading,
     isError: error,
     mutate,
@@ -21,7 +22,7 @@ export const useLanguage = (id: string | null) => {
   );
 
   return {
-    language: data,
+    language: data?.items || [],
     isLoading,
     isError: error,
     mutate,

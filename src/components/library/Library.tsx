@@ -4,9 +4,8 @@ import type { TLanguageFolder as LanguageFolderType } from './LanguageFolder';
 import type { TCreateLanguageFolder } from '@/types/language-folder';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useMemo, useState } from 'react';
-import { toast } from 'sonner';
 import { languageFolderMutations, useLanguageFolders } from '@/hooks/useLanguageFolders';
-import { useLanguages } from '@/hooks/useLanguages';
+import CreateFolderModal from './CreateFolderModal';
 import LanguageFolder from './LanguageFolder';
 import LibraryEmptyState from './LibraryEmptyState';
 import LibraryHeader from './LibraryHeader';
@@ -16,9 +15,9 @@ import LibrarySearch from './LibrarySearch';
 const Library: React.FC = () => {
   const router = useRouter();
   const { languageFolders, isLoading, mutate: refetchFolders } = useLanguageFolders();
-  const { languages } = useLanguages();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState('all');
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   // Use language folders from API only
   const folders = useMemo(() => {
@@ -38,36 +37,23 @@ const Library: React.FC = () => {
     router.push(`/vocab-list?source=${folder.sourceLanguageCode}&target=${folder.targetLanguageCode}`);
   }, [router]);
 
-  const handleCreateFolder = useCallback(async () => {
-    if (!languages || languages.length < 2) {
-      toast.error('Please ensure at least 2 languages are available');
-      return;
-    }
+  const handleCreateFolder = useCallback(() => {
+    setIsCreateModalOpen(true);
+  }, []);
 
+  const handleCreateFolderSubmit = useCallback(async (folderData: TCreateLanguageFolder) => {
     try {
-      // Generate a unique name for the new folder
-      const sourceLanguage = languages[0];
-      const targetLanguage = languages[1];
-      const folderName = `${sourceLanguage.name} → ${targetLanguage.name}`;
-
-      const newFolderData: TCreateLanguageFolder = {
-        name: folderName,
-        folderColor: 'from-blue-500 to-purple-600', // Default gradient color
-        sourceLanguageCode: sourceLanguage.code,
-        targetLanguageCode: targetLanguage.code,
-      };
-
-      await languageFolderMutations.create(newFolderData);
-
-      // Refresh the folders list
+      await languageFolderMutations.create(folderData);
       await refetchFolders();
-
-      toast.success('Language folder created successfully!');
     } catch (error) {
       console.error('Error creating language folder:', error);
-      toast.error('Failed to create language folder. Please try again.');
+      throw error; // Re-throw to let the modal handle the error display
     }
-  }, [languages, refetchFolders]);
+  }, [refetchFolders]);
+
+  const handleCloseModal = useCallback(() => {
+    setIsCreateModalOpen(false);
+  }, []);
 
   const handleFolderUpdated = useCallback(() => {
     // Refresh the folders list when a folder is updated
@@ -141,6 +127,13 @@ const Library: React.FC = () => {
 
         {/* Loading State */}
         {isLoading && <LibraryLoadingState />}
+
+        {/* Create Folder Modal */}
+        <CreateFolderModal
+          isOpen={isCreateModalOpen}
+          onClose={handleCloseModal}
+          onCreateFolder={handleCreateFolderSubmit}
+        />
       </div>
     </div>
   );
