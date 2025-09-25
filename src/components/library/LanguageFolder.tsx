@@ -16,6 +16,7 @@ import {
 } from '../ui/alert-dialog';
 import { Button } from '../ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
+import EditFolderDialog from './EditFolderDialog';
 
 export type TLanguageFolder = {
   id: string;
@@ -32,13 +33,13 @@ type LanguageFolderProps = {
   onFolderDeleted?: () => void;
 };
 
-const LanguageFolder = ({ folder, onFolderClick, onFolderDeleted }: LanguageFolderProps) => {
+const LanguageFolder = ({ folder, onFolderClick, onFolderUpdated, onFolderDeleted }: LanguageFolderProps) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
 
-  const handleEdit = async () => {
-    // TODO: Implement edit functionality with a dialog
-    toast.info('Edit functionality coming soon!');
+  const handleEdit = () => {
+    setShowEditDialog(true);
   };
 
   const handleDeleteClick = () => {
@@ -167,6 +168,14 @@ const LanguageFolder = ({ folder, onFolderClick, onFolderDeleted }: LanguageFold
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Edit Dialog */}
+      <EditFolderDialog
+        open={showEditDialog}
+        onOpenChange={setShowEditDialog}
+        folder={folder}
+        onFolderUpdated={onFolderUpdated}
+      />
     </>
   );
 };

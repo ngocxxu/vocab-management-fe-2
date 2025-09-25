@@ -1,4 +1,5 @@
 export { default as CreateFolderModal } from './CreateFolderModal';
+export { default as EditFolderDialog } from './EditFolderDialog';
 export { default as LanguageFolder } from './LanguageFolder';
 export { default as Library } from './Library';
 export { default as LibraryEmptyState } from './LibraryEmptyState';
