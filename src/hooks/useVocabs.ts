@@ -11,7 +11,7 @@ export const useVocabs = (queryParams?: VocabQueryParams) => {
   );
 
   return {
-    vocabs: (data as TVocab[] | undefined) || [],
+    vocabs: data?.items || [],
     isLoading,
     isError: error,
     mutate,

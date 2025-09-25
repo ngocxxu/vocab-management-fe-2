@@ -460,7 +460,7 @@ const VocabList: React.FC = () => {
         )}
 
         {/* Empty State */}
-        {data !== undefined && (
+        {data !== undefined && data.length === 0 && (
           <div className="flex flex-col items-center justify-center p-12 text-center">
             <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800">
               <svg
