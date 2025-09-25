@@ -161,7 +161,7 @@ export const subjectsApi = {
   },
   reorder: (subjects: { id: string; order: number }[]) => {
     const config = API_METHODS.subjects.reorder(subjects);
-    return ClientAPI.post(config.endpoint, config.data);
+    return ClientAPI.patch(config.endpoint, config.data);
   },
 };
 

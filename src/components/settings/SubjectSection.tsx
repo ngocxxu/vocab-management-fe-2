@@ -237,6 +237,7 @@ export const SubjectSection: React.FC = () => {
           order: index + 1,
         }));
         await subjectMutations.reorder(subjectsWithOrder);
+        await mutate();
         toast.success('Subjects reordered successfully');
       } catch (error) {
         // Revert on error

@@ -108,6 +108,13 @@ class ServerAPI {
   delete<T>(endpoint: string) {
     return this.request<T>(endpoint, { method: 'DELETE' });
   }
+
+  patch<T>(endpoint: string, data: any) {
+    return this.request<T>(endpoint, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  }
 }
 
 export const serverApi = new ServerAPI();
@@ -228,7 +235,7 @@ export const subjectsApi = {
   },
   reorder: (subjects: { id: string; order: number }[]) => {
     const config = API_METHODS.subjects.reorder(subjects);
-    return serverApi.post(config.endpoint, config.data);
+    return serverApi.patch(config.endpoint, { subjectIds: config.data });
   },
 };
 
