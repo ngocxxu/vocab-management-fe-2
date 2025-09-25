@@ -94,7 +94,7 @@ const ExpandedRowContent: React.FC<ExpandedRowContentProps> = ({
                       </div>
                     )}
 
-                    {showExplanations && (
+                    {showExplanations && target.explanationSource && (
                       <div className="text-sm">
                         <span className="font-medium text-slate-700 dark:text-slate-300">Explanation:</span>
                         <div className="mt-2 space-y-2">
@@ -119,7 +119,7 @@ const ExpandedRowContent: React.FC<ExpandedRowContentProps> = ({
                       </div>
                     )}
 
-                    {showExamples && target.vocabExamples && target.vocabExamples.length > 0 && (
+                    {showExamples && target.vocabExamples.some(example => example.source && example.target) && (
                       <div className="text-sm">
                         <span className="font-medium text-slate-700 dark:text-slate-300">Examples:</span>
                         <div className="mt-2 space-y-2">

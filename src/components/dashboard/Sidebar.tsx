@@ -8,7 +8,7 @@ import {
   User,
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 
 type MenuItem = {
@@ -40,10 +40,14 @@ type SidebarProps = {
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
   const router = useRouter();
   const pathname = usePathname();
-  const [isChosenButton, setIsChosenButton] = useState<string | null>(pathname.split('/')[1] || null);
+
+  // Get the current active item from pathname
+  const getCurrentActiveItem = () => {
+    const currentPath = pathname.split('/')[1];
+    return currentPath || 'dashboard'; // Default to dashboard if no path
+  };
 
   const handleButtonClick = (buttonId: string) => {
-    setIsChosenButton(buttonId);
     router.push(`/${buttonId}`);
   };
 
@@ -67,23 +71,26 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
       <div className="flex-1 space-y-6 overflow-y-auto p-6">
         {/* Main navigation items */}
         <div className="space-y-2">
-          {menuItems.filter(item => !item.category).map(item => (
-            <div key={item.id}>
-              <Button
-                variant="ghost"
-                className={`h-11 w-full cursor-pointer justify-between rounded-xl px-4 text-slate-700 transition-all duration-300 ease-in-out hover:bg-blue-50 hover:text-blue-500 dark:text-slate-300 dark:hover:bg-blue-950/50 dark:hover:text-blue-400 ${
-                  isChosenButton === item.id ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:bg-blue-600 hover:text-white dark:text-white dark:hover:bg-blue-600 dark:hover:text-white' : 'text-slate-700 dark:text-slate-300'
-                }`}
-                onClick={() => handleButtonClick(item.id)}
-              >
-                <div className="flex items-center space-x-3">
-                  {item.icon}
-                  <span className="font-medium">{item.label}</span>
-                </div>
-                {item.hasArrow && <ChevronDown className="h-4 w-4" />}
-              </Button>
-            </div>
-          ))}
+          {menuItems.filter(item => !item.category).map((item) => {
+            const isActive = getCurrentActiveItem() === item.id;
+            return (
+              <div key={item.id}>
+                <Button
+                  variant="ghost"
+                  className={`h-11 w-full cursor-pointer justify-between rounded-xl px-4 text-slate-700 transition-all duration-300 ease-in-out hover:bg-blue-50 hover:text-blue-500 dark:text-slate-300 dark:hover:bg-blue-950/50 dark:hover:text-blue-400 ${
+                    isActive ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:bg-blue-600 hover:text-white dark:text-white dark:hover:bg-blue-600 dark:hover:text-white' : 'text-slate-700 dark:text-slate-300'
+                  }`}
+                  onClick={() => handleButtonClick(item.id)}
+                >
+                  <div className="flex items-center space-x-3">
+                    {item.icon}
+                    <span className="font-medium">{item.label}</span>
+                  </div>
+                  {item.hasArrow && <ChevronDown className="h-4 w-4" />}
+                </Button>
+              </div>
+            );
+          })}
         </div>
       </div>
 

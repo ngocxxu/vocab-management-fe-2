@@ -1,5 +1,5 @@
-import { Bell, ChevronDown, LogOut, Menu, Moon, Search, Sun, User } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { Bell, LogOut, Menu, Moon, Search, Sun, User } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,7 +13,20 @@ type HeaderProps = {
 export const Header: React.FC<HeaderProps> = ({ onSidebarToggle }) => {
   const { theme, toggleTheme } = useTheme();
   const router = useRouter();
+  const pathname = usePathname();
   const { user } = useAuth();
+
+  // Navigation items configuration
+  const navigationItems = [
+    { label: 'Dashboard', path: '/dashboard' },
+    { label: 'Library', path: '/library' },
+    { label: 'Vocab Trainer', path: '/vocab-trainer' },
+    { label: 'Settings', path: '/settings' },
+  ];
+
+  const handleNavigation = (path: string) => {
+    router.push(path);
+  };
 
   const handleLogout = async () => {
     try {
@@ -48,23 +61,25 @@ export const Header: React.FC<HeaderProps> = ({ onSidebarToggle }) => {
             />
           </div>
 
-          {/* Apps Dropdown */}
-          <div className="flex cursor-pointer items-center space-x-2 hover:text-slate-700 dark:hover:text-slate-300">
-            <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Apps</span>
-            <ChevronDown className="h-4 w-4 text-slate-600 dark:text-slate-400" />
-          </div>
-
           {/* Navigation Links */}
           <div className="flex items-center space-x-6">
-            <Button variant="ghost" className="h-auto p-0 text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200">
-              Chat
-            </Button>
-            <Button variant="ghost" className="h-auto p-0 text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200">
-              Calendar
-            </Button>
-            <Button variant="ghost" className="h-auto p-0 text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200">
-              Email
-            </Button>
+            {navigationItems.map((item) => {
+              const isActive = pathname === item.path;
+              return (
+                <Button
+                  key={item.path}
+                  variant="ghost"
+                  className={`h-auto p-0 text-sm font-medium transition-colors hover:bg-transparent hover:text-slate-900 dark:text-slate-400 dark:hover:bg-transparent dark:hover:text-slate-200 ${
+                    isActive
+                      ? 'text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-500'
+                      : 'text-slate-600  hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200'
+                  }`}
+                  onClick={() => handleNavigation(item.path)}
+                >
+                  {item.label}
+                </Button>
+              );
+            })}
           </div>
         </div>
 

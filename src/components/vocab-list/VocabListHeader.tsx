@@ -3,13 +3,16 @@
 import { Filter, Plus } from 'lucide-react';
 import React from 'react';
 import { Button } from '@/components/ui/button';
+import { getLanguageName } from '../library/utils';
 
 type VocabListHeaderProps = {
   totalCount: number;
   onAddVocab: () => void;
+  sourceLanguageCode: string;
+  targetLanguageCode: string;
 };
 
-const VocabListHeader: React.FC<VocabListHeaderProps> = ({ totalCount, onAddVocab }) => {
+const VocabListHeader: React.FC<VocabListHeaderProps> = ({ totalCount, onAddVocab, sourceLanguageCode, targetLanguageCode }) => {
   return (
     <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
       <div className="space-y-1">
@@ -20,6 +23,14 @@ const VocabListHeader: React.FC<VocabListHeaderProps> = ({ totalCount, onAddVoca
             {' '}
             Total
           </span>
+
+          <p className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-sm font-medium text-blue-800 dark:bg-blue-900/20 dark:text-blue-200">
+            {getLanguageName(sourceLanguageCode)}
+            {' '}
+            →
+            {' '}
+            {getLanguageName(targetLanguageCode)}
+          </p>
         </div>
         <p className="text-slate-600 dark:text-slate-400">
           Track your vocabulary learning progress and review history.
