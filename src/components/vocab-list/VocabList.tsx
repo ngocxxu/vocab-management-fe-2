@@ -23,6 +23,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Form } from '@/components/ui/form';
+import { Skeleton } from '@/components/ui/skeleton';
 import { DataTable } from '@/components/ui/table';
 import { useVocabs, vocabMutations } from '@/hooks';
 import AddVocabDialog from './AddVocabDialog';
@@ -436,20 +437,7 @@ const VocabList: React.FC = () => {
         {/* Loading and Error States */}
         {isLoading && (
           <div className="flex items-center justify-center p-8">
-            <div className="text-lg">Loading vocabularies...</div>
-          </div>
-        )}
-
-        {isError && (
-          <div className="flex items-center justify-center p-8">
-            <div className="text-lg text-red-600">Error loading vocabularies. Please try again.</div>
-          </div>
-        )}
-
-        {/* Loading and Error States */}
-        {isLoading && (
-          <div className="flex items-center justify-center p-8">
-            <div className="text-lg">Loading vocabularies...</div>
+            <Skeleton className="h-6 w-48" />
           </div>
         )}
 

@@ -11,6 +11,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import MultiSelect from '@/components/ui/multi-select-react-select';
+import { Skeleton } from '@/components/ui/skeleton';
 
 type SubjectsSectionProps = {
   targetIndex: number;
@@ -51,7 +52,7 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = React.memo(({
           {' '}
           {targetIndex + 1}
         </h4>
-        <div className="h-10 animate-pulse rounded-md border bg-muted" />
+        <Skeleton className="h-10 w-full" />
       </div>
     );
   }
@@ -65,7 +66,7 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = React.memo(({
           {' '}
           {targetIndex + 1}
         </h4>
-        <div className="h-10 animate-pulse rounded-md border bg-muted" />
+        <Skeleton className="h-10 w-full" />
       </div>
     );
   }

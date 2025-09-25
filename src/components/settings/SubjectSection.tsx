@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/ui/skeleton';
 import { subjectMutations, useSubjects } from '@/hooks/useSubjects';
 
 type SubjectItemProps = {
@@ -255,19 +256,19 @@ export const SubjectSection: React.FC = () => {
           <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Subjects</h3>
         </div>
         <div className="space-y-2">
-          <Card className="animate-pulse">
+          <Card>
             <CardContent className="p-4">
-              <div className="h-4 w-1/3 rounded bg-slate-200 dark:bg-slate-700"></div>
+              <Skeleton className="h-4 w-1/3" />
             </CardContent>
           </Card>
-          <Card className="animate-pulse">
+          <Card>
             <CardContent className="p-4">
-              <div className="h-4 w-1/3 rounded bg-slate-200 dark:bg-slate-700"></div>
+              <Skeleton className="h-4 w-1/3" />
             </CardContent>
           </Card>
-          <Card className="animate-pulse">
+          <Card>
             <CardContent className="p-4">
-              <div className="h-4 w-1/3 rounded bg-slate-200 dark:bg-slate-700"></div>
+              <Skeleton className="h-4 w-1/3" />
             </CardContent>
           </Card>
         </div>

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function HomePage() {
@@ -20,9 +21,9 @@ export default function HomePage() {
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 dark:from-slate-900 dark:to-slate-800">
-        <div className="text-center">
-          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-purple-600 border-t-transparent"></div>
-          <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+        <div className="space-y-4 text-center">
+          <Skeleton className="mx-auto h-8 w-8 rounded-full" />
+          <Skeleton className="mx-auto h-4 w-20" />
         </div>
       </div>
     );

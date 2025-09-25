@@ -1,10 +1,11 @@
 import React from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const LibraryLoadingState: React.FC = () => {
   return (
-    <div className="py-16 text-center">
-      <div className="mx-auto mb-4 h-16 w-16 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600"></div>
-      <p className="text-lg text-slate-600 dark:text-slate-400">Loading your language folders...</p>
+    <div className="space-y-4 py-16 text-center">
+      <Skeleton className="mx-auto h-16 w-16 rounded-full" />
+      <Skeleton className="mx-auto h-6 w-64" />
     </div>
   );
 };

@@ -1,13 +1,14 @@
 'use client';
 
 import type { TUserProfile } from '@/types/settings';
-import { Camera, Check, Loader2, Pencil, User, X } from 'lucide-react';
+import { Camera, Check, Pencil, User, X } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/hooks/useAuth';
 
 type ProfileSectionProps = {
@@ -92,9 +93,9 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
           <CardDescription>Set your account details</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-8 w-8 animate-spin text-slate-500" />
-            <span className="ml-2 text-slate-600 dark:text-slate-400">Loading profile...</span>
+          <div className="flex items-center justify-center space-x-2 py-8">
+            <Skeleton className="h-8 w-8 rounded-full" />
+            <Skeleton className="h-4 w-32" />
           </div>
         </CardContent>
       </Card>

@@ -2,6 +2,7 @@
 
 import type { TUser } from '@/types/auth';
 import { createContext, use, useCallback, useEffect, useMemo, useState } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/hooks/useAuth';
 
 type AuthContextType = {
@@ -94,7 +95,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }), [user, isAuthenticated, isLoading, isError, signin, signup, signout]);
 
   if (!isInitialized) {
-    return <div>Loading...</div>; // You can replace this with a proper loading component
+    return <Skeleton className="h-screen w-full" />;
   }
 
   return <AuthContext value={value}>{children}</AuthContext>;

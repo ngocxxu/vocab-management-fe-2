@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/ui/skeleton';
 import { authMutations } from '@/hooks/useAuth';
 import { signInSchema } from '@/libs/validations/auth';
 
@@ -135,7 +136,7 @@ export default function SignInPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 px-4 dark:from-slate-900 dark:to-slate-800">
       <div className="w-full max-w-md">
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<Skeleton className="h-96 w-full" />}>
           <SignInForm />
         </Suspense>
       </div>
