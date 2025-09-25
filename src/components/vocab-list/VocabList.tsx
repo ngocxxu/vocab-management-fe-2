@@ -24,7 +24,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Form } from '@/components/ui/form';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DataTable } from '@/components/ui/table';
-import { useVocabs, vocabMutations } from '@/hooks';
+import { useLanguageFolder, useVocabs, vocabMutations } from '@/hooks';
 import AddVocabDialog from './AddVocabDialog';
 import ExpandedRowContent from './ExpandedRowContent';
 import VocabListHeader from './VocabListHeader';
@@ -32,6 +32,7 @@ import VocabListHeader from './VocabListHeader';
 // Define the form schema
 const FormSchema = z.object({
   textSource: z.string().min(1, 'Source text is required'),
+  languageFolderId: z.string().min(1, 'Language folder is required'),
   sourceLanguageCode: z.string().min(1, 'Source language is required'),
   targetLanguageCode: z.string().min(1, 'Target language is required'),
   textTargets: z.array(z.object({
@@ -62,16 +63,19 @@ const VocabList: React.FC = () => {
   // Get source and target language from URL params
   const sourceLanguageCode = searchParams.get('source') || undefined;
   const targetLanguageCode = searchParams.get('target') || undefined;
+  const languageFolderId = searchParams.get('languageFolderId') || undefined;
 
   const { vocabs, isLoading, isError, mutate } = useVocabs();
+  const { languageFolder, isLoading: isFolderLoading } = useLanguageFolder(languageFolderId || null);
 
   const form = useForm<FormData>({
     resolver: zodResolver(FormSchema),
     mode: 'onChange', // Re-validate on change for better UX
     defaultValues: {
       textSource: '',
-      sourceLanguageCode: '',
-      targetLanguageCode: '',
+      languageFolderId: languageFolderId || '',
+      sourceLanguageCode: sourceLanguageCode || '',
+      targetLanguageCode: targetLanguageCode || '',
       textTargets: [{
         wordTypeId: '',
         textTarget: '',
@@ -94,7 +98,21 @@ const VocabList: React.FC = () => {
 
   // Function to reset form to default values
   const resetForm = () => {
-    form.reset();
+    form.reset({
+      textSource: '',
+      languageFolderId: languageFolderId || '',
+      sourceLanguageCode: sourceLanguageCode || '',
+      targetLanguageCode: targetLanguageCode || '',
+      textTargets: [{
+        wordTypeId: '',
+        textTarget: '',
+        grammar: '',
+        explanationSource: '',
+        explanationTarget: '',
+        subjectIds: [],
+        vocabExamples: [{ source: '', target: '' }],
+      }],
+    });
     setActiveTab('0');
   };
 
@@ -394,6 +412,8 @@ const VocabList: React.FC = () => {
           onAddVocab={() => setOpen(true)}
           sourceLanguageCode={sourceLanguageCode || ''}
           targetLanguageCode={targetLanguageCode || ''}
+          languageFolder={languageFolder}
+          isFolderLoading={isFolderLoading}
         />
 
         {/* Loading and Error States */}

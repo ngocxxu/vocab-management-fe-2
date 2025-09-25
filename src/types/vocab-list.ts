@@ -25,6 +25,7 @@ export type TVocab = {
 
 export type TCreateVocab = {
   textSource: string;
+  languageFolderId: string;
   sourceLanguageCode: string;
   targetLanguageCode: string;
   textTargets: [

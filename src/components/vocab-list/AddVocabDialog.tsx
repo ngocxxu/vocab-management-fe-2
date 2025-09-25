@@ -10,6 +10,7 @@ import TextTargetTabs from './TextTargetTabs';
 
 type VocabFormData = {
   textSource: string;
+  languageFolderId: string;
   sourceLanguageCode: string;
   targetLanguageCode: string;
   textTargets: Array<{
