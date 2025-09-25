@@ -9,7 +9,7 @@ export async function POST() {
     const signoutResponse = await serverApi.post<{ message: string }>(API_ENDPOINTS.auth.signout, {});
 
     // Clear authentication cookie
-    const response = NextResponse.json(signoutResponse);
+    const response = NextResponse.json(signoutResponse || { message: 'Successfully signed out' });
     response.cookies.delete('auth-token');
     response.cookies.delete('accessToken');
     response.cookies.delete('refreshToken');

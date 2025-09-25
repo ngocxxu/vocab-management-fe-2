@@ -76,7 +76,16 @@ class ServerAPI {
         throw new Error(`API call failed: ${response.status} ${response.statusText}`);
       }
 
-      return response.json() as Promise<T>;
+      // Check if response has content before trying to parse JSON
+      const contentType = response.headers.get('content-type');
+      const text = await response.text();
+
+      if (!text || !contentType?.includes('application/json')) {
+        // Return empty object for non-JSON responses (like 204 No Content)
+        return {} as T;
+      }
+
+      return JSON.parse(text) as T;
     } catch (error) {
       console.error('🚨 Server API Error:', {
         endpoint: `${this.baseURL}${endpoint}`,
