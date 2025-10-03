@@ -18,6 +18,9 @@ export const handleTokenExpiration = () => {
 
   // Redirect to signin page after a short delay to allow toast to show
   setTimeout(() => {
-    window.location.href = '/signin';
+    // Preserve current URL with query params for redirect after login
+    const currentPath = `${window.location.pathname}${window.location.search}`;
+    const signInUrl = `/signin?redirect=${encodeURIComponent(currentPath)}`;
+    window.location.href = signInUrl;
   }, 1000);
 };

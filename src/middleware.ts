@@ -47,7 +47,9 @@ export default async function middleware(
   // If accessing a protected route without a token, redirect to signin
   if (isProtectedRoute && !token) {
     const signInUrl = new URL('/signin', request.url);
-    signInUrl.searchParams.set('redirect', pathname);
+    // Include both pathname and search params in redirect
+    const fullPath = `${pathname}${request.nextUrl.search}`;
+    signInUrl.searchParams.set('redirect', fullPath);
     return NextResponse.redirect(signInUrl);
   }
 

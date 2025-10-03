@@ -444,8 +444,33 @@ const VocabList: React.FC = () => {
 
         {/* Loading and Error States */}
         {isLoading && (
-          <div className="flex items-center justify-center p-8">
-            <Skeleton className="h-6 w-48" />
+          <div className="space-y-4">
+            {/* Table Header Skeleton */}
+            <div className="rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
+              <div className="border-b border-slate-200 p-4 dark:border-slate-700">
+                <Skeleton className="h-10 w-64" />
+              </div>
+              {/* Table Rows Skeleton */}
+              <div className="divide-y divide-slate-200 dark:divide-slate-700">
+                {Array.from({ length: pagination.pageSize }).map(_ => (
+                  <div key={Math.random()} className="flex items-center gap-4 p-4">
+                    <Skeleton className="h-5 w-5" />
+                    <Skeleton className="h-5 w-1/3" />
+                    <Skeleton className="h-5 w-1/2" />
+                    <div className="ml-auto flex gap-2">
+                      <Skeleton className="h-8 w-8" />
+                      <Skeleton className="h-8 w-8" />
+                      <Skeleton className="h-8 w-8" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {/* Pagination Skeleton */}
+              <div className="flex items-center justify-between border-t border-slate-200 p-4 dark:border-slate-700">
+                <Skeleton className="h-9 w-32" />
+                <Skeleton className="h-9 w-48" />
+              </div>
+            </div>
           </div>
         )}
 
@@ -456,7 +481,7 @@ const VocabList: React.FC = () => {
         )}
 
         {/* Empty State */}
-        {data !== undefined && data.length === 0 && (
+        {!isLoading && data.length === 0 && (
           <div className="flex flex-col items-center justify-center p-12 text-center">
             <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800">
               <svg
