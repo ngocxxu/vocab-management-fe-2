@@ -24,7 +24,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Form } from '@/components/ui/form';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DataTable } from '@/components/ui/table';
-import { useAuth, useLanguageFolder, useVocabs, vocabMutations } from '@/hooks';
+import { useApiPagination, useAuth, useLanguageFolder, useVocabs, vocabMutations } from '@/hooks';
 import AddVocabDialog from './AddVocabDialog';
 import ExpandedRowContent from './ExpandedRowContent';
 import VocabListHeader from './VocabListHeader';
@@ -58,6 +58,14 @@ const VocabList: React.FC = () => {
   const [globalFilter, setGlobalFilter] = useState('');
   const [isMounted, setIsMounted] = useState(false);
   const [expanded, setExpanded] = React.useState<Record<string, boolean>>({});
+
+  // Use reusable pagination hook
+  const { pagination, handlers } = useApiPagination({
+    page: 1,
+    pageSize: 10,
+    sortBy: 'textSource',
+    sortOrder: 'asc',
+  });
   const searchParams = useSearchParams();
 
   // Get source and target language from URL params
@@ -70,13 +78,17 @@ const VocabList: React.FC = () => {
 
   // Build query parameters for the API call
   const queryParams = {
+    page: pagination.page,
+    pageSize: pagination.pageSize,
+    sortBy: pagination.sortBy, // Optional - can be changed by table column clicking
+    sortOrder: pagination.sortOrder,
     sourceLanguageCode,
     targetLanguageCode,
     languageFolderId,
     userId: user?.id,
   };
 
-  const { vocabs, isLoading, isError, mutate } = useVocabs(queryParams);
+  const { vocabs, totalItems, totalPages, currentPage, isLoading, isError, mutate } = useVocabs(queryParams);
   const { languageFolder, isLoading: isFolderLoading } = useLanguageFolder(languageFolderId || null);
 
   const form = useForm<FormData>({
@@ -106,6 +118,9 @@ const VocabList: React.FC = () => {
     // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
     setIsMounted(true);
   }, []);
+
+  // Use handlers from the reusable pagination hook
+  const { handleSort, handlePageChange } = handlers;
 
   // Function to reset form to default values
   const resetForm = () => {
@@ -419,7 +434,7 @@ const VocabList: React.FC = () => {
     <Form {...form}>
       <div className="space-y-6">
         <VocabListHeader
-          totalCount={data.length}
+          totalCount={totalItems}
           onAddVocab={() => setOpen(true)}
           sourceLanguageCode={sourceLanguageCode || ''}
           targetLanguageCode={targetLanguageCode || ''}
@@ -500,7 +515,7 @@ const VocabList: React.FC = () => {
                 onSearchChangeAction={setGlobalFilter}
                 showSearch={true}
                 showPagination={true}
-                pageSize={8}
+                pageSize={pagination.pageSize}
                 className=""
                 headerClassName=""
                 rowClassName=""
@@ -513,6 +528,14 @@ const VocabList: React.FC = () => {
                     columnsCount={columns.length}
                   />
                 )}
+                // Server-side pagination & sorting
+                manualPagination={true}
+                manualSorting={true}
+                pageCount={totalPages}
+                currentPage={currentPage}
+                totalItems={totalItems}
+                onPageChange={handlePageChange}
+                onSortingChange={handleSort}
               />
             )}
           </>

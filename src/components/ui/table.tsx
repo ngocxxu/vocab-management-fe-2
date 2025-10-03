@@ -38,6 +38,14 @@ type DataTableProps<TData, TValue> = {
   renderExpandedRow?: (row: any) => React.ReactNode;
   expandedState?: Record<string, boolean>;
   onExpandedChange?: (expanded: Record<string, boolean>) => void;
+  // Server-side pagination & sorting
+  manualPagination?: boolean;
+  manualSorting?: boolean;
+  pageCount?: number;
+  currentPage?: number;
+  totalItems?: number;
+  onPageChange?: (page: number) => void;
+  onSortingChange?: (sortBy: string, sortOrder: 'asc' | 'desc') => void;
 };
 
 export function DataTable<TData, TValue>({
@@ -56,6 +64,14 @@ export function DataTable<TData, TValue>({
   renderExpandedRow,
   expandedState = DEFAULT_EXPANDED_STATE,
   onExpandedChange,
+  // Server-side props
+  manualPagination = false,
+  manualSorting = false,
+  pageCount = -1,
+  currentPage = 1,
+  totalItems = 0,
+  onPageChange,
+  onSortingChange,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -65,6 +81,21 @@ export function DataTable<TData, TValue>({
 
   // Memoize columns to prevent unnecessary re-renders
   const memoizedColumns = useMemo(() => columns, [columns]);
+
+  // Handle sorting change for server-side sorting
+  const handleSortingChange = React.useCallback((updaterOrValue: any) => {
+    if (manualSorting && onSortingChange) {
+      const newSorting = typeof updaterOrValue === 'function' ? updaterOrValue(sorting) : updaterOrValue;
+      setSorting(newSorting);
+
+      if (newSorting.length > 0) {
+        const { id, desc } = newSorting[0];
+        onSortingChange(id, desc ? 'desc' : 'asc');
+      }
+    } else {
+      setSorting(updaterOrValue);
+    }
+  }, [manualSorting, onSortingChange, sorting]);
 
   // Create table instance with all necessary features
   const table = useReactTable({
@@ -76,8 +107,12 @@ export function DataTable<TData, TValue>({
       columnVisibility,
       rowSelection,
       globalFilter,
+      pagination: {
+        pageIndex: currentPage - 1, // TanStack uses 0-based index
+        pageSize,
+      },
     },
-    onSortingChange: setSorting,
+    onSortingChange: handleSortingChange,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
@@ -86,9 +121,13 @@ export function DataTable<TData, TValue>({
       onSearchChangeAction?.(value);
     },
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
+    getSortedRowModel: manualSorting ? undefined : getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    getPaginationRowModel: manualPagination ? undefined : getPaginationRowModel(),
+    manualPagination,
+    manualSorting,
+    manualFiltering: true,
+    pageCount: manualPagination ? pageCount : undefined,
     // Enable global filtering
     globalFilterFn: 'includesString',
     // Enable column filtering
@@ -226,19 +265,25 @@ export function DataTable<TData, TValue>({
           <div className="text-sm text-slate-600 dark:text-slate-400">
             Showing
             {' '}
-            {table.getFilteredRowModel().rows.length}
+            {manualPagination ? data.length : table.getFilteredRowModel().rows.length}
             {' '}
             of
             {' '}
-            {data.length}
+            {manualPagination ? totalItems : data.length}
             {' '}
             results
           </div>
 
           <div className="flex items-center space-x-3">
             <Button
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
+              onClick={() => {
+                if (manualPagination && onPageChange) {
+                  onPageChange(currentPage - 1);
+                } else {
+                  table.previousPage();
+                }
+              }}
+              disabled={manualPagination ? currentPage <= 1 : !table.getCanPreviousPage()}
               variant="ghost"
               size="sm"
               className="flex items-center space-x-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200"
@@ -250,44 +295,63 @@ export function DataTable<TData, TValue>({
             </Button>
 
             <div className="flex items-center space-x-1">
-              {Array.from({ length: Math.min(5, table.getPageCount()) }, (_, i) => {
-                const pageIndex = i + 1;
+              {Array.from({ length: Math.min(5, manualPagination ? pageCount : table.getPageCount()) }, (_, i) => {
+                const pageNumber = i + 1;
+                const isActive = manualPagination ? currentPage === pageNumber : table.getState().pagination.pageIndex === i;
                 return (
                   <Button
-                    key={pageIndex + Math.random()}
-                    onClick={() => table.setPageIndex(i)}
-                    variant={table.getState().pagination.pageIndex === i ? 'default' : 'ghost'}
+                    key={pageNumber + Math.random()}
+                    onClick={() => {
+                      if (manualPagination && onPageChange) {
+                        onPageChange(pageNumber);
+                      } else {
+                        table.setPageIndex(i);
+                      }
+                    }}
+                    variant={isActive ? 'default' : 'ghost'}
                     size="sm"
                     className={`h-8 w-8 rounded-full p-0 text-sm font-medium transition-colors ${
-                      table.getState().pagination.pageIndex === i
+                      isActive
                         ? 'bg-purple-600 text-white hover:bg-purple-700'
                         : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200'
                     }`}
                   >
-                    {pageIndex}
+                    {pageNumber}
                   </Button>
                 );
               })}
-              {table.getPageCount() > 5 && (
+              {(manualPagination ? pageCount : table.getPageCount()) > 5 && (
                 <span className="px-2 text-slate-500 dark:text-slate-400">...</span>
               )}
-              {table.getPageCount() > 5 && (
+              {(manualPagination ? pageCount : table.getPageCount()) > 5 && (
                 <Button
-                  key={table.getPageCount() + Math.random()}
-                  onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+                  key={(manualPagination ? pageCount : table.getPageCount()) + Math.random()}
+                  onClick={() => {
+                    if (manualPagination && onPageChange) {
+                      onPageChange(pageCount);
+                    } else {
+                      table.setPageIndex(table.getPageCount() - 1);
+                    }
+                  }}
                   variant="ghost"
                   size="sm"
                   className="h-8 w-8 rounded-full p-0 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200"
                 >
-                  {table.getPageCount()}
+                  {manualPagination ? pageCount : table.getPageCount()}
                 </Button>
               )}
             </div>
 
             <Button
-              key={table.getPageCount() + Math.random()}
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
+              key={(manualPagination ? pageCount : table.getPageCount()) + Math.random()}
+              onClick={() => {
+                if (manualPagination && onPageChange) {
+                  onPageChange(currentPage + 1);
+                } else {
+                  table.nextPage();
+                }
+              }}
+              disabled={manualPagination ? currentPage >= pageCount : !table.getCanNextPage()}
               variant="ghost"
               size="sm"
               className="flex items-center space-x-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200"

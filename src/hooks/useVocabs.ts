@@ -12,6 +12,9 @@ export const useVocabs = (queryParams?: VocabQueryParams) => {
 
   return {
     vocabs: data?.items || [],
+    totalItems: data?.totalItems || 0,
+    totalPages: data?.totalPages || 0,
+    currentPage: data?.currentPage || 1,
     isLoading,
     isError: error,
     mutate,
