@@ -1,4 +1,4 @@
-import type { VocabQueryParams, VocabTrainerQueryParams } from './api-config';
+import type { LanguageFolderQueryParams, VocabQueryParams, VocabTrainerQueryParams } from './api-config';
 import type { TVocab } from '@/types/vocab-list';
 import { cookies } from 'next/headers';
 import { Env } from '@/libs/Env';
@@ -298,8 +298,8 @@ export const languagesApi = {
 
 // Language Folders API endpoints
 export const languageFoldersApi = {
-  getMy: () => {
-    const config = API_METHODS.languageFolders.getMy();
+  getMy: (params?: LanguageFolderQueryParams) => {
+    const config = API_METHODS.languageFolders.getMy(params);
     return serverApi.get(config.endpoint);
   },
   getById: (id: string) => {

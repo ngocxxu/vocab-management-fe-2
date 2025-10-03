@@ -1,12 +1,26 @@
+import type { LanguageFolderQueryParams } from '@/utils/api-config';
 import useSWR from 'swr';
 import { languageFoldersApi } from '@/utils/client-api';
 
 // Hook for getting user's language folders
-export const useLanguageFolders = () => {
-  const { data, error, isLoading, mutate } = useSWR('languageFolders', () => languageFoldersApi.getMy());
+export const useLanguageFolders = (params?: LanguageFolderQueryParams) => {
+  const queryKey = params ? ['languageFolders', JSON.stringify(params)] : 'languageFolders';
+  const { data, error, isLoading, mutate } = useSWR(
+    queryKey,
+    () => languageFoldersApi.getMy(params),
+  );
+
+  const folders = data?.items || [];
+  const totalItems = data?.totalItems ?? folders.length;
+  const pageSize = params?.pageSize || 10;
+  const totalPages = data?.totalPages ?? Math.ceil(totalItems / pageSize);
+  const currentPage = data?.currentPage ?? params?.page ?? 1;
 
   return {
-    languageFolders: data?.items || [],
+    languageFolders: folders,
+    totalItems,
+    totalPages,
+    currentPage,
     isLoading,
     isError: error,
     mutate,

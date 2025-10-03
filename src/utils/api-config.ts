@@ -48,6 +48,13 @@ export type VocabTrainerQueryParams = {
   userId?: string;
 };
 
+export type LanguageFolderQueryParams = {
+  page?: number;
+  pageSize?: number;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+};
+
 // API endpoint definitions
 export const API_ENDPOINTS = {
   auth: {
@@ -131,7 +138,13 @@ export const API_METHODS = {
     delete: (id: string) => ({ endpoint: `${API_ENDPOINTS.languages}/${id}` }),
   },
   languageFolders: {
-    getMy: () => ({ endpoint: `${API_ENDPOINTS.languageFolders}/my` }),
+    getMy: (params?: LanguageFolderQueryParams) => {
+      if (!params) {
+        return { endpoint: `${API_ENDPOINTS.languageFolders}/my` };
+      }
+      const queryString = buildQueryString(params);
+      return { endpoint: `${API_ENDPOINTS.languageFolders}/my?${queryString}` };
+    },
     getById: (id: string) => ({ endpoint: `${API_ENDPOINTS.languageFolders}/${id}` }),
     create: (languageFolderData: { name: string; folderColor: string; sourceLanguageCode: string; targetLanguageCode: string }) => ({ endpoint: API_ENDPOINTS.languageFolders, data: languageFolderData }),
     update: (id: string, languageFolderData: { name: string; folderColor: string; sourceLanguageCode: string; targetLanguageCode: string }) => ({ endpoint: `${API_ENDPOINTS.languageFolders}/${id}`, data: languageFolderData }),

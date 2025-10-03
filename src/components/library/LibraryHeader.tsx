@@ -42,7 +42,6 @@ const LibraryHeader: React.FC<LibraryHeaderProps> = memo(({
           Create New Folder
         </Button>
 
-        {/* Simplified Select to debug */}
         <Select value={filterType} onValueChange={onFilterChange}>
           <SelectTrigger className="w-44 border-2 border-slate-200 dark:border-slate-600">
             <SelectValue placeholder="Show All" />

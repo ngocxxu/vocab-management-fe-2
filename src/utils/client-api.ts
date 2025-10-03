@@ -1,5 +1,5 @@
 import type { AxiosRequestConfig } from 'axios';
-import type { VocabQueryParams, VocabTrainerQueryParams } from './api-config';
+import type { LanguageFolderQueryParams, VocabQueryParams, VocabTrainerQueryParams } from './api-config';
 import type { ResponseAPI, TLanguage, TLanguageFolder } from '@/types';
 import type { TAuthResponse } from '@/types/auth';
 import type { TCreateVocab, TVocab } from '@/types/vocab-list';
@@ -215,8 +215,8 @@ export const languagesApi = {
 
 // Language Folders API endpoints
 export const languageFoldersApi = {
-  getMy: () => {
-    const config = API_METHODS.languageFolders.getMy();
+  getMy: (params?: LanguageFolderQueryParams) => {
+    const config = API_METHODS.languageFolders.getMy(params);
     return ClientAPI.get<ResponseAPI<TLanguageFolder[]>>(config.endpoint);
   },
   getById: (id: string) => {
