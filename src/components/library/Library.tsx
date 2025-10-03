@@ -20,7 +20,7 @@ const Library: React.FC = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const handleFolderClick = useCallback((folder: LanguageFolderType) => {
-    router.push(`/vocab-list?source=${folder.sourceLanguageCode}&target=${folder.targetLanguageCode}&languageFolderId=${folder.id}`);
+    router.push(`/vocab-list?sourceLanguageCode=${folder.sourceLanguageCode}&targetLanguageCode=${folder.targetLanguageCode}&languageFolderId=${folder.id}`);
   }, [router]);
 
   const handleCreateFolder = useCallback(() => {

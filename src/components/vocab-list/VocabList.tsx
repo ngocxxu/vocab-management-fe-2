@@ -24,7 +24,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Form } from '@/components/ui/form';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DataTable } from '@/components/ui/table';
-import { useLanguageFolder, useVocabs, vocabMutations } from '@/hooks';
+import { useAuth, useLanguageFolder, useVocabs, vocabMutations } from '@/hooks';
 import AddVocabDialog from './AddVocabDialog';
 import ExpandedRowContent from './ExpandedRowContent';
 import VocabListHeader from './VocabListHeader';
@@ -61,11 +61,22 @@ const VocabList: React.FC = () => {
   const searchParams = useSearchParams();
 
   // Get source and target language from URL params
-  const sourceLanguageCode = searchParams.get('source') || undefined;
-  const targetLanguageCode = searchParams.get('target') || undefined;
+  const sourceLanguageCode = searchParams.get('sourceLanguageCode') || undefined;
+  const targetLanguageCode = searchParams.get('targetLanguageCode') || undefined;
   const languageFolderId = searchParams.get('languageFolderId') || undefined;
 
-  const { vocabs, isLoading, isError, mutate } = useVocabs();
+  // Get current user
+  const { user } = useAuth();
+
+  // Build query parameters for the API call
+  const queryParams = {
+    sourceLanguageCode,
+    targetLanguageCode,
+    languageFolderId,
+    userId: user?.id,
+  };
+
+  const { vocabs, isLoading, isError, mutate } = useVocabs(queryParams);
   const { languageFolder, isLoading: isFolderLoading } = useLanguageFolder(languageFolderId || null);
 
   const form = useForm<FormData>({

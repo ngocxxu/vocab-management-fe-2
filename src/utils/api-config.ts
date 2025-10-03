@@ -16,6 +16,25 @@ export type VocabQueryParams = {
   targetLanguageCode?: string;
   subjectIds?: string[];
   userId?: string;
+  languageFolderId?: string;
+};
+
+// Utility function to build query string from parameters
+export const buildQueryString = (params: Record<string, any>): string => {
+  const searchParams = new URLSearchParams();
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      if (Array.isArray(value)) {
+        // Handle arrays by adding multiple parameters with the same key
+        value.forEach(item => searchParams.append(key, item));
+      } else {
+        searchParams.append(key, String(value));
+      }
+    }
+  });
+
+  return searchParams.toString();
 };
 
 export type VocabTrainerQueryParams = {
@@ -58,7 +77,14 @@ export const API_METHODS = {
     verify: () => ({ endpoint: API_ENDPOINTS.auth.verify }),
   },
   vocabs: {
-    getAll: (params?: VocabQueryParams) => ({ endpoint: params ? `${API_ENDPOINTS.vocabs}?${new URLSearchParams(params as Record<string, string>).toString()}` : API_ENDPOINTS.vocabs }),
+    getAll: (params?: VocabQueryParams) => {
+      if (!params) {
+        return { endpoint: API_ENDPOINTS.vocabs };
+      }
+
+      const queryString = buildQueryString(params);
+      return { endpoint: `${API_ENDPOINTS.vocabs}?${queryString}` };
+    },
     getById: (id: string) => ({ endpoint: `${API_ENDPOINTS.vocabs}/${id}` }),
     create: (vocabData: TCreateVocab) => ({ endpoint: API_ENDPOINTS.vocabs, data: vocabData }),
     update: (id: string, vocabData: Partial<TCreateVocab>) => ({ endpoint: `${API_ENDPOINTS.vocabs}/${id}`, data: vocabData }),
@@ -67,7 +93,14 @@ export const API_METHODS = {
     deleteBulk: (ids: string[]) => ({ endpoint: `${API_ENDPOINTS.vocabs}/bulk/delete`, data: { data: { ids } } }),
   },
   vocabTrainers: {
-    getAll: (params?: VocabTrainerQueryParams) => ({ endpoint: params ? `${API_ENDPOINTS.vocabTrainers}?${new URLSearchParams(params as Record<string, string>).toString()}` : API_ENDPOINTS.vocabTrainers }),
+    getAll: (params?: VocabTrainerQueryParams) => {
+      if (!params) {
+        return { endpoint: API_ENDPOINTS.vocabTrainers };
+      }
+
+      const queryString = buildQueryString(params);
+      return { endpoint: `${API_ENDPOINTS.vocabTrainers}?${queryString}` };
+    },
     getById: (id: string) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}` }),
     create: (trainerData: TCreateVocabTrainer) => ({ endpoint: API_ENDPOINTS.vocabTrainers, data: trainerData }),
     delete: (id: string) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}` }),

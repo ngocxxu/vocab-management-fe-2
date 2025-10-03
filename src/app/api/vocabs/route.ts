@@ -28,6 +28,9 @@ export async function GET(request: NextRequest) {
     }
 
     // Filtering
+    if (searchParams.has('languageFolderId')) {
+      queryParams.languageFolderId = searchParams.get('languageFolderId')!;
+    }
     if (searchParams.has('textSource')) {
       queryParams.textSource = searchParams.get('textSource')!;
     }
