@@ -10,7 +10,6 @@ export async function POST() {
 
     // Clear authentication cookie
     const response = NextResponse.json(signoutResponse || { message: 'Successfully signed out' });
-    response.cookies.delete('auth-token');
     response.cookies.delete('accessToken');
     response.cookies.delete('refreshToken');
 

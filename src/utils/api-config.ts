@@ -77,7 +77,7 @@ export const API_ENDPOINTS = {
 export const API_METHODS = {
   auth: {
     signin: (data: { email: string; password: string }) => ({ endpoint: API_ENDPOINTS.auth.signin, data }),
-    signup: (data: { email: string; password: string; firstName: string; lastName: string; phone: string; avatar: string; role: string }) => ({ endpoint: API_ENDPOINTS.auth.signin, data }),
+    signup: (data: { email: string; password: string; firstName: string; lastName: string; phone: string; avatar: string; role: string }) => ({ endpoint: API_ENDPOINTS.auth.signup, data }),
     refresh: (data: { refreshToken: string }) => ({ endpoint: API_ENDPOINTS.auth.refresh, data }),
     signout: () => ({ endpoint: API_ENDPOINTS.auth.signout }),
     resetPassword: (data: { email: string }) => ({ endpoint: API_ENDPOINTS.auth.resetPassword, data }),

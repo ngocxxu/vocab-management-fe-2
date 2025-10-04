@@ -1,45 +1,23 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import { serverApi } from '@/utils/server-api';
+import { API_ENDPOINTS } from '@/utils/api-config';
 
-// POST /api/auth/signup - User signup
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { email, password, firstName, lastName, phone, avatar, role } = body;
 
-    // Validate required fields
-    if (!email || !password || !firstName || !lastName) {
-      return NextResponse.json(
-        { error: 'Email, password, firstName, and lastName are required' },
-        { status: 400 },
-      );
-    }
-
-    // Call NestJS backend for user creation
-    const authResponse = await serverApi.post<{ token?: string; user: any; message: string }>('/auth/signup', {
-      email,
-      password,
-      firstName,
-      lastName,
-      phone,
-      avatar,
-      role,
+    const nestResponse = await fetch(`${process.env.NESTJS_API_URL || 'http://localhost:3002/api/v1'}${API_ENDPOINTS.auth.signup}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password, firstName, lastName, phone, avatar, role }),
     });
 
-    // Set authentication cookie from backend response
-    const response = NextResponse.json(authResponse, { status: 201 });
+    const data = await nestResponse.json();
 
-    // If the backend returns a token, set it as a cookie
-    if (authResponse.token) {
-      response.cookies.set('auth-token', authResponse.token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 60 * 60 * 24 * 7, // 7 days
-        path: '/',
-      });
-    }
+    const response = NextResponse.json(data, { status: nestResponse.status });
 
     return response;
   } catch (error) {

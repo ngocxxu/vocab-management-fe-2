@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { UserRole } from '@/constants/auth';
 import { authMutations } from '@/hooks/useAuth';
 import { signUpSchema } from '@/libs/validations/auth';
 
@@ -42,7 +43,7 @@ export default function SignUpPage() {
         lastName: data.lastName,
         phone: data.phone || '',
         avatar: '',
-        role: 'user',
+        role: UserRole.STAFF,
       };
 
       await authMutations.signup(signupData);
