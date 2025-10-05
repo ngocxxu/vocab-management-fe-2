@@ -32,7 +32,6 @@ import LibrarySearch from './LibrarySearch';
 const Library: React.FC = () => {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterType, setFilterType] = useState('all');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingFolder, setEditingFolder] = useState<LanguageFolderType | null>(null);
   const [showEditDialog, setShowEditDialog] = useState(false);
@@ -82,10 +81,6 @@ const Library: React.FC = () => {
     refetchFolders();
   }, [refetchFolders]);
 
-  const handleFilterChange = useCallback((value: string) => {
-    setFilterType(value);
-  }, []);
-
   const handleSearchChange = useCallback((query: string) => {
     setSearchQuery(query);
   }, []);
@@ -115,13 +110,11 @@ const Library: React.FC = () => {
       const matchesSearch = folder.name.toLowerCase().includes(searchQuery.toLowerCase())
         || folder.sourceLanguageCode.toLowerCase().includes(searchQuery.toLowerCase())
         || folder.targetLanguageCode.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesFilter = filterType === 'all'
-        || (filterType === 'active' && true) // All folders are considered active now
-        || (filterType === 'empty' && false); // No folders are considered empty
+      const matchesFilter = true;
 
       return matchesSearch && matchesFilter;
     });
-  }, [languageFolders, searchQuery, filterType]);
+  }, [languageFolders, searchQuery]);
 
   // Use the filtered folders as data
   const data = useMemo<LanguageFolderType[]>(() => filteredFolders, [filteredFolders]);
@@ -250,8 +243,6 @@ const Library: React.FC = () => {
       <div className="container mx-auto flex flex-col gap-10 py-8">
         {/* Header Section */}
         <LibraryHeader
-          filterType={filterType}
-          onFilterChange={handleFilterChange}
           onCreateFolder={handleCreateFolder}
         />
 

@@ -3,17 +3,12 @@
 import { Plus } from 'lucide-react';
 import React, { memo, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 type LibraryHeaderProps = {
-  filterType: string;
-  onFilterChange: (value: string) => void;
   onCreateFolder: () => void;
 };
 
 const LibraryHeader: React.FC<LibraryHeaderProps> = memo(({
-  filterType,
-  onFilterChange,
   onCreateFolder,
 }) => {
   const handleCreateFolder = useCallback(() => {
@@ -41,17 +36,6 @@ const LibraryHeader: React.FC<LibraryHeaderProps> = memo(({
           <Plus className="mr-2 h-5 w-5" />
           Create New Folder
         </Button>
-
-        <Select value={filterType} onValueChange={onFilterChange}>
-          <SelectTrigger className="w-44 border-2 border-slate-200 dark:border-slate-600">
-            <SelectValue placeholder="Show All" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Show All</SelectItem>
-            <SelectItem value="active">Active</SelectItem>
-            <SelectItem value="empty">Empty</SelectItem>
-          </SelectContent>
-        </Select>
       </div>
     </div>
   );

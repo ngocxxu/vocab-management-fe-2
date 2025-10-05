@@ -17,9 +17,7 @@ export async function POST(request: NextRequest) {
 
     const data = await nestResponse.json();
 
-    const response = NextResponse.json(data, { status: nestResponse.status });
-
-    return response;
+    return NextResponse.json(data, { status: nestResponse.status });
   } catch (error) {
     console.error('Signup error:', error);
     return NextResponse.json(
