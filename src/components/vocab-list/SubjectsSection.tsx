@@ -10,7 +10,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import MultiSelect from '@/components/ui/multi-select-react-select';
+import { MultiSelect } from '@/components/ui/multi-select';
 import { Skeleton } from '@/components/ui/skeleton';
 
 type SubjectsSectionProps = {
@@ -103,17 +103,17 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = React.memo(({
             <FormControl>
               <MultiSelect
                 options={subjectOptions}
-                value={field.value || []}
-                onChange={(newValue) => {
+                defaultValue={field.value || []}
+                onValueChange={(newValue) => {
                   field.onChange(newValue);
                   // Clear validation error for this field when value changes
                   form.clearErrors(`textTargets.${targetIndex}.subjectIds`);
                 }}
                 placeholder="Choose subjects..."
                 maxCount={4}
-                isDisabled={subjectsLoading}
-                isLoading={subjectsLoading}
+                disabled={subjectsLoading}
                 className="w-full"
+                resetOnDefaultValueChange={true}
               />
             </FormControl>
             <FormMessage />
