@@ -5,7 +5,7 @@ import type { TVocab } from '@/types/vocab-list';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronDown, ChevronLeft, Edit, Trash } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import {
@@ -174,7 +174,7 @@ const VocabList: React.FC = () => {
     }
   };
 
-  const handleEdit = (item: TVocab) => {
+  const handleEdit = useCallback((item: TVocab) => {
     setEditingItem(item);
     setEditMode(true);
     setOpen(true);
@@ -199,7 +199,7 @@ const VocabList: React.FC = () => {
         })),
       })),
     });
-  };
+  }, [form]);
 
   const handleCloseDialog = () => {
     setOpen(false);
@@ -449,8 +449,7 @@ const VocabList: React.FC = () => {
       enableHiding: false,
       size: 50,
     },
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  ], []);
+  ], [expanded, handleEdit, mutate]);
 
   return (
     <Form {...form}>
