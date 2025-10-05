@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '../ui/textarea';
 
 type VocabExample = {
+  id: string;
   source: string;
   target: string;
 };
@@ -46,7 +47,7 @@ const ExamplesSection: React.FC<ExamplesSectionProps> = ({
       </div>
       <div className="space-y-3">
         {examples.map((example, exampleIndex) => (
-          <div key={`${example.source}-${example.target}-${Math.random()}`} className="flex items-center space-x-3 rounded-lg border p-3">
+          <div key={example.id} className="flex items-center space-x-3 rounded-lg border p-3">
             <div className="grid flex-1 grid-cols-2 gap-3">
               <div>
                 <Label htmlFor={`example-source-${targetIndex}-${exampleIndex}`} className="text-sm">Source</Label>

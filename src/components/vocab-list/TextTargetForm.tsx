@@ -16,13 +16,14 @@ type WordType = {
 };
 
 type TextTarget = {
+  id: string;
   wordTypeId: string;
   textTarget: string;
   grammar: string;
   explanationSource: string;
   explanationTarget: string;
   subjectIds: string[];
-  vocabExamples: Array<{ source: string; target: string }>;
+  vocabExamples: Array<{ id: string; source: string; target: string }>;
 };
 
 type TextTargetFormProps = {
@@ -40,7 +41,7 @@ type TextTargetFormProps = {
   onRemoveExample: (exampleIndex: number, targetIndex: number) => void;
 };
 
-const TextTargetForm: React.FC<TextTargetFormProps> = React.memo(({
+const TextTargetForm: React.FC<TextTargetFormProps> = ({
   targetIndex,
   target,
   wordTypes,
@@ -144,8 +145,6 @@ const TextTargetForm: React.FC<TextTargetFormProps> = React.memo(({
       />
     </div>
   );
-});
-
-TextTargetForm.displayName = 'TextTargetForm';
+};
 
 export default TextTargetForm;

@@ -29,6 +29,9 @@ import AddVocabDialog from './AddVocabDialog';
 import ExpandedRowContent from './ExpandedRowContent';
 import VocabListHeader from './VocabListHeader';
 
+// Utility function to generate unique IDs
+const generateId = () => `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
 // Define the form schema
 const FormSchema = z.object({
   textSource: z.string().min(1, 'Source text is required'),
@@ -36,6 +39,7 @@ const FormSchema = z.object({
   sourceLanguageCode: z.string().min(1, 'Source language is required'),
   targetLanguageCode: z.string().min(1, 'Target language is required'),
   textTargets: z.array(z.object({
+    id: z.string(),
     wordTypeId: z.string().min(1, 'Word type is required'),
     textTarget: z.string().min(1, 'Target text is required'),
     grammar: z.string(),
@@ -43,6 +47,7 @@ const FormSchema = z.object({
     explanationTarget: z.string(),
     subjectIds: z.array(z.string()).min(1, 'At least one subject must be selected'),
     vocabExamples: z.array(z.object({
+      id: z.string(),
       source: z.string(),
       target: z.string(),
     })),
@@ -100,13 +105,14 @@ const VocabList: React.FC = () => {
       sourceLanguageCode: sourceLanguageCode || '',
       targetLanguageCode: targetLanguageCode || '',
       textTargets: [{
+        id: generateId(),
         wordTypeId: '',
         textTarget: '',
         grammar: '',
         explanationSource: '',
         explanationTarget: '',
         subjectIds: [], // Ensure this is always initialized as an empty array
-        vocabExamples: [{ source: '', target: '' }],
+        vocabExamples: [{ id: generateId(), source: '', target: '' }],
       }],
     },
   });
@@ -130,13 +136,14 @@ const VocabList: React.FC = () => {
       sourceLanguageCode: sourceLanguageCode || '',
       targetLanguageCode: targetLanguageCode || '',
       textTargets: [{
+        id: generateId(),
         wordTypeId: '',
         textTarget: '',
         grammar: '',
         explanationSource: '',
         explanationTarget: '',
         subjectIds: [],
-        vocabExamples: [{ source: '', target: '' }],
+        vocabExamples: [{ id: generateId(), source: '', target: '' }],
       }],
     });
     setActiveTab('0');
@@ -145,13 +152,14 @@ const VocabList: React.FC = () => {
   const addTextTarget = () => {
     const newIndex = form.watch('textTargets').length;
     form.setValue('textTargets', [...form.watch('textTargets'), {
+      id: generateId(),
       wordTypeId: '',
       textTarget: '',
       grammar: '',
       explanationSource: '',
       explanationTarget: '',
       subjectIds: [], // Ensure this is always initialized as an empty array
-      vocabExamples: [{ source: '', target: '' }],
+      vocabExamples: [{ id: generateId(), source: '', target: '' }],
     }]);
     setActiveTab(newIndex.toString());
   };
@@ -177,13 +185,18 @@ const VocabList: React.FC = () => {
       sourceLanguageCode: item.sourceLanguageCode,
       targetLanguageCode: item.targetLanguageCode,
       textTargets: item.textTargets.map(textTarget => ({
+        id: generateId(), // Generate new ID for form state
         wordTypeId: textTarget.wordType?.id || '', // Extract ID from wordType object
         textTarget: textTarget.textTarget,
         grammar: textTarget.grammar,
         explanationSource: textTarget.explanationSource,
         explanationTarget: textTarget.explanationTarget,
         subjectIds: textTarget.textTargetSubjects?.map(tts => tts.subject.id) || [], // Extract subject IDs
-        vocabExamples: textTarget.vocabExamples || [{ source: '', target: '' }],
+        vocabExamples: (textTarget.vocabExamples || [{ source: '', target: '' }]).map(example => ({
+          id: generateId(), // Generate new ID for each example
+          source: example.source,
+          target: example.target,
+        })),
       })),
     });
   };
@@ -230,7 +243,7 @@ const VocabList: React.FC = () => {
     const currentTargets = form.watch('textTargets');
     const updatedTargets = currentTargets.map((target, index) =>
       index === targetIndex
-        ? { ...target, vocabExamples: [...target.vocabExamples, { source: '', target: '' }] }
+        ? { ...target, vocabExamples: [...target.vocabExamples, { id: generateId(), source: '', target: '' }] }
         : target,
     );
     form.setValue('textTargets', updatedTargets);
@@ -262,12 +275,21 @@ const VocabList: React.FC = () => {
       // Get the validated form data
       const formData = form.getValues();
 
+      // Strip out the client-side IDs before sending to API
+      const apiData = {
+        ...formData,
+        textTargets: formData.textTargets.map(({ id, ...target }) => ({
+          ...target,
+          vocabExamples: target.vocabExamples.map(({ id: exampleId, ...example }) => example),
+        })),
+      };
+
       if (editMode && editingItem) {
         // Update existing vocabulary
-        await vocabMutations.update(editingItem.id, formData as any);
+        await vocabMutations.update(editingItem.id, apiData as any);
       } else {
         // Create new vocabulary
-        await vocabMutations.create(formData as any);
+        await vocabMutations.create(apiData as any);
       }
 
       // Refresh the data

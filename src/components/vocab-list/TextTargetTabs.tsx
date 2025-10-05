@@ -10,13 +10,14 @@ import { cn } from '@/libs/utils';
 import TextTargetForm from './TextTargetForm';
 
 type TextTarget = {
+  id: string;
   wordTypeId: string;
   textTarget: string;
   grammar: string;
   explanationSource: string;
   explanationTarget: string;
   subjectIds: string[];
-  vocabExamples: Array<{ source: string; target: string }>;
+  vocabExamples: Array<{ id: string; source: string; target: string }>;
 };
 
 type TextTargetTabsProps = {
@@ -62,9 +63,9 @@ const TextTargetTabs: React.FC<TextTargetTabsProps> = ({
 
       <Tabs value={activeTab} onValueChange={onActiveTabChange} className="w-full">
         <TabsList className="grid w-full grid-cols-5">
-          {textTargets.map((target, index) => (
+          {textTargets.map((_target, index) => (
             <TabsTrigger
-              key={target.textTarget + Math.random()}
+              key={_target.id}
               value={index.toString()}
               className={cn(
                 'relative flex-shrink-0 flex items-center justify-between',
@@ -103,7 +104,7 @@ const TextTargetTabs: React.FC<TextTargetTabsProps> = ({
 
         {textTargets.map((target, index) => (
           <TabsContent
-            key={target.textTarget + Math.random()}
+            key={target.id}
             value={index.toString()}
             className={cn(
               'space-y-4',

@@ -14,13 +14,14 @@ type VocabFormData = {
   sourceLanguageCode: string;
   targetLanguageCode: string;
   textTargets: Array<{
+    id: string;
     wordTypeId: string;
     textTarget: string;
     grammar: string;
     explanationSource: string;
     explanationTarget: string;
     subjectIds: string[];
-    vocabExamples: Array<{ source: string; target: string }>;
+    vocabExamples: Array<{ id: string; source: string; target: string }>;
   }>;
 };
 
