@@ -23,10 +23,10 @@ export const useVocabTrainers = (queryParams?: VocabTrainerQueryParams) => {
   );
 
   return {
-    vocabTrainers: (data as TVocabTrainer[] | undefined) || [],
-    totalItems: 0,
-    totalPages: 0,
-    currentPage: 1,
+    vocabTrainers: (data?.items || []) as TVocabTrainer[],
+    totalItems: data?.totalItems || 0,
+    totalPages: data?.totalPages || 0,
+    currentPage: data?.currentPage || 1,
     isLoading,
     isError: error,
     mutate,

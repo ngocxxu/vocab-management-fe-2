@@ -109,7 +109,7 @@ export const vocabApi = {
 export const vocabTrainerApi = {
   getAll: (params?: VocabTrainerQueryParams) => {
     const config = API_METHODS.vocabTrainers.getAll(params);
-    return ClientAPI.get<TVocabTrainer[]>(config.endpoint);
+    return ClientAPI.get<ResponseAPI<TVocabTrainer[]>>(config.endpoint);
   },
   getById: (id: string) => {
     const config = API_METHODS.vocabTrainers.getById(id);

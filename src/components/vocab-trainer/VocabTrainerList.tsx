@@ -3,7 +3,7 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import type { TVocabTrainer } from '@/types/vocab-trainer';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ChevronDown, ChevronLeft, Edit, PlayCircle, Trash } from 'lucide-react';
+import { Edit, PlayCircle, Trash } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -26,7 +26,6 @@ import { DataTable } from '@/components/ui/table';
 import { EQuestionType } from '@/enum/vocab-trainer';
 import { useApiPagination, useAuth, useVocabTrainers, vocabTrainerMutations } from '@/hooks';
 import AddVocabTrainerDialog from './AddVocabTrainerDialog';
-import ExpandedRowContent from './ExpandedRowContent';
 import VocabTrainerHeader from './VocabTrainerHeader';
 
 // Define the form schema
@@ -46,7 +45,8 @@ const VocabTrainerList: React.FC = () => {
   const [editingItem, setEditingItem] = React.useState<TVocabTrainer | null>(null);
   const [globalFilter, setGlobalFilter] = useState('');
   const [isMounted, setIsMounted] = useState(false);
-  const [expanded, setExpanded] = React.useState<Record<string, boolean>>({});
+  const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
+  const [selectedQuestionTypes, setSelectedQuestionTypes] = useState<string[]>([]);
 
   // Use reusable pagination hook
   const { pagination, handlers } = useApiPagination({
@@ -65,6 +65,9 @@ const VocabTrainerList: React.FC = () => {
     pageSize: pagination.pageSize,
     sortBy: pagination.sortBy,
     sortOrder: pagination.sortOrder,
+    name: globalFilter || undefined,
+    status: selectedStatuses.length > 0 ? selectedStatuses : undefined,
+    questionType: selectedQuestionTypes.length > 0 ? selectedQuestionTypes[0] as EQuestionType : undefined,
     userId: user?.id,
   };
 
@@ -101,6 +104,28 @@ const VocabTrainerList: React.FC = () => {
       vocabAssignmentIds: [],
     });
   };
+
+  // Clear all filters
+  const clearFilters = () => {
+    setSelectedStatuses([]);
+    setSelectedQuestionTypes([]);
+    setGlobalFilter('');
+  };
+
+  // Define filter options
+  const statusOptions = [
+    { value: 'PENDING', label: 'Pending' },
+    { value: 'PASSED', label: 'Passed' },
+    { value: 'FAILED', label: 'Failed' },
+  ];
+
+  const questionTypeOptions = [
+    { value: EQuestionType.MULTIPLE_CHOICE, label: 'Multiple Choice' },
+    { value: EQuestionType.TRUE_OR_FALSE, label: 'True/False' },
+    { value: EQuestionType.FILL_IN_THE_BLANK, label: 'Fill in the Blank' },
+    { value: EQuestionType.MATCHING, label: 'Matching' },
+    { value: EQuestionType.SHORT_ANSWER, label: 'Short Answer' },
+  ];
 
   const handleEdit = useCallback((item: TVocabTrainer) => {
     setEditingItem(item);
@@ -263,37 +288,6 @@ const VocabTrainerList: React.FC = () => {
       size: 150,
     },
     {
-      id: 'expand',
-      header: () => null,
-      cell: ({ row }) => {
-        const isExpanded = expanded[row.original.id];
-        return (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-6 w-6 p-0 hover:bg-slate-100 dark:hover:bg-slate-700"
-            onClick={(e) => {
-              e.stopPropagation();
-              setExpanded(prev => ({
-                ...prev,
-                [row.original.id]: !prev[row.original.id],
-              }));
-            }}
-          >
-            {isExpanded
-              ? (
-                  <ChevronDown className="h-4 w-4" />
-                )
-              : (
-                  <ChevronLeft className="h-4 w-4" />
-                )}
-          </Button>
-        );
-      },
-      enableSorting: false,
-      enableHiding: false,
-    },
-    {
       id: 'actions',
       header: '',
       cell: ({ row: _row }) => (
@@ -354,7 +348,7 @@ const VocabTrainerList: React.FC = () => {
       enableHiding: false,
       size: 50,
     },
-  ], [expanded, handleEdit, mutate]);
+  ], [handleEdit, mutate]);
 
   return (
     <Form {...form}>
@@ -362,6 +356,14 @@ const VocabTrainerList: React.FC = () => {
         <VocabTrainerHeader
           totalCount={totalItems}
           onAddTrainer={() => setOpen(true)}
+          statusOptions={statusOptions}
+          selectedStatuses={selectedStatuses}
+          onStatusFilterChange={setSelectedStatuses}
+          questionTypeOptions={questionTypeOptions}
+          selectedQuestionTypes={selectedQuestionTypes}
+          onQuestionTypeFilterChange={setSelectedQuestionTypes}
+          onClearFilters={clearFilters}
+          hasActiveFilters={selectedStatuses.length > 0 || selectedQuestionTypes.length > 0 || !!globalFilter}
         />
 
         {/* Loading handled inside DataTable skeleton rows */}
@@ -417,14 +419,6 @@ const VocabTrainerList: React.FC = () => {
               headerClassName=""
               rowClassName=""
               cellClassName=""
-              expandedState={expanded}
-              onExpandedChange={setExpanded}
-              renderExpandedRow={row => (
-                <ExpandedRowContent
-                  trainer={row.original}
-                  columnsCount={columns.length}
-                />
-              )}
               // Server-side pagination & sorting
               manualPagination={true}
               manualSorting={true}
