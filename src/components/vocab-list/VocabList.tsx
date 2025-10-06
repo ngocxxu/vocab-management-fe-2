@@ -23,7 +23,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Form } from '@/components/ui/form';
 import { DataTable } from '@/components/ui/table';
-import { useApiPagination, useAuth, useLanguageFolder, useVocabs, vocabMutations } from '@/hooks';
+import { useApiPagination, useAuth, useLanguageFolder, useSubjects, useVocabs, vocabMutations } from '@/hooks';
 import AddVocabDialog from './AddVocabDialog';
 import ExpandedRowContent from './ExpandedRowContent';
 import VocabListHeader from './VocabListHeader';
@@ -62,6 +62,7 @@ const VocabList: React.FC = () => {
   const [globalFilter, setGlobalFilter] = useState('');
   const [isMounted, setIsMounted] = useState(false);
   const [expanded, setExpanded] = React.useState<Record<string, boolean>>({});
+  const [selectedSubjectIds, setSelectedSubjectIds] = useState<string[]>([]);
 
   // Use reusable pagination hook
   const { pagination, handlers } = useApiPagination({
@@ -90,11 +91,13 @@ const VocabList: React.FC = () => {
     sourceLanguageCode,
     targetLanguageCode,
     languageFolderId,
+    subjectIds: selectedSubjectIds.length > 0 ? selectedSubjectIds : undefined,
     userId: user?.id,
   };
 
   const { vocabs, totalItems, totalPages, currentPage, isLoading, isError, mutate } = useVocabs(queryParams);
   const { languageFolder, isLoading: isFolderLoading } = useLanguageFolder(languageFolderId || null);
+  const { subjects, isLoading: isSubjectsLoading } = useSubjects();
 
   const form = useForm<FormData>({
     resolver: zodResolver(FormSchema),
@@ -260,6 +263,11 @@ const VocabList: React.FC = () => {
         : target,
     );
     form.setValue('textTargets', updatedTargets);
+  };
+
+  const clearFilters = () => {
+    setSelectedSubjectIds([]);
+    setGlobalFilter('');
   };
 
   const handleSubmit = async () => {
@@ -461,6 +469,12 @@ const VocabList: React.FC = () => {
           targetLanguageCode={targetLanguageCode || ''}
           languageFolder={languageFolder}
           isFolderLoading={isFolderLoading}
+          subjects={subjects}
+          isSubjectsLoading={isSubjectsLoading}
+          selectedSubjectIds={selectedSubjectIds}
+          onSubjectFilterChange={setSelectedSubjectIds}
+          onClearFilters={clearFilters}
+          hasActiveFilters={selectedSubjectIds.length > 0 || !!globalFilter}
         />
 
         {/* Loading and Error States */}
