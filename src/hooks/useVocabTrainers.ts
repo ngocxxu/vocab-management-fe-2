@@ -19,11 +19,14 @@ export type VocabTrainerQueryParams = {
 export const useVocabTrainers = (queryParams?: VocabTrainerQueryParams) => {
   const { data, error, isLoading, mutate } = useSWR(
     queryParams ? ['vocabTrainers', queryParams] : 'vocabTrainers',
-    () => vocabTrainerApi.getAll(),
+    () => vocabTrainerApi.getAll(queryParams),
   );
 
   return {
     vocabTrainers: (data as TVocabTrainer[] | undefined) || [],
+    totalItems: 0,
+    totalPages: 0,
+    currentPage: 1,
     isLoading,
     isError: error,
     mutate,

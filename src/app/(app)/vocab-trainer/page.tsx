@@ -1,6 +1,6 @@
 import React from 'react';
-import { VocabListLayout } from '@/components/vocab-list';
+import { VocabTrainerLayout } from '@/components/vocab-trainer';
 
-export default function VocabListPage() {
-  return <VocabListLayout />;
+export default function VocabTrainerPage() {
+  return <VocabTrainerLayout />;
 }

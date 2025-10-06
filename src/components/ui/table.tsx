@@ -19,6 +19,7 @@ import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from './button';
+import { Skeleton } from './skeleton';
 
 const DEFAULT_EXPANDED_STATE = {};
 
@@ -41,11 +42,15 @@ type DataTableProps<TData, TValue> = {
   // Server-side pagination & sorting
   manualPagination?: boolean;
   manualSorting?: boolean;
+  manualFiltering?: boolean;
   pageCount?: number;
   currentPage?: number;
   totalItems?: number;
   onPageChange?: (page: number) => void;
   onSortingChange?: (sortBy: string, sortOrder: 'asc' | 'desc') => void;
+  // Loading state to render skeleton rows inside the table
+  isLoading?: boolean;
+  skeletonRowCount?: number;
 };
 
 export function DataTable<TData, TValue>({
@@ -67,11 +72,14 @@ export function DataTable<TData, TValue>({
   // Server-side props
   manualPagination = false,
   manualSorting = false,
+  manualFiltering = false,
   pageCount = -1,
   currentPage = 1,
   totalItems = 0,
   onPageChange,
   onSortingChange,
+  isLoading = false,
+  skeletonRowCount,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -122,7 +130,7 @@ export function DataTable<TData, TValue>({
     },
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: manualSorting ? undefined : getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
+    getFilteredRowModel: manualFiltering ? undefined : getFilteredRowModel(),
     getPaginationRowModel: manualPagination ? undefined : getPaginationRowModel(),
     manualPagination,
     manualSorting,
@@ -222,37 +230,61 @@ export function DataTable<TData, TValue>({
                 ))}
               </thead>
               <tbody>
-                {table.getRowModel().rows.map(row => (
-                  <React.Fragment key={row.id + Math.random()}>
-                    <tr
-                      className={`cursor-pointer border-b border-slate-100 transition-colors duration-200 hover:bg-slate-50/50 dark:border-slate-700 dark:hover:bg-slate-700/50 ${rowClassName}`}
-                      onClick={(e) => {
-                        // Don't expand if clicking on interactive elements
-                        const target = e.target as HTMLElement;
-                        if (target.closest('input[type="checkbox"], button, [role="button"], [data-no-expand]')) {
-                          return;
-                        }
+                {isLoading
+                  ? (
+                      Array.from({ length: skeletonRowCount ?? pageSize }).map((_, idx) => (
+                        <tr key={`skeleton-row-${idx}`} className={`border-b border-slate-100 dark:border-slate-700 ${rowClassName}`}>
+                          <td className={`px-6 py-4 ${cellClassName}`} colSpan={memoizedColumns.length}>
+                            <div className="flex items-center gap-4">
+                              <Skeleton className="h-5 w-5" />
+                              <Skeleton className="h-5 w-1/3" />
+                              <Skeleton className="h-5 w-1/2" />
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )
+                  : table.getRowModel().rows.length === 0
+                    ? (
+                        <tr className={`border-b border-slate-100 dark:border-slate-700 ${rowClassName}`}>
+                          <td className={`px-6 py-6 text-sm text-slate-500 dark:text-slate-400 ${cellClassName}`} colSpan={memoizedColumns.length}>
+                            No results
+                          </td>
+                        </tr>
+                      )
+                    : (
+                        table.getRowModel().rows.map(row => (
+                          <React.Fragment key={row.id + Math.random()}>
+                            <tr
+                              className={`cursor-pointer border-b border-slate-100 transition-colors duration-200 hover:bg-slate-50/50 dark:border-slate-700 dark:hover:bg-slate-700/50 ${rowClassName}`}
+                              onClick={(e) => {
+                                // Don't expand if clicking on interactive elements
+                                const target = e.target as HTMLElement;
+                                if (target.closest('input[type="checkbox"], button, [role="button"], [data-no-expand]')) {
+                                  return;
+                                }
 
-                        if (renderExpandedRow && onExpandedChange) {
-                          const rowId = (row.original as any).id;
-                          onExpandedChange({
-                            ...expandedState,
-                            [rowId]: !expandedState[rowId],
-                          });
-                        }
-                      }}
-                    >
-                      {row.getVisibleCells().map(cell => (
-                        <td key={cell.id + Math.random()} className={`px-6 py-4 ${cellClassName}`}>
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </td>
-                      ))}
-                    </tr>
-                    {renderExpandedRow && expandedState[(row.original as any).id] && (
-                      renderExpandedRow(row)
-                    )}
-                  </React.Fragment>
-                ))}
+                                if (renderExpandedRow && onExpandedChange) {
+                                  const rowId = (row.original as any).id;
+                                  onExpandedChange({
+                                    ...expandedState,
+                                    [rowId]: !expandedState[rowId],
+                                  });
+                                }
+                              }}
+                            >
+                              {row.getVisibleCells().map(cell => (
+                                <td key={cell.id + Math.random()} className={`px-6 py-4 ${cellClassName}`}>
+                                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                </td>
+                              ))}
+                            </tr>
+                            {renderExpandedRow && expandedState[(row.original as any).id] && (
+                              renderExpandedRow(row)
+                            )}
+                          </React.Fragment>
+                        ))
+                      )}
               </tbody>
             </table>
           </div>

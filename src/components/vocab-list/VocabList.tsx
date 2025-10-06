@@ -22,7 +22,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Form } from '@/components/ui/form';
-import { Skeleton } from '@/components/ui/skeleton';
 import { DataTable } from '@/components/ui/table';
 import { useApiPagination, useAuth, useLanguageFolder, useVocabs, vocabMutations } from '@/hooks';
 import AddVocabDialog from './AddVocabDialog';
@@ -87,6 +86,7 @@ const VocabList: React.FC = () => {
     pageSize: pagination.pageSize,
     sortBy: pagination.sortBy, // Optional - can be changed by table column clicking
     sortOrder: pagination.sortOrder,
+    textSource: globalFilter || undefined,
     sourceLanguageCode,
     targetLanguageCode,
     languageFolderId,
@@ -464,72 +464,10 @@ const VocabList: React.FC = () => {
         />
 
         {/* Loading and Error States */}
-        {isLoading && (
-          <div className="space-y-4">
-            {/* Table Header Skeleton */}
-            <div className="rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
-              <div className="border-b border-slate-200 p-4 dark:border-slate-700">
-                <Skeleton className="h-10 w-64" />
-              </div>
-              {/* Table Rows Skeleton */}
-              <div className="divide-y divide-slate-200 dark:divide-slate-700">
-                {Array.from({ length: pagination.pageSize }).map(_ => (
-                  <div key={Math.random()} className="flex items-center gap-4 p-4">
-                    <Skeleton className="h-5 w-5" />
-                    <Skeleton className="h-5 w-1/3" />
-                    <Skeleton className="h-5 w-1/2" />
-                    <div className="ml-auto flex gap-2">
-                      <Skeleton className="h-8 w-8" />
-                      <Skeleton className="h-8 w-8" />
-                      <Skeleton className="h-8 w-8" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-              {/* Pagination Skeleton */}
-              <div className="flex items-center justify-between border-t border-slate-200 p-4 dark:border-slate-700">
-                <Skeleton className="h-9 w-32" />
-                <Skeleton className="h-9 w-48" />
-              </div>
-            </div>
-          </div>
-        )}
 
         {isError && (
           <div className="flex items-center justify-center p-8">
             <div className="text-lg text-red-600">Error loading vocabularies. Please try again.</div>
-          </div>
-        )}
-
-        {/* Empty State */}
-        {!isLoading && data.length === 0 && (
-          <div className="flex flex-col items-center justify-center p-12 text-center">
-            <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800">
-              <svg
-                className="h-12 w-12 text-slate-400 dark:text-slate-500"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                />
-              </svg>
-            </div>
-            <h3 className="mt-4 text-lg font-medium text-slate-900 dark:text-white">No vocabularies yet</h3>
-            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-              Get started by adding your first vocabulary item to build your learning collection.
-            </p>
-            <Button
-              onClick={() => setOpen(true)}
-              className="mt-6"
-            >
-              Add your first vocabulary
-            </Button>
           </div>
         )}
 
@@ -552,38 +490,40 @@ const VocabList: React.FC = () => {
               editMode={editMode}
               editingItem={editingItem}
             />
-            {data.length > 0 && (
-              <DataTable
-                columns={columns}
-                data={data}
-                searchPlaceholder="Search vocab..."
-                searchValue={globalFilter}
-                onSearchChangeAction={setGlobalFilter}
-                showSearch={true}
-                showPagination={true}
-                pageSize={pagination.pageSize}
-                className=""
-                headerClassName=""
-                rowClassName=""
-                cellClassName=""
-                expandedState={expanded}
-                onExpandedChange={setExpanded}
-                renderExpandedRow={row => (
-                  <ExpandedRowContent
-                    vocab={row.original}
-                    columnsCount={columns.length}
-                  />
-                )}
-                // Server-side pagination & sorting
-                manualPagination={true}
-                manualSorting={true}
-                pageCount={totalPages}
-                currentPage={currentPage}
-                totalItems={totalItems}
-                onPageChange={handlePageChange}
-                onSortingChange={handleSort}
-              />
-            )}
+
+            <DataTable
+              columns={columns}
+              data={data}
+              searchPlaceholder="Search vocab..."
+              searchValue={globalFilter}
+              onSearchChangeAction={setGlobalFilter}
+              showSearch={true}
+              showPagination={true}
+              pageSize={pagination.pageSize}
+              isLoading={isLoading}
+              skeletonRowCount={pagination.pageSize}
+              className=""
+              headerClassName=""
+              rowClassName=""
+              cellClassName=""
+              expandedState={expanded}
+              onExpandedChange={setExpanded}
+              renderExpandedRow={row => (
+                <ExpandedRowContent
+                  vocab={row.original}
+                  columnsCount={columns.length}
+                />
+              )}
+              // Server-side pagination & sorting
+              manualPagination={true}
+              manualSorting={true}
+              manualFiltering={true}
+              pageCount={totalPages}
+              currentPage={currentPage}
+              totalItems={totalItems}
+              onPageChange={handlePageChange}
+              onSortingChange={handleSort}
+            />
           </>
         )}
       </div>
