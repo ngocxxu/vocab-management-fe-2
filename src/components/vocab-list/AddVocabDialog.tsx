@@ -10,7 +10,6 @@ import TextTargetTabs from './TextTargetTabs';
 
 type VocabFormData = {
   textSource: string;
-  languageFolderId: string;
   sourceLanguageCode: string;
   targetLanguageCode: string;
   textTargets: Array<{
@@ -122,11 +121,11 @@ const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
                 ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Validating...
+                      {editMode ? 'Updating...' : 'Validating...'}
                     </>
                   )
                 : (
-                    'Add Vocabulary'
+                    editMode ? 'Update Vocabulary' : 'Add Vocabulary'
                   )}
             </Button>
           </DialogFooter>

@@ -34,7 +34,6 @@ const generateId = () => `${Date.now()}-${Math.random().toString(36).substr(2, 9
 // Define the form schema
 const FormSchema = z.object({
   textSource: z.string().min(1, 'Source text is required'),
-  languageFolderId: z.string().min(1, 'Language folder is required'),
   sourceLanguageCode: z.string().min(1, 'Source language is required'),
   targetLanguageCode: z.string().min(1, 'Target language is required'),
   textTargets: z.array(z.object({
@@ -104,7 +103,6 @@ const VocabList: React.FC = () => {
     mode: 'onChange', // Re-validate on change for better UX
     defaultValues: {
       textSource: '',
-      languageFolderId: languageFolderId || '',
       sourceLanguageCode: sourceLanguageCode || '',
       targetLanguageCode: targetLanguageCode || '',
       textTargets: [{
@@ -135,7 +133,6 @@ const VocabList: React.FC = () => {
   const resetForm = () => {
     form.reset({
       textSource: '',
-      languageFolderId: languageFolderId || '',
       sourceLanguageCode: sourceLanguageCode || '',
       targetLanguageCode: targetLanguageCode || '',
       textTargets: [{
@@ -286,6 +283,7 @@ const VocabList: React.FC = () => {
       // Strip out the client-side IDs before sending to API
       const apiData = {
         ...formData,
+        languageFolderId: languageFolderId || '',
         textTargets: formData.textTargets.map(({ id, ...target }) => ({
           ...target,
           vocabExamples: target.vocabExamples.map(({ id: exampleId, ...example }) => example),
