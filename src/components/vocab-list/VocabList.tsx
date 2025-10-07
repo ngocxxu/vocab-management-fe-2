@@ -38,7 +38,7 @@ const FormSchema = z.object({
   targetLanguageCode: z.string().min(1, 'Target language is required'),
   textTargets: z.array(z.object({
     id: z.string(),
-    wordTypeId: z.string().min(1, 'Word type is required'),
+    wordTypeId: z.string().optional(),
     textTarget: z.string().min(1, 'Target text is required'),
     grammar: z.string(),
     explanationSource: z.string(),

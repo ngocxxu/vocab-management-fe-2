@@ -17,7 +17,7 @@ type WordType = {
 
 type TextTarget = {
   id: string;
-  wordTypeId: string;
+  wordTypeId?: string;
   textTarget: string;
   grammar: string;
   explanationSource: string;
@@ -29,7 +29,7 @@ type TextTarget = {
 type TextTargetFormProps = {
   targetIndex: number;
   target: TextTarget;
-  wordTypes: { items: WordType[] };
+  wordTypes: WordType[];
   isLoading: boolean;
   isError: boolean;
   subjects: TSubject[];
@@ -72,7 +72,7 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
         <div>
           <Label htmlFor={`wordType-${targetIndex}`}>Word Type</Label>
           <Select
-            value={target.wordTypeId}
+            value={target.wordTypeId || ''}
             onValueChange={(value: string) => onInputChange('wordTypeId', value, targetIndex)}
           >
             <SelectTrigger className="mt-1 w-full">
@@ -92,7 +92,7 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
                       </SelectItem>
                     )
                   : (
-                      wordTypes.items.map((wordType: WordType) => (
+                      wordTypes.map((wordType: WordType) => (
                         <SelectItem key={wordType.id} value={wordType.id}>
                           {wordType.name}
                         </SelectItem>

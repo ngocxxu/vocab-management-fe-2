@@ -16,7 +16,7 @@ export type TVocabTrainer = {
   userId: string;
   vocabAssignments: TVocabAssignment[];
   results: TWordResults[];
-  questions: TQuestion[];
+  questionAnswers: TQuestion[];
   updatedAt: string;
   createdAt: string;
 };
@@ -40,6 +40,7 @@ export type TQuestion = {
   content: string[];
   options: TOption[];
   type: EVocabTrainerType;
+  correctAnswer: string;
 };
 
 export type TFormInputsVocabTrainer = {
@@ -60,7 +61,7 @@ export type TFormTestVocabTrainer = {
 export type TQuestionAPI = {
   name: string;
   setCountTime: number;
-  questions: TQuestion[];
+  questionAnswers: TQuestion[];
 };
 
 export type TCreateVocabTrainer = {

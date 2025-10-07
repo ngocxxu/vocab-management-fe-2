@@ -11,7 +11,7 @@ import TextTargetForm from './TextTargetForm';
 
 type TextTarget = {
   id: string;
-  wordTypeId: string;
+  wordTypeId?: string;
   textTarget: string;
   grammar: string;
   explanationSource: string;

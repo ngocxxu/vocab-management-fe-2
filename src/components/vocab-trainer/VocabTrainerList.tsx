@@ -79,7 +79,7 @@ const VocabTrainerList: React.FC = () => {
     defaultValues: {
       name: '',
       questionType: EQuestionType.MULTIPLE_CHOICE,
-      setCountTime: 60,
+      setCountTime: 900,
       reminderDisabled: false,
       vocabAssignmentIds: [],
     },
@@ -99,7 +99,7 @@ const VocabTrainerList: React.FC = () => {
     form.reset({
       name: '',
       questionType: EQuestionType.MULTIPLE_CHOICE,
-      setCountTime: 60,
+      setCountTime: 900,
       reminderDisabled: false,
       vocabAssignmentIds: [],
     });
@@ -369,25 +369,6 @@ const VocabTrainerList: React.FC = () => {
         {isError && (
           <div className="flex items-center justify-center p-8">
             <div className="text-lg text-red-600">Error loading vocab trainers. Please try again.</div>
-          </div>
-        )}
-
-        {/* Empty State - only when no filter applied */}
-        {!isLoading && data.length === 0 && !globalFilter && (
-          <div className="flex flex-col items-center justify-center p-12 text-center">
-            <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800">
-              <PlayCircle className="h-12 w-12 text-slate-400 dark:text-slate-500" />
-            </div>
-            <h3 className="mt-4 text-lg font-medium text-slate-900 dark:text-white">No vocab trainers yet</h3>
-            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-              Get started by creating your first vocabulary trainer to practice and test your knowledge.
-            </p>
-            <Button
-              onClick={() => setOpen(true)}
-              className="mt-6"
-            >
-              Create your first trainer
-            </Button>
           </div>
         )}
 

@@ -14,7 +14,7 @@ type VocabFormData = {
   targetLanguageCode: string;
   textTargets: Array<{
     id: string;
-    wordTypeId: string;
+    wordTypeId?: string;
     textTarget: string;
     grammar: string;
     explanationSource: string;
