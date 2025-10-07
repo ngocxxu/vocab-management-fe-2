@@ -45,11 +45,11 @@ export type TQuestion = {
 
 export type TFormInputsVocabTrainer = {
   name: string;
-  wordTestSelects: string[];
+  wordTestSelects: TWordTestSelect[];
   setCountTime: number;
 };
 
-export type TWordTestSelect = { vocabId: string; userSelected: string };
+export type TWordTestSelect = { systemSelected: string; userSelected: string };
 
 export type TFormTestVocabTrainer = {
   id: string;
