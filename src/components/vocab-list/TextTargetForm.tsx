@@ -59,6 +59,17 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
     <div className="space-y-4">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div>
+          <Label htmlFor={`textTarget-${targetIndex}`}>Target Text</Label>
+          <Input
+            id={`textTarget-${targetIndex}`}
+            placeholder="Enter target text..."
+            value={target.textTarget}
+            onChange={e => onInputChange('textTarget', e.target.value, targetIndex)}
+            className="mt-1"
+          />
+        </div>
+
+        <div>
           <Label htmlFor={`wordType-${targetIndex}`}>Word Type</Label>
           <Select
             value={target.wordTypeId}
@@ -90,7 +101,9 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
             </SelectContent>
           </Select>
         </div>
+      </div>
 
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div>
           <Label htmlFor={`grammar-${targetIndex}`}>Grammar</Label>
           <Input

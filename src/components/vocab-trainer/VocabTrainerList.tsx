@@ -366,8 +366,6 @@ const VocabTrainerList: React.FC = () => {
           hasActiveFilters={selectedStatuses.length > 0 || selectedQuestionTypes.length > 0 || !!globalFilter}
         />
 
-        {/* Loading handled inside DataTable skeleton rows */}
-
         {isError && (
           <div className="flex items-center justify-center p-8">
             <div className="text-lg text-red-600">Error loading vocab trainers. Please try again.</div>
