@@ -177,8 +177,8 @@ const VocabTrainerList: React.FC = () => {
       };
 
       if (editMode && editingItem) {
-        // Note: Update is not implemented in the API yet
-        // TODO: Update flow not implemented
+        // Update existing trainer
+        await vocabTrainerMutations.update(editingItem.id, apiData);
       } else {
         // Create new trainer
         await vocabTrainerMutations.create(apiData);

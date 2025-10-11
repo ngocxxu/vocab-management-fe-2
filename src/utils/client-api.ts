@@ -119,6 +119,10 @@ export const vocabTrainerApi = {
     const config = API_METHODS.vocabTrainers.create(trainerData);
     return ClientAPI.post<TVocabTrainer>(config.endpoint, config.data);
   },
+  update: (id: string, trainerData: Partial<TCreateVocabTrainer>) => {
+    const config = API_METHODS.vocabTrainers.update(id, trainerData);
+    return ClientAPI.put<TVocabTrainer>(config.endpoint, config.data);
+  },
   delete: (id: string) => {
     const config = API_METHODS.vocabTrainers.delete(id);
     return ClientAPI.delete(config.endpoint);

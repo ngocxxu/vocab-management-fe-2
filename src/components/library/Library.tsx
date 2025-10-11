@@ -142,17 +142,7 @@ const Library: React.FC = () => {
       accessorKey: 'name',
       header: 'Folder Name',
       cell: ({ row }) => (
-        <div
-          className="cursor-pointer"
-          onClick={() => handleFolderClick(row.original)}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              handleFolderClick(row.original);
-            }
-          }}
-        >
+        <div>
           <div className="text-sm font-medium text-slate-900 dark:text-white">
             {row.original.name}
           </div>
@@ -236,7 +226,7 @@ const Library: React.FC = () => {
       enableHiding: false,
       size: 100,
     },
-  ], [handleFolderClick, handleEdit, handleDelete]);
+  ], [handleEdit, handleDelete]);
 
   return (
     <div className="h-full bg-gradient-to-br from-slate-50 via-white to-blue-50/30 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900/30">
@@ -271,6 +261,7 @@ const Library: React.FC = () => {
             showSearch={false}
             showPagination={true}
             pageSize={pagination.pageSize}
+            onRowClick={handleFolderClick}
             // Server-side pagination & sorting
             manualPagination={true}
             manualSorting={true}

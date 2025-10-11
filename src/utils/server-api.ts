@@ -202,6 +202,10 @@ export const vocabTrainerApi = {
     const config = API_METHODS.vocabTrainers.create(trainerData);
     return serverApi.post(config.endpoint, config.data);
   },
+  update: (id: string, trainerData: any) => {
+    const config = API_METHODS.vocabTrainers.update(id, trainerData);
+    return serverApi.put(config.endpoint, config.data);
+  },
   delete: (id: string) => {
     const config = API_METHODS.vocabTrainers.delete(id);
     return serverApi.delete(config.endpoint);

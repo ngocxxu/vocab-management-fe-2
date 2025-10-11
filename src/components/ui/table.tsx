@@ -39,6 +39,7 @@ type DataTableProps<TData, TValue> = {
   renderExpandedRow?: (row: any) => React.ReactNode;
   expandedState?: Record<string, boolean>;
   onExpandedChange?: (expanded: Record<string, boolean>) => void;
+  onRowClick?: (row: TData) => void;
   // Server-side pagination & sorting
   manualPagination?: boolean;
   manualSorting?: boolean;
@@ -69,6 +70,7 @@ export function DataTable<TData, TValue>({
   renderExpandedRow,
   expandedState = DEFAULT_EXPANDED_STATE,
   onExpandedChange,
+  onRowClick,
   // Server-side props
   manualPagination = false,
   manualSorting = false,
@@ -264,6 +266,13 @@ export function DataTable<TData, TValue>({
                                   return;
                                 }
 
+                                // Handle row click for navigation
+                                if (onRowClick) {
+                                  onRowClick(row.original);
+                                  return;
+                                }
+
+                                // Handle expand/collapse if no row click handler
                                 if (renderExpandedRow && onExpandedChange) {
                                   const rowId = (row.original as any).id;
                                   onExpandedChange({

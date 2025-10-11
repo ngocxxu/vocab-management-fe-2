@@ -70,6 +70,11 @@ export const vocabTrainerMutations = {
     return await vocabTrainerApi.create(trainerData);
   },
 
+  // Update vocab trainer
+  update: async (id: string, trainerData: Partial<TCreateVocabTrainer>) => {
+    return await vocabTrainerApi.update(id, trainerData);
+  },
+
   // Delete vocab trainer
   delete: async (id: string) => {
     return await vocabTrainerApi.delete(id);

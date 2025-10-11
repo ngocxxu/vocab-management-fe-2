@@ -19,6 +19,24 @@ export async function GET(
   }
 }
 
+// PUT /api/vocab-trainers/[id] - Update vocab trainer
+export async function PUT(
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  try {
+    const { id } = await params;
+    const body = await _request.json();
+    const updatedTrainer = await vocabTrainerApi.update(id, body);
+    return NextResponse.json(updatedTrainer);
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Failed to update vocab trainer' },
+      { status: 500 },
+    );
+  }
+}
+
 // DELETE /api/vocab-trainers/[id] - Delete vocab trainer
 export async function DELETE(
   _request: NextRequest,
