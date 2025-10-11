@@ -212,7 +212,7 @@ export const vocabTrainerApi = {
   },
   submitExam: (id: string, testData: any) => {
     const config = API_METHODS.vocabTrainers.submitExam(id, testData);
-    return serverApi.put(config.endpoint, config.data);
+    return serverApi.patch(config.endpoint, config.data);
   },
   deleteBulk: (ids: string[]) => {
     const config = API_METHODS.vocabTrainers.deleteBulk(ids);

@@ -37,7 +37,8 @@ export type TWordResults = {
 };
 
 export type TQuestion = {
-  content: string[];
+  id: string;
+  content: string;
   options: TOption[];
   type: EVocabTrainerType;
   correctAnswer: string;
@@ -62,6 +63,7 @@ export type TQuestionAPI = {
   name: string;
   setCountTime: number;
   questionAnswers: TQuestion[];
+  questionType: EQuestionType;
 };
 
 export type TCreateVocabTrainer = {

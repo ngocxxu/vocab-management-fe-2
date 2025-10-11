@@ -1,5 +1,6 @@
 export * from './useApiPagination';
 export * from './useAuth';
+export * from './useExamData';
 export * from './useLanguageFolders';
 export * from './useLanguages';
 export * from './useSubjects';

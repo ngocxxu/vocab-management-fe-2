@@ -1,5 +1,10 @@
 export { default as AddVocabTrainerDialog } from './AddVocabTrainerDialog';
 export { default as BasicInfoForm } from './BasicInfoForm';
+export { default as ExamLauncher } from './ExamLauncher';
+export { default as ExamResults } from './ExamResults';
+export { default as QuestionCard } from './QuestionCard';
+export { default as VocabExam } from './VocabExam';
+export { default as VocabExamHeader } from './VocabExamHeader';
 export { default as VocabSelectionForm } from './VocabSelectionForm';
 export { default as VocabTrainerContent } from './VocabTrainerContent';
 export { default as VocabTrainerHeader } from './VocabTrainerHeader';

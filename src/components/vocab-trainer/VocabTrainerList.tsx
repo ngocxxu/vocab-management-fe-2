@@ -3,7 +3,7 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import type { TVocabTrainer } from '@/types/vocab-trainer';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Edit, PlayCircle, Trash } from 'lucide-react';
+import { Edit, Trash } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -26,6 +26,7 @@ import { DataTable } from '@/components/ui/table';
 import { EQuestionType } from '@/enum/vocab-trainer';
 import { useApiPagination, useAuth, useVocabTrainers, vocabTrainerMutations } from '@/hooks';
 import AddVocabTrainerDialog from './AddVocabTrainerDialog';
+import ExamLauncher from './ExamLauncher';
 import VocabTrainerHeader from './VocabTrainerHeader';
 
 // Define the form schema
@@ -292,17 +293,9 @@ const VocabTrainerList: React.FC = () => {
       header: '',
       cell: ({ row: _row }) => (
         <div className="flex items-center space-x-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 rounded-lg hover:bg-green-100 dark:hover:bg-green-700"
-            onClick={() => {
-              // Navigate to exam page
-              window.location.href = `/vocab-trainer/${_row.original.id}/exam`;
-            }}
-          >
-            <PlayCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
-          </Button>
+          <ExamLauncher
+            trainerId={_row.original.id}
+          />
           <Button
             variant="ghost"
             size="icon"
