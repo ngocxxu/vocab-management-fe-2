@@ -2,7 +2,7 @@ import type { AxiosRequestConfig } from 'axios';
 import type { LanguageFolderQueryParams, VocabQueryParams, VocabTrainerQueryParams } from './api-config';
 import type { ResponseAPI, TLanguage, TLanguageFolder } from '@/types';
 import type { TAuthResponse } from '@/types/auth';
-import type { TCreateVocab, TVocab } from '@/types/vocab-list';
+import type { TCreateVocab, TCsvImportResponse, TVocab } from '@/types/vocab-list';
 import type {
   TCreateVocabTrainer,
   TFormTestVocabTrainer,
@@ -102,6 +102,14 @@ export const vocabApi = {
   deleteBulk: (ids: string[]) => {
     const config = API_METHODS.vocabs.deleteBulk(ids);
     return ClientAPI.post(config.endpoint, config.data);
+  },
+  importCsv: (file: File, params: { languageFolderId: string; sourceLanguageCode: string; targetLanguageCode: string }) => {
+    const config = API_METHODS.vocabs.importCsv(params);
+    const formData = new FormData();
+    formData.append('file', file);
+    return ClientAPI.post<TCsvImportResponse>(config.endpoint, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
   },
 };
 

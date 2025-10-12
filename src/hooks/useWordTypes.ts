@@ -6,7 +6,7 @@ export const useWordTypes = () => {
   const { data, error, isLoading, mutate } = useSWR('wordTypes', () => wordTypesApi.getAll());
 
   return {
-    wordTypes: data.items || [],
+    wordTypes: data?.items || [],
     isLoading,
     isError: error,
     mutate,

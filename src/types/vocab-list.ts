@@ -40,3 +40,15 @@ export type TCreateVocab = {
     },
   ];
 };
+
+export type TCsvImportResponse = {
+  created: number;
+  updated: number;
+  failed: number;
+  totalProcessed: number;
+  errors?: Array<{
+    row: number;
+    error: string;
+    data: Record<string, any>;
+  }>;
+};

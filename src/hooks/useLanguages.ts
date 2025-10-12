@@ -6,7 +6,7 @@ export const useLanguages = () => {
   const { data, error, isLoading, mutate } = useSWR('languages', () => languagesApi.getAll());
 
   return {
-    languages: data?.items,
+    languages: data?.items || [],
     isLoading,
     isError: error,
     mutate,

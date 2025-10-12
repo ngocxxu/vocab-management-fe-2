@@ -186,6 +186,30 @@ export const vocabApi = {
     const config = API_METHODS.vocabs.deleteBulk(ids);
     return serverApi.post(config.endpoint, config.data);
   },
+  importCsv: async (file: File, params: { languageFolderId: string; sourceLanguageCode: string; targetLanguageCode: string }) => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const queryString = new URLSearchParams(params).toString();
+    const endpoint = `${API_ENDPOINTS.vocabs}/import/csv?${queryString}`;
+
+    const cookieStore = await cookies();
+    const backendUrl = `${Env.NESTJS_API_URL || 'http://localhost:3002/api/v1'}${endpoint}`;
+
+    const response = await fetch(backendUrl, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        Cookie: cookieStore.toString(),
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`CSV import failed: ${response.status} ${response.statusText}`);
+    }
+
+    return response.json();
+  },
 };
 
 // Vocabulary Trainer API endpoints

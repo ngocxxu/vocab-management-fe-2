@@ -1,17 +1,19 @@
 'use client';
 
 import type { TLanguageFolder } from '@/types/language-folder';
-import { Filter, Folder, Plus } from 'lucide-react';
+import { Filter, Folder, Plus, Upload } from 'lucide-react';
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { MultiSelect } from '@/components/ui/multi-select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getLanguageName } from '../library/utils';
+import DownloadTemplateButton from './DownloadTemplateButton';
 
 type VocabListHeaderProps = {
   totalCount: number;
   onAddVocab: () => void;
+  onImportExcel: () => void;
   sourceLanguageCode: string;
   targetLanguageCode: string;
   languageFolder?: TLanguageFolder;
@@ -28,6 +30,7 @@ type VocabListHeaderProps = {
 const VocabListHeader: React.FC<VocabListHeaderProps> = ({
   totalCount,
   onAddVocab,
+  onImportExcel,
   sourceLanguageCode,
   targetLanguageCode,
   languageFolder,
@@ -141,6 +144,15 @@ const VocabListHeader: React.FC<VocabListHeaderProps> = ({
             </div>
           </PopoverContent>
         </Popover>
+        <DownloadTemplateButton />
+        <Button
+          onClick={onImportExcel}
+          variant="outline"
+          className="border-slate-200 bg-white/80 backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/80"
+        >
+          <Upload className="mr-2 h-4 w-4" />
+          Import Excel
+        </Button>
         <Button
           onClick={onAddVocab}
           className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg hover:from-blue-700 hover:to-indigo-700 dark:from-blue-500 dark:to-indigo-500 dark:hover:from-blue-600 dark:hover:to-indigo-600"

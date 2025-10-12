@@ -26,6 +26,7 @@ import { DataTable } from '@/components/ui/table';
 import { useApiPagination, useAuth, useLanguageFolder, useSubjects, useVocabs, vocabMutations } from '@/hooks';
 import AddVocabDialog from './AddVocabDialog';
 import ExpandedRowContent from './ExpandedRowContent';
+import ImportVocabDialog from './ImportVocabDialog';
 import VocabListHeader from './VocabListHeader';
 
 // Utility function to generate unique IDs
@@ -56,6 +57,7 @@ type FormData = z.infer<typeof FormSchema>;
 
 const VocabList: React.FC = () => {
   const [open, setOpen] = React.useState(false);
+  const [importDialogOpen, setImportDialogOpen] = React.useState(false);
   const [editMode, setEditMode] = React.useState(false);
   const [editingItem, setEditingItem] = React.useState<TVocab | null>(null);
   const [globalFilter, setGlobalFilter] = useState('');
@@ -262,6 +264,10 @@ const VocabList: React.FC = () => {
     form.setValue('textTargets', updatedTargets);
   };
 
+  const handleImportSuccess = useCallback(() => {
+    mutate(); // Refresh the vocab list
+  }, [mutate]);
+
   const clearFilters = () => {
     setSelectedSubjectIds([]);
     setGlobalFilter('');
@@ -463,6 +469,7 @@ const VocabList: React.FC = () => {
         <VocabListHeader
           totalCount={totalItems}
           onAddVocab={() => setOpen(true)}
+          onImportExcel={() => setImportDialogOpen(true)}
           sourceLanguageCode={sourceLanguageCode || ''}
           targetLanguageCode={targetLanguageCode || ''}
           languageFolder={languageFolder}
@@ -501,6 +508,15 @@ const VocabList: React.FC = () => {
               setOpen={handleCloseDialog}
               editMode={editMode}
               editingItem={editingItem}
+            />
+
+            <ImportVocabDialog
+              open={importDialogOpen}
+              onOpenChange={setImportDialogOpen}
+              languageFolderId={languageFolderId || ''}
+              sourceLanguageCode={sourceLanguageCode || ''}
+              targetLanguageCode={targetLanguageCode || ''}
+              onImportSuccess={handleImportSuccess}
             />
 
             <DataTable

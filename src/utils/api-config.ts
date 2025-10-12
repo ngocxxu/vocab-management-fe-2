@@ -98,6 +98,10 @@ export const API_METHODS = {
     delete: (id: string) => ({ endpoint: `${API_ENDPOINTS.vocabs}/${id}` }),
     createBulk: (vocabData: TCreateVocab[]) => ({ endpoint: `${API_ENDPOINTS.vocabs}/bulk/create`, data: { data: { vocabData } } }),
     deleteBulk: (ids: string[]) => ({ endpoint: `${API_ENDPOINTS.vocabs}/bulk/delete`, data: { data: { ids } } }),
+    importCsv: (params: { languageFolderId: string; sourceLanguageCode: string; targetLanguageCode: string }) => {
+      const queryString = buildQueryString(params);
+      return { endpoint: `${API_ENDPOINTS.vocabs}/import/csv?${queryString}` };
+    },
   },
   vocabTrainers: {
     getAll: (params?: VocabTrainerQueryParams) => {
