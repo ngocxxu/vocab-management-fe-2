@@ -4,8 +4,9 @@ export * from './useExamData';
 export * from './useLanguageFolders';
 export * from './useLanguages';
 export * from './useNotifications';
+export * from './useSocket';
 export * from './useSubjects';
-// Export all custom hooks
+export * from './useTheme';
 export * from './useVocabs';
 export * from './useVocabTrainers';
 export * from './useWordTypes';

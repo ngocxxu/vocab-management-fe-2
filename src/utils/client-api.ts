@@ -262,11 +262,11 @@ export const languageFoldersApi = {
 export const notificationsApi = {
   getMy: () => {
     const config = API_METHODS.notifications.getMy();
-    return ClientAPI.get<TNotification[]>(config.endpoint);
+    return ClientAPI.get<ResponseAPI<TNotification[]>>(config.endpoint);
   },
   getUnread: () => {
     const config = API_METHODS.notifications.getUnread();
-    return ClientAPI.get<TNotification[]>(config.endpoint);
+    return ClientAPI.get<ResponseAPI<TNotification[]>>(config.endpoint);
   },
   getUnreadCount: () => {
     const config = API_METHODS.notifications.getUnreadCount();

@@ -1,15 +1,15 @@
 'use client';
 
 import { useTheme as useNextTheme } from 'next-themes';
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 
 export function useTheme() {
   const { theme, setTheme, systemTheme } = useNextTheme();
-  const mounted = useRef(false);
+  const [mounted, setMounted] = useState(false);
 
   // useEffect only runs on the client, so now we can safely show the UI
   useEffect(() => {
-    mounted.current = true;
+    setMounted(true);
   }, []);
 
   const toggleTheme = () => {
@@ -25,7 +25,7 @@ export function useTheme() {
   return {
     theme: currentTheme,
     systemTheme,
-    mounted: mounted.current,
+    mounted,
     toggleTheme,
     setTheme,
   };

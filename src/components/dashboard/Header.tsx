@@ -1,6 +1,7 @@
-import { Bell, LogOut, Menu, Moon, Search, Sun, User } from 'lucide-react';
+import { LogOut, Menu, Moon, Search, Sun, User } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import React from 'react';
+import { NotificationDropdown } from '@/components/notifications/NotificationDropdown';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { authMutations, useAuth } from '@/hooks/useAuth';
@@ -11,7 +12,7 @@ type HeaderProps = {
 };
 
 export const Header: React.FC<HeaderProps> = ({ onSidebarToggle }) => {
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme, mounted } = useTheme();
   const router = useRouter();
   const pathname = usePathname();
   const { user } = useAuth();
@@ -95,19 +96,22 @@ export const Header: React.FC<HeaderProps> = ({ onSidebarToggle }) => {
             className="h-10 w-10 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800"
             onClick={toggleTheme}
             title={
-              theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
+              mounted ? (theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode') : 'Toggle theme'
             }
           >
-            {theme === 'dark'
-              ? <Sun className="h-5 w-5 text-slate-400" />
-              : <Moon className="h-5 w-5 text-slate-600" />}
+            {mounted
+              ? (
+                  theme === 'dark'
+                    ? <Sun className="h-5 w-5 text-slate-400" />
+                    : <Moon className="h-5 w-5 text-slate-600" />
+                )
+              : (
+                  <div className="h-5 w-5" />
+                )}
           </Button>
 
           {/* Notifications */}
-          <Button variant="ghost" size="icon" className="relative h-10 w-10 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800">
-            <Bell className="h-5 w-5 text-slate-600 dark:text-slate-400" />
-            <span className="absolute -top-1 -right-1 flex h-3 w-3 items-center justify-center rounded-full bg-blue-500"></span>
-          </Button>
+          <NotificationDropdown />
 
           {/* User Profile & Logout */}
           <div className="flex items-center space-x-2">

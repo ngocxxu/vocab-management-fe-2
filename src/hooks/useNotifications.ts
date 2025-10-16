@@ -10,7 +10,7 @@ export const useNotifications = () => {
   );
 
   return {
-    notifications: data || [],
+    notifications: data?.items || [],
     isLoading,
     isError: error,
     mutate,
@@ -25,7 +25,7 @@ export const useUnreadNotifications = () => {
   );
 
   return {
-    unreadNotifications: data || [],
+    unreadNotifications: data?.items || [],
     isLoading,
     isError: error,
     mutate,
