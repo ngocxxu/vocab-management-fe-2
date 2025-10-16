@@ -2,6 +2,15 @@ import type { AxiosRequestConfig } from 'axios';
 import type { LanguageFolderQueryParams, VocabQueryParams, VocabTrainerQueryParams } from './api-config';
 import type { ResponseAPI, TLanguage, TLanguageFolder } from '@/types';
 import type { TAuthResponse } from '@/types/auth';
+import type {
+  TDeleteNotificationResponse,
+  TMarkAllAsReadResponse,
+  TMarkAsReadResponse,
+  TNotification,
+  TNotificationInput,
+  TUnreadCountResponse,
+  TUpdateNotificationStatusInput,
+} from '@/types/notification';
 import type { TCreateVocab, TCsvImportResponse, TVocab } from '@/types/vocab-list';
 import type {
   TCreateVocabTrainer,
@@ -249,6 +258,50 @@ export const languageFoldersApi = {
   },
 };
 
+// Notifications API endpoints
+export const notificationsApi = {
+  getMy: () => {
+    const config = API_METHODS.notifications.getMy();
+    return ClientAPI.get<TNotification[]>(config.endpoint);
+  },
+  getUnread: () => {
+    const config = API_METHODS.notifications.getUnread();
+    return ClientAPI.get<TNotification[]>(config.endpoint);
+  },
+  getUnreadCount: () => {
+    const config = API_METHODS.notifications.getUnreadCount();
+    return ClientAPI.get<TUnreadCountResponse>(config.endpoint);
+  },
+  markAsRead: (id: string) => {
+    const config = API_METHODS.notifications.markAsRead(id);
+    return ClientAPI.patch<TMarkAsReadResponse>(config.endpoint, {});
+  },
+  markAllAsRead: () => {
+    const config = API_METHODS.notifications.markAllAsRead();
+    return ClientAPI.patch<TMarkAllAsReadResponse>(config.endpoint, {});
+  },
+  delete: (id: string) => {
+    const config = API_METHODS.notifications.delete(id);
+    return ClientAPI.delete<TDeleteNotificationResponse>(config.endpoint);
+  },
+  getById: (id: string) => {
+    const config = API_METHODS.notifications.getById(id);
+    return ClientAPI.get<TNotification>(config.endpoint);
+  },
+  create: (notificationData: TNotificationInput) => {
+    const config = API_METHODS.notifications.create(notificationData);
+    return ClientAPI.post<TNotification>(config.endpoint, config.data);
+  },
+  update: (id: string, notificationData: Partial<TNotificationInput>) => {
+    const config = API_METHODS.notifications.update(id, notificationData);
+    return ClientAPI.put<TNotification>(config.endpoint, config.data);
+  },
+  updateStatus: (id: string, statusData: TUpdateNotificationStatusInput) => {
+    const config = API_METHODS.notifications.updateStatus(id, statusData);
+    return ClientAPI.patch<TNotification>(config.endpoint, config.data);
+  },
+};
+
 // Main API object for easy access
 export const api = {
   auth: authApi,
@@ -258,6 +311,7 @@ export const api = {
   wordTypes: wordTypesApi,
   languages: languagesApi,
   languageFolders: languageFoldersApi,
+  notifications: notificationsApi,
 };
 
 // Export the axios instance for direct use when needed

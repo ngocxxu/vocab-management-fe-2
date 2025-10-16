@@ -1,4 +1,13 @@
 import type { LanguageFolderQueryParams, VocabQueryParams, VocabTrainerQueryParams } from './api-config';
+import type {
+  TDeleteNotificationResponse,
+  TMarkAllAsReadResponse,
+  TMarkAsReadResponse,
+  TNotification,
+  TNotificationInput,
+  TUnreadCountResponse,
+  TUpdateNotificationStatusInput,
+} from '@/types/notification';
 import type { TVocab } from '@/types/vocab-list';
 import { cookies } from 'next/headers';
 import { Env } from '@/libs/Env';
@@ -348,6 +357,47 @@ export const languageFoldersApi = {
   },
 };
 
+// Notifications API endpoints
+export const notificationsApi = {
+  getMy: (includeDeleted?: boolean) => {
+    const config = API_METHODS.notifications.getMy();
+    const endpoint = includeDeleted ? `${config.endpoint}?includeDeleted=true` : config.endpoint;
+    return serverApi.get<TNotification[]>(endpoint);
+  },
+  getUnread: () => {
+    const config = API_METHODS.notifications.getUnread();
+    return serverApi.get<TNotification[]>(config.endpoint);
+  },
+  getUnreadCount: () => {
+    const config = API_METHODS.notifications.getUnreadCount();
+    return serverApi.get<TUnreadCountResponse>(config.endpoint);
+  },
+  markAsRead: (id: string) => {
+    const config = API_METHODS.notifications.markAsRead(id);
+    return serverApi.patch<TMarkAsReadResponse>(config.endpoint, {});
+  },
+  markAllAsRead: () => {
+    const config = API_METHODS.notifications.markAllAsRead();
+    return serverApi.patch<TMarkAllAsReadResponse>(config.endpoint, {});
+  },
+  delete: (id: string) => {
+    const config = API_METHODS.notifications.delete(id);
+    return serverApi.delete<TDeleteNotificationResponse>(config.endpoint);
+  },
+  getById: (id: string) => {
+    return serverApi.get<TNotification>(`${API_ENDPOINTS.notifications}/${id}`);
+  },
+  create: (notificationData: TNotificationInput) => {
+    return serverApi.post<TNotification>(API_ENDPOINTS.notifications, notificationData);
+  },
+  update: (id: string, notificationData: Partial<TNotificationInput>) => {
+    return serverApi.put<TNotification>(`${API_ENDPOINTS.notifications}/${id}`, notificationData);
+  },
+  updateStatus: (id: string, statusData: TUpdateNotificationStatusInput) => {
+    return serverApi.patch<TNotification>(`${API_ENDPOINTS.notifications}/${id}/status`, statusData);
+  },
+};
+
 // Main API object for easy access
 export const api = {
   auth: authApi,
@@ -357,4 +407,5 @@ export const api = {
   wordTypes: wordTypesApi,
   languages: languagesApi,
   languageFolders: languageFoldersApi,
+  notifications: notificationsApi,
 };

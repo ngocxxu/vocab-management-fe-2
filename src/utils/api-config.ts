@@ -1,4 +1,8 @@
 import type { EQuestionType } from '@/enum/vocab-trainer';
+import type {
+  TNotificationInput,
+  TUpdateNotificationStatusInput,
+} from '@/types/notification';
 import type { TCreateVocab } from '@/types/vocab-list';
 import type {
   TCreateVocabTrainer,
@@ -71,6 +75,7 @@ export const API_ENDPOINTS = {
   wordTypes: '/word-types',
   languages: '/languages',
   languageFolders: '/language-folders',
+  notifications: '/notifications',
 } as const;
 
 // API method configurations
@@ -154,5 +159,17 @@ export const API_METHODS = {
     create: (languageFolderData: { name: string; folderColor: string; sourceLanguageCode: string; targetLanguageCode: string }) => ({ endpoint: API_ENDPOINTS.languageFolders, data: languageFolderData }),
     update: (id: string, languageFolderData: { name: string; folderColor: string; sourceLanguageCode: string; targetLanguageCode: string }) => ({ endpoint: `${API_ENDPOINTS.languageFolders}/${id}`, data: languageFolderData }),
     delete: (id: string) => ({ endpoint: `${API_ENDPOINTS.languageFolders}/${id}` }),
+  },
+  notifications: {
+    getMy: () => ({ endpoint: `${API_ENDPOINTS.notifications}/my` }),
+    getUnread: () => ({ endpoint: `${API_ENDPOINTS.notifications}/my/unread` }),
+    getUnreadCount: () => ({ endpoint: `${API_ENDPOINTS.notifications}/my/unread-count` }),
+    markAsRead: (id: string) => ({ endpoint: `${API_ENDPOINTS.notifications}/${id}/my/mark-as-read` }),
+    markAllAsRead: () => ({ endpoint: `${API_ENDPOINTS.notifications}/my/mark-all-as-read` }),
+    delete: (id: string) => ({ endpoint: `${API_ENDPOINTS.notifications}/${id}/my` }),
+    getById: (id: string) => ({ endpoint: `${API_ENDPOINTS.notifications}/${id}` }),
+    create: (notificationData: TNotificationInput) => ({ endpoint: API_ENDPOINTS.notifications, data: notificationData }),
+    update: (id: string, notificationData: Partial<TNotificationInput>) => ({ endpoint: `${API_ENDPOINTS.notifications}/${id}`, data: notificationData }),
+    updateStatus: (id: string, statusData: TUpdateNotificationStatusInput) => ({ endpoint: `${API_ENDPOINTS.notifications}/${id}/status`, data: statusData }),
   },
 } as const;

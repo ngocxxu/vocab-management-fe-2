@@ -45,5 +45,8 @@ export * from './language';
 // Export language folder types
 export * from './language-folder';
 
+// Export notification types
+export * from './notification';
+
 // Export subject types
 export * from './subject';
