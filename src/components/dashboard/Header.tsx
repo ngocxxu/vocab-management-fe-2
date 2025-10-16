@@ -64,7 +64,10 @@ export const Header: React.FC<HeaderProps> = ({ onSidebarToggle }) => {
           {/* Navigation Links */}
           <div className="flex items-center space-x-6">
             {navigationItems.map((item) => {
-              const isActive = pathname === item.path;
+              // Special handling for vocab-trainer to include exam pages
+              const isActive = item.path === '/vocab-trainer'
+                ? pathname.startsWith('/vocab-trainer')
+                : pathname === item.path;
               return (
                 <Button
                   key={item.path}
