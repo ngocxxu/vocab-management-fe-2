@@ -7,9 +7,11 @@ import {
   Settings,
   User,
 } from 'lucide-react';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import React from 'react';
 import { Button } from '@/components/ui/button';
+import { authMutations, useAuth } from '@/hooks/useAuth';
 
 type MenuItem = {
   id: string;
@@ -40,6 +42,7 @@ type SidebarProps = {
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
   const router = useRouter();
   const pathname = usePathname();
+  const { user, mutate } = useAuth();
 
   // Get the current active item from pathname
   const getCurrentActiveItem = () => {
@@ -49,6 +52,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
 
   const handleButtonClick = (buttonId: string) => {
     router.push(`/${buttonId}`);
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await authMutations.signout();
+      // Clear the auth cache
+      mutate();
+      // Redirect to signin page
+      router.push('/signin');
+    } catch (error) {
+      console.error('Sign out failed:', error);
+    }
   };
 
   return (
@@ -98,15 +113,38 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
       <div className="flex-shrink-0 border-t border-slate-200/60 p-4 dark:border-slate-700/60">
         <div className="flex items-center justify-between rounded-xl bg-blue-50 p-4 dark:bg-blue-950/30">
           <div className="flex items-center space-x-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-blue-400 to-blue-600">
-              <User className="h-6 w-6 text-white" />
-            </div>
+            {user?.avatar
+              ? (
+                  <Image
+                    src={user.avatar}
+                    alt={`${user?.firstName ?? ''} ${user?.lastName ?? ''}`.trim() || 'Avatar'}
+                    width={40}
+                    height={40}
+                    className="h-10 w-10 rounded-full object-cover"
+                  />
+                )
+              : (
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-blue-400 to-blue-600">
+                    <User className="h-6 w-6 text-white" />
+                  </div>
+                )}
             <div>
-              <p className="font-semibold text-slate-900 dark:text-white">Mathew</p>
-              <p className="text-sm text-slate-600 dark:text-slate-400">Designer</p>
+              <p className="font-semibold text-slate-900 dark:text-white">
+                {user?.firstName && user?.lastName
+                  ? `${user.firstName} ${user.lastName}`
+                  : 'User'}
+              </p>
+              <p className="text-sm text-slate-600 dark:text-slate-400">
+                {user?.email || 'user@example.com'}
+              </p>
             </div>
           </div>
-          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-slate-100 dark:hover:bg-slate-700">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 w-8 p-0 hover:bg-slate-100 dark:hover:bg-slate-700"
+            onClick={handleSignOut}
+          >
             <Power className="h-4 w-4 text-slate-600 dark:text-slate-400" />
           </Button>
         </div>

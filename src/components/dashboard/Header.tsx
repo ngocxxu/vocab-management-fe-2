@@ -1,4 +1,5 @@
 import { LogOut, Menu, Moon, Search, Sun, User } from 'lucide-react';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import React from 'react';
 import { NotificationDropdown } from '@/components/notifications/NotificationDropdown';
@@ -115,9 +116,21 @@ export const Header: React.FC<HeaderProps> = ({ onSidebarToggle }) => {
 
           {/* User Profile & Logout */}
           <div className="flex items-center space-x-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-blue-400 to-blue-600 shadow-sm">
-              <User className="h-5 w-5 text-white" />
-            </div>
+            {user?.avatar
+              ? (
+                  <Image
+                    src={user.avatar}
+                    alt={`${user?.firstName ?? ''} ${user?.lastName ?? ''}`.trim() || 'Avatar'}
+                    width={40}
+                    height={40}
+                    className="h-10 w-10 rounded-full object-cover shadow-sm"
+                  />
+                )
+              : (
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-blue-400 to-blue-600 shadow-sm">
+                    <User className="h-5 w-5 text-white" />
+                  </div>
+                )}
             <div className="text-sm">
               <div className="font-medium text-slate-900 dark:text-slate-100">
                 {user?.firstName}

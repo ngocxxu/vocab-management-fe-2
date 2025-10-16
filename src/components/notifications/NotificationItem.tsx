@@ -68,15 +68,22 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
       className={cn(
         'group relative flex items-start space-x-3 rounded-lg p-3 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50 mt-2',
         !isRead && 'bg-blue-50/50 dark:bg-blue-950/20',
+        isRead && 'bg-slate-50 dark:bg-slate-800/30',
         itemIndex === 0 && 'mt-0',
       )}
       role="button"
       tabIndex={0}
-      onKeyDown={handleClick}
+      onClick={handleClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleClick();
+        }
+      }}
     >
       {/* Notification Icon */}
       <div className="flex-shrink-0">
-        <div className={cn('flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700', iconColor)}>
+        <div className={cn('flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700', iconColor, isRead && 'opacity-60')}>
           <IconComponent className="h-4 w-4" />
         </div>
       </div>
@@ -86,7 +93,8 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <p className={cn(
-              'text-sm font-medium text-slate-900 dark:text-slate-100',
+              'text-sm font-medium',
+              isRead ? 'text-slate-600 dark:text-slate-300' : 'text-slate-900 dark:text-slate-100',
               !isRead && 'font-semibold',
             )}
             >
