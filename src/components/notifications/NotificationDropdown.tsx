@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { notificationMutations, useNotifications, useUnreadCount, useUnreadNotifications } from '@/hooks/useNotifications';
 import { cn } from '@/libs/utils';
@@ -133,7 +134,6 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ clas
           <TabsList className="grid w-full grid-cols-2 rounded-none border-b border-slate-200 dark:border-slate-700">
             <TabsTrigger
               value="unread"
-              className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-blue-500"
             >
               Unread
               {unreadCount > 0 && (
@@ -144,7 +144,6 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ clas
             </TabsTrigger>
             <TabsTrigger
               value="all"
-              className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-blue-500"
             >
               All
               <Badge variant="outline" className="ml-2 h-4 px-1 text-xs">
@@ -180,14 +179,18 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ clas
                   : (
                       <div className="p-2">
                         {displayedUnreadNotifications.map((notification, index) => (
-                          <NotificationItem
-                            itemIndex={index}
-                            key={notification.id}
-                            notification={notification}
-                            isRead={false}
-                            onMarkAsRead={handleNotificationRead}
-                            onDelete={handleNotificationDelete}
-                          />
+                          <React.Fragment key={notification.id}>
+                            <NotificationItem
+                              itemIndex={index}
+                              notification={notification}
+                              isRead={false}
+                              onMarkAsRead={handleNotificationRead}
+                              onDelete={handleNotificationDelete}
+                            />
+                            {index < displayedUnreadNotifications.length - 1 && (
+                              <Separator className="my-2" />
+                            )}
+                          </React.Fragment>
                         ))}
                         {displayedUnreadNotifications.length < unreadNotificationsWithRecipients.length && (
                           <div className="py-2 text-center text-xs text-slate-500 dark:text-slate-400">
@@ -234,16 +237,19 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ clas
                   : (
                       <div className="p-2">
                         {displayedAllNotifications.map((notification, index) => (
-                          <NotificationItem
-                            itemIndex={index}
-                            key={notification.id}
-                            notification={notification}
-                            isRead={notification.isRead}
-                            onMarkAsRead={handleNotificationRead}
-                            onDelete={handleNotificationDelete}
-                          />
-                        ),
-                        )}
+                          <React.Fragment key={notification.id}>
+                            <NotificationItem
+                              itemIndex={index}
+                              notification={notification}
+                              isRead={notification.isRead}
+                              onMarkAsRead={handleNotificationRead}
+                              onDelete={handleNotificationDelete}
+                            />
+                            {index < displayedAllNotifications.length - 1 && (
+                              <Separator className="my-2" />
+                            )}
+                          </React.Fragment>
+                        ))}
                         {displayedAllNotifications.length < (allNotificationsWithRecipients?.length || 0) && (
                           <div className="py-2 text-center text-xs text-slate-500 dark:text-slate-400">
                             Showing

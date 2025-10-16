@@ -31,6 +31,12 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       return;
     }
 
+    // Check if socket URL is configured
+    if (!Env.NEXT_PUBLIC_SOCKET_URL) {
+      console.warn('🔌 Socket URL not configured. WebSocket notifications will be disabled.');
+      return;
+    }
+
     // Create socket connection to notification namespace
     const socketInstance = io(`${Env.NEXT_PUBLIC_SOCKET_URL}/notification`, {
       transports: ['websocket', 'polling'],
@@ -38,6 +44,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
+      timeout: 10000, // 10 second timeout
     });
 
     // Connection event handlers
@@ -57,6 +64,18 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     socketInstance.on('connect_error', (error) => {
       console.error('🔌 Socket connection error:', error);
       setIsConnected(false);
+
+      // Log specific error details for debugging
+      if (error.message) {
+        console.error('🔌 Error message:', error.message);
+      }
+      // Socket.IO specific error properties
+      if ('description' in error && error.description) {
+        console.error('🔌 Error description:', error.description);
+      }
+      if ('context' in error && error.context) {
+        console.error('🔌 Error context:', error.context);
+      }
     });
 
     // Listen for notification events
@@ -72,6 +91,22 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     // Listen for connection confirmation
     socketInstance.on('connected', (data) => {
       console.warn('🔌 Socket connected:', data);
+    });
+
+    // Handle reconnection errors
+    socketInstance.on('reconnect_error', (error) => {
+      console.error('🔌 Socket reconnection error:', error);
+    });
+
+    // Handle reconnection attempts
+    socketInstance.on('reconnect_attempt', (attemptNumber) => {
+      console.warn(`🔌 Socket reconnection attempt ${attemptNumber}`);
+    });
+
+    // Handle failed reconnection
+    socketInstance.on('reconnect_failed', () => {
+      console.error('🔌 Socket reconnection failed after all attempts');
+      setIsConnected(false);
     });
 
     setSocket(socketInstance);
