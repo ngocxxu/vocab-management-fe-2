@@ -3,12 +3,12 @@ import {
   AlertCircle,
   BookOpen,
   CheckCircle,
-  Clock,
   FolderOpen,
   GraduationCap,
   Info,
   Settings,
 } from 'lucide-react';
+import { CircleFill } from '@/components/ui/circle-fill';
 
 /**
  * Format notification message based on type, action, and data
@@ -179,8 +179,8 @@ export const getNotificationStatusIcon = (isRead: boolean, priority: string) => 
     case 'HIGH':
       return AlertCircle;
     case 'MEDIUM':
-      return Clock;
+      return CircleFill;
     default:
-      return Clock;
+      return CircleFill;
   }
 };

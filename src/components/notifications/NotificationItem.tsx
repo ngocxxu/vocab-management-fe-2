@@ -1,10 +1,8 @@
 'use client';
 
 import type { TNotification } from '@/types/notification';
-import { Trash2 } from 'lucide-react';
 import React from 'react';
 import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
 import { notificationMutations } from '@/hooks/useNotifications';
 import { cn } from '@/libs/utils';
 import {
@@ -28,7 +26,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
   notification,
   isRead,
   onMarkAsRead,
-  onDelete,
+  // onDelete,
 }) => {
   const IconComponent = getNotificationIcon(notification.type);
   const StatusIcon = getNotificationStatusIcon(isRead, notification.priority);
@@ -49,26 +47,24 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
     }
   };
 
-  const handleDelete = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (onDelete) {
-      try {
-        await notificationMutations.delete(notification.id);
-        onDelete();
-        toast.success('Notification deleted');
-      } catch (error) {
-        console.error('Failed to delete notification:', error);
-        toast.error('Failed to delete notification');
-      }
-    }
-  };
+  // const handleDelete = async (e: React.MouseEvent) => {
+  //   e.stopPropagation();
+  //   if (onDelete) {
+  //     try {
+  //       await notificationMutations.delete(notification.id);
+  //       onDelete();
+  //       toast.success('Notification deleted');
+  //     } catch (error) {
+  //       console.error('Failed to delete notification:', error);
+  //       toast.error('Failed to delete notification');
+  //     }
+  //   }
+  // };
 
   return (
     <div
       className={cn(
-        'group relative flex items-start space-x-3 rounded-lg p-3 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50 mt-2',
-        !isRead && 'bg-blue-50/50 dark:bg-blue-950/20',
-        isRead && 'bg-slate-50 dark:bg-slate-800/30',
+        'group relative flex items-start space-x-3 rounded-lg p-2 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer',
         itemIndex === 0 && 'mt-0',
       )}
       role="button"
@@ -105,14 +101,6 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
             </p>
           </div>
 
-          {/* Status Indicator */}
-          <div className="ml-2 flex-shrink-0">
-            <StatusIcon className={cn(
-              'h-3 w-3',
-              isRead ? 'text-slate-400' : 'text-blue-500',
-            )}
-            />
-          </div>
         </div>
 
         {/* Priority Badge */}
@@ -125,8 +113,19 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
         )}
       </div>
 
+      {/* Status Indicator */}
+      <div className="flex-shrink-0">
+        {!isRead && (
+          <StatusIcon className={cn(
+            'size-3',
+            'text-blue-500',
+          )}
+          />
+        )}
+      </div>
+
       {/* Delete Button */}
-      <div className="flex-shrink-0 opacity-0 transition-opacity group-hover:opacity-100">
+      {/* <div className="flex-shrink-0 opacity-0 transition-opacity group-hover:opacity-100">
         <Button
           variant="ghost"
           size="sm"
@@ -136,7 +135,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
         >
           <Trash2 className="h-3 w-3" />
         </Button>
-      </div>
+      </div> */}
     </div>
   );
 };

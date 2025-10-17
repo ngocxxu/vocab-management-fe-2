@@ -1,5 +1,6 @@
 'use client';
 
+import type { TNotification } from '@/types/notification';
 import { Bell, CheckCheck } from 'lucide-react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
@@ -21,6 +22,66 @@ type NotificationDropdownProps = {
   className?: string;
 };
 
+type NotificationWithReadStatus = TNotification & {
+  isRead: boolean;
+};
+
+type NotificationListProps = {
+  notifications: NotificationWithReadStatus[];
+  isLoading: boolean;
+  emptyMessage: string;
+  onMarkAsRead: () => void;
+  onDelete: () => void;
+};
+
+const NotificationList: React.FC<NotificationListProps> = ({
+  notifications,
+  isLoading,
+  emptyMessage,
+  onMarkAsRead,
+  onDelete,
+}) => {
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <div className="text-sm text-slate-500 dark:text-slate-400">
+          Loading notifications...
+        </div>
+      </div>
+    );
+  }
+
+  if (notifications.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-8 text-center">
+        <Bell className="h-8 w-8 text-slate-300 dark:text-slate-600" />
+        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+          {emptyMessage}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-2">
+      {notifications.map((notification, index) => (
+        <React.Fragment key={notification.id}>
+          <NotificationItem
+            itemIndex={index}
+            notification={notification}
+            isRead={false}
+            onMarkAsRead={onMarkAsRead}
+            onDelete={onDelete}
+          />
+          {index < notifications.length - 1 && (
+            <Separator className="my-2" />
+          )}
+        </React.Fragment>
+      ))}
+    </div>
+  );
+};
+
 export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ className }) => {
   const [displayedCount, setDisplayedCount] = useState(5);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -31,7 +92,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ clas
 
   // Reset displayed count when dropdown opens
   useEffect(() => {
-    setDisplayedCount(() => 5);
+    setDisplayedCount(5);
   }, []);
 
   const handleMarkAllAsRead = async () => {
@@ -108,7 +169,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ clas
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent className="w-80 p-0" align="end">
+      <DropdownMenuContent className="w-96 p-0" align="end">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 dark:border-slate-700">
           <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
@@ -159,54 +220,26 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ clas
               ref={scrollAreaRef}
               onScrollCapture={handleScroll}
             >
-              {isLoadingUnread
-                ? (
-                    <div className="flex items-center justify-center py-8">
-                      <div className="text-sm text-slate-500 dark:text-slate-400">
-                        Loading notifications...
-                      </div>
-                    </div>
-                  )
-                : displayedUnreadNotifications.length === 0
-                  ? (
-                      <div className="flex flex-col items-center justify-center py-8 text-center">
-                        <Bell className="h-8 w-8 text-slate-300 dark:text-slate-600" />
-                        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-                          No unread notifications
-                        </p>
-                      </div>
-                    )
-                  : (
-                      <div className="p-2">
-                        {displayedUnreadNotifications.map((notification, index) => (
-                          <React.Fragment key={notification.id}>
-                            <NotificationItem
-                              itemIndex={index}
-                              notification={notification}
-                              isRead={false}
-                              onMarkAsRead={handleNotificationRead}
-                              onDelete={handleNotificationDelete}
-                            />
-                            {index < displayedUnreadNotifications.length - 1 && (
-                              <Separator className="my-2" />
-                            )}
-                          </React.Fragment>
-                        ))}
-                        {displayedUnreadNotifications.length < unreadNotificationsWithRecipients.length && (
-                          <div className="py-2 text-center text-xs text-slate-500 dark:text-slate-400">
-                            Showing
-                            {' '}
-                            {displayedUnreadNotifications.length}
-                            {' '}
-                            of
-                            {' '}
-                            {unreadNotificationsWithRecipients.length}
-                            {' '}
-                            notifications
-                          </div>
-                        )}
-                      </div>
-                    )}
+              <NotificationList
+                notifications={displayedUnreadNotifications}
+                isLoading={isLoadingUnread}
+                emptyMessage="No unread notifications"
+                onMarkAsRead={handleNotificationRead}
+                onDelete={handleNotificationDelete}
+              />
+              {displayedUnreadNotifications.length < unreadNotificationsWithRecipients.length && (
+                <div className="py-2 text-center text-xs text-slate-500 dark:text-slate-400">
+                  Showing
+                  {' '}
+                  {displayedUnreadNotifications.length}
+                  {' '}
+                  of
+                  {' '}
+                  {unreadNotificationsWithRecipients.length}
+                  {' '}
+                  notifications
+                </div>
+              )}
             </ScrollArea>
           </TabsContent>
 
@@ -217,54 +250,26 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ clas
               ref={scrollAreaRef}
               onScrollCapture={handleScroll}
             >
-              {isLoadingAll
-                ? (
-                    <div className="flex items-center justify-center py-8">
-                      <div className="text-sm text-slate-500 dark:text-slate-400">
-                        Loading notifications...
-                      </div>
-                    </div>
-                  )
-                : displayedAllNotifications.length === 0
-                  ? (
-                      <div className="flex flex-col items-center justify-center py-8 text-center">
-                        <Bell className="h-8 w-8 text-slate-300 dark:text-slate-600" />
-                        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-                          No notifications yet
-                        </p>
-                      </div>
-                    )
-                  : (
-                      <div className="p-2">
-                        {displayedAllNotifications.map((notification, index) => (
-                          <React.Fragment key={notification.id}>
-                            <NotificationItem
-                              itemIndex={index}
-                              notification={notification}
-                              isRead={notification.isRead}
-                              onMarkAsRead={handleNotificationRead}
-                              onDelete={handleNotificationDelete}
-                            />
-                            {index < displayedAllNotifications.length - 1 && (
-                              <Separator className="my-2" />
-                            )}
-                          </React.Fragment>
-                        ))}
-                        {displayedAllNotifications.length < (allNotificationsWithRecipients?.length || 0) && (
-                          <div className="py-2 text-center text-xs text-slate-500 dark:text-slate-400">
-                            Showing
-                            {' '}
-                            {displayedAllNotifications.length}
-                            {' '}
-                            of
-                            {' '}
-                            {allNotificationsWithRecipients?.length || 0}
-                            {' '}
-                            notifications
-                          </div>
-                        )}
-                      </div>
-                    )}
+              <NotificationList
+                notifications={displayedAllNotifications}
+                isLoading={isLoadingAll}
+                emptyMessage="No notifications yet"
+                onMarkAsRead={handleNotificationRead}
+                onDelete={handleNotificationDelete}
+              />
+              {displayedAllNotifications.length < (allNotificationsWithRecipients?.length || 0) && (
+                <div className="py-2 text-center text-xs text-slate-500 dark:text-slate-400">
+                  Showing
+                  {' '}
+                  {displayedAllNotifications.length}
+                  {' '}
+                  of
+                  {' '}
+                  {allNotificationsWithRecipients?.length || 0}
+                  {' '}
+                  notifications
+                </div>
+              )}
             </ScrollArea>
           </TabsContent>
         </Tabs>
