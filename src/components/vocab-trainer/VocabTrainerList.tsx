@@ -23,6 +23,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Form } from '@/components/ui/form';
 import { DataTable } from '@/components/ui/table';
+import { QUESTION_TYPE_OPTIONS } from '@/constants/vocab-trainer';
 import { EQuestionType } from '@/enum/vocab-trainer';
 import { useApiPagination, useAuth, useVocabTrainers, vocabTrainerMutations } from '@/hooks';
 import AddVocabTrainerDialog from './AddVocabTrainerDialog';
@@ -118,14 +119,6 @@ const VocabTrainerList: React.FC = () => {
     { value: 'PENDING', label: 'Pending' },
     { value: 'PASSED', label: 'Passed' },
     { value: 'FAILED', label: 'Failed' },
-  ];
-
-  const questionTypeOptions = [
-    { value: EQuestionType.MULTIPLE_CHOICE, label: 'Multiple Choice' },
-    { value: EQuestionType.TRUE_OR_FALSE, label: 'True/False' },
-    { value: EQuestionType.FILL_IN_THE_BLANK, label: 'Fill in the Blank' },
-    { value: EQuestionType.MATCHING, label: 'Matching' },
-    { value: EQuestionType.SHORT_ANSWER, label: 'Short Answer' },
   ];
 
   const handleEdit = useCallback((item: TVocabTrainer) => {
@@ -352,7 +345,7 @@ const VocabTrainerList: React.FC = () => {
           statusOptions={statusOptions}
           selectedStatuses={selectedStatuses}
           onStatusFilterChange={setSelectedStatuses}
-          questionTypeOptions={questionTypeOptions}
+          questionTypeOptions={QUESTION_TYPE_OPTIONS}
           selectedQuestionTypes={selectedQuestionTypes}
           onQuestionTypeFilterChange={setSelectedQuestionTypes}
           onClearFilters={clearFilters}

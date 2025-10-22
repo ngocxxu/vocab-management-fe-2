@@ -12,7 +12,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
-import { EQuestionType } from '@/enum/vocab-trainer';
+import { QUESTION_TYPE_OPTIONS } from '@/constants/vocab-trainer';
 
 const BasicInfoForm: React.FC = () => {
   const form = useFormContext();
@@ -63,11 +63,11 @@ const BasicInfoForm: React.FC = () => {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value={EQuestionType.MULTIPLE_CHOICE}>Multiple Choice</SelectItem>
-                    <SelectItem value={EQuestionType.FILL_IN_THE_BLANK}>Fill in the Blank</SelectItem>
-                    <SelectItem value={EQuestionType.MATCHING}>Matching</SelectItem>
-                    <SelectItem value={EQuestionType.TRUE_OR_FALSE}>True or False</SelectItem>
-                    <SelectItem value={EQuestionType.SHORT_ANSWER}>Short Answer</SelectItem>
+                    {QUESTION_TYPE_OPTIONS.map(option => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 <FormMessage />

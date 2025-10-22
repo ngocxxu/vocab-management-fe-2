@@ -82,6 +82,61 @@ const NotificationList: React.FC<NotificationListProps> = ({
   );
 };
 
+type NotificationTabContentProps = {
+  notifications: NotificationWithReadStatus[];
+  isLoading: boolean;
+  emptyMessage: string;
+  displayedCount: number;
+  totalCount: number;
+  scrollAreaRef: React.RefObject<HTMLDivElement | null>;
+  onScroll: (event: React.UIEvent<HTMLDivElement>) => void;
+  onMarkAsRead: () => void;
+  onDelete: () => void;
+};
+
+const NotificationTabContent: React.FC<NotificationTabContentProps> = ({
+  notifications,
+  isLoading,
+  emptyMessage,
+  displayedCount,
+  totalCount,
+  scrollAreaRef,
+  onScroll,
+  onMarkAsRead,
+  onDelete,
+}) => {
+  return (
+    <React.Fragment>
+      <ScrollArea
+        className="h-90"
+        ref={scrollAreaRef}
+        onScrollCapture={onScroll}
+      >
+        <NotificationList
+          notifications={notifications}
+          isLoading={isLoading}
+          emptyMessage={emptyMessage}
+          onMarkAsRead={onMarkAsRead}
+          onDelete={onDelete}
+        />
+      </ScrollArea>
+      {displayedCount < totalCount && (
+        <div className="py-2 text-center text-xs text-slate-500 dark:text-slate-400">
+          Showing
+          {' '}
+          {displayedCount}
+          {' '}
+          of
+          {' '}
+          {totalCount}
+          {' '}
+          notifications
+        </div>
+      )}
+    </React.Fragment>
+  );
+};
+
 export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ className }) => {
   const [displayedCount, setDisplayedCount] = useState(5);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -92,6 +147,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ clas
 
   // Reset displayed count when dropdown opens
   useEffect(() => {
+    // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
     setDisplayedCount(5);
   }, []);
 
@@ -215,62 +271,32 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ clas
 
           {/* Unread Tab */}
           <TabsContent value="unread" className="m-0">
-            <ScrollArea
-              className="h-96"
-              ref={scrollAreaRef}
-              onScrollCapture={handleScroll}
-            >
-              <NotificationList
-                notifications={displayedUnreadNotifications}
-                isLoading={isLoadingUnread}
-                emptyMessage="No unread notifications"
-                onMarkAsRead={handleNotificationRead}
-                onDelete={handleNotificationDelete}
-              />
-              {displayedUnreadNotifications.length < unreadNotificationsWithRecipients.length && (
-                <div className="py-2 text-center text-xs text-slate-500 dark:text-slate-400">
-                  Showing
-                  {' '}
-                  {displayedUnreadNotifications.length}
-                  {' '}
-                  of
-                  {' '}
-                  {unreadNotificationsWithRecipients.length}
-                  {' '}
-                  notifications
-                </div>
-              )}
-            </ScrollArea>
+            <NotificationTabContent
+              notifications={displayedUnreadNotifications}
+              isLoading={isLoadingUnread}
+              emptyMessage="No unread notifications"
+              displayedCount={displayedUnreadNotifications.length}
+              totalCount={unreadNotificationsWithRecipients.length}
+              scrollAreaRef={scrollAreaRef}
+              onScroll={handleScroll}
+              onMarkAsRead={handleNotificationRead}
+              onDelete={handleNotificationDelete}
+            />
           </TabsContent>
 
           {/* All Tab */}
           <TabsContent value="all" className="m-0">
-            <ScrollArea
-              className="h-96"
-              ref={scrollAreaRef}
-              onScrollCapture={handleScroll}
-            >
-              <NotificationList
-                notifications={displayedAllNotifications}
-                isLoading={isLoadingAll}
-                emptyMessage="No notifications yet"
-                onMarkAsRead={handleNotificationRead}
-                onDelete={handleNotificationDelete}
-              />
-              {displayedAllNotifications.length < (allNotificationsWithRecipients?.length || 0) && (
-                <div className="py-2 text-center text-xs text-slate-500 dark:text-slate-400">
-                  Showing
-                  {' '}
-                  {displayedAllNotifications.length}
-                  {' '}
-                  of
-                  {' '}
-                  {allNotificationsWithRecipients?.length || 0}
-                  {' '}
-                  notifications
-                </div>
-              )}
-            </ScrollArea>
+            <NotificationTabContent
+              notifications={displayedAllNotifications}
+              isLoading={isLoadingAll}
+              emptyMessage="No notifications yet"
+              displayedCount={displayedAllNotifications.length}
+              totalCount={allNotificationsWithRecipients?.length || 0}
+              scrollAreaRef={scrollAreaRef}
+              onScroll={handleScroll}
+              onMarkAsRead={handleNotificationRead}
+              onDelete={handleNotificationDelete}
+            />
           </TabsContent>
         </Tabs>
       </DropdownMenuContent>

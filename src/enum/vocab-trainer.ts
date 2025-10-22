@@ -5,6 +5,7 @@ export enum EVocabTrainerType {
 
 export enum EQuestionType {
   MULTIPLE_CHOICE = 'MULTIPLE_CHOICE',
+  FLIP_CARD = 'FLIP_CARD',
   FILL_IN_THE_BLANK = 'FILL_IN_THE_BLANK',
   MATCHING = 'MATCHING',
   TRUE_OR_FALSE = 'TRUE_OR_FALSE',
