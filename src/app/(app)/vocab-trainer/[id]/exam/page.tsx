@@ -2,25 +2,31 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
-import VocabExam from '@/components/vocab-trainer/VocabExam';
+import { EQuestionType } from '@/enum/vocab-trainer';
 
 const ExamPage: React.FC = () => {
   const params = useParams();
   const router = useRouter();
   const trainerId = params.id as string;
-  const [examData, setExamData] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [_isLoading, setIsLoading] = useState(true);
 
-  // Load exam data from localStorage only (no API call)
-  const loadExamDataFromStorage = useCallback(() => {
+  // Load exam data from localStorage and redirect based on questionType
+  const loadExamDataAndRedirect = useCallback(() => {
     const storageKey = `exam_data_${trainerId}`;
     const cachedData = localStorage.getItem(storageKey);
 
     if (cachedData) {
       try {
         const parsedData = JSON.parse(cachedData);
-        setExamData(parsedData);
         setIsLoading(false);
+
+        // Redirect based on questionType
+        if (parsedData.questionType === EQuestionType.FLIP_CARD) {
+          router.push(`/vocab-trainer/${trainerId}/exam/flip-card`);
+        } else {
+          // Default to multiple choice for other question types
+          router.push(`/vocab-trainer/${trainerId}/exam/multiple-choice`);
+        }
       } catch (err) {
         console.error('Failed to parse cached exam data:', err);
         localStorage.removeItem(storageKey);
@@ -33,37 +39,15 @@ const ExamPage: React.FC = () => {
     }
   }, [trainerId, router]);
 
-  // Load exam data from localStorage only (no API call)
+  // Load exam data and redirect
   useEffect(() => {
-    loadExamDataFromStorage();
-  }, [loadExamDataFromStorage]);
+    loadExamDataAndRedirect();
+  }, [loadExamDataAndRedirect]);
 
-  // Clear localStorage when leaving the exam page
-  useEffect(() => {
-    // Clear localStorage when component unmounts (user leaves page)
-    return () => {
-      const storageKey = `exam_data_${trainerId}`;
-      localStorage.removeItem(storageKey);
-    };
-  }, [trainerId]);
-
-  // Show loading while checking localStorage
-  if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-900">
-        <div className="text-lg text-white">Loading exam...</div>
-      </div>
-    );
-  }
-
-  // If no exam data, component will redirect, so this shouldn't render
-  if (!examData) {
-    return null;
-  }
-
+  // Show loading while checking localStorage and redirecting
   return (
-    <div className="min-h-full bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-900">
-      <VocabExam trainerId={trainerId} examData={examData} />
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-900">
+      <div className="text-lg text-white">Loading exam...</div>
     </div>
   );
 };

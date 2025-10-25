@@ -78,3 +78,29 @@ export type TCreateVocabTrainer = {
   reminderLastRemind: string;
   vocabAssignmentIds: string[];
 };
+
+export type TFlipCardQuestion = {
+  frontText: string[];
+  backText: string[];
+  frontLanguageCode: string;
+  backLanguageCode: string;
+};
+
+export type TFlipCardResult = {
+  cardIndex: number;
+  frontText: string[];
+  backText: string[];
+  frontLanguageCode: string;
+  backLanguageCode: string;
+  assessment: 'known' | 'unknown';
+  timeSpent: number; // seconds spent on this card
+};
+
+export type TFlipCardExamData = {
+  trainerId: string;
+  trainerName: string;
+  questions: TFlipCardQuestion[];
+  results: TFlipCardResult[];
+  totalTimeElapsed: number;
+  completedAt: string;
+};
