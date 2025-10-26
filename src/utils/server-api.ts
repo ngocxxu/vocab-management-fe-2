@@ -219,6 +219,27 @@ export const vocabApi = {
 
     return response.json();
   },
+  exportCsv: async (params: VocabQueryParams): Promise<Response> => {
+    const { buildQueryString } = await import('./api-config');
+    const queryString = buildQueryString(params);
+    const endpoint = `${API_ENDPOINTS.vocabs}/export/csv?${queryString}`;
+
+    const cookieStore = await cookies();
+    const backendUrl = `${Env.NESTJS_API_URL || 'http://localhost:3002/api/v1'}${endpoint}`;
+
+    const response = await fetch(backendUrl, {
+      method: 'GET',
+      headers: {
+        Cookie: cookieStore.toString(),
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`CSV export failed: ${response.status} ${response.statusText}`);
+    }
+
+    return response;
+  },
 };
 
 // Vocabulary Trainer API endpoints

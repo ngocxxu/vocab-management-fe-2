@@ -3,6 +3,7 @@ export { default as BasicInfoForm } from './BasicInfoForm';
 export { default as DownloadTemplateButton } from './DownloadTemplateButton';
 export { default as ExamplesSection } from './ExamplesSection';
 export { default as ExpandedRowContent } from './ExpandedRowContent';
+export { default as ExportExcelButton } from './ExportExcelButton';
 export { default as ImportVocabDialog } from './ImportVocabDialog';
 export { default as SubjectsSection } from './SubjectsSection';
 export { default as TextTargetForm } from './TextTargetForm';

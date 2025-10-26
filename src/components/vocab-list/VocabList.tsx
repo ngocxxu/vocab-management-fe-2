@@ -480,6 +480,7 @@ const VocabList: React.FC = () => {
           onSubjectFilterChange={setSelectedSubjectIds}
           onClearFilters={clearFilters}
           hasActiveFilters={selectedSubjectIds.length > 0 || !!globalFilter}
+          queryParams={queryParams}
         />
 
         {/* Loading and Error States */}

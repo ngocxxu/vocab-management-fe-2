@@ -1,6 +1,7 @@
 'use client';
 
 import type { TLanguageFolder } from '@/types/language-folder';
+import type { VocabQueryParams } from '@/utils/api-config';
 import { Filter, Folder, Plus, Upload } from 'lucide-react';
 import React from 'react';
 import { Button } from '@/components/ui/button';
@@ -9,6 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Skeleton } from '@/components/ui/skeleton';
 import { getLanguageName } from '../library/utils';
 import DownloadTemplateButton from './DownloadTemplateButton';
+import ExportExcelButton from './ExportExcelButton';
 
 type VocabListHeaderProps = {
   totalCount: number;
@@ -25,6 +27,7 @@ type VocabListHeaderProps = {
   onSubjectFilterChange: (subjectIds: string[]) => void;
   onClearFilters: () => void;
   hasActiveFilters: boolean;
+  queryParams: VocabQueryParams;
 };
 
 const VocabListHeader: React.FC<VocabListHeaderProps> = ({
@@ -41,6 +44,7 @@ const VocabListHeader: React.FC<VocabListHeaderProps> = ({
   onSubjectFilterChange,
   onClearFilters,
   hasActiveFilters,
+  queryParams,
 }) => {
   return (
     <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
@@ -145,6 +149,7 @@ const VocabListHeader: React.FC<VocabListHeaderProps> = ({
           </PopoverContent>
         </Popover>
         <DownloadTemplateButton />
+        <ExportExcelButton queryParams={queryParams} />
         <Button
           onClick={onImportExcel}
           variant="outline"
