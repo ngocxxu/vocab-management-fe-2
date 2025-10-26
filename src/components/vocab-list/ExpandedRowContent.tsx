@@ -121,18 +121,25 @@ const ExpandedRowContent: React.FC<ExpandedRowContentProps> = ({
                     <div className="text-sm">
                       <span className="font-medium text-slate-700 dark:text-slate-300">Examples:</span>
                       <div className="mt-2 space-y-2">
-                        {target.vocabExamples.map(example => (
-                          <div key={example.source + Math.random()} className="rounded border border-slate-200 bg-slate-50 p-2 dark:border-slate-600 dark:bg-slate-700">
-                            <div className="grid grid-cols-1 gap-2">
-                              <div>
-                                <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Source:</span>
-                                <p className="text-slate-700 dark:text-slate-300">{example.source}</p>
+                        {target.vocabExamples.map((example, index) => (
+                          <div className="mt-2 space-y-2" key={example.source + index}>
+                            {example.source && (
+                              <div className="grid grid-cols-2 gap-2">
+                                <div className="rounded border border-slate-200 bg-slate-50 p-2 dark:border-slate-600 dark:bg-slate-700">
+                                  <div>
+                                    <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Source:</span>
+                                    <p className="text-slate-700 dark:text-slate-300">{example.source}</p>
+                                  </div>
+                                </div>
+
+                                <div className="rounded border border-slate-200 bg-slate-50 p-2 dark:border-slate-600 dark:bg-slate-700">
+                                  <div>
+                                    <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Target:</span>
+                                    <p className="text-slate-700 dark:text-slate-300">{example.target}</p>
+                                  </div>
+                                </div>
                               </div>
-                              <div>
-                                <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Target:</span>
-                                <p className="text-slate-700 dark:text-slate-300">{example.target}</p>
-                              </div>
-                            </div>
+                            ) }
                           </div>
                         ))}
                       </div>
