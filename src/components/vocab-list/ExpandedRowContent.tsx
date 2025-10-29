@@ -1,5 +1,9 @@
 import type { TVocab } from '@/types/vocab-list';
-import React from 'react';
+import { Volume2 } from 'lucide-react';
+import React, { useCallback } from 'react';
+import { useSpeechSynthesis } from 'react-speech-kit';
+import { Button } from '@/components/ui/button';
+import { selectVoiceByCode } from '@/utils/textToSpeech';
 
 type ExpandedRowContentProps = {
   vocab: TVocab;
@@ -21,6 +25,19 @@ const ExpandedRowContent: React.FC<ExpandedRowContentProps> = ({
   showSubjects = true,
   showExamples = true,
 }) => {
+  const { speak, cancel, voices } = useSpeechSynthesis();
+
+  const handleSpeakTextTarget = useCallback((text: string) => {
+    cancel();
+    speak({
+      text,
+      voice: selectVoiceByCode(voices, vocab.targetLanguageCode || 'en'),
+      rate: 0.95,
+      pitch: 1,
+      volume: 1,
+    });
+  }, [speak, cancel, voices, vocab.targetLanguageCode]);
+
   return (
     <tr className={`bg-slate-50 dark:bg-slate-800 ${className}`}>
       <td colSpan={columnsCount} className="p-4">
@@ -50,10 +67,20 @@ const ExpandedRowContent: React.FC<ExpandedRowContentProps> = ({
               >
                 {/* Target Header */}
                 <div className="mb-3 flex items-start justify-between">
-                  <div>
+                  <div className="flex items-center gap-2">
                     <h4 className="font-medium text-slate-900 dark:text-slate-100">
                       {target.textTarget}
                     </h4>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 p-0 hover:bg-slate-100 dark:hover:bg-slate-700"
+                      onClick={() => handleSpeakTextTarget(target.textTarget)}
+                      aria-label="Play pronunciation"
+                      title="Play pronunciation"
+                    >
+                      <Volume2 className="h-4 w-4 text-slate-500" />
+                    </Button>
                     <p className="text-xs text-slate-500 dark:text-slate-400">
                       Target
                       {' '}

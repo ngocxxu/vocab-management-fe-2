@@ -3,10 +3,11 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import type { TVocab } from '@/types/vocab-list';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ChevronDown, ChevronLeft, Edit, Trash } from 'lucide-react';
+import { ChevronDown, ChevronLeft, Edit, Trash, Volume2 } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useSpeechSynthesis } from 'react-speech-kit';
 import { z } from 'zod';
 import {
   AlertDialog,
@@ -24,6 +25,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Form } from '@/components/ui/form';
 import { DataTable } from '@/components/ui/table';
 import { useApiPagination, useAuth, useLanguageFolder, useSubjects, useVocabs, vocabMutations } from '@/hooks';
+import { selectVoiceByCode } from '@/utils/textToSpeech';
 import AddVocabDialog from './AddVocabDialog';
 import ExpandedRowContent from './ExpandedRowContent';
 import ImportVocabDialog from './ImportVocabDialog';
@@ -64,6 +66,18 @@ const VocabList: React.FC = () => {
   const [isMounted, setIsMounted] = useState(false);
   const [expanded, setExpanded] = React.useState<Record<string, boolean>>({});
   const [selectedSubjectIds, setSelectedSubjectIds] = useState<string[]>([]);
+  const { speak, cancel, voices } = useSpeechSynthesis();
+
+  const handleSpeakTextSource = useCallback((vocab: TVocab) => {
+    cancel();
+    speak({
+      text: vocab.textSource || '',
+      voice: selectVoiceByCode(voices, vocab.sourceLanguageCode || 'en'),
+      rate: 0.95,
+      pitch: 1,
+      volume: 1,
+    });
+  }, [speak, cancel, voices]);
 
   // Use reusable pagination hook
   const { pagination, handlers } = useApiPagination({
@@ -350,6 +364,20 @@ const VocabList: React.FC = () => {
         return (
           <div className="flex items-center space-x-3">
             <div className="font-semibold text-slate-900 dark:text-white">{row.original.textSource}</div>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6 p-0 hover:bg-slate-100 dark:hover:bg-slate-700"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleSpeakTextSource(row.original);
+              }}
+              aria-label="Play pronunciation"
+              title="Play pronunciation"
+            >
+              <Volume2 className="h-4 w-4 text-slate-500" />
+            </Button>
           </div>
         );
       },
@@ -461,7 +489,7 @@ const VocabList: React.FC = () => {
       enableHiding: false,
       size: 50,
     },
-  ], [expanded, handleEdit, mutate]);
+  ], [expanded, handleEdit, mutate, handleSpeakTextSource]);
 
   return (
     <Form {...form}>

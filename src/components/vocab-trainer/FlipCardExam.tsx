@@ -4,9 +4,11 @@ import type { TFlipCardExamData, TFlipCardQuestion, TFlipCardResult } from '@/ty
 import { ChevronLeft, ChevronRight, Clock } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useSpeechSynthesis } from 'react-speech-kit';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { selectVoiceByCode } from '@/utils/textToSpeech';
 import FlipCard from './FlipCard';
 import FlipCardResults from './FlipCardResults';
 
@@ -19,6 +21,7 @@ type ExamState = 'taking' | 'completed' | 'error';
 
 const FlipCardExam: React.FC<FlipCardExamProps> = ({ trainerId, examData }) => {
   const router = useRouter();
+  const { speak, cancel, voices } = useSpeechSynthesis();
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [assessments, setAssessments] = useState<Map<number, 'known' | 'unknown'>>(() => {
@@ -40,6 +43,28 @@ const FlipCardExam: React.FC<FlipCardExamProps> = ({ trainerId, examData }) => {
   const totalCards = questions.length;
   const isLastCard = currentCardIndex === totalCards - 1;
   const isFirstCard = currentCardIndex === 0;
+
+  const handlePlayAudio = useCallback(() => {
+    if (!currentQuestion) {
+      return;
+    }
+
+    const textToSpeak = isFlipped
+      ? (currentQuestion.backText || []).join(', ')
+      : (currentQuestion.frontText || []).join(', ');
+    const langCode = isFlipped
+      ? (currentQuestion.backLanguageCode || 'vi')
+      : (currentQuestion.frontLanguageCode || 'en');
+
+    cancel();
+    speak({
+      text: textToSpeak,
+      voice: selectVoiceByCode(voices, langCode),
+      rate: 0.9,
+      pitch: 1,
+      volume: 1,
+    });
+  }, [currentQuestion, isFlipped, speak, cancel, voices]);
   const handleAssessment = useCallback((assessment: 'known' | 'unknown') => {
     const timeSpent = Math.floor((Date.now() - cardStartTime) / 1000);
     setAssessments((prev) => {
@@ -236,6 +261,7 @@ const FlipCardExam: React.FC<FlipCardExamProps> = ({ trainerId, examData }) => {
           question={currentQuestion}
           isFlipped={isFlipped}
           onFlip={handleCardFlip}
+          onPlayAudio={handlePlayAudio}
         />
       </div>
 
