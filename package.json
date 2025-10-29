@@ -1,5 +1,6 @@
 {
   "name": "vocab-management-fe",
+  "version": "0.1.0",
   "engines": {
     "node": ">=20"
   },
@@ -110,6 +111,5 @@
       "@semantic-release/release-notes-generator",
       "@semantic-release/github"
     ]
-  },
-  "version": "0.1.0"
+  }
 }
