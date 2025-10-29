@@ -33,9 +33,11 @@ ENV NODE_ENV production
 
 # Accept build arguments for NEXT_PUBLIC_* vars
 ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_SOCKET_URL
 
 # Set them as ENV for build process
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_SOCKET_URL=$NEXT_PUBLIC_SOCKET_URL
 
 # Build the application
 RUN pnpm run build
