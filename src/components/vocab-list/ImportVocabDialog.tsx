@@ -168,10 +168,10 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="sm:max-w-[500px]" aria-describedby="import-dialog-description">
           <DialogHeader>
             <DialogTitle>Import Vocabulary</DialogTitle>
-            <DialogDescription>
+            <DialogDescription id="import-dialog-description">
               Upload an Excel file (.xls, .xlsx) or CSV file to import vocabulary data.
             </DialogDescription>
           </DialogHeader>

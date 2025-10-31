@@ -118,6 +118,7 @@ export const vocabApi = {
     formData.append('file', file);
     return ClientAPI.post<TCsvImportResponse>(config.endpoint, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
+      timeout: 300000, // 5 minutes to match backend timeout
     });
   },
 };
