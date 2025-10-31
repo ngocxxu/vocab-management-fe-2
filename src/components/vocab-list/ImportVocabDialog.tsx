@@ -237,78 +237,79 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
               Import Results
             </AlertDialogTitle>
             <AlertDialogDescription>
-              {importResult && (
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4 rounded-lg bg-slate-50 p-4 dark:bg-slate-800">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-500" />
-                      <span className="text-sm font-medium">
-                        Created:
-                        {importResult.created}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-blue-500" />
-                      <span className="text-sm font-medium">
-                        Updated:
-                        {importResult.updated}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <AlertCircle className="h-4 w-4 text-red-500" />
-                      <span className="text-sm font-medium">
-                        Failed:
-                        {importResult.failed}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium">
-                        Total:
-                        {importResult.totalProcessed}
-                      </span>
-                    </div>
-                  </div>
-
-                  {importResult.errors && importResult.errors.length > 0 && (
-                    <div>
-                      <h4 className="mb-2 font-medium">Error Details:</h4>
-                      <div className="max-h-60 overflow-auto rounded-lg border">
-                        <table className="w-full">
-                          <thead>
-                            <tr className="border-b bg-slate-50 dark:bg-slate-800">
-                              <th className="px-4 py-2 text-left text-sm font-medium text-slate-700 dark:text-slate-300">Row</th>
-                              <th className="px-4 py-2 text-left text-sm font-medium text-slate-700 dark:text-slate-300">Error</th>
-                              <th className="px-4 py-2 text-left text-sm font-medium text-slate-700 dark:text-slate-300">Data</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {importResult.errors.map(error => (
-                              <tr key={error.error} className="border-b hover:bg-slate-50 dark:hover:bg-slate-800">
-                                <td className="px-4 py-2 font-medium">{error.row}</td>
-                                <td className="px-4 py-2 text-red-600">{error.error}</td>
-                                <td className="max-w-xs px-4 py-2">
-                                  {Object.entries(error.data).map(([key, value]) => (
-                                    <div key={key} className="text-xs">
-                                      <span className="font-medium">
-                                        {key}
-                                        :
-                                      </span>
-                                      {' '}
-                                      {String(value)}
-                                    </div>
-                                  ))}
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
+              Detailed results of the import operation.
             </AlertDialogDescription>
           </AlertDialogHeader>
+          {importResult && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4 rounded-lg bg-slate-50 p-4 dark:bg-slate-800">
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                  <span className="text-sm font-medium">
+                    Created:
+                    {importResult.created}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-blue-500" />
+                  <span className="text-sm font-medium">
+                    Updated:
+                    {importResult.updated}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <AlertCircle className="h-4 w-4 text-red-500" />
+                  <span className="text-sm font-medium">
+                    Failed:
+                    {importResult.failed}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium">
+                    Total:
+                    {importResult.totalProcessed}
+                  </span>
+                </div>
+              </div>
+
+              {importResult.errors && importResult.errors.length > 0 && (
+                <div>
+                  <h4 className="mb-2 font-medium">Error Details:</h4>
+                  <div className="max-h-60 overflow-auto rounded-lg border">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b bg-slate-50 dark:bg-slate-800">
+                          <th className="px-4 py-2 text-left text-sm font-medium text-slate-700 dark:text-slate-300">Row</th>
+                          <th className="px-4 py-2 text-left text-sm font-medium text-slate-700 dark:text-slate-300">Error</th>
+                          <th className="px-4 py-2 text-left text-sm font-medium text-slate-700 dark:text-slate-300">Data</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {importResult.errors.map(error => (
+                          <tr key={error.error} className="border-b hover:bg-slate-50 dark:hover:bg-slate-800">
+                            <td className="px-4 py-2 font-medium">{error.row}</td>
+                            <td className="px-4 py-2 text-red-600">{error.error}</td>
+                            <td className="max-w-xs px-4 py-2">
+                              {Object.entries(error.data).map(([key, value]) => (
+                                <div key={key} className="text-xs">
+                                  <span className="font-medium">
+                                    {key}
+                                    :
+                                  </span>
+                                  {' '}
+                                  {String(value)}
+                                </div>
+                              ))}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
           <AlertDialogFooter>
             <AlertDialogCancel onClick={handleRetry}>Try Again</AlertDialogCancel>
             <AlertDialogAction onClick={handleClose}>Close</AlertDialogAction>
