@@ -69,7 +69,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {question.options.map((option, index) => {
+          {question.options && question.options.map((option, index) => {
             const isSelected = selectedAnswer === option.value;
             const optionLabel = optionLabels[index];
 
