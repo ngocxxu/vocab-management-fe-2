@@ -26,8 +26,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   const [isConnected, setIsConnected] = useState(false);
   const { user } = useAuth();
 
+  // Extract userId to stable reference
+  const userId = user?.id;
+
   useEffect(() => {
-    if (!user?.id) {
+    if (!userId) {
       return;
     }
 
@@ -117,7 +120,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       setSocket(null);
       setIsConnected(false);
     };
-  }, [user?.id]);
+  }, [userId]); // Use stable userId instead of user?.id
 
   const contextValue = useMemo(() => ({
     socket,
