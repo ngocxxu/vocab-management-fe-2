@@ -101,18 +101,38 @@ axiosInstance.interceptors.response.use(
     // Handle common error scenarios
     if (error.response) {
       // Server responded with error status
-      console.error('❌ Response Error:', {
-        status: error.response.status,
-        statusText: error.response.statusText,
-        url: error.config?.url,
-        data: error.response.data,
-      });
+      const errorInfo: Record<string, any> = {};
+      if (error.response.status !== undefined) {
+        errorInfo.status = error.response.status;
+      }
+      if (error.response.statusText) {
+        errorInfo.statusText = error.response.statusText;
+      }
+      if (error.config?.url) {
+        errorInfo.url = error.config.url;
+      }
+      if (error.response.data !== undefined) {
+        errorInfo.data = error.response.data;
+      }
+
+      // Only log if we have meaningful information
+      if (Object.keys(errorInfo).length > 0) {
+        console.error('❌ Response Error:', errorInfo);
+      } else {
+        // Fallback: log the error object itself if response is empty
+        console.error('❌ Response Error (empty response):', {
+          hasResponse: !!error.response,
+          hasRequest: !!error.request,
+          message: error.message,
+          url: error.config?.url,
+        });
+      }
     } else if (error.request) {
       // Request was made but no response received
-      console.error('❌ Network Error:', error.message);
+      console.error('❌ Network Error:', error.message || error);
     } else {
       // Something else happened
-      console.error('❌ Error:', error.message);
+      console.error('❌ Error:', error.message || error);
     }
 
     return Promise.reject(error);
