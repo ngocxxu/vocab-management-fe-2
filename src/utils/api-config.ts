@@ -101,8 +101,8 @@ export const API_METHODS = {
     create: (vocabData: TCreateVocab) => ({ endpoint: API_ENDPOINTS.vocabs, data: vocabData }),
     update: (id: string, vocabData: Partial<TCreateVocab>) => ({ endpoint: `${API_ENDPOINTS.vocabs}/${id}`, data: vocabData }),
     delete: (id: string) => ({ endpoint: `${API_ENDPOINTS.vocabs}/${id}` }),
-    createBulk: (vocabData: TCreateVocab[]) => ({ endpoint: `${API_ENDPOINTS.vocabs}/bulk/create`, data: { data: { vocabData } } }),
-    deleteBulk: (ids: string[]) => ({ endpoint: `${API_ENDPOINTS.vocabs}/bulk/delete`, data: { data: { ids } } }),
+    createBulk: (vocabData: TCreateVocab[]) => ({ endpoint: `${API_ENDPOINTS.vocabs}/bulk/create`, data: { vocabData } }),
+    deleteBulk: (ids: string[]) => ({ endpoint: `${API_ENDPOINTS.vocabs}/bulk/delete`, data: { ids } }),
     importCsv: (params: { languageFolderId: string; sourceLanguageCode: string; targetLanguageCode: string }) => {
       const queryString = buildQueryString(params);
       return { endpoint: `${API_ENDPOINTS.vocabs}/import/csv?${queryString}` };
@@ -123,7 +123,7 @@ export const API_METHODS = {
     delete: (id: string) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}` }),
     getExam: (id: string) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}/exam` }),
     submitExam: (id: string, testData: TFormTestVocabTrainer) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}/exam`, data: testData }),
-    deleteBulk: (ids: string[]) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/bulk/delete`, data: { data: { ids } } }),
+    deleteBulk: (ids: string[]) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/bulk/delete`, data: { ids } }),
   },
   subjects: {
     getAll: () => ({ endpoint: API_ENDPOINTS.subjects }),

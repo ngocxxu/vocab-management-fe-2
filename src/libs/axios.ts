@@ -64,7 +64,8 @@ axiosInstance.interceptors.response.use(
     const originalRequest = error.config;
 
     if (error.response?.status === 500) {
-      if (error.response?.data?.message.includes('403')) {
+      const message = error.response?.data?.message;
+      if (message && typeof message === 'string' && message.includes('403')) {
         window.location.href = '/signin';
         return Promise.reject(error);
       }

@@ -3,6 +3,7 @@
 import type {
   ColumnDef,
   ColumnFiltersState,
+  RowSelectionState,
   SortingState,
   Table as TanStackTable,
   VisibilityState,
@@ -15,7 +16,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowUpDown, Trash } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from './button';
@@ -40,6 +41,7 @@ type DataTableProps<TData, TValue> = {
   expandedState?: Record<string, boolean>;
   onExpandedChange?: (expanded: Record<string, boolean>) => void;
   onRowClick?: (row: TData) => void;
+  onBulkDelete?: (ids: string[], emptyRowSelection: React.Dispatch<React.SetStateAction<RowSelectionState>>) => void;
   // Server-side pagination & sorting
   manualPagination?: boolean;
   manualSorting?: boolean;
@@ -71,6 +73,7 @@ export function DataTable<TData, TValue>({
   expandedState = DEFAULT_EXPANDED_STATE,
   onExpandedChange,
   onRowClick,
+  onBulkDelete,
   // Server-side props
   manualPagination = false,
   manualSorting = false,
@@ -160,13 +163,33 @@ export function DataTable<TData, TValue>({
     <div className={`space-y-4 ${className}`}>
       {/* Search Input */}
       {showSearch && (
-        <div className="flex justify-end">
-          <input
-            placeholder={searchPlaceholder}
-            value={globalFilter ?? ''}
-            onChange={event => table.setGlobalFilter(event.target.value)}
-            className="w-64 rounded-lg border border-slate-200 bg-white/80 px-4 py-2 backdrop-blur-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none dark:border-slate-700 dark:bg-slate-800/80 dark:text-white"
-          />
+        <div className="flex items-center justify-between">
+          {onBulkDelete && table.getSelectedRowModel().rows.length > 0 && (
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => {
+                const selectedIds = table.getSelectedRowModel().rows.map(row => (row.original as any).id);
+                onBulkDelete(selectedIds, setRowSelection);
+              }}
+              className="flex items-center"
+            >
+              <Trash className="h-4 w-4" />
+              <span>
+                Delete (
+                {table.getSelectedRowModel().rows.length}
+                )
+              </span>
+            </Button>
+          )}
+          <div className={onBulkDelete && table.getSelectedRowModel().rows.length > 0 ? '' : 'ml-auto'}>
+            <input
+              placeholder={searchPlaceholder}
+              value={globalFilter ?? ''}
+              onChange={event => table.setGlobalFilter(event.target.value)}
+              className="w-64 rounded-lg border border-slate-200 bg-white/80 px-4 py-2 backdrop-blur-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none dark:border-slate-700 dark:bg-slate-800/80 dark:text-white"
+            />
+          </div>
         </div>
       )}
 

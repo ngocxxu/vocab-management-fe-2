@@ -1,6 +1,6 @@
 'use client';
 
-import type { ColumnDef } from '@tanstack/react-table';
+import type { ColumnDef, RowSelectionState } from '@tanstack/react-table';
 import type { TVocab } from '@/types/vocab-list';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronDown, ChevronLeft, Edit, Trash, Volume2 } from 'lucide-react';
@@ -66,6 +66,8 @@ const VocabList: React.FC = () => {
   const [isMounted, setIsMounted] = useState(false);
   const [expanded, setExpanded] = React.useState<Record<string, boolean>>({});
   const [selectedSubjectIds, setSelectedSubjectIds] = useState<string[]>([]);
+  const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
+  const [selectedIdsForDelete, setSelectedIdsForDelete] = useState<string[]>([]);
   const { speak, cancel, voices } = useSpeechSynthesis();
 
   const handleSpeakTextSource = useCallback((vocab: TVocab) => {
@@ -285,6 +287,23 @@ const VocabList: React.FC = () => {
   const clearFilters = () => {
     setSelectedSubjectIds([]);
     setGlobalFilter('');
+  };
+
+  const handleBulkDelete = useCallback((ids: string[], emptyRowSelection: React.Dispatch<React.SetStateAction<RowSelectionState>>) => {
+    setSelectedIdsForDelete(ids);
+    setBulkDeleteDialogOpen(true);
+    emptyRowSelection({});
+  }, []);
+
+  const confirmBulkDelete = async () => {
+    try {
+      await vocabMutations.deleteBulk(selectedIdsForDelete);
+      await mutate();
+      setBulkDeleteDialogOpen(false);
+      setSelectedIdsForDelete([]);
+    } catch (error) {
+      console.error('Failed to delete vocabularies:', error);
+    }
   };
 
   const handleSubmit = async () => {
@@ -548,6 +567,37 @@ const VocabList: React.FC = () => {
               onImportSuccess={handleImportSuccess}
             />
 
+            <AlertDialog open={bulkDeleteDialogOpen} onOpenChange={setBulkDeleteDialogOpen}>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete
+                    {' '}
+                    {selectedIdsForDelete.length}
+                    {' '}
+                    vocabulary item(s) and remove them from your list.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel
+                    onClick={() => {
+                      setBulkDeleteDialogOpen(false);
+                      setSelectedIdsForDelete([]);
+                    }}
+                  >
+                    Cancel
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    className="bg-red-500 hover:bg-red-600"
+                    onClick={confirmBulkDelete}
+                  >
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+
             <DataTable
               columns={columns}
               data={data}
@@ -580,6 +630,7 @@ const VocabList: React.FC = () => {
               totalItems={totalItems}
               onPageChange={handlePageChange}
               onSortingChange={handleSort}
+              onBulkDelete={handleBulkDelete}
             />
           </>
         )}

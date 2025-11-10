@@ -6,7 +6,7 @@ import { vocabApi } from '@/utils/server-api';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const result = await vocabApi.deleteBulk(body.data.ids);
+    const result = await vocabApi.deleteBulk(body.ids);
     return NextResponse.json(result);
   } catch (error) {
     return NextResponse.json(
