@@ -1,6 +1,6 @@
 'use client';
 
-import type { ColumnDef } from '@tanstack/react-table';
+import type { ColumnDef, RowSelectionState } from '@tanstack/react-table';
 import type { TVocabTrainer } from '@/types/vocab-trainer';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Edit, Trash } from 'lucide-react';
@@ -49,6 +49,8 @@ const VocabTrainerList: React.FC = () => {
   const [isMounted, setIsMounted] = useState(false);
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [selectedQuestionTypes, setSelectedQuestionTypes] = useState<string[]>([]);
+  const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
+  const [selectedIdsForDelete, setSelectedIdsForDelete] = useState<string[]>([]);
 
   // Use reusable pagination hook
   const { pagination, handlers } = useApiPagination({
@@ -112,6 +114,23 @@ const VocabTrainerList: React.FC = () => {
     setSelectedStatuses([]);
     setSelectedQuestionTypes([]);
     setGlobalFilter('');
+  };
+
+  const handleBulkDelete = useCallback((ids: string[], emptyRowSelection: React.Dispatch<React.SetStateAction<RowSelectionState>>) => {
+    setSelectedIdsForDelete(ids);
+    setBulkDeleteDialogOpen(true);
+    emptyRowSelection({});
+  }, []);
+
+  const confirmBulkDelete = async () => {
+    try {
+      await vocabTrainerMutations.deleteBulk(selectedIdsForDelete);
+      await mutate();
+      setBulkDeleteDialogOpen(false);
+      setSelectedIdsForDelete([]);
+    } catch (error) {
+      console.error('Failed to delete vocab trainers:', error);
+    }
   };
 
   // Define filter options
@@ -369,6 +388,38 @@ const VocabTrainerList: React.FC = () => {
               editMode={editMode}
               editingItem={editingItem}
             />
+
+            <AlertDialog open={bulkDeleteDialogOpen} onOpenChange={setBulkDeleteDialogOpen}>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete
+                    {' '}
+                    {selectedIdsForDelete.length}
+                    {' '}
+                    vocabulary trainer(s) and remove them from your list.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel
+                    onClick={() => {
+                      setBulkDeleteDialogOpen(false);
+                      setSelectedIdsForDelete([]);
+                    }}
+                  >
+                    Cancel
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    className="bg-red-500 hover:bg-red-600"
+                    onClick={confirmBulkDelete}
+                  >
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+
             <DataTable
               columns={columns}
               data={data}
@@ -392,6 +443,7 @@ const VocabTrainerList: React.FC = () => {
               totalItems={totalItems}
               onPageChange={handlePageChange}
               onSortingChange={handleSort}
+              onBulkDelete={handleBulkDelete}
             />
           </>
         )}
