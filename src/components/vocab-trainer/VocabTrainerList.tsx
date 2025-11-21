@@ -1,23 +1,13 @@
 'use client';
 
-import type { ColumnDef, RowSelectionState } from '@tanstack/react-table';
+import type { ColumnDef } from '@tanstack/react-table';
 import type { TVocabTrainer } from '@/types/vocab-trainer';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Edit, Trash } from 'lucide-react';
+import { Edit } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+import { BulkDeleteDialog, DeleteActionButton, ErrorState } from '@/components/shared';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -25,7 +15,7 @@ import { Form } from '@/components/ui/form';
 import { DataTable } from '@/components/ui/table';
 import { QUESTION_TYPE_OPTIONS } from '@/constants/vocab-trainer';
 import { EQuestionType } from '@/enum/vocab-trainer';
-import { useApiPagination, useAuth, useVocabTrainers, vocabTrainerMutations } from '@/hooks';
+import { useApiPagination, useAuth, useBulkDelete, useDialogState, useVocabTrainers, vocabTrainerMutations } from '@/hooks';
 import AddVocabTrainerDialog from './AddVocabTrainerDialog';
 import ExamLauncher from './ExamLauncher';
 import VocabTrainerHeader from './VocabTrainerHeader';
@@ -42,17 +32,11 @@ const FormSchema = z.object({
 type FormData = z.infer<typeof FormSchema>;
 
 const VocabTrainerList: React.FC = () => {
-  const [open, setOpen] = React.useState(false);
-  const [editMode, setEditMode] = React.useState(false);
-  const [editingItem, setEditingItem] = React.useState<TVocabTrainer | null>(null);
   const [globalFilter, setGlobalFilter] = useState('');
   const [isMounted, setIsMounted] = useState(false);
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [selectedQuestionTypes, setSelectedQuestionTypes] = useState<string[]>([]);
-  const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
-  const [selectedIdsForDelete, setSelectedIdsForDelete] = useState<string[]>([]);
 
-  // Use reusable pagination hook
   const { pagination, handlers } = useApiPagination({
     page: 1,
     pageSize: 10,
@@ -60,10 +44,8 @@ const VocabTrainerList: React.FC = () => {
     sortOrder: 'asc',
   });
 
-  // Get current user
   const { user } = useAuth();
 
-  // Build query parameters for the API call
   const queryParams = {
     page: pagination.page,
     pageSize: pagination.pageSize,
@@ -89,16 +71,13 @@ const VocabTrainerList: React.FC = () => {
     },
   });
 
-  // Prevent hydration mismatch by only rendering on client
   useEffect(() => {
     // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
     setIsMounted(true);
   }, []);
 
-  // Use handlers from the reusable pagination hook
   const { handleSort, handlePageChange } = handlers;
 
-  // Function to reset form to default values
   const resetForm = () => {
     form.reset({
       name: '',
@@ -109,28 +88,25 @@ const VocabTrainerList: React.FC = () => {
     });
   };
 
-  // Clear all filters
+  const dialogState = useDialogState<TVocabTrainer>({
+    onClose: () => {
+      resetForm();
+    },
+  });
+
+  const bulkDelete = useBulkDelete({
+    deleteMutation: vocabTrainerMutations.deleteBulk,
+    onSuccess: async () => {
+      await mutate();
+    },
+    itemName: 'vocabulary trainer',
+    itemNamePlural: 'vocabulary trainers',
+  });
+
   const clearFilters = () => {
     setSelectedStatuses([]);
     setSelectedQuestionTypes([]);
     setGlobalFilter('');
-  };
-
-  const handleBulkDelete = useCallback((ids: string[], emptyRowSelection: React.Dispatch<React.SetStateAction<RowSelectionState>>) => {
-    setSelectedIdsForDelete(ids);
-    setBulkDeleteDialogOpen(true);
-    emptyRowSelection({});
-  }, []);
-
-  const confirmBulkDelete = async () => {
-    try {
-      await vocabTrainerMutations.deleteBulk(selectedIdsForDelete);
-      await mutate();
-      setBulkDeleteDialogOpen(false);
-      setSelectedIdsForDelete([]);
-    } catch (error) {
-      console.error('Failed to delete vocab trainers:', error);
-    }
   };
 
   // Define filter options
@@ -140,26 +116,23 @@ const VocabTrainerList: React.FC = () => {
     { value: 'FAILED', label: 'Failed' },
   ];
 
-  const handleEdit = useCallback((item: TVocabTrainer) => {
-    setEditingItem(item);
-    setEditMode(true);
-    setOpen(true);
+  const handleEdit = useCallback(
+    (item: TVocabTrainer) => {
+      dialogState.handleEdit(item);
 
-    // Populate the form with the item data
-    form.reset({
-      name: item.name,
-      questionType: item.questionType,
-      setCountTime: item.setCountTime,
-      reminderDisabled: item.reminderDisabled,
-      vocabAssignmentIds: item.vocabAssignments?.map(va => va.vocabId) || [],
-    });
-  }, [form]);
+      form.reset({
+        name: item.name,
+        questionType: item.questionType,
+        setCountTime: item.setCountTime,
+        reminderDisabled: item.reminderDisabled,
+        vocabAssignmentIds: item.vocabAssignments?.map(va => va.vocabId) || [],
+      });
+    },
+    [form, dialogState],
+  );
 
   const handleCloseDialog = () => {
-    setOpen(false);
-    setEditMode(false);
-    setEditingItem(null);
-    resetForm();
+    dialogState.handleClose();
   };
 
   const handleSubmit = async () => {
@@ -188,21 +161,14 @@ const VocabTrainerList: React.FC = () => {
         vocabAssignmentIds: formData.vocabAssignmentIds,
       };
 
-      if (editMode && editingItem) {
-        // Update existing trainer
-        await vocabTrainerMutations.update(editingItem.id, apiData);
+      if (dialogState.editMode && dialogState.editingItem) {
+        await vocabTrainerMutations.update(dialogState.editingItem.id, apiData);
       } else {
-        // Create new trainer
         await vocabTrainerMutations.create(apiData);
       }
 
-      // Refresh the data
       await mutate();
-
-      // Close the dialog and show success message
-      setOpen(false);
-
-      // Reset the form after successful submission
+      dialogState.setOpen(false);
       resetForm();
     } catch (error) {
       console.error('Failed to save vocab trainer:', error);
@@ -316,37 +282,16 @@ const VocabTrainerList: React.FC = () => {
           >
             <Edit className="h-4 w-4 text-slate-500" />
           </Button>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-red-100 dark:hover:bg-red-700">
-                <Trash className="h-4 w-4 text-slate-500" />
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete this vocabulary trainer and remove it from your list.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction
-                  className="bg-red-500 hover:bg-red-600"
-                  onClick={async () => {
-                    try {
-                      await vocabTrainerMutations.delete(_row.original.id);
-                      await mutate();
-                    } catch (error) {
-                      console.error('Failed to delete vocab trainer:', error);
-                    }
-                  }}
-                >
-                  Delete
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          <DeleteActionButton
+            itemId={_row.original.id}
+            itemName="vocabulary trainer"
+            onDelete={vocabTrainerMutations.delete}
+            onSuccess={async () => {
+              await mutate();
+            }}
+            successMessage="Vocab trainer deleted successfully!"
+            errorMessage="Failed to delete vocab trainer. Please try again."
+          />
         </div>
       ),
       enableSorting: false,
@@ -360,7 +305,7 @@ const VocabTrainerList: React.FC = () => {
       <div className="space-y-6">
         <VocabTrainerHeader
           totalCount={totalItems}
-          onAddTrainer={() => setOpen(true)}
+          onAddTrainer={() => dialogState.setOpen(true)}
           statusOptions={statusOptions}
           selectedStatuses={selectedStatuses}
           onStatusFilterChange={setSelectedStatuses}
@@ -372,9 +317,7 @@ const VocabTrainerList: React.FC = () => {
         />
 
         {isError && (
-          <div className="flex items-center justify-center p-8">
-            <div className="text-lg text-red-600">Error loading vocab trainers. Please try again.</div>
-          </div>
+          <ErrorState message="Error loading vocab trainers. Please try again." />
         )}
 
         {isMounted && (
@@ -383,42 +326,21 @@ const VocabTrainerList: React.FC = () => {
               formData={form.watch()}
               onSubmit={handleSubmit}
               onReset={resetForm}
-              open={open}
+              open={dialogState.open}
               setOpen={handleCloseDialog}
-              editMode={editMode}
-              editingItem={editingItem}
+              editMode={dialogState.editMode}
+              editingItem={dialogState.editingItem}
             />
 
-            <AlertDialog open={bulkDeleteDialogOpen} onOpenChange={setBulkDeleteDialogOpen}>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete
-                    {' '}
-                    {selectedIdsForDelete.length}
-                    {' '}
-                    vocabulary trainer(s) and remove them from your list.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel
-                    onClick={() => {
-                      setBulkDeleteDialogOpen(false);
-                      setSelectedIdsForDelete([]);
-                    }}
-                  >
-                    Cancel
-                  </AlertDialogCancel>
-                  <AlertDialogAction
-                    className="bg-red-500 hover:bg-red-600"
-                    onClick={confirmBulkDelete}
-                  >
-                    Delete
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+            <BulkDeleteDialog
+              open={bulkDelete.bulkDeleteDialogOpen}
+              onOpenChange={bulkDelete.setBulkDeleteDialogOpen}
+              itemCount={bulkDelete.selectedIds.length}
+              itemName="vocabulary trainer"
+              itemNamePlural="vocabulary trainers"
+              onConfirm={bulkDelete.confirmBulkDelete}
+              onCancel={() => bulkDelete.reset()}
+            />
 
             <DataTable
               columns={columns}
@@ -443,7 +365,7 @@ const VocabTrainerList: React.FC = () => {
               totalItems={totalItems}
               onPageChange={handlePageChange}
               onSortingChange={handleSort}
-              onBulkDelete={handleBulkDelete}
+              onBulkDelete={bulkDelete.handleBulkDelete}
             />
           </>
         )}

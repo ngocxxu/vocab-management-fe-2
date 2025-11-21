@@ -8,7 +8,7 @@ export default async function RootLayout(props: {
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>
+      <body suppressHydrationWarning>
         <ThemeProvider>
           <PostHogProvider>
             {props.children}

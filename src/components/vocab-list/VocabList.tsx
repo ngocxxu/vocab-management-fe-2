@@ -1,30 +1,20 @@
 'use client';
 
-import type { ColumnDef, RowSelectionState } from '@tanstack/react-table';
+import type { ColumnDef } from '@tanstack/react-table';
 import type { TVocab } from '@/types/vocab-list';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ChevronDown, ChevronLeft, Edit, Trash, Volume2 } from 'lucide-react';
+import { ChevronDown, ChevronLeft, Edit, Volume2 } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSpeechSynthesis } from 'react-speech-kit';
 import { z } from 'zod';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+import { BulkDeleteDialog, DeleteActionButton, ErrorState } from '@/components/shared';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Form } from '@/components/ui/form';
 import { DataTable } from '@/components/ui/table';
-import { useApiPagination, useAuth, useLanguageFolder, useSubjects, useVocabs, vocabMutations } from '@/hooks';
+import { useApiPagination, useAuth, useBulkDelete, useDialogState, useLanguageFolder, useSubjects, useVocabs, vocabMutations } from '@/hooks';
 import { selectVoiceByCode } from '@/utils/textToSpeech';
 import AddVocabDialog from './AddVocabDialog';
 import ExpandedRowContent from './ExpandedRowContent';
@@ -58,16 +48,11 @@ const FormSchema = z.object({
 type FormData = z.infer<typeof FormSchema>;
 
 const VocabList: React.FC = () => {
-  const [open, setOpen] = React.useState(false);
   const [importDialogOpen, setImportDialogOpen] = React.useState(false);
-  const [editMode, setEditMode] = React.useState(false);
-  const [editingItem, setEditingItem] = React.useState<TVocab | null>(null);
   const [globalFilter, setGlobalFilter] = useState('');
   const [isMounted, setIsMounted] = useState(false);
   const [expanded, setExpanded] = React.useState<Record<string, boolean>>({});
   const [selectedSubjectIds, setSelectedSubjectIds] = useState<string[]>([]);
-  const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
-  const [selectedIdsForDelete, setSelectedIdsForDelete] = useState<string[]>([]);
   const { speak, cancel, voices } = useSpeechSynthesis();
 
   const handleSpeakTextSource = useCallback((vocab: TVocab) => {
@@ -81,7 +66,6 @@ const VocabList: React.FC = () => {
     });
   }, [speak, cancel, voices]);
 
-  // Use reusable pagination hook
   const { pagination, handlers } = useApiPagination({
     page: 1,
     pageSize: 10,
@@ -90,19 +74,16 @@ const VocabList: React.FC = () => {
   });
   const searchParams = useSearchParams();
 
-  // Get source and target language from URL params
   const sourceLanguageCode = searchParams.get('sourceLanguageCode') || undefined;
   const targetLanguageCode = searchParams.get('targetLanguageCode') || undefined;
   const languageFolderId = searchParams.get('languageFolderId') || undefined;
 
-  // Get current user
   const { user } = useAuth();
 
-  // Build query parameters for the API call
   const queryParams = {
     page: pagination.page,
     pageSize: pagination.pageSize,
-    sortBy: pagination.sortBy, // Optional - can be changed by table column clicking
+    sortBy: pagination.sortBy,
     sortOrder: pagination.sortOrder,
     textSource: globalFilter || undefined,
     sourceLanguageCode,
@@ -118,7 +99,7 @@ const VocabList: React.FC = () => {
 
   const form = useForm<FormData>({
     resolver: zodResolver(FormSchema),
-    mode: 'onChange', // Re-validate on change for better UX
+    mode: 'onChange',
     defaultValues: {
       textSource: '',
       sourceLanguageCode: sourceLanguageCode || '',
@@ -130,7 +111,7 @@ const VocabList: React.FC = () => {
         grammar: '',
         explanationSource: '',
         explanationTarget: '',
-        subjectIds: [], // Ensure this is always initialized as an empty array
+        subjectIds: [],
         vocabExamples: [{ id: generateId(), source: '', target: '' }],
       }],
     },
@@ -138,16 +119,13 @@ const VocabList: React.FC = () => {
 
   const [activeTab, setActiveTab] = useState('0');
 
-  // Prevent hydration mismatch by only rendering on client
   useEffect(() => {
     // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
     setIsMounted(true);
   }, []);
 
-  // Use handlers from the reusable pagination hook
   const { handleSort, handlePageChange } = handlers;
 
-  // Function to reset form to default values
   const resetForm = () => {
     form.reset({
       textSource: '',
@@ -166,6 +144,19 @@ const VocabList: React.FC = () => {
     });
     setActiveTab('0');
   };
+
+  const dialogState = useDialogState<TVocab>({
+    onClose: () => {
+      resetForm();
+    },
+  });
+
+  const bulkDelete = useBulkDelete({
+    deleteMutation: vocabMutations.deleteBulk,
+    onSuccess: () => void mutate(),
+    itemName: 'vocabulary item',
+    itemNamePlural: 'vocabulary items',
+  });
 
   const addTextTarget = () => {
     const newIndex = form.watch('textTargets').length;
@@ -192,38 +183,35 @@ const VocabList: React.FC = () => {
     }
   };
 
-  const handleEdit = useCallback((item: TVocab) => {
-    setEditingItem(item);
-    setEditMode(true);
-    setOpen(true);
+  const handleEdit = useCallback(
+    (item: TVocab) => {
+      dialogState.handleEdit(item);
 
-    // Populate the form with the item data, mapping the structure correctly
-    form.reset({
-      textSource: item.textSource,
-      sourceLanguageCode: item.sourceLanguageCode,
-      targetLanguageCode: item.targetLanguageCode,
-      textTargets: item.textTargets.map(textTarget => ({
-        id: generateId(), // Generate new ID for form state
-        wordTypeId: textTarget.wordType?.id || '', // Extract ID from wordType object
-        textTarget: textTarget.textTarget,
-        grammar: textTarget.grammar,
-        explanationSource: textTarget.explanationSource,
-        explanationTarget: textTarget.explanationTarget,
-        subjectIds: textTarget.textTargetSubjects?.map(tts => tts.subject.id) || [], // Extract subject IDs
-        vocabExamples: (textTarget.vocabExamples || [{ source: '', target: '' }]).map(example => ({
-          id: generateId(), // Generate new ID for each example
-          source: example.source,
-          target: example.target,
+      form.reset({
+        textSource: item.textSource,
+        sourceLanguageCode: item.sourceLanguageCode,
+        targetLanguageCode: item.targetLanguageCode,
+        textTargets: item.textTargets.map(textTarget => ({
+          id: generateId(),
+          wordTypeId: textTarget.wordType?.id || '',
+          textTarget: textTarget.textTarget,
+          grammar: textTarget.grammar,
+          explanationSource: textTarget.explanationSource,
+          explanationTarget: textTarget.explanationTarget,
+          subjectIds: textTarget.textTargetSubjects?.map(tts => tts.subject.id) || [],
+          vocabExamples: (textTarget.vocabExamples || [{ source: '', target: '' }]).map(example => ({
+            id: generateId(),
+            source: example.source,
+            target: example.target,
+          })),
         })),
-      })),
-    });
-  }, [form]);
+      });
+    },
+    [form, dialogState],
+  );
 
   const handleCloseDialog = () => {
-    setOpen(false);
-    setEditMode(false);
-    setEditingItem(null);
-    resetForm();
+    dialogState.handleClose();
   };
 
   const handleInputChange = (field: string, value: string, targetIndex?: number) => {
@@ -289,23 +277,6 @@ const VocabList: React.FC = () => {
     setGlobalFilter('');
   };
 
-  const handleBulkDelete = useCallback((ids: string[], emptyRowSelection: React.Dispatch<React.SetStateAction<RowSelectionState>>) => {
-    setSelectedIdsForDelete(ids);
-    setBulkDeleteDialogOpen(true);
-    emptyRowSelection({});
-  }, []);
-
-  const confirmBulkDelete = async () => {
-    try {
-      await vocabMutations.deleteBulk(selectedIdsForDelete);
-      await mutate();
-      setBulkDeleteDialogOpen(false);
-      setSelectedIdsForDelete([]);
-    } catch (error) {
-      console.error('Failed to delete vocabularies:', error);
-    }
-  };
-
   const handleSubmit = async () => {
     try {
       // Validate the form
@@ -329,21 +300,14 @@ const VocabList: React.FC = () => {
         })),
       };
 
-      if (editMode && editingItem) {
-        // Update existing vocabulary
-        await vocabMutations.update(editingItem.id, apiData as any);
+      if (dialogState.editMode && dialogState.editingItem) {
+        await vocabMutations.update(dialogState.editingItem.id, apiData as any);
       } else {
-        // Create new vocabulary
         await vocabMutations.create(apiData as any);
       }
 
-      // Refresh the data
       await mutate();
-
-      // If successful, close the dialog and show success message
-      setOpen(false);
-
-      // Reset the form after successful submission
+      dialogState.setOpen(false);
       resetForm();
     } catch (error) {
       console.error('Failed to save vocabulary:', error);
@@ -471,37 +435,14 @@ const VocabList: React.FC = () => {
           >
             <Edit className="h-4 w-4 text-slate-500" />
           </Button>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-red-100 dark:hover:bg-red-700">
-                <Trash className="h-4 w-4 text-slate-500" />
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete this vocabulary item and remove it from your list.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction
-                  className="bg-red-500 hover:bg-red-600"
-                  onClick={async () => {
-                    try {
-                      await vocabMutations.delete(_row.original.id);
-                      await mutate();
-                    } catch (error) {
-                      console.error('Failed to delete vocabulary:', error);
-                    }
-                  }}
-                >
-                  Delete
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          <DeleteActionButton
+            itemId={_row.original.id}
+            itemName="vocabulary item"
+            onDelete={vocabMutations.delete}
+            onSuccess={() => void mutate()}
+            successMessage="Vocabulary deleted successfully!"
+            errorMessage="Failed to delete vocabulary. Please try again."
+          />
         </div>
       ),
       enableSorting: false,
@@ -515,7 +456,7 @@ const VocabList: React.FC = () => {
       <div className="space-y-6">
         <VocabListHeader
           totalCount={totalItems}
-          onAddVocab={() => setOpen(true)}
+          onAddVocab={() => dialogState.setOpen(true)}
           onImportExcel={() => setImportDialogOpen(true)}
           sourceLanguageCode={sourceLanguageCode || ''}
           targetLanguageCode={targetLanguageCode || ''}
@@ -530,12 +471,8 @@ const VocabList: React.FC = () => {
           queryParams={queryParams}
         />
 
-        {/* Loading and Error States */}
-
         {isError && (
-          <div className="flex items-center justify-center p-8">
-            <div className="text-lg text-red-600">Error loading vocabularies. Please try again.</div>
-          </div>
+          <ErrorState message="Error loading vocabularies. Please try again." />
         )}
 
         {isMounted && (
@@ -552,10 +489,10 @@ const VocabList: React.FC = () => {
               onActiveTabChange={setActiveTab}
               onSubmit={handleSubmit}
               onReset={resetForm}
-              open={open}
+              open={dialogState.open}
               setOpen={handleCloseDialog}
-              editMode={editMode}
-              editingItem={editingItem}
+              editMode={dialogState.editMode}
+              editingItem={dialogState.editingItem}
             />
 
             <ImportVocabDialog
@@ -567,36 +504,15 @@ const VocabList: React.FC = () => {
               onImportSuccess={handleImportSuccess}
             />
 
-            <AlertDialog open={bulkDeleteDialogOpen} onOpenChange={setBulkDeleteDialogOpen}>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete
-                    {' '}
-                    {selectedIdsForDelete.length}
-                    {' '}
-                    vocabulary item(s) and remove them from your list.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel
-                    onClick={() => {
-                      setBulkDeleteDialogOpen(false);
-                      setSelectedIdsForDelete([]);
-                    }}
-                  >
-                    Cancel
-                  </AlertDialogCancel>
-                  <AlertDialogAction
-                    className="bg-red-500 hover:bg-red-600"
-                    onClick={confirmBulkDelete}
-                  >
-                    Delete
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+            <BulkDeleteDialog
+              open={bulkDelete.bulkDeleteDialogOpen}
+              onOpenChange={bulkDelete.setBulkDeleteDialogOpen}
+              itemCount={bulkDelete.selectedIds.length}
+              itemName="vocabulary item"
+              itemNamePlural="vocabulary items"
+              onConfirm={bulkDelete.confirmBulkDelete}
+              onCancel={() => bulkDelete.reset()}
+            />
 
             <DataTable
               columns={columns}
@@ -630,7 +546,7 @@ const VocabList: React.FC = () => {
               totalItems={totalItems}
               onPageChange={handlePageChange}
               onSortingChange={handleSort}
-              onBulkDelete={handleBulkDelete}
+              onBulkDelete={bulkDelete.handleBulkDelete}
             />
           </>
         )}
