@@ -47,7 +47,7 @@ const ExamPage: React.FC = () => {
 
   // Show loading while checking localStorage and redirecting
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-900">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-950 via-purple-950 to-indigo-950">
       <div className="text-lg text-white">Loading exam...</div>
     </div>
   );

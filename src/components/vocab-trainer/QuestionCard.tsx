@@ -27,7 +27,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
       <div className="relative mx-auto max-w-4xl">
         {/* Speech bubble with gradient border */}
         <div className="relative rounded-3xl border-4 bg-gradient-to-br from-yellow-400 via-yellow-500 to-pink-500 p-1">
-          <div className="rounded-3xl bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-900 p-8">
+          <div className="rounded-3xl bg-gradient-to-br from-indigo-950 via-purple-950 to-indigo-950 p-8">
             {/* Question mark icon with sparkle effect */}
             <div className="absolute -top-4 -left-4">
               <div className="relative">
