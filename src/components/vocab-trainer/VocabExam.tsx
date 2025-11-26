@@ -1,7 +1,7 @@
 'use client';
 
 import type { TFormTestVocabTrainer, TQuestionAPI, TWordTestSelect } from '@/types/vocab-trainer';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -164,9 +164,6 @@ const VocabExam: React.FC<VocabExamProps> = ({ trainerId, examData }) => {
         currentQuestion={currentQuestionIndex + 1}
         totalQuestions={totalQuestions}
         timeRemaining={timeRemaining}
-        isSubmitting={examState === 'submitting'}
-        canSubmit={canSubmit}
-        onSubmit={handleSubmit}
       />
 
       <QuestionCard
@@ -183,18 +180,18 @@ const VocabExam: React.FC<VocabExamProps> = ({ trainerId, examData }) => {
             variant="outline"
             onClick={handlePrevious}
             disabled={isFirstQuestion}
-            className="group rounded-2xl border-2 border-yellow-400/50 bg-gradient-to-r from-indigo-800/50 to-purple-800/50 px-6 py-3 text-white transition-all duration-300 hover:scale-105 hover:border-yellow-400 hover:from-indigo-700/70 hover:to-purple-700/70"
+            className="group rounded-2xl border-2 border-yellow-500/50 bg-white px-6 py-3 text-slate-900 transition-all duration-300 hover:scale-105 hover:border-yellow-500 dark:border-yellow-400/50 dark:bg-slate-900 dark:text-white dark:hover:border-yellow-400"
           >
             <ChevronLeft className="mr-2 h-5 w-5 transition-transform duration-300 group-hover:-translate-x-1" />
             <span className="font-semibold">Previous</span>
           </Button>
 
-          <div className="rounded-2xl border border-yellow-400/30 bg-gradient-to-r from-indigo-800/30 to-purple-800/30 px-6 py-3 backdrop-blur-sm">
+          <div className="rounded-2xl border border-yellow-500/30 bg-white px-6 py-3 backdrop-blur-sm dark:border-yellow-400/30 dark:bg-slate-900">
             <div className="text-center">
-              <div className="text-sm text-slate-300">Answered</div>
-              <div className="text-2xl font-bold text-white">
+              <div className="text-sm text-slate-600 dark:text-slate-300">Answered</div>
+              <div className="text-2xl font-bold text-slate-900 dark:text-white">
                 {selectedAnswers.size}
-                <span className="text-lg text-slate-400">
+                <span className="text-lg text-slate-600 dark:text-slate-400">
                   /
                   {totalQuestions}
                 </span>
@@ -202,15 +199,31 @@ const VocabExam: React.FC<VocabExamProps> = ({ trainerId, examData }) => {
             </div>
           </div>
 
-          <Button
-            variant="outline"
-            onClick={handleNext}
-            disabled={isLastQuestion}
-            className="group rounded-2xl border-2 border-yellow-400/50 bg-gradient-to-r from-indigo-800/50 to-purple-800/50 px-6 py-3 text-white transition-all duration-300 hover:scale-105 hover:border-yellow-400 hover:from-indigo-700/70 hover:to-purple-700/70"
-          >
-            <span className="font-semibold">Next</span>
-            <ChevronRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
-          </Button>
+          {isLastQuestion
+            ? (
+                <Button
+                  onClick={handleSubmit}
+                  disabled={!canSubmit || examState === 'submitting'}
+                  className={`rounded-2xl px-8 py-3 text-lg font-semibold shadow-lg transition-all duration-300 ${
+                    canSubmit && examState !== 'submitting'
+                      ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:scale-105 hover:from-emerald-700 hover:to-teal-700 hover:shadow-emerald-500/25 dark:from-emerald-500 dark:to-teal-500 dark:hover:from-emerald-600 dark:hover:to-teal-600 dark:hover:shadow-emerald-400/25'
+                      : 'bg-slate-400 text-slate-700 dark:bg-slate-600 dark:text-slate-300'
+                  }`}
+                >
+                  <CheckCircle className="mr-2 h-5 w-5" />
+                  {examState === 'submitting' ? 'Submitting...' : 'Submit Exam'}
+                </Button>
+              )
+            : (
+                <Button
+                  variant="outline"
+                  onClick={handleNext}
+                  className="group rounded-2xl border-2 border-yellow-500/50 bg-white px-6 py-3 text-slate-900 transition-all duration-300 hover:scale-105 hover:border-yellow-500 dark:border-yellow-400/50 dark:bg-slate-900 dark:text-white dark:hover:border-yellow-400"
+                >
+                  <span className="font-semibold">Next</span>
+                  <ChevronRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
+                </Button>
+              )}
         </div>
       </div>
     </div>

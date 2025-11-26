@@ -59,20 +59,20 @@ const ExamResults: React.FC<ExamResultsProps> = ({
 
   const getScoreColor = (percentage: number) => {
     if (percentage >= 80) {
-      return 'text-lime-400';
+      return 'text-emerald-600 dark:text-lime-400';
     }
     if (percentage >= 60) {
-      return 'text-yellow-400';
+      return 'text-yellow-600 dark:text-yellow-400';
     }
     return 'text-red-400';
   };
 
   const getScoreBadgeColor = (percentage: number) => {
     if (percentage >= 80) {
-      return 'bg-lime-400/20 text-lime-400 border-lime-400/50';
+      return 'bg-emerald-500/20 text-emerald-700 border-emerald-500/50 dark:bg-lime-400/20 dark:text-lime-400 dark:border-lime-400/50';
     }
     if (percentage >= 60) {
-      return 'bg-yellow-400/20 text-yellow-400 border-yellow-400/50';
+      return 'bg-yellow-500/20 text-yellow-600 border-yellow-500/50 dark:bg-yellow-400/20 dark:text-yellow-400 dark:border-yellow-400/50';
     }
     return 'bg-red-400/20 text-red-400 border-red-400/50';
   };
@@ -83,11 +83,11 @@ const ExamResults: React.FC<ExamResultsProps> = ({
       <div className="mx-auto max-w-6xl px-4">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
           {/* Left Column - Score Display */}
-          <Card className="border-2 border-yellow-400/30 bg-gradient-to-br from-indigo-900/80 via-purple-900/80 to-indigo-900/80 backdrop-blur-sm">
+          <Card className="border-2 border-yellow-500/30 bg-white backdrop-blur-sm dark:border-yellow-400/30 dark:bg-slate-900">
             <CardHeader className="text-center">
               <div className="flex items-center justify-center space-x-2">
-                <Trophy className="h-8 w-8 text-yellow-400" />
-                <CardTitle className="text-3xl font-bold text-white">
+                <Trophy className="h-8 w-8 text-yellow-600 dark:text-yellow-400" />
+                <CardTitle className="text-3xl font-bold text-slate-900 dark:text-white">
                   Exam Completed!
                 </CardTitle>
               </div>
@@ -107,22 +107,22 @@ const ExamResults: React.FC<ExamResultsProps> = ({
 
               {/* Stats Grid */}
               <div className="grid grid-cols-2 gap-4">
-                <div className="rounded-2xl border border-yellow-400/30 bg-gradient-to-br from-indigo-800/30 to-purple-800/30 p-4 text-center">
-                  <div className="mb-2 flex items-center justify-center space-x-2 text-slate-300">
+                <div className="rounded-2xl border border-yellow-500/30 bg-white p-4 text-center dark:border-yellow-400/30 dark:bg-slate-900">
+                  <div className="mb-2 flex items-center justify-center space-x-2 text-slate-600 dark:text-slate-300">
                     <Target className="h-5 w-5" />
                     <span className="text-sm font-medium">Accuracy</span>
                   </div>
-                  <p className="text-2xl font-bold text-white">
+                  <p className="text-2xl font-bold text-slate-900 dark:text-white">
                     {correctAnswers}
-                    <span className="text-lg text-slate-400">
+                    <span className="text-lg text-slate-600 dark:text-slate-400">
                       /
                       {totalQuestions}
                     </span>
                   </p>
                 </div>
 
-                <div className="rounded-2xl border border-yellow-400/30 bg-gradient-to-br from-indigo-800/30 to-purple-800/30 p-4 text-center">
-                  <div className="mb-2 flex items-center justify-center space-x-2 text-slate-300">
+                <div className="rounded-2xl border border-yellow-500/30 bg-white p-4 text-center dark:border-yellow-400/30 dark:bg-slate-900">
+                  <div className="mb-2 flex items-center justify-center space-x-2 text-slate-600 dark:text-slate-300">
                     <Clock className="h-5 w-5" />
                     <span className="text-sm font-medium">Time Taken</span>
                   </div>
@@ -136,7 +136,7 @@ const ExamResults: React.FC<ExamResultsProps> = ({
               <div className="flex justify-center pt-4">
                 <Button
                   onClick={handleBackToTrainers}
-                  className="rounded-2xl bg-gradient-to-r from-lime-400 to-green-500 px-8 py-3 text-lg font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:from-lime-500 hover:to-green-600 hover:shadow-lime-400/25"
+                  className="rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 px-8 py-3 text-lg font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:from-emerald-700 hover:to-teal-700 hover:shadow-emerald-500/25 dark:from-emerald-500 dark:to-teal-500 dark:hover:from-emerald-600 dark:hover:to-teal-600 dark:hover:shadow-emerald-400/25"
                 >
                   <ArrowLeft className="mr-2 h-5 w-5" />
                   Back to Trainers
@@ -146,9 +146,9 @@ const ExamResults: React.FC<ExamResultsProps> = ({
           </Card>
 
           {/* Right Column - Chart */}
-          <Card className="border-2 border-yellow-400/30 bg-gradient-to-br from-indigo-900/80 via-purple-900/80 to-indigo-900/80 backdrop-blur-sm">
+          <Card className="border-2 border-yellow-500/30 bg-white backdrop-blur-sm dark:border-yellow-400/30 dark:bg-slate-900">
             <CardHeader>
-              <CardTitle className="text-center text-2xl font-semibold text-white">
+              <CardTitle className="text-center text-2xl font-semibold text-slate-900 dark:text-white">
                 Performance Overview
               </CardTitle>
             </CardHeader>
@@ -179,17 +179,17 @@ const ExamResults: React.FC<ExamResultsProps> = ({
               {/* Chart Legend */}
               <div className="space-y-3">
                 {chartData.map(item => (
-                  <div key={item.name} className="flex items-center justify-between rounded-lg border border-yellow-400/20 bg-gradient-to-r from-indigo-800/20 to-purple-800/20 p-3">
+                  <div key={item.name} className="flex items-center justify-between rounded-lg border border-yellow-500/20 bg-white p-3 dark:border-yellow-400/20 dark:bg-slate-900">
                     <div className="flex items-center space-x-3">
                       <div
                         className="h-4 w-4 rounded-full"
                         style={{ backgroundColor: item.color }}
                       />
-                      <span className="font-medium text-white">{item.name}</span>
+                      <span className="font-medium text-slate-900 dark:text-white">{item.name}</span>
                     </div>
                     <div className="text-right">
-                      <div className="text-lg font-bold text-white">{item.value}</div>
-                      <div className="text-sm text-slate-300">
+                      <div className="text-lg font-bold text-slate-900 dark:text-white">{item.value}</div>
+                      <div className="text-sm text-slate-600 dark:text-slate-300">
                         {Math.round((item.value / totalQuestions) * 100)}
                         %
                       </div>
@@ -203,7 +203,7 @@ const ExamResults: React.FC<ExamResultsProps> = ({
       </div>
 
       {/* Detailed Results */}
-      <Card className="mx-auto w-full max-w-6xl border-2 border-yellow-400/30 bg-gradient-to-br from-indigo-900/80 via-purple-900/80 to-indigo-900/80 backdrop-blur-sm">
+      <Card className="mx-auto w-full max-w-6xl border-2 border-yellow-400/30 bg-white backdrop-blur-sm dark:bg-slate-900">
         <CardHeader>
           <CardTitle className="text-center text-2xl font-semibold text-white">
             Question Review
@@ -219,7 +219,7 @@ const ExamResults: React.FC<ExamResultsProps> = ({
                 key={`question-${question.content}-${index}`}
                 className={`rounded-2xl border-2 p-6 ${
                   isCorrect
-                    ? 'border-lime-400/50 bg-gradient-to-br from-lime-400/10 to-green-500/10'
+                    ? 'border-emerald-500/50 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 dark:border-lime-400/50 dark:from-lime-400/10 dark:to-green-500/10'
                     : 'border-red-400/50 bg-gradient-to-br from-red-400/10 to-red-500/10'
                 }`}
               >
@@ -227,7 +227,7 @@ const ExamResults: React.FC<ExamResultsProps> = ({
                   <div className="flex-shrink-0">
                     {isCorrect
                       ? (
-                          <CheckCircle className="h-6 w-6 text-lime-400" />
+                          <CheckCircle className="h-6 w-6 text-emerald-600 dark:text-lime-400" />
                         )
                       : (
                           <XCircle className="h-6 w-6 text-red-400" />
@@ -235,14 +235,14 @@ const ExamResults: React.FC<ExamResultsProps> = ({
                   </div>
                   <div className="flex-1 space-y-3">
                     <div className="flex items-center space-x-3">
-                      <Badge variant="outline" className="border-yellow-400/50 bg-yellow-400/10 text-yellow-400">
+                      <Badge variant="outline" className="border-yellow-500/50 bg-yellow-500/10 text-yellow-600 dark:border-yellow-400/50 dark:bg-yellow-400/10 dark:text-yellow-400">
                         Question
                         {' '}
                         {index + 1}
                       </Badge>
                       {isCorrect
                         ? (
-                            <Badge className="bg-lime-400/20 text-lime-400">
+                            <Badge className="bg-emerald-500/20 text-emerald-700 dark:bg-lime-400/20 dark:text-lime-400">
                               Correct
                             </Badge>
                           )
@@ -253,21 +253,21 @@ const ExamResults: React.FC<ExamResultsProps> = ({
                           )}
                     </div>
 
-                    <p className="text-lg font-medium text-white">
+                    <p className="text-lg font-medium text-slate-900 dark:text-white">
                       {question.content}
                     </p>
 
                     <div className="space-y-2 text-sm">
                       <div className="flex items-center space-x-2">
-                        <span className="font-medium text-slate-300">Your answer:</span>
-                        <span className={`font-medium ${isCorrect ? 'text-lime-400' : 'text-red-400'}`}>
+                        <span className="font-medium text-slate-600 dark:text-slate-300">Your answer:</span>
+                        <span className={`font-medium ${isCorrect ? 'text-emerald-600 dark:text-lime-400' : 'text-red-400'}`}>
                           {userAnswer || 'Not answered'}
                         </span>
                       </div>
                       {!isCorrect && (
                         <div className="flex items-center space-x-2">
-                          <span className="font-medium text-slate-300">Correct answer:</span>
-                          <span className="font-medium text-lime-400">
+                          <span className="font-medium text-slate-600 dark:text-slate-300">Correct answer:</span>
+                          <span className="font-medium text-emerald-600 dark:text-lime-400">
                             {question.correctAnswer}
                           </span>
                         </div>

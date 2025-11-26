@@ -47,10 +47,10 @@ const FlipCard: React.FC<FlipCardProps> = ({
           className="absolute inset-0 rounded-3xl border-4 bg-gradient-to-br from-yellow-400 via-yellow-500 to-pink-500 p-1 backface-hidden"
           style={{ backfaceVisibility: 'hidden' }}
         >
-          <div className="flex h-full w-full flex-col items-center justify-center rounded-3xl bg-gradient-to-br from-indigo-950 via-purple-950 to-indigo-950 p-8">
+          <div className="flex h-full w-full flex-col items-center justify-center rounded-3xl bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-8 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
             {/* Language Badge */}
             <div className="mb-6">
-              <span className="rounded-full bg-yellow-400/20 px-4 py-2 text-sm font-semibold text-yellow-400">
+              <span className="rounded-full bg-yellow-400/20 px-4 py-2 text-sm font-semibold text-yellow-600 dark:text-yellow-400">
                 {safeFrontLanguageCode.toUpperCase()}
               </span>
             </div>
@@ -60,7 +60,7 @@ const FlipCard: React.FC<FlipCardProps> = ({
               {safeFrontText.map((text, index) => (
                 <h2
                   key={text + index}
-                  className="text-3xl font-bold text-white lg:text-4xl"
+                  className="text-3xl font-bold text-slate-900 lg:text-4xl dark:text-white"
                 >
                   {text}
                   {index < safeFrontText.length - 1 && ', '}
@@ -73,7 +73,7 @@ const FlipCard: React.FC<FlipCardProps> = ({
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute top-4 right-4 h-10 w-10 rounded-full bg-white/20 text-white hover:bg-white/30"
+                className="absolute top-4 right-4 h-10 w-10 rounded-full bg-slate-900/20 text-slate-900 hover:bg-slate-900/30 dark:bg-white/20 dark:text-white dark:hover:bg-white/30"
                 onClick={(e) => {
                   e.stopPropagation();
                   onPlayAudio();
@@ -84,7 +84,7 @@ const FlipCard: React.FC<FlipCardProps> = ({
             )}
 
             {/* Click to flip hint */}
-            <div className="absolute bottom-4 text-sm text-slate-300">
+            <div className="absolute bottom-4 text-sm text-slate-600 dark:text-slate-300">
               Click to flip
             </div>
           </div>
@@ -92,13 +92,13 @@ const FlipCard: React.FC<FlipCardProps> = ({
 
         {/* Back Side */}
         <div
-          className="absolute inset-0 rotate-y-180 rounded-3xl border-4 bg-gradient-to-br from-lime-400 via-green-500 to-emerald-500 p-1 backface-hidden"
+          className="absolute inset-0 rotate-y-180 rounded-3xl border-4 bg-gradient-to-br from-emerald-500 via-teal-500 to-teal-600 p-1 backface-hidden dark:from-emerald-600 dark:via-teal-600 dark:to-emerald-700"
           style={{ backfaceVisibility: 'hidden' }}
         >
-          <div className="flex h-full w-full flex-col items-center justify-center rounded-3xl bg-gradient-to-br from-indigo-950 via-purple-950 to-indigo-950 p-8">
+          <div className="flex h-full w-full flex-col items-center justify-center rounded-3xl bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-8 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
             {/* Language Badge */}
             <div className="mb-6">
-              <span className="rounded-full bg-lime-400/20 px-4 py-2 text-sm font-semibold text-lime-400">
+              <span className="rounded-full bg-emerald-500/20 px-4 py-2 text-sm font-semibold text-emerald-700 dark:text-emerald-400">
                 {safeBackLanguageCode.toUpperCase()}
               </span>
             </div>
@@ -108,7 +108,7 @@ const FlipCard: React.FC<FlipCardProps> = ({
               {safeBackText.map((text, index) => (
                 <h2
                   key={text + index}
-                  className="text-3xl font-bold text-white lg:text-4xl"
+                  className="text-3xl font-bold text-slate-900 lg:text-4xl dark:text-white"
                 >
                   {text}
                   {index < safeBackText.length - 1 && ', '}
@@ -121,7 +121,7 @@ const FlipCard: React.FC<FlipCardProps> = ({
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute top-4 right-4 h-10 w-10 rounded-full bg-white/20 text-white hover:bg-white/30"
+                className="absolute top-4 right-4 h-10 w-10 rounded-full bg-slate-900/20 text-slate-900 hover:bg-slate-900/30 dark:bg-white/20 dark:text-white dark:hover:bg-white/30"
                 onClick={(e) => {
                   e.stopPropagation();
                   onPlayAudio();
@@ -132,7 +132,7 @@ const FlipCard: React.FC<FlipCardProps> = ({
             )}
 
             {/* Click to flip hint */}
-            <div className="absolute bottom-4 text-sm text-slate-300">
+            <div className="absolute bottom-4 text-sm text-slate-600 dark:text-slate-300">
               Click to flip back
             </div>
           </div>

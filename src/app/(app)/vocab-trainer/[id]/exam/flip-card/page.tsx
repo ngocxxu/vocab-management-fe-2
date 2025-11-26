@@ -51,8 +51,8 @@ const FlipCardExamPage: React.FC = () => {
   // Show loading while checking localStorage
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-950 via-purple-950 to-indigo-950">
-        <div className="text-lg text-white">Loading FlipCard exam...</div>
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+        <div className="text-lg text-slate-900 dark:text-white">Loading FlipCard exam...</div>
       </div>
     );
   }
@@ -63,7 +63,7 @@ const FlipCardExamPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-full bg-gradient-to-br from-indigo-950 via-purple-950 to-indigo-950">
+    <div className="min-h-full bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
       <FlipCardExam trainerId={trainerId} examData={examData} />
     </div>
   );

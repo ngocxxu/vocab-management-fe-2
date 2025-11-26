@@ -27,7 +27,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
       <div className="relative mx-auto max-w-4xl">
         {/* Speech bubble with gradient border */}
         <div className="relative rounded-3xl border-4 bg-gradient-to-br from-yellow-400 via-yellow-500 to-pink-500 p-1">
-          <div className="rounded-3xl bg-gradient-to-br from-indigo-950 via-purple-950 to-indigo-950 p-8">
+          <div className="rounded-3xl bg-white p-8 dark:bg-slate-900">
             {/* Question mark icon with sparkle effect */}
             <div className="absolute -top-4 -left-4">
               <div className="relative">
@@ -45,14 +45,14 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
             <div className="ml-8 text-center">
               <Badge
                 variant="outline"
-                className="mb-4 border-yellow-400/50 bg-yellow-400/10 px-4 py-2 text-lg font-semibold text-yellow-400"
+                className="mb-4 border-yellow-500/50 bg-yellow-500/10 px-4 py-2 text-lg font-semibold text-yellow-600 dark:border-yellow-400/50 dark:bg-yellow-400/10 dark:text-yellow-400"
               >
                 Question
                 {' '}
                 {questionNumber}
               </Badge>
 
-              <h2 className="text-2xl leading-relaxed font-bold text-white lg:text-3xl">
+              <h2 className="text-2xl leading-relaxed font-bold text-slate-900 lg:text-3xl dark:text-white">
                 {question.content}
               </h2>
             </div>
@@ -63,7 +63,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
       {/* Answer Options Grid */}
       <div className="mx-auto max-w-4xl">
         <div className="mb-6 text-center">
-          <h3 className="text-lg font-semibold tracking-wider text-slate-300 uppercase">
+          <h3 className="text-lg font-semibold tracking-wider text-slate-600 uppercase dark:text-slate-300">
             Choose your answer
           </h3>
         </div>
@@ -79,8 +79,8 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
                 variant="outline"
                 className={`group relative h-auto min-h-[80px] justify-start rounded-2xl border-2 p-6 text-left transition-all duration-300 hover:scale-[1.02] ${
                   isSelected
-                    ? 'border-emerald-600 bg-gradient-to-br from-emerald-700 to-teal-700 shadow-lg shadow-emerald-600/15'
-                    : 'border-yellow-400/50 bg-gradient-to-br from-indigo-800/50 to-purple-800/50 hover:border-yellow-400 hover:bg-gradient-to-br hover:from-indigo-700/70 hover:to-purple-700/70'
+                    ? 'border-amber-500 bg-gradient-to-br from-amber-300 to-amber-300 shadow-lg shadow-amber-500/20'
+                    : 'border-yellow-500/50 bg-white hover:border-yellow-500 hover:bg-slate-50 dark:border-yellow-400/50 dark:bg-slate-900 dark:hover:border-yellow-400 dark:hover:bg-slate-800'
                 }`}
                 onClick={() => onAnswerSelect(option.value)}
               >
@@ -88,8 +88,8 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
                   {/* Option letter */}
                   <div className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl text-lg font-bold transition-all duration-300 ${
                     isSelected
-                      ? 'bg-white/20 text-white'
-                      : 'bg-yellow-400/20 text-yellow-400 group-hover:bg-yellow-400/30'
+                      ? 'bg-amber-100/80 text-amber-900'
+                      : 'bg-yellow-500/20 text-yellow-600 group-hover:bg-yellow-500/30 dark:bg-yellow-400/20 dark:text-yellow-400 dark:group-hover:bg-yellow-400/30'
                   }`}
                   >
                     {optionLabel}
@@ -98,8 +98,8 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
                   {/* Option text */}
                   <span className={`flex-1 text-lg font-semibold whitespace-normal transition-colors duration-300 ${
                     isSelected
-                      ? 'text-white'
-                      : 'text-slate-200 group-hover:text-white'
+                      ? 'text-amber-900'
+                      : 'text-slate-700 group-hover:text-slate-900 dark:text-slate-200 dark:group-hover:text-white'
                   }`}
                   >
                     {option.label}
@@ -108,7 +108,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
                   {/* Selection indicator */}
                   {isSelected && (
                     <div className="flex-shrink-0">
-                      <div className="h-3 w-3 rounded-full bg-white shadow-lg" />
+                      <div className="h-3 w-3 rounded-full bg-amber-600 shadow-lg" />
                     </div>
                   )}
                 </div>

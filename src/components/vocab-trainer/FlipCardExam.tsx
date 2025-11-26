@@ -230,10 +230,10 @@ const FlipCardExam: React.FC<FlipCardExamProps> = ({ trainerId, examData }) => {
       <div className="mx-auto max-w-6xl px-4">
         <div className="flex items-center justify-between">
           <div className="space-y-2">
-            <h1 className="text-3xl font-bold text-white">
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
               {examData.name || 'FlipCard Exam'}
             </h1>
-            <Badge variant="outline" className="border-yellow-400/50 bg-yellow-400/10 p-2 text-yellow-400">
+            <Badge variant="outline" className="border-yellow-500/50 bg-yellow-500/10 p-2 text-yellow-600 dark:border-yellow-400/50 dark:bg-yellow-400/10 dark:text-yellow-400">
               <Clock className="h-4 w-4" />
               <span className="font-mono">
                 {Math.floor(timeElapsed / 60)}
@@ -247,7 +247,7 @@ const FlipCardExam: React.FC<FlipCardExamProps> = ({ trainerId, examData }) => {
             {/* Complete button */}
             <Button
               onClick={handleComplete}
-              className="rounded-2xl bg-gradient-to-r from-lime-400 to-green-500 px-6 py-2 text-white shadow-lg transition-all duration-300 hover:scale-105 hover:from-lime-500 hover:to-green-600 hover:shadow-lime-400/25"
+              className="rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-2 text-white shadow-lg transition-all duration-300 hover:scale-105 hover:from-emerald-700 hover:to-teal-700 hover:shadow-emerald-500/25 dark:from-emerald-500 dark:to-teal-500 dark:hover:from-emerald-600 dark:hover:to-teal-600 dark:hover:shadow-emerald-400/25"
             >
               Complete Exam
             </Button>
@@ -272,18 +272,18 @@ const FlipCardExam: React.FC<FlipCardExamProps> = ({ trainerId, examData }) => {
             variant="outline"
             onClick={handlePrevious}
             disabled={isFirstCard}
-            className="group rounded-2xl border-2 border-yellow-400/50 bg-gradient-to-r from-indigo-800/50 to-purple-800/50 px-6 py-3 text-white transition-all duration-300 hover:scale-105 hover:border-yellow-400 hover:from-indigo-700/70 hover:to-purple-700/70"
+            className="group rounded-2xl border-2 border-yellow-500/50 bg-white px-6 py-3 text-slate-900 transition-all duration-300 hover:scale-105 hover:border-yellow-500 dark:border-yellow-400/50 dark:bg-slate-900 dark:text-white dark:hover:border-yellow-400"
           >
             <ChevronLeft className="mr-2 h-5 w-5 transition-transform duration-300 group-hover:-translate-x-1" />
             <span className="font-semibold">Previous</span>
           </Button>
 
-          <div className="rounded-2xl border border-yellow-400/30 bg-gradient-to-r from-indigo-800/30 to-purple-800/30 px-8 py-3 backdrop-blur-sm">
+          <div className="rounded-2xl border border-yellow-500/30 bg-white px-8 py-3 backdrop-blur-sm dark:border-yellow-400/30 dark:bg-slate-900">
             <div className="text-center">
-              <div className="text-sm text-slate-300">Card</div>
-              <div className="text-2xl font-bold text-white">
+              <div className="text-sm text-slate-600 dark:text-slate-300">Card</div>
+              <div className="text-2xl font-bold text-slate-900 dark:text-white">
                 {currentCardIndex + 1}
-                <span className="text-lg text-slate-400">
+                <span className="text-lg text-slate-600 dark:text-slate-400">
                   /
                   {totalCards}
                 </span>
@@ -295,7 +295,7 @@ const FlipCardExam: React.FC<FlipCardExamProps> = ({ trainerId, examData }) => {
             variant="outline"
             onClick={handleNext}
             disabled={isLastCard}
-            className="group rounded-2xl border-2 border-yellow-400/50 bg-gradient-to-r from-indigo-800/50 to-purple-800/50 px-6 py-3 text-white transition-all duration-300 hover:scale-105 hover:border-yellow-400 hover:from-indigo-700/70 hover:to-purple-700/70"
+            className="group rounded-2xl border-2 border-yellow-500/50 bg-gradient-to-r from-slate-200/80 to-blue-200/80 px-6 py-3 text-slate-900 transition-all duration-300 hover:scale-105 hover:border-yellow-500 hover:from-slate-300/90 hover:to-blue-300/90 dark:border-yellow-400/50 dark:from-indigo-800/50 dark:to-purple-800/50 dark:text-white dark:hover:border-yellow-400 dark:hover:from-indigo-700/70 dark:hover:to-purple-700/70"
           >
             <span className="font-semibold">Next</span>
             <ChevronRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
