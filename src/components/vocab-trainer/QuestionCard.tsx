@@ -79,7 +79,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
                 variant="outline"
                 className={`group relative h-auto min-h-[80px] justify-start rounded-2xl border-2 p-6 text-left transition-all duration-300 hover:scale-[1.02] ${
                   isSelected
-                    ? 'border-lime-400 bg-gradient-to-br from-lime-400 to-green-500 shadow-lg shadow-lime-400/25'
+                    ? 'border-emerald-600 bg-gradient-to-br from-emerald-700 to-teal-700 shadow-lg shadow-emerald-600/15'
                     : 'border-yellow-400/50 bg-gradient-to-br from-indigo-800/50 to-purple-800/50 hover:border-yellow-400 hover:bg-gradient-to-br hover:from-indigo-700/70 hover:to-purple-700/70'
                 }`}
                 onClick={() => onAnswerSelect(option.value)}
