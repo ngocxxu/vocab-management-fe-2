@@ -68,7 +68,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
           </h3>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="grid auto-rows-fr grid-cols-1 gap-4 sm:grid-cols-2">
           {question.options && question.options.map((option, index) => {
             const isSelected = selectedAnswer === option.value;
             const optionLabel = optionLabels[index];
@@ -96,7 +96,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
                   </div>
 
                   {/* Option text */}
-                  <span className={`flex-1 text-lg font-semibold transition-colors duration-300 ${
+                  <span className={`flex-1 text-lg font-semibold whitespace-normal transition-colors duration-300 ${
                     isSelected
                       ? 'text-white'
                       : 'text-slate-200 group-hover:text-white'

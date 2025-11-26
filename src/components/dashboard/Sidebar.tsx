@@ -134,7 +134,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
                   ? `${user.firstName} ${user.lastName}`
                   : 'User'}
               </p>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
+              <p className="max-w-36 truncate text-sm text-slate-600 dark:text-slate-400" title={user?.email || 'user@example.com'}>
                 {user?.email || 'user@example.com'}
               </p>
             </div>
