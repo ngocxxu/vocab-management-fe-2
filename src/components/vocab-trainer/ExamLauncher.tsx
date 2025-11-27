@@ -3,7 +3,7 @@
 import { Loader2, PlayCircle } from 'lucide-react';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { EQuestionType } from '@/enum/vocab-trainer';
+import { getExamUrl } from '@/constants/vocab-trainer';
 import { useExamData } from '@/hooks/useExamData';
 
 type ExamLauncherProps = {
@@ -17,16 +17,9 @@ const ExamLauncher: React.FC<ExamLauncherProps> = ({ trainerId }) => {
     trainerId,
     autoLoad: false, // Don't auto-load, only load when button is clicked
     onSuccessAction: (examData) => {
-      // Exam data loaded successfully, navigate to appropriate exam page based on questionType
       setIsLaunching(false);
-
-      // Route based on questionType
-      if (examData.questionType === EQuestionType.FLIP_CARD) {
-        window.location.href = `/vocab-trainer/${trainerId}/exam/flip-card`;
-      } else {
-        // Default to multiple choice for other question types
-        window.location.href = `/vocab-trainer/${trainerId}/exam/multiple-choice`;
-      }
+      const examUrl = getExamUrl(trainerId, examData.questionType);
+      window.location.href = examUrl;
     },
     onErrorAction: (error) => {
       // Exam data failed to load, stay on list page

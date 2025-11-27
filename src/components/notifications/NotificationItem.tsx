@@ -1,10 +1,15 @@
 'use client';
 
 import type { TNotification } from '@/types/notification';
-import React from 'react';
+import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import React, { useState } from 'react';
 import { toast } from 'sonner';
+import { getExamUrl } from '@/constants/vocab-trainer';
 import { notificationMutations } from '@/hooks/useNotifications';
 import { cn } from '@/libs/utils';
+import { ENotificationAction, ENotificationType } from '@/types/notification';
+import { vocabTrainerApi } from '@/utils/client-api';
 import {
   formatNotificationMessage,
   formatTimeAgo,
@@ -28,11 +33,15 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
   onMarkAsRead,
   // onDelete,
 }) => {
+  const router = useRouter();
+  const [isLoadingExam, setIsLoadingExam] = useState(false);
   const IconComponent = getNotificationIcon(notification.type);
   const StatusIcon = getNotificationStatusIcon(isRead, notification.priority);
   const iconColor = getNotificationIconColor(notification.priority);
   const message = formatNotificationMessage(notification);
   const timeAgo = formatTimeAgo(notification.createdAt);
+
+  const isVocabTrainerRemind = notification.type === ENotificationType.VOCAB_TRAINER && notification.action === ENotificationAction.REMIND;
 
   const handleClick = async () => {
     if (!isRead && onMarkAsRead) {
@@ -43,6 +52,38 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
       } catch (error) {
         console.error('Failed to mark notification as read:', error);
         toast.error('Failed to mark notification as read');
+      }
+    }
+
+    if (isVocabTrainerRemind) {
+      const { trainerId, questionType } = notification.data || {};
+
+      if (!trainerId || !questionType) {
+        console.error('Missing trainerId or questionType:', { trainerId, questionType });
+        toast.error('Invalid notification data');
+        return;
+      }
+
+      setIsLoadingExam(true);
+      try {
+        const examData = await vocabTrainerApi.getExam(trainerId);
+
+        if (!examData) {
+          throw new Error('No exam data received');
+        }
+
+        const storageKey = `exam_data_${trainerId}`;
+        const examDataString = JSON.stringify(examData);
+        localStorage.setItem(storageKey, examDataString);
+
+        const verifyData = localStorage.getItem(storageKey);
+        if (verifyData) {
+          router.push(getExamUrl(trainerId, questionType));
+        }
+      } catch (error) {
+        console.error('Failed to load exam data:', error);
+        toast.error('Failed to load exam. Please try again.');
+        setIsLoadingExam(false);
       }
     }
   };
@@ -113,9 +154,12 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
         )}
       </div>
 
-      {/* Status Indicator */}
-      <div className="flex-shrink-0">
-        {!isRead && (
+      {/* Status Indicator / Loading */}
+      <div className="flex flex-shrink-0 flex-col items-end justify-end gap-1">
+        {isLoadingExam && (
+          <Loader2 className="h-3 w-3 animate-spin text-blue-500" />
+        )}
+        {!isRead && !isLoadingExam && (
           <StatusIcon className={cn(
             'size-3',
             'text-blue-500',

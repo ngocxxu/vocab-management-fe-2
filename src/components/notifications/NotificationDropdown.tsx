@@ -69,7 +69,7 @@ const NotificationList: React.FC<NotificationListProps> = ({
           <NotificationItem
             itemIndex={index}
             notification={notification}
-            isRead={false}
+            isRead={notification.recipients?.[0]?.isRead || false}
             onMarkAsRead={onMarkAsRead}
             onDelete={onDelete}
           />

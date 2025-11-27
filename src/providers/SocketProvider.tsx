@@ -47,16 +47,14 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
-      timeout: 10000, // 10 second timeout
+      timeout: 10000,
+      withCredentials: true,
     });
 
     // Connection event handlers
     socketInstance.on('connect', () => {
       console.warn('🔌 Connected to notification socket');
       setIsConnected(true);
-
-      // The backend will handle user-specific notifications based on authentication
-      // No need to explicitly join a room since the backend can identify users
     });
 
     socketInstance.on('disconnect', () => {
@@ -68,16 +66,21 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       console.error('🔌 Socket connection error:', error);
       setIsConnected(false);
 
-      // Log specific error details for debugging
-      if (error.message) {
-        console.error('🔌 Error message:', error.message);
+      const errorMessage = error instanceof Error ? error.message : (error as any)?.message || String(error);
+      if (errorMessage && errorMessage !== 'websocket error') {
+        console.error('🔌 Error message:', errorMessage);
       }
-      // Socket.IO specific error properties
-      if ('description' in error && error.description) {
-        console.error('🔌 Error description:', error.description);
-      }
-      if ('context' in error && error.context) {
-        console.error('🔌 Error context:', error.context);
+
+      if (error && typeof error === 'object') {
+        if ('description' in error && error.description) {
+          console.error('🔌 Error description:', error.description);
+        }
+        if ('context' in error && error.context) {
+          console.error('🔌 Error context:', error.context);
+        }
+        if ('type' in error && error.type) {
+          console.error('🔌 Error type:', error.type);
+        }
       }
     });
 

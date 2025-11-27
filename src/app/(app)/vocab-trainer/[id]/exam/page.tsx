@@ -3,7 +3,7 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
-import { EQuestionType } from '@/enum/vocab-trainer';
+import { getExamUrl } from '@/constants/vocab-trainer';
 
 const ExamPage: React.FC = () => {
   const params = useParams();
@@ -21,13 +21,8 @@ const ExamPage: React.FC = () => {
         const parsedData = JSON.parse(cachedData);
         setIsLoading(false);
 
-        // Redirect based on questionType
-        if (parsedData.questionType === EQuestionType.FLIP_CARD) {
-          router.push(`/vocab-trainer/${trainerId}/exam/flip-card`);
-        } else {
-          // Default to multiple choice for other question types
-          router.push(`/vocab-trainer/${trainerId}/exam/multiple-choice`);
-        }
+        const examUrl = getExamUrl(trainerId, parsedData.questionType);
+        router.push(examUrl);
       } catch (err) {
         console.error('Failed to parse cached exam data:', err);
         localStorage.removeItem(storageKey);

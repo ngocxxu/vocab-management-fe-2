@@ -1,14 +1,28 @@
 // Notification types based on backend Prisma schema
-export type NotificationType = 'VOCAB' | 'VOCAB_TRAINER' | 'VOCAB_SUBJECT' | 'SYSTEM';
+export enum ENotificationType {
+  VOCAB = 'VOCAB',
+  VOCAB_TRAINER = 'VOCAB_TRAINER',
+  VOCAB_SUBJECT = 'VOCAB_SUBJECT',
+  SYSTEM = 'SYSTEM',
+}
 
-export type NotificationAction = 'CREATE' | 'UPDATE' | 'DELETE' | 'MULTI_CREATE' | 'MULTI_DELETE' | 'REMIND';
+export type NotificationType = ENotificationType;
+
+export enum ENotificationAction {
+  CREATE = 'CREATE',
+  UPDATE = 'UPDATE',
+  DELETE = 'DELETE',
+  MULTI_CREATE = 'MULTI_CREATE',
+  MULTI_DELETE = 'MULTI_DELETE',
+  REMIND = 'REMIND',
+}
 
 export type PriorityLevel = 'LOW' | 'MEDIUM' | 'HIGH';
 
 export type TNotification = {
   id: string;
   type: NotificationType;
-  action: NotificationAction;
+  action: ENotificationAction;
   priority: PriorityLevel;
   data: Record<string, any>; // JSON data from backend
   isActive: boolean;
@@ -58,7 +72,7 @@ export type TDeleteNotificationResponse = TNotification;
 // Input types for creating/updating notifications
 export type TNotificationInput = {
   type: NotificationType;
-  action: NotificationAction;
+  action: ENotificationAction;
   priority: PriorityLevel;
   data: Record<string, any>;
   isActive: boolean;
