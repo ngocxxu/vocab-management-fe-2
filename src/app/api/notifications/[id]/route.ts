@@ -14,9 +14,12 @@ export async function GET(
     const notification = await notificationsApi.getById(id);
     return NextResponse.json(notification);
   } catch (error) {
+    const status = (error as any)?.status || 500;
+    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch notification';
+
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to fetch notification' },
-      { status: 500 },
+      { error: errorMessage },
+      { status },
     );
   }
 }
@@ -34,9 +37,12 @@ export async function PUT(
     const result = await notificationsApi.update(id, body);
     return NextResponse.json(result);
   } catch (error) {
+    const status = (error as any)?.status || 500;
+    const errorMessage = error instanceof Error ? error.message : 'Failed to update notification';
+
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to update notification' },
-      { status: 500 },
+      { error: errorMessage },
+      { status },
     );
   }
 }
@@ -53,9 +59,12 @@ export async function DELETE(
     const result = await notificationsApi.delete(id);
     return NextResponse.json(result);
   } catch (error) {
+    const status = (error as any)?.status || 500;
+    const errorMessage = error instanceof Error ? error.message : 'Failed to delete notification';
+
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to delete notification' },
-      { status: 500 },
+      { error: errorMessage },
+      { status },
     );
   }
 }

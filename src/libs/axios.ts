@@ -63,16 +63,13 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 500) {
-      const message = error.response?.data?.message;
-      if (message && typeof message === 'string' && message.includes('403')) {
-        window.location.href = '/signin';
-        return Promise.reject(error);
-      }
+    // Handle 403 Forbidden - redirect to login
+    if (error.response?.status === 403) {
+      handleTokenExpiration();
       return Promise.reject(error);
     }
 
-    // Handle 401 or 403 Unauthorized - token expired
+    // Handle 401 Unauthorized - token expired
     if ((error.response?.status === 401) && !originalRequest._retry) {
       originalRequest._retry = true;
 

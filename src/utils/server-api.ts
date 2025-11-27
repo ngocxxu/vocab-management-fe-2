@@ -82,7 +82,10 @@ class ServerAPI {
       const response = await this.doFetch(endpoint, options);
 
       if (!response.ok) {
-        throw new Error(`API call failed: ${response.status} ${response.statusText}`);
+        const error = new Error(`API call failed: ${response.status} ${response.statusText}`);
+        (error as any).status = response.status;
+        (error as any).statusText = response.statusText;
+        throw error;
       }
 
       // Check if response has content before trying to parse JSON

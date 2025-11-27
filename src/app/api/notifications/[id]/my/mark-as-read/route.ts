@@ -14,9 +14,12 @@ export async function PATCH(
     const result = await notificationsApi.markAsRead(id);
     return NextResponse.json(result);
   } catch (error) {
+    const status = (error as any)?.status || 500;
+    const errorMessage = error instanceof Error ? error.message : 'Failed to mark notification as read';
+
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to mark notification as read' },
-      { status: 500 },
+      { error: errorMessage },
+      { status },
     );
   }
 }

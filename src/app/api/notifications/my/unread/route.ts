@@ -9,9 +9,12 @@ export async function GET(_request: NextRequest) {
     const notifications = await notificationsApi.getUnread();
     return NextResponse.json(notifications);
   } catch (error) {
+    const status = (error as any)?.status || 500;
+    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch unread notifications';
+
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to fetch unread notifications' },
-      { status: 500 },
+      { error: errorMessage },
+      { status },
     );
   }
 }
