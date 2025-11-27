@@ -243,15 +243,6 @@ const FlipCardExam: React.FC<FlipCardExamProps> = ({ trainerId, examData }) => {
             </Badge>
           </div>
 
-          <div className="flex items-center space-x-4">
-            {/* Complete button */}
-            <Button
-              onClick={handleComplete}
-              className="rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-2 text-white shadow-lg transition-all duration-300 hover:scale-105 hover:from-emerald-700 hover:to-teal-700 hover:shadow-emerald-500/25 dark:from-emerald-500 dark:to-teal-500 dark:hover:from-emerald-600 dark:hover:to-teal-600 dark:hover:shadow-emerald-400/25"
-            >
-              Complete Exam
-            </Button>
-          </div>
         </div>
       </div>
 
@@ -291,15 +282,25 @@ const FlipCardExam: React.FC<FlipCardExamProps> = ({ trainerId, examData }) => {
             </div>
           </div>
 
-          <Button
-            variant="outline"
-            onClick={handleNext}
-            disabled={isLastCard}
-            className="group rounded-2xl border-2 border-yellow-500/50 bg-gradient-to-r from-slate-200/80 to-blue-200/80 px-6 py-3 text-slate-900 transition-all duration-300 hover:scale-105 hover:border-yellow-500 hover:from-slate-300/90 hover:to-blue-300/90 dark:border-yellow-400/50 dark:from-indigo-800/50 dark:to-purple-800/50 dark:text-white dark:hover:border-yellow-400 dark:hover:from-indigo-700/70 dark:hover:to-purple-700/70"
-          >
-            <span className="font-semibold">Next</span>
-            <ChevronRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
-          </Button>
+          {isLastCard
+            ? (
+                <Button
+                  onClick={handleComplete}
+                  className="rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 px-8 py-3 text-lg font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:from-emerald-700 hover:to-teal-700 hover:shadow-emerald-500/25 dark:from-emerald-500 dark:to-teal-500 dark:hover:from-emerald-600 dark:hover:to-teal-600 dark:hover:shadow-emerald-400/25"
+                >
+                  Complete Exam
+                </Button>
+              )
+            : (
+                <Button
+                  variant="outline"
+                  onClick={handleNext}
+                  className="group rounded-2xl border-2 border-yellow-500/50 bg-white px-6 py-3 text-slate-900 transition-all duration-300 hover:scale-105 hover:border-yellow-500 hover:bg-slate-50 dark:border-yellow-400/50 dark:bg-slate-900 dark:text-white dark:hover:border-yellow-400 dark:hover:bg-slate-800"
+                >
+                  <span className="font-semibold">Next</span>
+                  <ChevronRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
+                </Button>
+              )}
         </div>
       </div>
     </div>

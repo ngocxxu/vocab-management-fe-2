@@ -47,7 +47,7 @@ const FlipCard: React.FC<FlipCardProps> = ({
           className="absolute inset-0 rounded-3xl border-4 bg-gradient-to-br from-yellow-400 via-yellow-500 to-pink-500 p-1 backface-hidden"
           style={{ backfaceVisibility: 'hidden' }}
         >
-          <div className="flex h-full w-full flex-col items-center justify-center rounded-3xl bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-8 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+          <div className="flex h-full w-full flex-col items-center justify-center rounded-3xl bg-white p-8 dark:bg-slate-900">
             {/* Language Badge */}
             <div className="mb-6">
               <span className="rounded-full bg-yellow-400/20 px-4 py-2 text-sm font-semibold text-yellow-600 dark:text-yellow-400">
@@ -95,7 +95,7 @@ const FlipCard: React.FC<FlipCardProps> = ({
           className="absolute inset-0 rotate-y-180 rounded-3xl border-4 bg-gradient-to-br from-emerald-500 via-teal-500 to-teal-600 p-1 backface-hidden dark:from-emerald-600 dark:via-teal-600 dark:to-emerald-700"
           style={{ backfaceVisibility: 'hidden' }}
         >
-          <div className="flex h-full w-full flex-col items-center justify-center rounded-3xl bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-8 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+          <div className="flex h-full w-full flex-col items-center justify-center rounded-3xl bg-white p-8 dark:bg-slate-900">
             {/* Language Badge */}
             <div className="mb-6">
               <span className="rounded-full bg-emerald-500/20 px-4 py-2 text-sm font-semibold text-emerald-700 dark:text-emerald-400">

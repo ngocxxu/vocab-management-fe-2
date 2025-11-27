@@ -108,7 +108,7 @@ const FlipCardResults: React.FC<FlipCardResultsProps> = ({
                     <Clock className="h-5 w-5" />
                     <span className="text-sm font-medium">Time Taken</span>
                   </div>
-                  <p className="font-mono text-2xl font-bold text-white">
+                  <p className="font-mono text-2xl font-bold text-slate-900 dark:text-white">
                     {formatTime(totalTimeElapsed)}
                   </p>
                 </div>
