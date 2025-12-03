@@ -1,6 +1,6 @@
 'use client';
 
-import type { TQuestion } from '@/types/vocab-trainer';
+import type { TExamResult, TExamSubmitResponse, TQuestion } from '@/types/vocab-trainer';
 import { ArrowLeft, CheckCircle, Clock, Target, Trophy, XCircle } from 'lucide-react';
 import React from 'react';
 import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts';
@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 type ExamResultsProps = {
   trainerId: string;
-  results: any;
+  results: TExamSubmitResponse;
   questions: TQuestion[];
   selectedAnswers: Map<number, string>;
   timeElapsed: number;
@@ -19,26 +19,20 @@ type ExamResultsProps = {
 
 const ExamResults: React.FC<ExamResultsProps> = ({
   trainerId,
-  results: _results,
+  results,
   questions,
   selectedAnswers,
   timeElapsed,
   onBackToTrainers,
 }) => {
   const handleBackToTrainers = () => {
-    // Clear localStorage before navigating back
     const storageKey = `exam_data_${trainerId}`;
     localStorage.removeItem(storageKey);
-
-    // Call the original callback
     onBackToTrainers();
   };
 
-  // Calculate score
-  const correctAnswers = questions.filter((question, index) => {
-    const userAnswer = selectedAnswers.get(index);
-    return userAnswer === question.correctAnswer;
-  }).length;
+  const examResults = results?.results || [];
+  const correctAnswers = examResults.filter((result: TExamResult) => result.status === 'PASSED').length;
 
   const totalQuestions = questions.length;
   const incorrectAnswers = totalQuestions - correctAnswers;
@@ -211,8 +205,10 @@ const ExamResults: React.FC<ExamResultsProps> = ({
         </CardHeader>
         <CardContent className="space-y-4">
           {questions.map((question, index) => {
-            const userAnswer = selectedAnswers.get(index);
-            const isCorrect = userAnswer === question.correctAnswer;
+            const result = examResults[index] as TExamResult | undefined;
+            const userAnswer = result?.userSelected || selectedAnswers.get(index) || 'Not answered';
+            const isCorrect = result?.status === 'PASSED' || (!result && selectedAnswers.get(index) === question.correctAnswer);
+            const explanation = result?.data?.explanation;
 
             return (
               <div
@@ -261,15 +257,25 @@ const ExamResults: React.FC<ExamResultsProps> = ({
                       <div className="flex items-center space-x-2">
                         <span className="font-medium text-slate-600 dark:text-slate-300">Your answer:</span>
                         <span className={`font-medium ${isCorrect ? 'text-emerald-600 dark:text-lime-400' : 'text-red-400'}`}>
-                          {userAnswer || 'Not answered'}
+                          {userAnswer}
                         </span>
                       </div>
                       {!isCorrect && (
                         <div className="flex items-center space-x-2">
                           <span className="font-medium text-slate-600 dark:text-slate-300">Correct answer:</span>
                           <span className="font-medium text-emerald-600 dark:text-lime-400">
-                            {question.correctAnswer}
+                            {result?.systemSelected || question.correctAnswer}
                           </span>
+                        </div>
+                      )}
+                      {explanation && (
+                        <div className="mt-3 rounded-lg border border-blue-500/30 bg-blue-50/50 p-3 dark:border-blue-400/30 dark:bg-blue-900/20">
+                          <div className="mb-1 text-xs font-semibold tracking-wide text-blue-700 uppercase dark:text-blue-300">
+                            Explanation
+                          </div>
+                          <p className="text-sm text-blue-900 dark:text-blue-100">
+                            {explanation}
+                          </p>
                         </div>
                       )}
                     </div>

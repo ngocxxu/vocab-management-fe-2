@@ -13,5 +13,8 @@ export const getExamUrl = (trainerId: string, questionType: EQuestionType): stri
   if (questionType === EQuestionType.FLIP_CARD) {
     return `/vocab-trainer/${trainerId}/exam/flip-card`;
   }
+  if (questionType === EQuestionType.FILL_IN_THE_BLANK) {
+    return `/vocab-trainer/${trainerId}/exam/fill-in-blank`;
+  }
   return `/vocab-trainer/${trainerId}/exam/multiple-choice`;
 };

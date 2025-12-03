@@ -37,10 +37,10 @@ export type TWordResults = {
 };
 
 export type TQuestion = {
-  id: string;
+  id?: string;
   content: string;
-  options: TOption[];
-  type: EVocabTrainerType;
+  options?: TOption[];
+  type: EVocabTrainerType | 'textSource' | 'textTarget';
   correctAnswer: string;
 };
 
@@ -52,11 +52,33 @@ export type TFormInputsVocabTrainer = {
 
 export type TWordTestSelect = { systemSelected: string; userSelected: string };
 
+export type TWordTestInput = { userAnswer: string; systemAnswer: string };
+
 export type TFormTestVocabTrainer = {
   id: string;
   questionType: EQuestionType;
   countTime: number;
   wordTestSelects: TWordTestSelect[];
+};
+
+export type TFormTestVocabTrainerFillInBlank = {
+  questionType: EQuestionType;
+  countTime: number;
+  wordTestInputs: TWordTestInput[];
+};
+
+export type TExamResult = {
+  status: string;
+  userSelected: string;
+  systemSelected: string;
+  data?: {
+    explanation?: string;
+  };
+};
+
+export type TExamSubmitResponse = {
+  status: string;
+  results: TExamResult[];
 };
 
 export type TQuestionAPI = {
