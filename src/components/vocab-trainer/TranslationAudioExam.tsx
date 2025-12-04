@@ -61,7 +61,7 @@ const TranslationAudioExam: React.FC<TranslationAudioExamProps> = ({ trainerId, 
     return [];
   }, [examData.questionAnswers]);
 
-  const canSubmit = audioBlob !== null && fileId !== null;
+  const canSubmit = audioBlob !== null;
 
   const handleRecordingComplete = useCallback((blob: Blob) => {
     setAudioBlob(blob);
@@ -72,37 +72,34 @@ const TranslationAudioExam: React.FC<TranslationAudioExamProps> = ({ trainerId, 
     setFileId(null);
   }, []);
 
-  const handleUpload = useCallback(async () => {
-    if (!audioBlob) {
-      return;
-    }
-
-    setExamState('uploading');
-    setError(null);
-
-    try {
-      const uploadedFileId = await uploadAudioToCloudinary(audioBlob);
-      setFileId(uploadedFileId);
-      setExamState('taking');
-    } catch (err) {
-      console.error('Failed to upload audio:', err);
-      setError(err instanceof Error ? err.message : 'Failed to upload audio. Please try again.');
-      setExamState('error');
-    }
-  }, [audioBlob]);
-
   const handleSubmit = useCallback(async () => {
-    if (!canSubmit || !fileId) {
+    if (!canSubmit || !audioBlob) {
       return;
     }
 
-    setExamState('submitting');
     setError(null);
 
     try {
+      let currentFileId = fileId;
+
+      if (!currentFileId) {
+        setExamState('uploading');
+        try {
+          currentFileId = await uploadAudioToCloudinary(audioBlob);
+          setFileId(currentFileId);
+        } catch (uploadErr) {
+          console.error('Failed to upload audio:', uploadErr);
+          setError(uploadErr instanceof Error ? uploadErr.message : 'Failed to upload audio. Please try again.');
+          setExamState('error');
+          return;
+        }
+      }
+
+      setExamState('submitting');
+
       const examSubmissionData: TFormTestVocabTrainerTranslationAudio = {
         questionType: EQuestionType.TRANSLATION_AUDIO,
-        fileId,
+        fileId: currentFileId,
         countTime: timeElapsed,
       };
 
@@ -167,7 +164,7 @@ const TranslationAudioExam: React.FC<TranslationAudioExamProps> = ({ trainerId, 
       setError(errorMessage);
       setExamState('error');
     }
-  }, [canSubmit, fileId, timeElapsed, trainerId, router]);
+  }, [canSubmit, audioBlob, fileId, timeElapsed, trainerId, router]);
 
   const handleBackToTrainers = () => {
     router.push('/vocab-trainer');
@@ -258,32 +255,12 @@ const TranslationAudioExam: React.FC<TranslationAudioExamProps> = ({ trainerId, 
 
         <AudioRecorder onRecordingComplete={handleRecordingComplete} onReset={handleResetRecording} />
 
-        {audioBlob && !fileId && (
+        {audioBlob && (
           <Card className="border-2 border-yellow-500/30 bg-white dark:border-yellow-400/30 dark:bg-slate-900">
             <CardContent className="p-6">
               <div className="space-y-4">
                 <p className="text-center text-slate-700 dark:text-slate-300">
-                  Recording complete! Upload your audio to continue.
-                </p>
-                <div className="flex justify-center">
-                  <Button
-                    onClick={handleUpload}
-                    className="rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-3 text-lg font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:from-blue-700 hover:to-indigo-700"
-                  >
-                    Upload Audio
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {fileId && (
-          <Card className="border-2 border-yellow-500/30 bg-white dark:border-yellow-400/30 dark:bg-slate-900">
-            <CardContent className="p-6">
-              <div className="space-y-4">
-                <p className="text-center text-slate-700 dark:text-slate-300">
-                  Audio uploaded! Submit your exam to continue.
+                  Recording complete! Submit your exam to continue.
                 </p>
                 <div className="flex justify-center">
                   <Button
