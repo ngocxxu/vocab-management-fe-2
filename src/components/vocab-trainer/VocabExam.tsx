@@ -21,7 +21,7 @@ type ExamState = 'taking' | 'submitting' | 'completed' | 'error';
 const VocabExam: React.FC<VocabExamProps> = ({ trainerId, examData }) => {
   const router = useRouter();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [selectedAnswers, setSelectedAnswers] = useState<Map<number, string>>(new Map());
+  const [selectedAnswers, setSelectedAnswers] = useState<Map<number, string>>(() => new Map());
   const [timeRemaining, setTimeRemaining] = useState(() => examData.setCountTime || 900);
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [examState, setExamState] = useState<ExamState>('taking');
@@ -55,8 +55,8 @@ const VocabExam: React.FC<VocabExamProps> = ({ trainerId, examData }) => {
     }
   };
 
-  const handleSubmit = async () => {
-    if (!canSubmit) {
+  const handleSubmit = useCallback(async () => {
+    if (selectedAnswers.size !== totalQuestions) {
       return;
     }
 
@@ -64,7 +64,6 @@ const VocabExam: React.FC<VocabExamProps> = ({ trainerId, examData }) => {
     setError(null);
 
     try {
-      // Prepare exam data in the required format
       const wordTestSelects: TWordTestSelect[] = questions.map((question, index) => {
         const userAnswer = selectedAnswers.get(index) || '';
         return {
@@ -88,7 +87,7 @@ const VocabExam: React.FC<VocabExamProps> = ({ trainerId, examData }) => {
       setError('Failed to submit exam. Please try again.');
       setExamState('error');
     }
-  };
+  }, [selectedAnswers, totalQuestions, questions, trainerId, examData.questionType, timeElapsed]);
 
   const handleBackToTrainers = () => {
     router.push('/vocab-trainer');

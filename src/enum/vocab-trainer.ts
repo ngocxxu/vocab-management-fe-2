@@ -10,6 +10,7 @@ export enum EQuestionType {
   MATCHING = 'MATCHING',
   TRUE_OR_FALSE = 'TRUE_OR_FALSE',
   SHORT_ANSWER = 'SHORT_ANSWER',
+  TRANSLATION_AUDIO = 'TRANSLATION_AUDIO',
 }
 
 export enum EVocabTrainerStatus {

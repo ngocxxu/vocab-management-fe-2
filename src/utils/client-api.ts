@@ -2,6 +2,7 @@ import type { AxiosRequestConfig } from 'axios';
 import type { LanguageFolderQueryParams, VocabQueryParams, VocabTrainerQueryParams } from './api-config';
 import type { ResponseAPI, TLanguage, TLanguageFolder } from '@/types';
 import type { TAuthResponse } from '@/types/auth';
+import type { GenerateUploadSignatureInput, GenerateUploadSignatureOutput } from '@/types/cloudinary';
 import type {
   TDeleteNotificationResponse,
   TMarkAllAsReadResponse,
@@ -14,7 +15,7 @@ import type {
 import type { TCreateVocab, TCsvImportResponse, TVocab } from '@/types/vocab-list';
 import type {
   TCreateVocabTrainer,
-  TFormTestVocabTrainer,
+  TFormTestVocabTrainerUnion,
   TQuestionAPI,
   TVocabTrainer,
 } from '@/types/vocab-trainer';
@@ -149,7 +150,7 @@ export const vocabTrainerApi = {
     const config = API_METHODS.vocabTrainers.getExam(id);
     return ClientAPI.get<TQuestionAPI>(config.endpoint);
   },
-  submitExam: (id: string, testData: TFormTestVocabTrainer) => {
+  submitExam: (id: string, testData: TFormTestVocabTrainerUnion) => {
     const config = API_METHODS.vocabTrainers.submitExam(id, testData);
     return ClientAPI.patch(config.endpoint, config.data);
   },
@@ -303,6 +304,14 @@ export const notificationsApi = {
   },
 };
 
+// Cloudinary API endpoints
+export const cloudinaryApi = {
+  getUploadSignature: (params?: GenerateUploadSignatureInput) => {
+    const config = API_METHODS.cloudinary.getUploadSignature(params);
+    return ClientAPI.get<GenerateUploadSignatureOutput>(config.endpoint);
+  },
+};
+
 // Main API object for easy access
 export const api = {
   auth: authApi,
@@ -313,6 +322,7 @@ export const api = {
   languages: languagesApi,
   languageFolders: languageFoldersApi,
   notifications: notificationsApi,
+  cloudinary: cloudinaryApi,
 };
 
 // Export the axios instance for direct use when needed

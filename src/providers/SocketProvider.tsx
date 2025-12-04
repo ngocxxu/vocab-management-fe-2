@@ -55,6 +55,15 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     socketInstance.on('connect', () => {
       console.warn('🔌 Connected to notification socket');
       setIsConnected(true);
+
+      if (userId) {
+        console.warn('🔌 Joining user room:', userId);
+        socketInstance.emit('join-user-room', { userId });
+      }
+    });
+
+    socketInstance.on('joined-user-room', (data) => {
+      console.warn('🔌 Joined user room:', data);
     });
 
     socketInstance.on('disconnect', () => {

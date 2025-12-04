@@ -1,4 +1,5 @@
 import type { EQuestionType } from '@/enum/vocab-trainer';
+import type { GenerateUploadSignatureInput } from '@/types/cloudinary';
 import type {
   TNotificationInput,
   TUpdateNotificationStatusInput,
@@ -6,7 +7,7 @@ import type {
 import type { TCreateVocab } from '@/types/vocab-list';
 import type {
   TCreateVocabTrainer,
-  TFormTestVocabTrainer,
+  TFormTestVocabTrainerUnion,
 } from '@/types/vocab-trainer';
 
 // Query parameters types
@@ -76,6 +77,7 @@ export const API_ENDPOINTS = {
   languages: '/languages',
   languageFolders: '/language-folders',
   notifications: '/notifications',
+  cloudinary: '/cloudinary',
 } as const;
 
 // API method configurations
@@ -122,7 +124,7 @@ export const API_METHODS = {
     update: (id: string, trainerData: Partial<TCreateVocabTrainer>) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}`, data: trainerData }),
     delete: (id: string) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}` }),
     getExam: (id: string) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}/exam` }),
-    submitExam: (id: string, testData: TFormTestVocabTrainer) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}/exam`, data: testData }),
+    submitExam: (id: string, testData: TFormTestVocabTrainerUnion) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}/exam`, data: testData }),
     deleteBulk: (ids: string[]) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/bulk/delete`, data: { ids } }),
   },
   subjects: {
@@ -171,5 +173,11 @@ export const API_METHODS = {
     create: (notificationData: TNotificationInput) => ({ endpoint: API_ENDPOINTS.notifications, data: notificationData }),
     update: (id: string, notificationData: Partial<TNotificationInput>) => ({ endpoint: `${API_ENDPOINTS.notifications}/${id}`, data: notificationData }),
     updateStatus: (id: string, statusData: TUpdateNotificationStatusInput) => ({ endpoint: `${API_ENDPOINTS.notifications}/${id}/status`, data: statusData }),
+  },
+  cloudinary: {
+    getUploadSignature: (params?: GenerateUploadSignatureInput) => {
+      const queryString = buildQueryString(params || {});
+      return { endpoint: `${API_ENDPOINTS.cloudinary}/upload-signature${queryString ? `?${queryString}` : ''}` };
+    },
   },
 } as const;

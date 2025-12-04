@@ -67,6 +67,11 @@ export type TFormTestVocabTrainerFillInBlank = {
   wordTestInputs: TWordTestInput[];
 };
 
+export type TFormTestVocabTrainerUnion
+  = | TFormTestVocabTrainer
+    | TFormTestVocabTrainerFillInBlank
+    | TFormTestVocabTrainerTranslationAudio;
+
 export type TExamResult = {
   status: string;
   userSelected: string;
@@ -125,4 +130,28 @@ export type TFlipCardExamData = {
   results: TFlipCardResult[];
   totalTimeElapsed: number;
   completedAt: string;
+};
+
+export type TTranslationAudioDialogue = {
+  speaker: string;
+  text: string;
+};
+
+export type TFormTestVocabTrainerTranslationAudio = {
+  questionType: EQuestionType;
+  fileId: string;
+  targetStyle?: 'formal' | 'informal';
+  targetAudience?: string;
+  countTime: number;
+};
+
+export type TAudioEvaluationProgress = {
+  jobId: string;
+  status: 'evaluating' | 'completed' | 'failed';
+  data?: {
+    transcript?: string;
+    markdownReport?: string;
+    error?: string;
+  };
+  timestamp: string;
 };

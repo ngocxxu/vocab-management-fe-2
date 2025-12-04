@@ -1,5 +1,5 @@
 import type { EQuestionType } from '@/enum/vocab-trainer';
-import type { TCreateVocabTrainer, TFormTestVocabTrainer, TFormTestVocabTrainerFillInBlank, TQuestionAPI, TVocabTrainer } from '@/types/vocab-trainer';
+import type { TCreateVocabTrainer, TFormTestVocabTrainerUnion, TQuestionAPI, TVocabTrainer } from '@/types/vocab-trainer';
 import useSWR from 'swr';
 import { vocabTrainerApi } from '@/utils/client-api';
 
@@ -86,8 +86,8 @@ export const vocabTrainerMutations = {
   },
 
   // Submit exam results
-  submitExam: async (id: string, examData: TFormTestVocabTrainer | TFormTestVocabTrainerFillInBlank) => {
-    return await vocabTrainerApi.submitExam(id, examData as any);
+  submitExam: async (id: string, examData: TFormTestVocabTrainerUnion) => {
+    return await vocabTrainerApi.submitExam(id, examData);
   },
 
   // Get exam questions for a trainer

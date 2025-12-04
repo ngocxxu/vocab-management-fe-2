@@ -7,6 +7,7 @@ export const QUESTION_TYPE_OPTIONS = [
   { value: EQuestionType.SHORT_ANSWER, label: 'Short Answer' },
   { value: EQuestionType.TRUE_OR_FALSE, label: 'True/False' },
   { value: EQuestionType.MATCHING, label: 'Matching' },
+  { value: EQuestionType.TRANSLATION_AUDIO, label: 'Translation Audio' },
 ];
 
 export const getExamUrl = (trainerId: string, questionType: EQuestionType): string => {
@@ -15,6 +16,9 @@ export const getExamUrl = (trainerId: string, questionType: EQuestionType): stri
   }
   if (questionType === EQuestionType.FILL_IN_THE_BLANK) {
     return `/vocab-trainer/${trainerId}/exam/fill-in-blank`;
+  }
+  if (questionType === EQuestionType.TRANSLATION_AUDIO) {
+    return `/vocab-trainer/${trainerId}/exam/translation-audio`;
   }
   return `/vocab-trainer/${trainerId}/exam/multiple-choice`;
 };
