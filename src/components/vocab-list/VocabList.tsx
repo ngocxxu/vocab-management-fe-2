@@ -9,12 +9,13 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSpeechSynthesis } from 'react-speech-kit';
 import { z } from 'zod';
+import { createVocab, deleteVocabsBulk, updateVocab } from '@/actions/vocabs';
 import { BulkDeleteDialog, DeleteActionButton, ErrorState } from '@/components/shared';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Form } from '@/components/ui/form';
 import { DataTable } from '@/components/ui/table';
-import { useApiPagination, useAuth, useBulkDelete, useDialogState, useLanguageFolder, useSubjects, useVocabs, vocabMutations } from '@/hooks';
+import { useApiPagination, useAuth, useBulkDelete, useDialogState, useLanguageFolder, useSubjects, useVocabs } from '@/hooks';
 import { selectVoiceByCode } from '@/utils/textToSpeech';
 import AddVocabDialog from './AddVocabDialog';
 import ExpandedRowContent from './ExpandedRowContent';
@@ -152,7 +153,10 @@ const VocabList: React.FC = () => {
   });
 
   const bulkDelete = useBulkDelete({
-    deleteMutation: vocabMutations.deleteBulk,
+    deleteMutation: async (ids: string[]) => {
+      await deleteVocabsBulk(ids);
+      return { success: true };
+    },
     onSuccess: () => void mutate(),
     itemName: 'vocabulary item',
     itemNamePlural: 'vocabulary items',
@@ -301,9 +305,9 @@ const VocabList: React.FC = () => {
       };
 
       if (dialogState.editMode && dialogState.editingItem) {
-        await vocabMutations.update(dialogState.editingItem.id, apiData as any);
+        await updateVocab(dialogState.editingItem.id, apiData as any);
       } else {
-        await vocabMutations.create(apiData as any);
+        await createVocab(apiData as any);
       }
 
       await mutate();
@@ -315,7 +319,7 @@ const VocabList: React.FC = () => {
     }
   };
 
-  // Use the vocabs from SWR hook
+  // Use the vocabs from hook
   const data = useMemo<TVocab[]>(() => vocabs, [vocabs]);
 
   // Memoize columns to prevent unnecessary re-renders
@@ -438,7 +442,10 @@ const VocabList: React.FC = () => {
           <DeleteActionButton
             itemId={_row.original.id}
             itemName="vocabulary item"
-            onDelete={vocabMutations.delete}
+            onDelete={async (id: string) => {
+              const { deleteVocab } = await import('@/actions/vocabs');
+              await deleteVocab(id);
+            }}
             onSuccess={() => void mutate()}
             successMessage="Vocabulary deleted successfully!"
             errorMessage="Failed to delete vocabulary. Please try again."

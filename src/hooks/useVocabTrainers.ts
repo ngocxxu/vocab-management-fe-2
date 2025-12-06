@@ -1,9 +1,8 @@
 import type { EQuestionType } from '@/enum/vocab-trainer';
 import type { TCreateVocabTrainer, TFormTestVocabTrainerUnion, TQuestionAPI, TVocabTrainer } from '@/types/vocab-trainer';
-import useSWR from 'swr';
+import { useEffect, useState } from 'react';
 import { vocabTrainerApi } from '@/utils/client-api';
 
-// Query parameters type for vocab trainers
 export type VocabTrainerQueryParams = {
   page?: number;
   pageSize?: number;
@@ -15,12 +14,53 @@ export type VocabTrainerQueryParams = {
   userId?: string;
 };
 
-// Hook for getting vocab trainers with query parameters
 export const useVocabTrainers = (queryParams?: VocabTrainerQueryParams) => {
-  const { data, error, isLoading, mutate } = useSWR(
-    queryParams ? ['vocabTrainers', queryParams] : 'vocabTrainers',
-    () => vocabTrainerApi.getAll(queryParams),
-  );
+  const [data, setData] = useState<{ items: TVocabTrainer[]; totalItems: number; totalPages: number; currentPage: number } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<any>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchData = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const result = await vocabTrainerApi.getAll(queryParams);
+        if (!cancelled) {
+          setData(result);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [JSON.stringify(queryParams)]);
+
+  const mutate = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const result = await vocabTrainerApi.getAll(queryParams);
+      setData(result);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return {
     vocabTrainers: (data?.items || []) as TVocabTrainer[],
@@ -33,64 +73,150 @@ export const useVocabTrainers = (queryParams?: VocabTrainerQueryParams) => {
   };
 };
 
-// Hook for getting a single vocab trainer by ID
 export const useVocabTrainer = (id: string | null) => {
-  const { data, error, isLoading, mutate } = useSWR(
-    id ? ['vocabTrainer', id] : null,
-    () => vocabTrainerApi.getById(id!),
-  );
+  const [data, setData] = useState<TVocabTrainer | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<any>(null);
+
+  useEffect(() => {
+    if (!id) {
+      setIsLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    const fetchData = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const result = await vocabTrainerApi.getById(id);
+        if (!cancelled) {
+          setData(result);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  const mutate = async () => {
+    if (!id) {
+      return;
+    }
+    setIsLoading(true);
+    setError(null);
+    try {
+      const result = await vocabTrainerApi.getById(id);
+      setData(result);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return {
-    vocabTrainer: data as TVocabTrainer | undefined,
+    vocabTrainer: data,
     isLoading,
     isError: error,
     mutate,
   };
 };
 
-// Hook for getting exam questions for a trainer
 export const useVocabTrainerExam = (id: string | null) => {
-  const { data, error, isLoading, mutate } = useSWR(
-    id ? ['vocabTrainerExam', id] : null,
-    () => vocabTrainerApi.getExam(id!),
-  );
+  const [data, setData] = useState<TQuestionAPI | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<any>(null);
+
+  useEffect(() => {
+    if (!id) {
+      setIsLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    const fetchData = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const result = await vocabTrainerApi.getExam(id);
+        if (!cancelled) {
+          setData(result);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  const mutate = async () => {
+    if (!id) {
+      return;
+    }
+    setIsLoading(true);
+    setError(null);
+    try {
+      const result = await vocabTrainerApi.getExam(id);
+      setData(result);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return {
-    exam: data as TQuestionAPI | undefined,
+    exam: data,
     isLoading,
     isError: error,
     mutate,
   };
 };
 
-// API functions for mutations
 export const vocabTrainerMutations = {
-  // Create new vocab trainer
   create: async (trainerData: TCreateVocabTrainer) => {
     return await vocabTrainerApi.create(trainerData);
   },
-
-  // Update vocab trainer
   update: async (id: string, trainerData: Partial<TCreateVocabTrainer>) => {
     return await vocabTrainerApi.update(id, trainerData);
   },
-
-  // Delete vocab trainer
   delete: async (id: string) => {
     return await vocabTrainerApi.delete(id);
   },
-
-  // Bulk delete vocab trainers
   deleteBulk: async (ids: string[]) => {
     return await vocabTrainerApi.deleteBulk(ids);
   },
-
-  // Submit exam results
   submitExam: async (id: string, examData: TFormTestVocabTrainerUnion) => {
     return await vocabTrainerApi.submitExam(id, examData);
   },
-
-  // Get exam questions for a trainer
   getExam: async (id: string) => {
     return await vocabTrainerApi.getExam(id);
   },

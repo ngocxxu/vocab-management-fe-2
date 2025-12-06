@@ -245,6 +245,30 @@ export const vocabApi = {
   },
 };
 
+// Statistics API endpoints
+export const statisticsApi = {
+  getSummary: async () => {
+    const config = API_METHODS.vocabs.getStatisticsSummary();
+    return serverApi.get<import('@/types/statistics').MasterySummary>(config.endpoint);
+  },
+  getBySubject: async () => {
+    const config = API_METHODS.vocabs.getStatisticsBySubject();
+    return serverApi.get<import('@/types/statistics').MasteryBySubject[]>(config.endpoint);
+  },
+  getProgress: async (params?: { startDate?: string; endDate?: string }) => {
+    const config = API_METHODS.vocabs.getStatisticsProgress(params);
+    return serverApi.get<import('@/types/statistics').ProgressOverTime[]>(config.endpoint);
+  },
+  getProblematic: async (params?: { minIncorrect?: number; limit?: number }) => {
+    const config = API_METHODS.vocabs.getStatisticsProblematic(params);
+    return serverApi.get<import('@/types/statistics').TopProblematicVocab[]>(config.endpoint);
+  },
+  getDistribution: async () => {
+    const config = API_METHODS.vocabs.getStatisticsDistribution();
+    return serverApi.get<import('@/types/statistics').MasteryDistribution[]>(config.endpoint);
+  },
+};
+
 // Vocabulary Trainer API endpoints
 export const vocabTrainerApi = {
   getAll: (params?: VocabTrainerQueryParams) => {

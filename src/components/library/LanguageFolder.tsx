@@ -3,7 +3,7 @@
 import { Edit, Folder, MoreVertical, Trash2 } from 'lucide-react';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
-import { languageFolderMutations } from '@/hooks/useLanguageFolders';
+import { deleteLanguageFolder } from '@/actions/language-folders';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -49,7 +49,7 @@ const LanguageFolder = ({ folder, onFolderClick, onFolderUpdated, onFolderDelete
   const handleConfirmDelete = async () => {
     try {
       setIsDeleting(true);
-      await languageFolderMutations.delete(folder.id);
+      await deleteLanguageFolder(folder.id);
       toast.success('Language folder deleted successfully!');
       onFolderDeleted?.();
       setShowDeleteDialog(false);

@@ -7,6 +7,7 @@ import { Edit, Folder, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useMemo, useState } from 'react';
 import { toast } from 'sonner';
+import { createLanguageFolder, deleteLanguageFolder } from '@/actions/language-folders';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,7 +22,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/table';
 import { useApiPagination } from '@/hooks';
-import { languageFolderMutations, useLanguageFolders } from '@/hooks/useLanguageFolders';
+import { useLanguageFolders } from '@/hooks/useLanguageFolders';
 import CreateFolderModal from './CreateFolderModal';
 import EditFolderDialog from './EditFolderDialog';
 import LibraryEmptyState from './LibraryEmptyState';
@@ -64,7 +65,7 @@ const Library: React.FC = () => {
 
   const handleCreateFolderSubmit = useCallback(async (folderData: TCreateLanguageFolder) => {
     try {
-      await languageFolderMutations.create(folderData);
+      await createLanguageFolder(folderData);
       await refetchFolders();
     } catch (error) {
       console.error('Error creating language folder:', error);
@@ -92,7 +93,7 @@ const Library: React.FC = () => {
 
   const handleDelete = useCallback(async (folderId: string) => {
     try {
-      await languageFolderMutations.delete(folderId);
+      await deleteLanguageFolder(folderId);
       toast.success('Language folder deleted successfully!');
       await refetchFolders();
     } catch (error) {

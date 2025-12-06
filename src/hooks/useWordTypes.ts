@@ -1,9 +1,53 @@
-import useSWR from 'swr';
+import { useEffect, useState } from 'react';
 import { wordTypesApi } from '@/utils/client-api';
 
-// Hook for getting all word types
 export const useWordTypes = () => {
-  const { data, error, isLoading, mutate } = useSWR('wordTypes', () => wordTypesApi.getAll());
+  const [data, setData] = useState<{ items: any[] } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<any>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchData = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const result = await wordTypesApi.getAll();
+        if (!cancelled) {
+          setData(result);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const mutate = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const result = await wordTypesApi.getAll();
+      setData(result);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return {
     wordTypes: data?.items || [],
@@ -13,12 +57,61 @@ export const useWordTypes = () => {
   };
 };
 
-// Hook for getting a single word type by ID
 export const useWordType = (id: string | null) => {
-  const { data, error, isLoading, mutate } = useSWR(
-    id ? ['wordType', id] : null,
-    () => wordTypesApi.getById(id!),
-  );
+  const [data, setData] = useState<any>(undefined);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<any>(null);
+
+  useEffect(() => {
+    if (!id) {
+      setIsLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    const fetchData = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const result = await wordTypesApi.getById(id);
+        if (!cancelled) {
+          setData(result);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  const mutate = async () => {
+    if (!id) {
+      return;
+    }
+    setIsLoading(true);
+    setError(null);
+    try {
+      const result = await wordTypesApi.getById(id);
+      setData(result);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return {
     wordType: data,
@@ -28,19 +121,13 @@ export const useWordType = (id: string | null) => {
   };
 };
 
-// API functions for mutations
 export const wordTypeMutations = {
-  // Create new word type
   create: async (wordTypeData: { name: string; description: string }) => {
     return await wordTypesApi.create(wordTypeData);
   },
-
-  // Update word type
   update: async (id: string, wordTypeData: { name: string; description: string }) => {
     return await wordTypesApi.update(id, wordTypeData);
   },
-
-  // Delete word type
   delete: async (id: string) => {
     return await wordTypesApi.delete(id);
   },

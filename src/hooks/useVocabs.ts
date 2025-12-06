@@ -1,14 +1,55 @@
 import type { TCreateVocab, TVocab } from '@/types/vocab-list';
 import type { VocabQueryParams } from '@/utils/api-config';
-import useSWR from 'swr';
+import { useEffect, useState } from 'react';
 import { vocabApi } from '@/utils/client-api';
 
-// Hook for getting vocabularies with query parameters
 export const useVocabs = (queryParams?: VocabQueryParams) => {
-  const { data, error, isLoading, mutate } = useSWR(
-    queryParams ? ['vocabs', queryParams] : 'vocabs',
-    () => vocabApi.getAll(queryParams),
-  );
+  const [data, setData] = useState<{ items: TVocab[]; totalItems: number; totalPages: number; currentPage: number } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<any>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchData = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const result = await vocabApi.getAll(queryParams);
+        if (!cancelled) {
+          setData(result);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [JSON.stringify(queryParams)]);
+
+  const mutate = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const result = await vocabApi.getAll(queryParams);
+      setData(result);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return {
     vocabs: data?.items || [],
@@ -21,44 +62,83 @@ export const useVocabs = (queryParams?: VocabQueryParams) => {
   };
 };
 
-// Hook for getting a single vocabulary by ID
 export const useVocab = (id: string | null) => {
-  const { data, error, isLoading, mutate } = useSWR(
-    id ? ['vocab', id] : null,
-    () => vocabApi.getById(id!),
-  );
+  const [data, setData] = useState<TVocab | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<any>(null);
+
+  useEffect(() => {
+    if (!id) {
+      setIsLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    const fetchData = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const result = await vocabApi.getById(id);
+        if (!cancelled) {
+          setData(result);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  const mutate = async () => {
+    if (!id) {
+      return;
+    }
+    setIsLoading(true);
+    setError(null);
+    try {
+      const result = await vocabApi.getById(id);
+      setData(result);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return {
-    vocab: data as TVocab | undefined,
+    vocab: data,
     isLoading,
     isError: error,
     mutate,
   };
 };
 
-// API functions for mutations
 export const vocabMutations = {
-  // Create new vocabulary
   create: async (vocabData: TCreateVocab) => {
     return await vocabApi.create(vocabData);
   },
-
-  // Update vocabulary
   update: async (id: string, vocabData: Partial<TCreateVocab>) => {
     return await vocabApi.update(id, vocabData);
   },
-
-  // Delete vocabulary
   delete: async (id: string) => {
     return await vocabApi.delete(id);
   },
-
-  // Bulk create vocabularies
   createBulk: async (vocabData: TCreateVocab[]) => {
     return await vocabApi.createBulk(vocabData);
   },
-
-  // Bulk delete vocabularies
   deleteBulk: async (ids: string[]) => {
     return await vocabApi.deleteBulk(ids);
   },

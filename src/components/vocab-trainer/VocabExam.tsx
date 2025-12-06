@@ -4,9 +4,9 @@ import type { TFormTestVocabTrainer, TQuestionAPI, TWordTestSelect } from '@/typ
 import { CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
+import { submitExam } from '@/actions/vocab-trainers';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { vocabTrainerMutations } from '@/hooks';
 import ExamResults from './ExamResults';
 import QuestionCard from './QuestionCard';
 import VocabExamHeader from './VocabExamHeader';
@@ -79,7 +79,7 @@ const VocabExam: React.FC<VocabExamProps> = ({ trainerId, examData }) => {
         wordTestSelects,
       };
 
-      const result = await vocabTrainerMutations.submitExam(trainerId, examSubmissionData);
+      const result = await submitExam(trainerId, examSubmissionData);
       setExamResults(result);
       setExamState('completed');
     } catch (err) {

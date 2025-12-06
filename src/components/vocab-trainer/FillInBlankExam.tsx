@@ -4,9 +4,9 @@ import type { TFormTestVocabTrainerFillInBlank, TQuestionAPI, TWordTestInput } f
 import { CheckCircle, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { submitExam } from '@/actions/vocab-trainers';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { vocabTrainerMutations } from '@/hooks';
 import ExamResults from './ExamResults';
 import FillInBlankCard from './FillInBlankCard';
 import VocabExamHeader from './VocabExamHeader';
@@ -86,7 +86,7 @@ const FillInBlankExam: React.FC<FillInBlankExamProps> = ({ trainerId, examData }
         wordTestInputs,
       };
 
-      const result = await vocabTrainerMutations.submitExam(trainerId, examSubmissionData as any);
+      const result = await submitExam(trainerId, examSubmissionData as any);
       setExamResults(result);
       setExamState('completed');
     } catch (err) {

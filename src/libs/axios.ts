@@ -5,8 +5,9 @@ import { handleTokenExpiration } from '@/utils/auth-utils';
 import { Env } from './Env';
 
 // Create axios instance with default configuration
+// Use relative paths to call Next.js API routes instead of backend directly
 const axiosInstance: AxiosInstance = axios.create({
-  baseURL: Env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api',
+  baseURL: '/api',
   timeout: 60000, // 60 seconds timeout
   headers: {
     'Content-Type': 'application/json',
@@ -74,8 +75,8 @@ axiosInstance.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        // Attempt to refresh the token
-        const refreshResponse = await fetch(`${Env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}${API_ENDPOINTS.auth.refresh}`, {
+        // Attempt to refresh the token via Next.js API route
+        const refreshResponse = await fetch(`/api${API_ENDPOINTS.auth.refresh}`, {
           method: 'POST',
           credentials: 'include',
         });

@@ -7,6 +7,7 @@ import { Edit } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { createVocabTrainer, deleteVocabTrainer, deleteVocabTrainersBulk, updateVocabTrainer } from '@/actions/vocab-trainers';
 import { BulkDeleteDialog, DeleteActionButton, ErrorState } from '@/components/shared';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -15,7 +16,7 @@ import { Form } from '@/components/ui/form';
 import { DataTable } from '@/components/ui/table';
 import { QUESTION_TYPE_OPTIONS } from '@/constants/vocab-trainer';
 import { EQuestionType } from '@/enum/vocab-trainer';
-import { useApiPagination, useAuth, useBulkDelete, useDialogState, useVocabTrainers, vocabTrainerMutations } from '@/hooks';
+import { useApiPagination, useAuth, useBulkDelete, useDialogState, useVocabTrainers } from '@/hooks';
 import AddVocabTrainerDialog from './AddVocabTrainerDialog';
 import ExamLauncher from './ExamLauncher';
 import VocabTrainerHeader from './VocabTrainerHeader';
@@ -95,7 +96,10 @@ const VocabTrainerList: React.FC = () => {
   });
 
   const bulkDelete = useBulkDelete({
-    deleteMutation: vocabTrainerMutations.deleteBulk,
+    deleteMutation: async (ids: string[]) => {
+      await deleteVocabTrainersBulk(ids);
+      return { success: true };
+    },
     onSuccess: async () => {
       await mutate();
     },
@@ -162,9 +166,9 @@ const VocabTrainerList: React.FC = () => {
       };
 
       if (dialogState.editMode && dialogState.editingItem) {
-        await vocabTrainerMutations.update(dialogState.editingItem.id, apiData);
+        await updateVocabTrainer(dialogState.editingItem.id, apiData);
       } else {
-        await vocabTrainerMutations.create(apiData);
+        await createVocabTrainer(apiData);
       }
 
       await mutate();
@@ -175,7 +179,7 @@ const VocabTrainerList: React.FC = () => {
     }
   };
 
-  // Use the trainers from SWR hook
+  // Use the trainers from hook
   const data = useMemo<TVocabTrainer[]>(() => vocabTrainers, [vocabTrainers]);
 
   // Memoize columns to prevent unnecessary re-renders
@@ -285,7 +289,9 @@ const VocabTrainerList: React.FC = () => {
           <DeleteActionButton
             itemId={_row.original.id}
             itemName="vocabulary trainer"
-            onDelete={vocabTrainerMutations.delete}
+            onDelete={async (id: string) => {
+              await deleteVocabTrainer(id);
+            }}
             onSuccess={async () => {
               await mutate();
             }}

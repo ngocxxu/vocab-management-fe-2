@@ -1,13 +1,54 @@
 import type { TNotification, TNotificationInput, TUpdateNotificationStatusInput } from '@/types/notification';
-import useSWR from 'swr';
+import { useEffect, useState } from 'react';
 import { notificationsApi } from '@/utils/client-api';
 
-// Hook for getting notifications for current user
 export const useNotifications = () => {
-  const { data, error, isLoading, mutate } = useSWR(
-    'notifications',
-    () => notificationsApi.getMy(),
-  );
+  const [data, setData] = useState<{ items: TNotification[] } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<any>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchData = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const result = await notificationsApi.getMy();
+        if (!cancelled) {
+          setData(result);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const mutate = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const result = await notificationsApi.getMy();
+      setData(result);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return {
     notifications: data?.items || [],
@@ -17,12 +58,53 @@ export const useNotifications = () => {
   };
 };
 
-// Hook for getting unread notifications
 export const useUnreadNotifications = () => {
-  const { data, error, isLoading, mutate } = useSWR(
-    'unread-notifications',
-    () => notificationsApi.getUnread(),
-  );
+  const [data, setData] = useState<{ items: TNotification[] } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<any>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchData = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const result = await notificationsApi.getUnread();
+        if (!cancelled) {
+          setData(result);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const mutate = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const result = await notificationsApi.getUnread();
+      setData(result);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return {
     unreadNotifications: data?.items || [],
@@ -32,12 +114,53 @@ export const useUnreadNotifications = () => {
   };
 };
 
-// Hook for getting unread notification count
 export const useUnreadCount = () => {
-  const { data, error, isLoading, mutate } = useSWR(
-    'unread-count',
-    () => notificationsApi.getUnreadCount(),
-  );
+  const [data, setData] = useState<{ count: number } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<any>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchData = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const result = await notificationsApi.getUnreadCount();
+        if (!cancelled) {
+          setData(result);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const mutate = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const result = await notificationsApi.getUnreadCount();
+      setData(result);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return {
     unreadCount: data?.count || 0,
@@ -47,49 +170,86 @@ export const useUnreadCount = () => {
   };
 };
 
-// Hook for getting a single notification by ID
 export const useNotification = (id: string | null) => {
-  const { data, error, isLoading, mutate } = useSWR(
-    id ? ['notification', id] : null,
-    () => notificationsApi.getById(id!),
-  );
+  const [data, setData] = useState<TNotification | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<any>(null);
+
+  useEffect(() => {
+    if (!id) {
+      setIsLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    const fetchData = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const result = await notificationsApi.getById(id);
+        if (!cancelled) {
+          setData(result);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  const mutate = async () => {
+    if (!id) {
+      return;
+    }
+    setIsLoading(true);
+    setError(null);
+    try {
+      const result = await notificationsApi.getById(id);
+      setData(result);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return {
-    notification: data as TNotification | undefined,
+    notification: data,
     isLoading,
     isError: error,
     mutate,
   };
 };
 
-// API functions for mutations
 export const notificationMutations = {
-  // Mark notification as read
   markAsRead: async (id: string) => {
     return await notificationsApi.markAsRead(id);
   },
-
-  // Mark all notifications as read
   markAllAsRead: async () => {
     return await notificationsApi.markAllAsRead();
   },
-
-  // Delete notification
   delete: async (id: string) => {
     return await notificationsApi.delete(id);
   },
-
-  // Create notification (Admin/Staff only)
   create: async (notificationData: TNotificationInput) => {
     return await notificationsApi.create(notificationData);
   },
-
-  // Update notification (Admin/Staff only)
   update: async (id: string, notificationData: Partial<TNotificationInput>) => {
     return await notificationsApi.update(id, notificationData);
   },
-
-  // Update notification status for current user
   updateStatus: async (id: string, statusData: TUpdateNotificationStatusInput) => {
     return await notificationsApi.updateStatus(id, statusData);
   },

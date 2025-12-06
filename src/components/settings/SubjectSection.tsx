@@ -227,8 +227,7 @@ export const SubjectSection: React.FC = () => {
 
       const newOrder = arrayMove(subjects, oldIndex, newIndex);
 
-      // Update local state immediately for better UX
-      mutate({ items: newOrder, statusCode: 200 }, false);
+      // Note: Optimistic update not supported with new mutate, will refetch after reorder
 
       try {
         // Update order on server

@@ -4,6 +4,7 @@ import type { TNotification } from '@/types/notification';
 import { Bell, CheckCheck } from 'lucide-react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
+import { markAllNotificationsAsRead } from '@/actions/notifications';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -14,7 +15,7 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { notificationMutations, useNotifications, useUnreadCount, useUnreadNotifications } from '@/hooks/useNotifications';
+import { useNotifications, useUnreadCount, useUnreadNotifications } from '@/hooks/useNotifications';
 import { cn } from '@/libs/utils';
 import { NotificationItem } from './NotificationItem';
 
@@ -153,7 +154,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ clas
 
   const handleMarkAllAsRead = async () => {
     try {
-      await notificationMutations.markAllAsRead();
+      await markAllNotificationsAsRead();
       mutateAll();
       mutateUnread();
       mutateCount();

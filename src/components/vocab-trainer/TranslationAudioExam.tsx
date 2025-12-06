@@ -4,11 +4,11 @@ import type { TFormTestVocabTrainerTranslationAudio, TQuestionAPI, TTranslationA
 import { CheckCircle, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { submitExam } from '@/actions/vocab-trainers';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { EQuestionType } from '@/enum/vocab-trainer';
-import { vocabTrainerMutations } from '@/hooks';
 import { uploadAudioToCloudinary } from '@/utils/cloudinary';
 import AudioRecorder from './AudioRecorder';
 import DialogueDisplay from './DialogueDisplay';
@@ -103,7 +103,7 @@ const TranslationAudioExam: React.FC<TranslationAudioExamProps> = ({ trainerId, 
         countTime: timeElapsed,
       };
 
-      const result = await vocabTrainerMutations.submitExam(trainerId, examSubmissionData as any);
+      const result = await submitExam(trainerId, examSubmissionData as any);
 
       console.warn('Submit exam response:', result);
       console.warn('Response type:', typeof result);

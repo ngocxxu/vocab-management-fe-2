@@ -109,6 +109,23 @@ export const API_METHODS = {
       const queryString = buildQueryString(params);
       return { endpoint: `${API_ENDPOINTS.vocabs}/import/csv?${queryString}` };
     },
+    getStatisticsSummary: () => ({ endpoint: `${API_ENDPOINTS.vocabs}/statistics/summary` }),
+    getStatisticsBySubject: () => ({ endpoint: `${API_ENDPOINTS.vocabs}/statistics/by-subject` }),
+    getStatisticsProgress: (params?: { startDate?: string; endDate?: string }) => {
+      if (!params || (!params.startDate && !params.endDate)) {
+        return { endpoint: `${API_ENDPOINTS.vocabs}/statistics/progress` };
+      }
+      const queryString = buildQueryString(params);
+      return { endpoint: `${API_ENDPOINTS.vocabs}/statistics/progress?${queryString}` };
+    },
+    getStatisticsProblematic: (params?: { minIncorrect?: number; limit?: number }) => {
+      if (!params || (!params.minIncorrect && !params.limit)) {
+        return { endpoint: `${API_ENDPOINTS.vocabs}/statistics/problematic` };
+      }
+      const queryString = buildQueryString(params);
+      return { endpoint: `${API_ENDPOINTS.vocabs}/statistics/problematic?${queryString}` };
+    },
+    getStatisticsDistribution: () => ({ endpoint: `${API_ENDPOINTS.vocabs}/statistics/distribution` }),
   },
   vocabTrainers: {
     getAll: (params?: VocabTrainerQueryParams) => {

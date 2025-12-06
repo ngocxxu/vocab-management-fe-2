@@ -4,7 +4,7 @@ import type { TLanguageFolder } from './LanguageFolder';
 import type { LanguageFolderFormData } from './LanguageFolderForm';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { languageFolderMutations } from '@/hooks/useLanguageFolders';
+import { updateLanguageFolder } from '@/actions/language-folders';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
 import LanguageFolderForm from './LanguageFolderForm';
 
@@ -21,7 +21,7 @@ const EditFolderDialog = ({ open, onOpenChange, folder, onFolderUpdated }: EditF
   const handleSubmit = async (formData: LanguageFolderFormData) => {
     try {
       setIsUpdating(true);
-      await languageFolderMutations.update(folder.id, formData);
+      await updateLanguageFolder(folder.id, formData);
       toast.success('Language folder updated successfully!');
       onFolderUpdated?.();
       onOpenChange(false);

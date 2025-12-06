@@ -3,7 +3,6 @@
 import type { Socket } from 'socket.io-client';
 import React, { createContext, useEffect, useMemo, useState } from 'react';
 import { io } from 'socket.io-client';
-import { mutate } from 'swr';
 import { useAuth } from '@/hooks/useAuth';
 import { Env } from '@/libs/Env';
 
@@ -97,10 +96,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     socketInstance.on('notification', (data) => {
       console.warn('🔔 Received notification:', data);
 
-      // Trigger SWR revalidation for notifications
-      mutate('notifications');
-      mutate('unread-notifications');
-      mutate('unread-count');
+      // Notifications will be refreshed via their own hooks/components
     });
 
     // Listen for connection confirmation

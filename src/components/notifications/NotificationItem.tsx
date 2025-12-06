@@ -5,8 +5,8 @@ import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
+import { markNotificationAsRead } from '@/actions/notifications';
 import { getExamUrl } from '@/constants/vocab-trainer';
-import { notificationMutations } from '@/hooks/useNotifications';
 import { cn } from '@/libs/utils';
 import { ENotificationAction, ENotificationType } from '@/types/notification';
 import { vocabTrainerApi } from '@/utils/client-api';
@@ -46,7 +46,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
   const handleClick = async () => {
     if (!isRead && onMarkAsRead) {
       try {
-        await notificationMutations.markAsRead(notification.id);
+        await markNotificationAsRead(notification.id);
         onMarkAsRead();
         toast.success('Notification marked as read');
       } catch (error) {

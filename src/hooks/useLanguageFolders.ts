@@ -1,14 +1,54 @@
 import type { LanguageFolderQueryParams } from '@/utils/api-config';
-import useSWR from 'swr';
+import { useEffect, useState } from 'react';
 import { languageFoldersApi } from '@/utils/client-api';
 
-// Hook for getting user's language folders
 export const useLanguageFolders = (params?: LanguageFolderQueryParams) => {
-  const queryKey = params ? ['languageFolders', JSON.stringify(params)] : 'languageFolders';
-  const { data, error, isLoading, mutate } = useSWR(
-    queryKey,
-    () => languageFoldersApi.getMy(params),
-  );
+  const [data, setData] = useState<{ items: any[]; totalItems: number; totalPages: number; currentPage: number } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<any>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchData = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const result = await languageFoldersApi.getMy(params);
+        if (!cancelled) {
+          setData(result);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [JSON.stringify(params)]);
+
+  const mutate = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const result = await languageFoldersApi.getMy(params);
+      setData(result);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const folders = data?.items || [];
   const totalItems = data?.totalItems ?? folders.length;
@@ -27,12 +67,61 @@ export const useLanguageFolders = (params?: LanguageFolderQueryParams) => {
   };
 };
 
-// Hook for getting a single language folder by ID
 export const useLanguageFolder = (id: string | null) => {
-  const { data, error, isLoading, mutate } = useSWR(
-    id ? ['languageFolder', id] : null,
-    () => languageFoldersApi.getById(id!),
-  );
+  const [data, setData] = useState<any>(undefined);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<any>(null);
+
+  useEffect(() => {
+    if (!id) {
+      setIsLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    const fetchData = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const result = await languageFoldersApi.getById(id);
+        if (!cancelled) {
+          setData(result);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  const mutate = async () => {
+    if (!id) {
+      return;
+    }
+    setIsLoading(true);
+    setError(null);
+    try {
+      const result = await languageFoldersApi.getById(id);
+      setData(result);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return {
     languageFolder: data,
@@ -42,9 +131,7 @@ export const useLanguageFolder = (id: string | null) => {
   };
 };
 
-// API functions for mutations
 export const languageFolderMutations = {
-  // Create new language folder
   create: async (languageFolderData: {
     name: string;
     folderColor: string;
@@ -53,8 +140,6 @@ export const languageFolderMutations = {
   }) => {
     return await languageFoldersApi.create(languageFolderData);
   },
-
-  // Update language folder
   update: async (id: string, languageFolderData: {
     name: string;
     folderColor: string;
@@ -63,8 +148,6 @@ export const languageFolderMutations = {
   }) => {
     return await languageFoldersApi.update(id, languageFolderData);
   },
-
-  // Delete language folder
   delete: async (id: string) => {
     return await languageFoldersApi.delete(id);
   },

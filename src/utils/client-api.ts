@@ -12,6 +12,13 @@ import type {
   TUnreadCountResponse,
   TUpdateNotificationStatusInput,
 } from '@/types/notification';
+import type {
+  MasteryBySubject,
+  MasteryDistribution,
+  MasterySummary,
+  ProgressOverTime,
+  TopProblematicVocab,
+} from '@/types/statistics';
 import type { TCreateVocab, TCsvImportResponse, TVocab } from '@/types/vocab-list';
 import type {
   TCreateVocabTrainer,
@@ -121,6 +128,30 @@ export const vocabApi = {
       headers: { 'Content-Type': 'multipart/form-data' },
       timeout: 300000, // 5 minutes to match backend timeout
     });
+  },
+};
+
+// Statistics API endpoints
+export const statisticsApi = {
+  getSummary: () => {
+    const config = API_METHODS.vocabs.getStatisticsSummary();
+    return ClientAPI.get<MasterySummary>(config.endpoint);
+  },
+  getBySubject: () => {
+    const config = API_METHODS.vocabs.getStatisticsBySubject();
+    return ClientAPI.get<MasteryBySubject[]>(config.endpoint);
+  },
+  getProgress: (params?: { startDate?: string; endDate?: string }) => {
+    const config = API_METHODS.vocabs.getStatisticsProgress(params);
+    return ClientAPI.get<ProgressOverTime[]>(config.endpoint);
+  },
+  getProblematic: (params?: { minIncorrect?: number; limit?: number }) => {
+    const config = API_METHODS.vocabs.getStatisticsProblematic(params);
+    return ClientAPI.get<TopProblematicVocab[]>(config.endpoint);
+  },
+  getDistribution: () => {
+    const config = API_METHODS.vocabs.getStatisticsDistribution();
+    return ClientAPI.get<MasteryDistribution[]>(config.endpoint);
   },
 };
 
@@ -323,6 +354,7 @@ export const api = {
   languageFolders: languageFoldersApi,
   notifications: notificationsApi,
   cloudinary: cloudinaryApi,
+  statistics: statisticsApi,
 };
 
 // Export the axios instance for direct use when needed
