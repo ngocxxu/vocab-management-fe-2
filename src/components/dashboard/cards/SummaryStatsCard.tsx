@@ -16,7 +16,7 @@ type MetricCardProps = {
 
 const MetricCard: React.FC<MetricCardProps> = ({ title, value, icon, iconColor, subtitle }) => (
   <Card className="group overflow-hidden border-0 bg-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.08)] backdrop-blur-sm transition-all duration-500 hover:scale-[1.02] hover:bg-white/90 hover:shadow-[0_20px_40px_rgb(0,0,0,0.12)] dark:bg-slate-800/80 dark:hover:bg-slate-800/90">
-    <CardContent className="p-6">
+    <CardContent className="px-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-5">
           <div className={`flex h-16 w-16 items-center justify-center rounded-2xl ${iconColor} shadow-xl transition-transform duration-300 group-hover:scale-110`}>
@@ -192,14 +192,14 @@ export const SummaryStatsCard: React.FC<SummaryStatsCardProps> = ({ data }) => {
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <Card className="border-0 bg-white/80 shadow-lg dark:bg-slate-800/80">
-          <CardContent className="p-6">
+          <CardContent className="px-6">
             <h3 className="mb-4 text-lg font-semibold text-slate-900 dark:text-white">Answer Distribution</h3>
             <DonutChart correct={data.totalCorrect} incorrect={data.totalIncorrect} />
           </CardContent>
         </Card>
 
         <Card className="border-0 bg-white/80 shadow-lg dark:bg-slate-800/80">
-          <CardContent className="p-6">
+          <CardContent className="px-6">
             <h3 className="mb-4 text-lg font-semibold text-slate-900 dark:text-white">Mastery Progress</h3>
             <MasteryProgress mastery={data.averageMastery} />
           </CardContent>
