@@ -17,7 +17,6 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useNotifications, useUnreadCount, useUnreadNotifications } from '@/hooks/useNotifications';
 import { cn } from '@/libs/utils';
 import { NotificationItem } from './NotificationItem';
 
@@ -154,9 +153,11 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
   const router = useRouter();
   const [, startTransition] = useTransition();
 
-  const { notifications = [], isLoading: isLoadingAll, mutate: mutateAll } = useNotifications(initialAllNotifications);
-  const { unreadNotifications = [], isLoading: isLoadingUnread, mutate: mutateUnread } = useUnreadNotifications(initialUnreadNotifications);
-  const { unreadCount, mutate: mutateCount } = useUnreadCount(initialUnreadCount);
+  const notifications = initialAllNotifications?.items || [];
+  const isLoadingAll = false;
+  const unreadNotifications = initialUnreadNotifications?.items || [];
+  const isLoadingUnread = false;
+  const unreadCount = initialUnreadCount?.count || 0;
 
   // Reset displayed count when dropdown opens
   useEffect(() => {
@@ -167,9 +168,6 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
   const handleMarkAllAsRead = async () => {
     try {
       await markAllNotificationsAsRead();
-      mutateAll();
-      mutateUnread();
-      mutateCount();
       toast.success('All notifications marked as read');
       startTransition(() => {
         router.refresh();
@@ -181,14 +179,15 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
   };
 
   const handleNotificationRead = () => {
-    mutateUnread();
-    mutateCount();
+    startTransition(() => {
+      router.refresh();
+    });
   };
 
   const handleNotificationDelete = () => {
-    mutateAll();
-    mutateUnread();
-    mutateCount();
+    startTransition(() => {
+      router.refresh();
+    });
   };
 
   const handleScroll = useCallback((event: React.UIEvent<HTMLDivElement>) => {

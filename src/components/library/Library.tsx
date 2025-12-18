@@ -23,7 +23,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/table';
 import { useApiPagination } from '@/hooks';
-import { useLanguageFolders } from '@/hooks/useLanguageFolders';
 import CreateFolderModal from './CreateFolderModal';
 import EditFolderDialog from './EditFolderDialog';
 import LibraryEmptyState from './LibraryEmptyState';
@@ -51,18 +50,10 @@ const Library: React.FC<LibraryProps> = ({ initialData, initialLanguagesData }) 
   const [editingFolder, setEditingFolder] = useState<LanguageFolderType | null>(null);
   const [showEditDialog, setShowEditDialog] = useState(false);
 
-  // Build query parameters for the API call
-  const queryParams = {
-    page: pagination.page,
-    pageSize: pagination.pageSize,
-    sortBy: pagination.sortBy,
-    sortOrder: pagination.sortOrder,
-  };
-
-  const { languageFolders, totalItems, totalPages, currentPage, isLoading } = useLanguageFolders(
-    queryParams,
-    initialData,
-  );
+  const totalItems = initialData?.totalItems || 0;
+  const totalPages = initialData?.totalPages || 0;
+  const currentPage = initialData?.currentPage || 1;
+  const isLoading = false;
 
   const handleFolderClick = useCallback((folder: LanguageFolderType) => {
     router.push(`/vocab-list?sourceLanguageCode=${folder.sourceLanguageCode}&targetLanguageCode=${folder.targetLanguageCode}&languageFolderId=${folder.id}`);
@@ -120,7 +111,8 @@ const Library: React.FC<LibraryProps> = ({ initialData, initialLanguagesData }) 
   const { handleSort, handlePageChange } = handlers;
 
   // Client-side filtering (server-side pagination doesn't support search yet)
-  const filteredFolders = useMemo(() => {
+  const data = useMemo<LanguageFolderType[]>(() => {
+    const languageFolders = initialData?.items || [];
     return languageFolders.filter((folder: LanguageFolderType) => {
       const matchesSearch = folder.name.toLowerCase().includes(searchQuery.toLowerCase())
         || folder.sourceLanguageCode.toLowerCase().includes(searchQuery.toLowerCase())
@@ -129,10 +121,7 @@ const Library: React.FC<LibraryProps> = ({ initialData, initialLanguagesData }) 
 
       return matchesSearch && matchesFilter;
     });
-  }, [languageFolders, searchQuery]);
-
-  // Use the filtered folders as data
-  const data = useMemo<LanguageFolderType[]>(() => filteredFolders, [filteredFolders]);
+  }, [initialData, searchQuery]);
 
   // Define table columns
   const columns = useMemo<ColumnDef<LanguageFolderType>[]>(() => [

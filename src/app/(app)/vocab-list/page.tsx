@@ -15,6 +15,9 @@ export default async function VocabListPage({ searchParams }: PageProps) {
   const sourceLanguageCode = typeof resolvedParams.sourceLanguageCode === 'string' ? resolvedParams.sourceLanguageCode : undefined;
   const targetLanguageCode = typeof resolvedParams.targetLanguageCode === 'string' ? resolvedParams.targetLanguageCode : undefined;
   const languageFolderId = typeof resolvedParams.languageFolderId === 'string' ? resolvedParams.languageFolderId : undefined;
+  const textSource = typeof resolvedParams.textSource === 'string' ? resolvedParams.textSource : undefined;
+  const subjectIdsParam = typeof resolvedParams.subjectIds === 'string' ? resolvedParams.subjectIds : undefined;
+  const subjectIds = subjectIdsParam ? subjectIdsParam.split(',') : undefined;
 
   const queryParams = {
     page: !Number.isNaN(rawPage) && rawPage > 0 ? rawPage : 1,
@@ -24,6 +27,8 @@ export default async function VocabListPage({ searchParams }: PageProps) {
     sourceLanguageCode,
     targetLanguageCode,
     languageFolderId,
+    textSource,
+    subjectIds,
   };
 
   try {

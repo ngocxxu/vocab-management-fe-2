@@ -15,7 +15,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useSubjects } from '@/hooks/useSubjects';
 
 type SubjectItemProps = {
   subject: TSubject;
@@ -163,7 +162,8 @@ type SubjectSectionProps = {
 };
 
 export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsData }) => {
-  const { subjects, isLoading } = useSubjects(initialSubjectsData);
+  const subjects = initialSubjectsData?.items || [];
+  const isLoading = false;
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingSubject, setEditingSubject] = useState<TSubject | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);

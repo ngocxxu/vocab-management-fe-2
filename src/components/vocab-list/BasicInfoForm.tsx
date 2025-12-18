@@ -12,7 +12,6 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useLanguages } from '@/hooks/useLanguages';
 
 type Language = {
   code: string;
@@ -25,7 +24,9 @@ type BasicInfoFormProps = {
 
 const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ initialLanguagesData }) => {
   const form = useFormContext();
-  const { languages, isLoading, isError } = useLanguages(initialLanguagesData);
+  const languages = initialLanguagesData?.items || [];
+  const isLoading = false;
+  const isError = false;
 
   // Get current form values to filter options
   const sourceLanguageCode = form.watch('sourceLanguageCode');

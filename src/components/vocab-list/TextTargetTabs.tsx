@@ -7,8 +7,6 @@ import { Plus, X } from 'lucide-react';
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useSubjects } from '@/hooks/useSubjects';
-import { useWordTypes } from '@/hooks/useWordTypes';
 import { cn } from '@/libs/utils';
 import TextTargetForm from './TextTargetForm';
 
@@ -51,8 +49,12 @@ const TextTargetTabs: React.FC<TextTargetTabsProps> = ({
   initialSubjectsData,
   initialWordTypesData,
 }) => {
-  const { wordTypes, isLoading, isError } = useWordTypes(initialWordTypesData);
-  const { subjects, isLoading: subjectsLoading, isError: subjectsError } = useSubjects(initialSubjectsData);
+  const wordTypes = initialWordTypesData?.items || [];
+  const isLoading = false;
+  const isError = false;
+  const subjects = initialSubjectsData?.items || [];
+  const subjectsLoading = false;
+  const subjectsError = false;
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">

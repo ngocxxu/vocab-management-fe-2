@@ -18,7 +18,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Form } from '@/components/ui/form';
 import { DataTable } from '@/components/ui/table';
-import { useApiPagination, useAuth, useBulkDelete, useDialogState, useLanguageFolder, useSubjects, useVocabs } from '@/hooks';
+import { useApiPagination, useAuth, useBulkDelete, useDialogState } from '@/hooks';
 import { selectVoiceByCode } from '@/utils/textToSpeech';
 import AddVocabDialog from './AddVocabDialog';
 import ExpandedRowContent from './ExpandedRowContent';
@@ -69,10 +69,8 @@ const VocabList: React.FC<VocabListProps> = ({
   initialWordTypesData,
 }) => {
   const [importDialogOpen, setImportDialogOpen] = React.useState(false);
-  const [globalFilter, setGlobalFilter] = useState('');
   const [isMounted, setIsMounted] = useState(false);
   const [expanded, setExpanded] = React.useState<Record<string, boolean>>({});
-  const [selectedSubjectIds, setSelectedSubjectIds] = useState<string[]>([]);
   const { speak, cancel, voices } = useSpeechSynthesis();
 
   const handleSpeakTextSource = useCallback((vocab: TVocab) => {
@@ -93,50 +91,29 @@ const VocabList: React.FC<VocabListProps> = ({
     sortOrder: 'asc',
   });
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const [, startTransition] = useTransition();
 
   const sourceLanguageCode = searchParams.get('sourceLanguageCode') || undefined;
   const targetLanguageCode = searchParams.get('targetLanguageCode') || undefined;
   const languageFolderId = searchParams.get('languageFolderId') || undefined;
+  const textSource = searchParams.get('textSource') || '';
+  const subjectIdsParam = searchParams.get('subjectIds');
+  const selectedSubjectIds = subjectIdsParam ? subjectIdsParam.split(',') : [];
 
   const { user } = useAuth();
-  const router = useRouter();
-  const [, startTransition] = useTransition();
 
-  const queryParams = {
-    page: pagination.page,
-    pageSize: pagination.pageSize,
-    sortBy: pagination.sortBy,
-    sortOrder: pagination.sortOrder,
-    textSource: globalFilter || undefined,
-    sourceLanguageCode,
-    targetLanguageCode,
-    languageFolderId,
-    subjectIds: selectedSubjectIds.length > 0 ? selectedSubjectIds : undefined,
-    userId: user?.id,
-  };
+  const totalItems = initialVocabsData?.totalItems || 0;
+  const totalPages = initialVocabsData?.totalPages || 0;
+  const currentPage = initialVocabsData?.currentPage || 1;
+  const isLoading = false;
+  const isError = false;
 
-  // Only pass initialData on first render if params match initial query params
-  // Compare current queryParams with what was used to fetch initialData
-  const isFirstRender = initialVocabsData
-    && pagination.page === (initialVocabsData.currentPage || 1)
-    && pagination.pageSize === 10
-    && pagination.sortBy === 'textSource'
-    && pagination.sortOrder === 'asc'
-    && !globalFilter
-    && selectedSubjectIds.length === 0
-    && sourceLanguageCode === (initialVocabsData ? sourceLanguageCode : undefined)
-    && targetLanguageCode === (initialVocabsData ? targetLanguageCode : undefined)
-    && languageFolderId === (initialVocabsData ? languageFolderId : undefined);
+  const languageFolder = initialLanguageFolderData;
+  const isFolderLoading = false;
 
-  const { vocabs, totalItems, totalPages, currentPage, isLoading, isError, mutate } = useVocabs(
-    queryParams,
-    isFirstRender ? initialVocabsData : undefined,
-  );
-  const { languageFolder, isLoading: isFolderLoading } = useLanguageFolder(
-    languageFolderId || null,
-    initialLanguageFolderData,
-  );
-  const { subjects, isLoading: isSubjectsLoading } = useSubjects(initialSubjectsData);
+  const subjects = initialSubjectsData?.items || [];
+  const isSubjectsLoading = false;
 
   const form = useForm<FormData>({
     resolver: zodResolver(FormSchema),
@@ -198,7 +175,6 @@ const VocabList: React.FC<VocabListProps> = ({
       return { success: true };
     },
     onSuccess: () => {
-      mutate();
       startTransition(() => {
         router.refresh();
       });
@@ -318,16 +294,40 @@ const VocabList: React.FC<VocabListProps> = ({
   };
 
   const handleImportSuccess = useCallback(() => {
-    mutate();
     startTransition(() => {
       router.refresh();
     });
-  }, [mutate, router, startTransition]);
+  }, [router, startTransition]);
 
-  const clearFilters = () => {
-    setSelectedSubjectIds([]);
-    setGlobalFilter('');
-  };
+  const handleSearchChange = useCallback((query: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (query) {
+      params.set('textSource', query);
+    } else {
+      params.delete('textSource');
+    }
+    params.set('page', '1');
+    router.push(`?${params.toString()}`);
+  }, [router, searchParams]);
+
+  const handleSubjectFilterChange = useCallback((subjectIds: string[]) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (subjectIds.length > 0) {
+      params.set('subjectIds', subjectIds.join(','));
+    } else {
+      params.delete('subjectIds');
+    }
+    params.set('page', '1');
+    router.push(`?${params.toString()}`);
+  }, [router, searchParams]);
+
+  const clearFilters = useCallback(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('textSource');
+    params.delete('subjectIds');
+    params.set('page', '1');
+    router.push(`?${params.toString()}`);
+  }, [router, searchParams]);
 
   const handleSubmit = async () => {
     try {
@@ -369,8 +369,7 @@ const VocabList: React.FC<VocabListProps> = ({
     }
   };
 
-  // Use the vocabs from hook
-  const data = useMemo<TVocab[]>(() => vocabs, [vocabs]);
+  const data = useMemo<TVocab[]>(() => initialVocabsData?.items || [], [initialVocabsData]);
 
   // Memoize columns to prevent unnecessary re-renders
   const columns = useMemo<ColumnDef<TVocab>[]>(() => [
@@ -497,7 +496,6 @@ const VocabList: React.FC<VocabListProps> = ({
               await deleteVocab(id);
             }}
             onSuccess={() => {
-              mutate();
               startTransition(() => {
                 router.refresh();
               });
@@ -511,7 +509,7 @@ const VocabList: React.FC<VocabListProps> = ({
       enableHiding: false,
       size: 50,
     },
-  ], [expanded, handleEdit, mutate, handleSpeakTextSource, router, startTransition]);
+  ], [expanded, handleEdit, handleSpeakTextSource, router, startTransition]);
 
   return (
     <Form {...form}>
@@ -527,10 +525,21 @@ const VocabList: React.FC<VocabListProps> = ({
           subjects={subjects}
           isSubjectsLoading={isSubjectsLoading}
           selectedSubjectIds={selectedSubjectIds}
-          onSubjectFilterChange={setSelectedSubjectIds}
+          onSubjectFilterChange={handleSubjectFilterChange}
           onClearFilters={clearFilters}
-          hasActiveFilters={selectedSubjectIds.length > 0 || !!globalFilter}
-          queryParams={queryParams}
+          hasActiveFilters={selectedSubjectIds.length > 0 || !!textSource}
+          queryParams={{
+            page: pagination.page,
+            pageSize: pagination.pageSize,
+            sortBy: pagination.sortBy,
+            sortOrder: pagination.sortOrder,
+            textSource: textSource || undefined,
+            sourceLanguageCode,
+            targetLanguageCode,
+            languageFolderId,
+            subjectIds: selectedSubjectIds.length > 0 ? selectedSubjectIds : undefined,
+            userId: user?.id,
+          }}
         />
 
         {isError && (
@@ -583,8 +592,8 @@ const VocabList: React.FC<VocabListProps> = ({
               columns={columns}
               data={data}
               searchPlaceholder="Search vocab..."
-              searchValue={globalFilter}
-              onSearchChangeAction={setGlobalFilter}
+              searchValue={textSource}
+              onSearchChangeAction={handleSearchChange}
               showSearch={true}
               showPagination={true}
               pageSize={pagination.pageSize}

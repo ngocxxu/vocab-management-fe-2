@@ -2,7 +2,8 @@
 
 import type { ColumnDef } from '@tanstack/react-table';
 import type { ResponseAPI, TLanguage } from '@/types';
-import React, { useCallback, useMemo, useState } from 'react';
+import type { TVocab } from '@/types/vocab-list';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -14,7 +15,8 @@ import {
 } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DataTable } from '@/components/ui/table';
-import { useApiPagination, useAuth, useLanguageFolders, useLanguages, useVocabs } from '@/hooks';
+import { useApiPagination, useAuth } from '@/hooks';
+import { languageFoldersApi, vocabApi } from '@/utils/client-api';
 
 type VocabSelectionFormProps = {
   selectedIds: string[];
@@ -36,24 +38,58 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({ selectedIds, in
   const [sourceLanguageCode, setSourceLanguageCode] = useState<string>('ALL');
   const [targetLanguageCode, setTargetLanguageCode] = useState<string>('ALL');
   const [languageFolderId, setLanguageFolderId] = useState<string>('ALL');
+  const [vocabs, setVocabs] = useState<TVocab[]>([]);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [languageFolders, setLanguageFolders] = useState<any[]>([]);
 
   // server-side pagination, 5 items per page
   const { pagination, handlers } = useApiPagination({ page: 1, pageSize: 5, sortBy: 'textSource', sortOrder: 'asc' });
 
-  const { vocabs, totalItems, totalPages, currentPage } = useVocabs({
-    page: pagination.page,
-    pageSize: pagination.pageSize,
-    sortBy: pagination.sortBy,
-    sortOrder: pagination.sortOrder,
-    textSource: globalFilter || undefined,
-    sourceLanguageCode: sourceLanguageCode !== 'ALL' ? sourceLanguageCode : undefined,
-    targetLanguageCode: targetLanguageCode !== 'ALL' ? targetLanguageCode : undefined,
-    languageFolderId: languageFolderId !== 'ALL' ? languageFolderId : undefined,
-    userId: user?.id,
-  });
+  const languages = initialLanguagesData?.items || [];
 
-  const { languages } = useLanguages(initialLanguagesData);
-  const { languageFolders } = useLanguageFolders({ page: 1, pageSize: 100 });
+  useEffect(() => {
+    const fetchLanguageFolders = async () => {
+      try {
+        const result = await languageFoldersApi.getMy({ page: 1, pageSize: 100 });
+        setLanguageFolders(result.items || []);
+      } catch (error) {
+        console.error('Failed to fetch language folders:', error);
+      }
+    };
+    fetchLanguageFolders();
+  }, []);
+
+  useEffect(() => {
+    const fetchVocabs = async () => {
+      setIsLoading(true);
+      try {
+        const result = await vocabApi.getAll({
+          page: pagination.page,
+          pageSize: pagination.pageSize,
+          sortBy: pagination.sortBy,
+          sortOrder: pagination.sortOrder,
+          textSource: globalFilter || undefined,
+          sourceLanguageCode: sourceLanguageCode !== 'ALL' ? sourceLanguageCode : undefined,
+          targetLanguageCode: targetLanguageCode !== 'ALL' ? targetLanguageCode : undefined,
+          languageFolderId: languageFolderId !== 'ALL' ? languageFolderId : undefined,
+          userId: user?.id,
+        });
+        setVocabs(result.items || []);
+        setTotalItems(result.totalItems || 0);
+        setTotalPages(result.totalPages || 0);
+        setCurrentPage(result.currentPage || 1);
+      } catch (error) {
+        console.error('Failed to fetch vocabs:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchVocabs();
+  }, [pagination.page, pagination.pageSize, pagination.sortBy, pagination.sortOrder, globalFilter, sourceLanguageCode, targetLanguageCode, languageFolderId, user?.id]);
 
   const data = useMemo<RowVocab[]>(() => vocabs, [vocabs]);
 
@@ -227,7 +263,7 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({ selectedIds, in
                 manualPagination={true}
                 manualSorting={true}
                 manualFiltering={true}
-                isLoading={false}
+                isLoading={isLoading}
                 skeletonRowCount={pagination.pageSize}
                 pageCount={totalPages}
                 currentPage={currentPage}

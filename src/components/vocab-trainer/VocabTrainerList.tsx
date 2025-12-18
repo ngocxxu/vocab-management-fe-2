@@ -5,7 +5,7 @@ import type { ResponseAPI, TLanguage } from '@/types';
 import type { TVocabTrainer } from '@/types/vocab-trainer';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Edit } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -18,7 +18,7 @@ import { Form } from '@/components/ui/form';
 import { DataTable } from '@/components/ui/table';
 import { QUESTION_TYPE_OPTIONS } from '@/constants/vocab-trainer';
 import { EQuestionType } from '@/enum/vocab-trainer';
-import { useApiPagination, useAuth, useBulkDelete, useDialogState, useVocabTrainers } from '@/hooks';
+import { useApiPagination, useBulkDelete, useDialogState } from '@/hooks';
 import AddVocabTrainerDialog from './AddVocabTrainerDialog';
 import ExamLauncher from './ExamLauncher';
 import VocabTrainerHeader from './VocabTrainerHeader';
@@ -40,10 +40,7 @@ type VocabTrainerListProps = {
 };
 
 const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initialLanguagesData }) => {
-  const [globalFilter, setGlobalFilter] = useState('');
   const [isMounted, setIsMounted] = useState(false);
-  const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
-  const [selectedQuestionTypes, setSelectedQuestionTypes] = useState<string[]>([]);
 
   const { pagination, handlers } = useApiPagination({
     page: 1,
@@ -52,34 +49,21 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
     sortOrder: 'asc',
   });
 
-  const { user } = useAuth();
+  const searchParams = useSearchParams();
   const router = useRouter();
   const [, startTransition] = useTransition();
 
-  const queryParams = {
-    page: pagination.page,
-    pageSize: pagination.pageSize,
-    sortBy: pagination.sortBy,
-    sortOrder: pagination.sortOrder,
-    name: globalFilter || undefined,
-    status: selectedStatuses.length > 0 ? selectedStatuses : undefined,
-    questionType: selectedQuestionTypes.length > 0 ? selectedQuestionTypes[0] as EQuestionType : undefined,
-    userId: user?.id,
-  };
+  const name = searchParams.get('name') || '';
+  const statusParam = searchParams.get('status');
+  const selectedStatuses = statusParam ? statusParam.split(',') : [];
+  const questionTypeParam = searchParams.get('questionType');
+  const selectedQuestionTypes = questionTypeParam ? [questionTypeParam] : [];
 
-  // Only pass initialData on first render if params match (no filters, default pagination)
-  const isFirstRender = pagination.page === (initialData?.currentPage || 1)
-    && pagination.pageSize === 10
-    && pagination.sortBy === 'name'
-    && pagination.sortOrder === 'asc'
-    && !globalFilter
-    && selectedStatuses.length === 0
-    && selectedQuestionTypes.length === 0;
-
-  const { vocabTrainers, totalItems, totalPages, currentPage, isLoading, isError, mutate } = useVocabTrainers(
-    queryParams,
-    isFirstRender ? initialData : undefined,
-  );
+  const totalItems = initialData?.totalItems || 0;
+  const totalPages = initialData?.totalPages || 0;
+  const currentPage = initialData?.currentPage || 1;
+  const isLoading = false;
+  const isError = false;
 
   const form = useForm<FormData>({
     resolver: zodResolver(FormSchema),
@@ -122,7 +106,6 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
       return { success: true };
     },
     onSuccess: () => {
-      mutate();
       startTransition(() => {
         router.refresh();
       });
@@ -131,11 +114,47 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
     itemNamePlural: 'vocabulary trainers',
   });
 
-  const clearFilters = () => {
-    setSelectedStatuses([]);
-    setSelectedQuestionTypes([]);
-    setGlobalFilter('');
-  };
+  const handleStatusFilterChange = useCallback((statuses: string[]) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (statuses.length > 0) {
+      params.set('status', statuses.join(','));
+    } else {
+      params.delete('status');
+    }
+    params.set('page', '1');
+    router.push(`?${params.toString()}`);
+  }, [router, searchParams]);
+
+  const handleQuestionTypeFilterChange = useCallback((questionTypes: string[]) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (questionTypes.length > 0) {
+      params.set('questionType', questionTypes[0] || '');
+    } else {
+      params.delete('questionType');
+    }
+    params.set('page', '1');
+    router.push(`?${params.toString()}`);
+  }, [router, searchParams]);
+
+  const handleSearchChange = useCallback((query: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (query) {
+      params.set('name', query);
+    } else {
+      params.delete('name');
+    }
+    params.set('page', '1');
+    router.push(`?${params.toString()}`);
+  }, [router, searchParams]);
+
+  const clearFilters = useCallback(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('name');
+    params.delete('status');
+    params.delete('questionType');
+    params.set('page', '1');
+    router.push(`?${params.toString()}`);
+  }, [router, searchParams]);
 
   // Define filter options
   const statusOptions = [
@@ -205,8 +224,7 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
     }
   };
 
-  // Use the trainers from hook
-  const data = useMemo<TVocabTrainer[]>(() => vocabTrainers, [vocabTrainers]);
+  const data = useMemo<TVocabTrainer[]>(() => initialData?.items || [], [initialData]);
 
   // Memoize columns to prevent unnecessary re-renders
   const columns = useMemo<ColumnDef<TVocabTrainer>[]>(() => [
@@ -319,7 +337,6 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
               await deleteVocabTrainer(id);
             }}
             onSuccess={() => {
-              mutate();
               startTransition(() => {
                 router.refresh();
               });
@@ -333,7 +350,8 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
       enableHiding: false,
       size: 50,
     },
-  ], [handleEdit, mutate]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ], [handleEdit]);
 
   return (
     <Form {...form}>
@@ -343,12 +361,12 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
           onAddTrainer={() => dialogState.setOpen(true)}
           statusOptions={statusOptions}
           selectedStatuses={selectedStatuses}
-          onStatusFilterChange={setSelectedStatuses}
+          onStatusFilterChange={handleStatusFilterChange}
           questionTypeOptions={QUESTION_TYPE_OPTIONS}
           selectedQuestionTypes={selectedQuestionTypes}
-          onQuestionTypeFilterChange={setSelectedQuestionTypes}
+          onQuestionTypeFilterChange={handleQuestionTypeFilterChange}
           onClearFilters={clearFilters}
-          hasActiveFilters={selectedStatuses.length > 0 || selectedQuestionTypes.length > 0 || !!globalFilter}
+          hasActiveFilters={selectedStatuses.length > 0 || selectedQuestionTypes.length > 0 || !!name}
         />
 
         {isError && (
@@ -382,8 +400,8 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
               columns={columns}
               data={data}
               searchPlaceholder="Search trainers..."
-              searchValue={globalFilter}
-              onSearchChangeAction={setGlobalFilter}
+              searchValue={name}
+              onSearchChangeAction={handleSearchChange}
               showSearch={true}
               showPagination={true}
               pageSize={pagination.pageSize}

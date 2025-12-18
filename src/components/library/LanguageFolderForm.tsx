@@ -7,7 +7,6 @@ import { ColorPicker } from '@/components/ui/color-picker';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useLanguages } from '@/hooks/useLanguages';
 import { cn } from '@/libs/utils';
 
 export type LanguageFolderFormData = {
@@ -42,7 +41,8 @@ const LanguageFolderForm: React.FC<LanguageFolderFormProps> = ({
   className,
   initialLanguagesData,
 }) => {
-  const { languages, isLoading: isLoadingLanguages } = useLanguages(initialLanguagesData);
+  const languages = initialLanguagesData?.items || [];
+  const isLoadingLanguages = false;
   const [formData, setFormData] = useState<LanguageFolderFormData>({
     name: '',
     folderColor: '#3b82f6',
