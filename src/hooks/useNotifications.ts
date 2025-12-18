@@ -1,13 +1,28 @@
-import type { TNotification, TNotificationInput, TUpdateNotificationStatusInput } from '@/types/notification';
-import { useEffect, useState } from 'react';
+import type { ResponseAPI } from '@/types';
+import type { TNotification, TNotificationInput, TUnreadCountResponse, TUpdateNotificationStatusInput } from '@/types/notification';
+import { useEffect, useRef, useState } from 'react';
 import { notificationsApi } from '@/utils/client-api';
 
-export const useNotifications = () => {
-  const [data, setData] = useState<{ items: TNotification[] } | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+export const useNotifications = (initialData?: ResponseAPI<TNotification[]>) => {
+  const [data, setData] = useState<ResponseAPI<TNotification[]> | null>(initialData || null);
+  const [isLoading, setIsLoading] = useState(!initialData);
   const [error, setError] = useState<any>(null);
+  const initialDataRef = useRef(initialData);
+  const hasUsedInitialDataRef = useRef(false);
 
   useEffect(() => {
+    // Skip fetch if we have initialData and this is the first render
+    if (initialDataRef.current && !hasUsedInitialDataRef.current) {
+      hasUsedInitialDataRef.current = true;
+      return;
+    }
+
+    // If already used initialData, skip fetch
+    if (hasUsedInitialDataRef.current && initialDataRef.current) {
+      return;
+    }
+
+    // Fetch when no initialData
     let cancelled = false;
 
     const fetchData = async () => {
@@ -18,6 +33,7 @@ export const useNotifications = () => {
         const result = await notificationsApi.getMy();
         if (!cancelled) {
           setData(result);
+          hasUsedInitialDataRef.current = true;
         }
       } catch (err) {
         if (!cancelled) {
@@ -35,7 +51,7 @@ export const useNotifications = () => {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, []); // Only run once on mount
 
   const mutate = async () => {
     setIsLoading(true);
@@ -58,12 +74,26 @@ export const useNotifications = () => {
   };
 };
 
-export const useUnreadNotifications = () => {
-  const [data, setData] = useState<{ items: TNotification[] } | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+export const useUnreadNotifications = (initialData?: ResponseAPI<TNotification[]>) => {
+  const [data, setData] = useState<ResponseAPI<TNotification[]> | null>(initialData || null);
+  const [isLoading, setIsLoading] = useState(!initialData);
   const [error, setError] = useState<any>(null);
+  const initialDataRef = useRef(initialData);
+  const hasUsedInitialDataRef = useRef(false);
 
   useEffect(() => {
+    // Skip fetch if we have initialData and this is the first render
+    if (initialDataRef.current && !hasUsedInitialDataRef.current) {
+      hasUsedInitialDataRef.current = true;
+      return;
+    }
+
+    // If already used initialData, skip fetch
+    if (hasUsedInitialDataRef.current && initialDataRef.current) {
+      return;
+    }
+
+    // Fetch when no initialData
     let cancelled = false;
 
     const fetchData = async () => {
@@ -74,6 +104,7 @@ export const useUnreadNotifications = () => {
         const result = await notificationsApi.getUnread();
         if (!cancelled) {
           setData(result);
+          hasUsedInitialDataRef.current = true;
         }
       } catch (err) {
         if (!cancelled) {
@@ -91,7 +122,7 @@ export const useUnreadNotifications = () => {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, []); // Only run once on mount
 
   const mutate = async () => {
     setIsLoading(true);
@@ -114,12 +145,26 @@ export const useUnreadNotifications = () => {
   };
 };
 
-export const useUnreadCount = () => {
-  const [data, setData] = useState<{ count: number } | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+export const useUnreadCount = (initialData?: TUnreadCountResponse) => {
+  const [data, setData] = useState<TUnreadCountResponse | null>(initialData || null);
+  const [isLoading, setIsLoading] = useState(!initialData);
   const [error, setError] = useState<any>(null);
+  const initialDataRef = useRef(initialData);
+  const hasUsedInitialDataRef = useRef(false);
 
   useEffect(() => {
+    // Skip fetch if we have initialData and this is the first render
+    if (initialDataRef.current && !hasUsedInitialDataRef.current) {
+      hasUsedInitialDataRef.current = true;
+      return;
+    }
+
+    // If already used initialData, skip fetch
+    if (hasUsedInitialDataRef.current && initialDataRef.current) {
+      return;
+    }
+
+    // Fetch when no initialData
     let cancelled = false;
 
     const fetchData = async () => {
@@ -130,6 +175,7 @@ export const useUnreadCount = () => {
         const result = await notificationsApi.getUnreadCount();
         if (!cancelled) {
           setData(result);
+          hasUsedInitialDataRef.current = true;
         }
       } catch (err) {
         if (!cancelled) {
@@ -147,7 +193,7 @@ export const useUnreadCount = () => {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, []); // Only run once on mount
 
   const mutate = async () => {
     setIsLoading(true);

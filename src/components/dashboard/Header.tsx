@@ -1,3 +1,5 @@
+import type { ResponseAPI } from '@/types';
+import type { TNotification, TUnreadCountResponse } from '@/types/notification';
 import { LogOut, Menu, Moon, Search, Sun, User } from 'lucide-react';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
@@ -10,9 +12,17 @@ import { useTheme } from '@/hooks/useTheme';
 
 type HeaderProps = {
   onSidebarToggle: () => void;
+  initialAllNotifications?: ResponseAPI<TNotification[]>;
+  initialUnreadNotifications?: ResponseAPI<TNotification[]>;
+  initialUnreadCount?: TUnreadCountResponse;
 };
 
-export const Header: React.FC<HeaderProps> = ({ onSidebarToggle }) => {
+export const Header: React.FC<HeaderProps> = ({
+  onSidebarToggle,
+  initialAllNotifications,
+  initialUnreadNotifications,
+  initialUnreadCount,
+}) => {
   const { theme, toggleTheme, mounted } = useTheme();
   const router = useRouter();
   const pathname = usePathname();
@@ -112,7 +122,11 @@ export const Header: React.FC<HeaderProps> = ({ onSidebarToggle }) => {
           </Button>
 
           {/* Notifications */}
-          <NotificationDropdown />
+          <NotificationDropdown
+            initialAllNotifications={initialAllNotifications}
+            initialUnreadNotifications={initialUnreadNotifications}
+            initialUnreadCount={initialUnreadCount}
+          />
 
           {/* User Profile & Logout */}
           <div className="flex items-center space-x-2">

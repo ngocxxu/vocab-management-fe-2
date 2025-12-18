@@ -1,6 +1,7 @@
 'use client';
 
-import type { TNotification } from '@/types/notification';
+import type { ResponseAPI } from '@/types';
+import type { TNotification, TUnreadCountResponse } from '@/types/notification';
 import { Bell, CheckCheck } from 'lucide-react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
@@ -21,6 +22,9 @@ import { NotificationItem } from './NotificationItem';
 
 type NotificationDropdownProps = {
   className?: string;
+  initialAllNotifications?: ResponseAPI<TNotification[]>;
+  initialUnreadNotifications?: ResponseAPI<TNotification[]>;
+  initialUnreadCount?: TUnreadCountResponse;
 };
 
 type NotificationWithReadStatus = TNotification & {
@@ -138,13 +142,18 @@ const NotificationTabContent: React.FC<NotificationTabContentProps> = ({
   );
 };
 
-export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ className }) => {
+export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
+  className,
+  initialAllNotifications,
+  initialUnreadNotifications,
+  initialUnreadCount,
+}) => {
   const [displayedCount, setDisplayedCount] = useState(5);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
-  const { notifications = [], isLoading: isLoadingAll, mutate: mutateAll } = useNotifications();
-  const { unreadNotifications = [], isLoading: isLoadingUnread, mutate: mutateUnread } = useUnreadNotifications();
-  const { unreadCount, mutate: mutateCount } = useUnreadCount();
+  const { notifications = [], isLoading: isLoadingAll, mutate: mutateAll } = useNotifications(initialAllNotifications);
+  const { unreadNotifications = [], isLoading: isLoadingUnread, mutate: mutateUnread } = useUnreadNotifications(initialUnreadNotifications);
+  const { unreadCount, mutate: mutateCount } = useUnreadCount(initialUnreadCount);
 
   // Reset displayed count when dropdown opens
   useEffect(() => {

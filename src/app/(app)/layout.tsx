@@ -1,33 +1,33 @@
-'use client';
+import { notificationsApi } from '@/utils/server-api';
+import { LayoutClient } from './LayoutClient';
 
-import { useState } from 'react';
-import { Header, Sidebar } from '@/components/dashboard';
-import { SocketProvider } from '@/providers/SocketProvider';
-
-export default function Layout(props: {
+export default async function Layout(props: {
   children: React.ReactNode;
 }) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  try {
+    // Fetch all notification data at server-side
+    const [allNotifications, unreadNotifications, unreadCount] = await Promise.all([
+      notificationsApi.getMy(),
+      notificationsApi.getUnread(),
+      notificationsApi.getUnreadCount(),
+    ]);
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
-
-  return (
-    <SocketProvider>
-      <div className="flex h-screen bg-slate-50 dark:bg-slate-900">
-        <Sidebar isOpen={isSidebarOpen} />
-        <div
-          className={`flex flex-1 flex-col transition-all duration-300 ease-in-out ${
-            isSidebarOpen ? 'ml-72' : 'ml-0'
-          }`}
-        >
-          <Header onSidebarToggle={toggleSidebar} />
-          <div className="flex-1 overflow-auto">
-            {props.children}
-          </div>
-        </div>
-      </div>
-    </SocketProvider>
-  );
+    return (
+      <LayoutClient
+        initialAllNotifications={allNotifications}
+        initialUnreadNotifications={unreadNotifications}
+        initialUnreadCount={unreadCount}
+      >
+        {props.children}
+      </LayoutClient>
+    );
+  } catch (error) {
+    console.error('Failed to fetch notifications:', error);
+    // Return LayoutClient without initial data if fetch fails
+    return (
+      <LayoutClient>
+        {props.children}
+      </LayoutClient>
+    );
+  }
 }

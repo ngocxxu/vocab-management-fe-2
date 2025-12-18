@@ -411,11 +411,11 @@ export const notificationsApi = {
   getMy: (includeDeleted?: boolean) => {
     const config = API_METHODS.notifications.getMy();
     const endpoint = includeDeleted ? `${config.endpoint}?includeDeleted=true` : config.endpoint;
-    return serverApi.get<TNotification[]>(endpoint);
+    return serverApi.get<ResponseAPI<TNotification[]>>(endpoint);
   },
   getUnread: () => {
     const config = API_METHODS.notifications.getUnread();
-    return serverApi.get<TNotification[]>(config.endpoint);
+    return serverApi.get<ResponseAPI<TNotification[]>>(config.endpoint);
   },
   getUnreadCount: () => {
     const config = API_METHODS.notifications.getUnreadCount();
