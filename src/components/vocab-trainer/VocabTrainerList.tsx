@@ -1,6 +1,7 @@
 'use client';
 
 import type { ColumnDef } from '@tanstack/react-table';
+import type { ResponseAPI } from '@/types';
 import type { TVocabTrainer } from '@/types/vocab-trainer';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Edit } from 'lucide-react';
@@ -32,7 +33,11 @@ const FormSchema = z.object({
 
 type FormData = z.infer<typeof FormSchema>;
 
-const VocabTrainerList: React.FC = () => {
+type VocabTrainerListProps = {
+  initialData?: ResponseAPI<TVocabTrainer[]>;
+};
+
+const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData }) => {
   const [globalFilter, setGlobalFilter] = useState('');
   const [isMounted, setIsMounted] = useState(false);
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
@@ -58,7 +63,19 @@ const VocabTrainerList: React.FC = () => {
     userId: user?.id,
   };
 
-  const { vocabTrainers, totalItems, totalPages, currentPage, isLoading, isError, mutate } = useVocabTrainers(queryParams);
+  // Only pass initialData on first render if params match (no filters, default pagination)
+  const isFirstRender = pagination.page === (initialData?.currentPage || 1)
+    && pagination.pageSize === 10
+    && pagination.sortBy === 'name'
+    && pagination.sortOrder === 'asc'
+    && !globalFilter
+    && selectedStatuses.length === 0
+    && selectedQuestionTypes.length === 0;
+
+  const { vocabTrainers, totalItems, totalPages, currentPage, isLoading, isError, mutate } = useVocabTrainers(
+    queryParams,
+    isFirstRender ? initialData : undefined,
+  );
 
   const form = useForm<FormData>({
     resolver: zodResolver(FormSchema),

@@ -9,7 +9,9 @@ import type {
   TUnreadCountResponse,
   TUpdateNotificationStatusInput,
 } from '@/types/notification';
+import type { TSubjectResponse } from '@/types/subject';
 import type { TVocab } from '@/types/vocab-list';
+import type { TVocabTrainer } from '@/types/vocab-trainer';
 import { cookies } from 'next/headers';
 import { Env } from '@/libs/Env';
 import { handleTokenExpiration } from '@/utils/auth-utils';
@@ -274,7 +276,7 @@ export const statisticsApi = {
 export const vocabTrainerApi = {
   getAll: (params?: VocabTrainerQueryParams) => {
     const config = API_METHODS.vocabTrainers.getAll(params);
-    return serverApi.get(config.endpoint);
+    return serverApi.get<ResponseAPI<TVocabTrainer[]>>(config.endpoint);
   },
   getById: (id: string) => {
     const config = API_METHODS.vocabTrainers.getById(id);
@@ -310,7 +312,7 @@ export const vocabTrainerApi = {
 export const subjectsApi = {
   getAll: () => {
     const config = API_METHODS.subjects.getAll();
-    return serverApi.get(config.endpoint);
+    return serverApi.get<TSubjectResponse>(config.endpoint);
   },
   getById: (id: string) => {
     const config = API_METHODS.subjects.getById(id);

@@ -1,6 +1,7 @@
 'use client';
 
 import type { ColumnDef } from '@tanstack/react-table';
+import type { TSubjectResponse } from '@/types/subject';
 import type { TVocab } from '@/types/vocab-list';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronDown, ChevronLeft, Edit, Volume2 } from 'lucide-react';
@@ -48,7 +49,11 @@ const FormSchema = z.object({
 
 type FormData = z.infer<typeof FormSchema>;
 
-const VocabList: React.FC = () => {
+type VocabListProps = {
+  initialSubjectsData?: TSubjectResponse;
+};
+
+const VocabList: React.FC<VocabListProps> = ({ initialSubjectsData }) => {
   const [importDialogOpen, setImportDialogOpen] = React.useState(false);
   const [globalFilter, setGlobalFilter] = useState('');
   const [isMounted, setIsMounted] = useState(false);
@@ -96,7 +101,7 @@ const VocabList: React.FC = () => {
 
   const { vocabs, totalItems, totalPages, currentPage, isLoading, isError, mutate } = useVocabs(queryParams);
   const { languageFolder, isLoading: isFolderLoading } = useLanguageFolder(languageFolderId || null);
-  const { subjects, isLoading: isSubjectsLoading } = useSubjects();
+  const { subjects, isLoading: isSubjectsLoading } = useSubjects(initialSubjectsData);
 
   const form = useForm<FormData>({
     resolver: zodResolver(FormSchema),

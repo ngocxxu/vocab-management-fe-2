@@ -1,3 +1,5 @@
+import type { ResponseAPI } from '@/types';
+import type { TVocabTrainer } from '@/types/vocab-trainer';
 import Link from 'next/link';
 import React from 'react';
 import {
@@ -10,7 +12,11 @@ import {
 } from '@/components/ui/breadcrumb';
 import { VocabTrainerList } from './index';
 
-const VocabTrainerContent: React.FC = () => {
+type VocabTrainerContentProps = {
+  initialData?: ResponseAPI<TVocabTrainer[]>;
+};
+
+const VocabTrainerContent: React.FC<VocabTrainerContentProps> = ({ initialData }) => {
   return (
     <div
       className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900/30"
@@ -33,7 +39,7 @@ const VocabTrainerContent: React.FC = () => {
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-        <VocabTrainerList />
+        <VocabTrainerList initialData={initialData} />
       </div>
     </div>
   );

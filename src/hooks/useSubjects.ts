@@ -1,12 +1,27 @@
-import { useEffect, useState } from 'react';
+import type { TSubjectResponse } from '@/types/subject';
+import { useEffect, useRef, useState } from 'react';
 import { subjectsApi } from '@/utils/client-api';
 
-export const useSubjects = () => {
-  const [data, setData] = useState<{ items: any[] } | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+export const useSubjects = (initialData?: TSubjectResponse) => {
+  const [data, setData] = useState<TSubjectResponse | null>(initialData || null);
+  const [isLoading, setIsLoading] = useState(!initialData);
   const [error, setError] = useState<any>(null);
+  const initialDataRef = useRef(initialData);
+  const hasUsedInitialDataRef = useRef(false);
 
   useEffect(() => {
+    // Skip fetch if we have initialData and this is the first render
+    if (initialDataRef.current && !hasUsedInitialDataRef.current) {
+      hasUsedInitialDataRef.current = true;
+      return;
+    }
+
+    // If already used initialData, skip fetch
+    if (hasUsedInitialDataRef.current && initialDataRef.current) {
+      return;
+    }
+
+    // Fetch when no initialData
     let cancelled = false;
 
     const fetchData = async () => {
@@ -17,6 +32,7 @@ export const useSubjects = () => {
         const result = await subjectsApi.getAll();
         if (!cancelled) {
           setData(result);
+          hasUsedInitialDataRef.current = true;
         }
       } catch (err) {
         if (!cancelled) {
@@ -34,7 +50,7 @@ export const useSubjects = () => {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, []); // Only run once on mount
 
   const mutate = async () => {
     setIsLoading(true);
