@@ -3,7 +3,7 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import type { ResponseAPI, TLanguage } from '@/types';
 import type { TVocab } from '@/types/vocab-list';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { getVocabsForSelection } from '@/actions';
 import { getMyLanguageFoldersForSelection } from '@/actions/language-folders';
@@ -22,6 +22,7 @@ import { useApiPagination, useAuth } from '@/hooks';
 type VocabSelectionFormProps = {
   selectedIds: string[];
   initialLanguagesData?: ResponseAPI<TLanguage[]>;
+  open?: boolean;
 };
 
 type RowVocab = {
@@ -32,7 +33,7 @@ type RowVocab = {
   targetLanguageCode: string;
 };
 
-const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({ selectedIds, initialLanguagesData }) => {
+const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({ selectedIds, initialLanguagesData, open = true }) => {
   const form = useFormContext();
   const { user } = useAuth();
   const [globalFilter, setGlobalFilter] = useState('');
@@ -45,29 +46,68 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({ selectedIds, in
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [languageFolders, setLanguageFolders] = useState<any[]>([]);
+  const languageFoldersFetchedRef = useRef(false);
+  const lastFetchParamsRef = useRef<string>('');
 
-  // server-side pagination, 5 items per page
   const { pagination, handlers } = useApiPagination({ page: 1, pageSize: 5, sortBy: 'textSource', sortOrder: 'asc' });
 
   const languages = initialLanguagesData?.items || [];
 
   useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    if (languageFoldersFetchedRef.current) {
+      return;
+    }
+
     const fetchLanguageFolders = async () => {
+      languageFoldersFetchedRef.current = true;
       try {
         const result = await getMyLanguageFoldersForSelection({ page: 1, pageSize: 100 });
         if ('error' in result) {
           console.error('Failed to fetch language folders:', result.error);
+          languageFoldersFetchedRef.current = false;
           return;
         }
         setLanguageFolders(result.items || []);
       } catch (error) {
         console.error('Failed to fetch language folders:', error);
+        languageFoldersFetchedRef.current = false;
       }
     };
     fetchLanguageFolders();
-  }, []);
+  }, [open]);
 
   useEffect(() => {
+    if (!open) {
+      lastFetchParamsRef.current = '';
+      return;
+    }
+
+    if (!user?.id) {
+      return;
+    }
+
+    const fetchParams = JSON.stringify({
+      page: pagination.page,
+      pageSize: pagination.pageSize,
+      sortBy: pagination.sortBy,
+      sortOrder: pagination.sortOrder,
+      globalFilter,
+      sourceLanguageCode,
+      targetLanguageCode,
+      languageFolderId,
+      userId: user.id,
+    });
+
+    if (lastFetchParamsRef.current === fetchParams) {
+      return;
+    }
+
+    lastFetchParamsRef.current = fetchParams;
+
     const fetchVocabs = async () => {
       setIsLoading(true);
       try {
@@ -80,7 +120,7 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({ selectedIds, in
           sourceLanguageCode: sourceLanguageCode !== 'ALL' ? sourceLanguageCode : undefined,
           targetLanguageCode: targetLanguageCode !== 'ALL' ? targetLanguageCode : undefined,
           languageFolderId: languageFolderId !== 'ALL' ? languageFolderId : undefined,
-          userId: user?.id,
+          userId: user.id,
         });
         if ('error' in result) {
           console.error('Failed to fetch vocabs:', result.error);
@@ -98,7 +138,7 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({ selectedIds, in
     };
 
     fetchVocabs();
-  }, [pagination.page, pagination.pageSize, pagination.sortBy, pagination.sortOrder, globalFilter, sourceLanguageCode, targetLanguageCode, languageFolderId, user?.id]);
+  }, [open, pagination.page, pagination.pageSize, pagination.sortBy, pagination.sortOrder, globalFilter, sourceLanguageCode, targetLanguageCode, languageFolderId, user?.id]);
 
   const data = useMemo<RowVocab[]>(() => vocabs, [vocabs]);
 

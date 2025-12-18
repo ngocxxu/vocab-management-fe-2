@@ -70,7 +70,7 @@ const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({
           </DialogHeader>
           <div className="space-y-6 p-6 pb-0">
             <BasicInfoForm />
-            <VocabSelectionForm selectedIds={formData.vocabAssignmentIds} initialLanguagesData={initialLanguagesData} />
+            <VocabSelectionForm selectedIds={formData.vocabAssignmentIds} initialLanguagesData={initialLanguagesData} open={open} />
           </div>
           <DialogFooter className="pt-4">
             <DialogClose asChild>
