@@ -1,13 +1,21 @@
+import type { ResponseAPI, TLanguageFolder } from '@/types';
 import type { TSubjectResponse } from '@/types/subject';
+import type { TVocab } from '@/types/vocab-list';
 import React, { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import VocabListContent from './VocabListContent';
 
 type VocabListLayoutProps = {
+  initialVocabsData?: ResponseAPI<TVocab[]>;
+  initialLanguageFolderData?: TLanguageFolder;
   initialSubjectsData?: TSubjectResponse;
 };
 
-const VocabListLayout: React.FC<VocabListLayoutProps> = ({ initialSubjectsData }) => {
+const VocabListLayout: React.FC<VocabListLayoutProps> = ({
+  initialVocabsData,
+  initialLanguageFolderData,
+  initialSubjectsData,
+}) => {
   return (
     <Suspense fallback={(
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900/30">
@@ -19,7 +27,11 @@ const VocabListLayout: React.FC<VocabListLayoutProps> = ({ initialSubjectsData }
       </div>
     )}
     >
-      <VocabListContent initialSubjectsData={initialSubjectsData} />
+      <VocabListContent
+        initialVocabsData={initialVocabsData}
+        initialLanguageFolderData={initialLanguageFolderData}
+        initialSubjectsData={initialSubjectsData}
+      />
     </Suspense>
   );
 };

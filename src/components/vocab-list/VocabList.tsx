@@ -1,6 +1,7 @@
 'use client';
 
 import type { ColumnDef } from '@tanstack/react-table';
+import type { ResponseAPI, TLanguageFolder } from '@/types';
 import type { TSubjectResponse } from '@/types/subject';
 import type { TVocab } from '@/types/vocab-list';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -21,6 +22,7 @@ import { selectVoiceByCode } from '@/utils/textToSpeech';
 import AddVocabDialog from './AddVocabDialog';
 import ExpandedRowContent from './ExpandedRowContent';
 import ImportVocabDialog from './ImportVocabDialog';
+
 import VocabListHeader from './VocabListHeader';
 
 // Utility function to generate unique IDs
@@ -50,10 +52,16 @@ const FormSchema = z.object({
 type FormData = z.infer<typeof FormSchema>;
 
 type VocabListProps = {
+  initialVocabsData?: ResponseAPI<TVocab[]>;
+  initialLanguageFolderData?: TLanguageFolder;
   initialSubjectsData?: TSubjectResponse;
 };
 
-const VocabList: React.FC<VocabListProps> = ({ initialSubjectsData }) => {
+const VocabList: React.FC<VocabListProps> = ({
+  initialVocabsData,
+  initialLanguageFolderData,
+  initialSubjectsData,
+}) => {
   const [importDialogOpen, setImportDialogOpen] = React.useState(false);
   const [globalFilter, setGlobalFilter] = useState('');
   const [isMounted, setIsMounted] = useState(false);
@@ -99,8 +107,27 @@ const VocabList: React.FC<VocabListProps> = ({ initialSubjectsData }) => {
     userId: user?.id,
   };
 
-  const { vocabs, totalItems, totalPages, currentPage, isLoading, isError, mutate } = useVocabs(queryParams);
-  const { languageFolder, isLoading: isFolderLoading } = useLanguageFolder(languageFolderId || null);
+  // Only pass initialData on first render if params match initial query params
+  // Compare current queryParams with what was used to fetch initialData
+  const isFirstRender = initialVocabsData
+    && pagination.page === (initialVocabsData.currentPage || 1)
+    && pagination.pageSize === 10
+    && pagination.sortBy === 'textSource'
+    && pagination.sortOrder === 'asc'
+    && !globalFilter
+    && selectedSubjectIds.length === 0
+    && sourceLanguageCode === (initialVocabsData ? sourceLanguageCode : undefined)
+    && targetLanguageCode === (initialVocabsData ? targetLanguageCode : undefined)
+    && languageFolderId === (initialVocabsData ? languageFolderId : undefined);
+
+  const { vocabs, totalItems, totalPages, currentPage, isLoading, isError, mutate } = useVocabs(
+    queryParams,
+    isFirstRender ? initialVocabsData : undefined,
+  );
+  const { languageFolder, isLoading: isFolderLoading } = useLanguageFolder(
+    languageFolderId || null,
+    initialLanguageFolderData,
+  );
   const { subjects, isLoading: isSubjectsLoading } = useSubjects(initialSubjectsData);
 
   const form = useForm<FormData>({

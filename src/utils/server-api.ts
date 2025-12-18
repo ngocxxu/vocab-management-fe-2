@@ -175,7 +175,7 @@ export const authApi = {
 export const vocabApi = {
   getAll: (params?: VocabQueryParams) => {
     const config = API_METHODS.vocabs.getAll(params);
-    return serverApi.get<TVocab[]>(config.endpoint);
+    return serverApi.get<ResponseAPI<TVocab[]>>(config.endpoint);
   },
   getById: (id: string) => {
     const config = API_METHODS.vocabs.getById(id);

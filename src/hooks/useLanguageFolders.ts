@@ -93,10 +93,12 @@ export const useLanguageFolders = (
   };
 };
 
-export const useLanguageFolder = (id: string | null) => {
-  const [data, setData] = useState<any>(undefined);
-  const [isLoading, setIsLoading] = useState(true);
+export const useLanguageFolder = (id: string | null, initialData?: TLanguageFolder) => {
+  const [data, setData] = useState<TLanguageFolder | undefined>(initialData);
+  const [isLoading, setIsLoading] = useState(!initialData);
   const [error, setError] = useState<any>(null);
+  const initialDataRef = useRef(initialData);
+  const hasUsedInitialDataRef = useRef(false);
 
   useEffect(() => {
     if (!id) {
@@ -104,6 +106,18 @@ export const useLanguageFolder = (id: string | null) => {
       return;
     }
 
+    // Skip fetch if we have initialData and this is the first render with matching id
+    if (initialDataRef.current && !hasUsedInitialDataRef.current && initialDataRef.current.id === id) {
+      hasUsedInitialDataRef.current = true;
+      return;
+    }
+
+    // If already used initialData and id matches, skip fetch
+    if (hasUsedInitialDataRef.current && initialDataRef.current && initialDataRef.current.id === id) {
+      return;
+    }
+
+    // Fetch when no initialData or id changed
     let cancelled = false;
 
     const fetchData = async () => {
@@ -114,6 +128,7 @@ export const useLanguageFolder = (id: string | null) => {
         const result = await languageFoldersApi.getById(id);
         if (!cancelled) {
           setData(result);
+          hasUsedInitialDataRef.current = true;
         }
       } catch (err) {
         if (!cancelled) {

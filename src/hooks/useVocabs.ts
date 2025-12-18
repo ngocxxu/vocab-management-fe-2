@@ -1,14 +1,36 @@
+import type { ResponseAPI } from '@/types';
 import type { TCreateVocab, TVocab } from '@/types/vocab-list';
 import type { VocabQueryParams } from '@/utils/api-config';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { vocabApi } from '@/utils/client-api';
 
-export const useVocabs = (queryParams?: VocabQueryParams) => {
-  const [data, setData] = useState<{ items: TVocab[]; totalItems: number; totalPages: number; currentPage: number } | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+export const useVocabs = (
+  queryParams?: VocabQueryParams,
+  initialData?: ResponseAPI<TVocab[]>,
+) => {
+  const [data, setData] = useState<ResponseAPI<TVocab[]> | null>(initialData || null);
+  const [isLoading, setIsLoading] = useState(!initialData);
   const [error, setError] = useState<any>(null);
+  const initialParamsRef = useRef<string | null>(initialData ? JSON.stringify(queryParams) : null);
+  const hasUsedInitialDataRef = useRef(false);
+  const initialDataRef = useRef(initialData);
 
   useEffect(() => {
+    const currentParamsStr = JSON.stringify(queryParams);
+
+    // Skip fetch if we have initialData and this is the first render with matching params
+    if (initialDataRef.current && !hasUsedInitialDataRef.current && currentParamsStr === initialParamsRef.current) {
+      hasUsedInitialDataRef.current = true;
+      return;
+    }
+
+    // If params changed from initial params, fetch
+    if (hasUsedInitialDataRef.current && currentParamsStr === initialParamsRef.current) {
+      // Same params as initial, skip fetch
+      return;
+    }
+
+    // Fetch when params changed or no initialData
     let cancelled = false;
 
     const fetchData = async () => {
@@ -19,6 +41,8 @@ export const useVocabs = (queryParams?: VocabQueryParams) => {
         const result = await vocabApi.getAll(queryParams);
         if (!cancelled) {
           setData(result);
+          hasUsedInitialDataRef.current = true;
+          initialParamsRef.current = currentParamsStr;
         }
       } catch (err) {
         if (!cancelled) {

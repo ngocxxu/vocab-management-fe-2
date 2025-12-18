@@ -1,4 +1,6 @@
+import type { ResponseAPI, TLanguageFolder } from '@/types';
 import type { TSubjectResponse } from '@/types/subject';
+import type { TVocab } from '@/types/vocab-list';
 import Link from 'next/link';
 import React from 'react';
 import {
@@ -12,10 +14,16 @@ import {
 import { VocabList } from './index';
 
 type VocabListContentProps = {
+  initialVocabsData?: ResponseAPI<TVocab[]>;
+  initialLanguageFolderData?: TLanguageFolder;
   initialSubjectsData?: TSubjectResponse;
 };
 
-const VocabListContent: React.FC<VocabListContentProps> = ({ initialSubjectsData }) => {
+const VocabListContent: React.FC<VocabListContentProps> = ({
+  initialVocabsData,
+  initialLanguageFolderData,
+  initialSubjectsData,
+}) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900/30">
       <div className="container mx-auto px-4 py-8">
@@ -32,7 +40,11 @@ const VocabListContent: React.FC<VocabListContentProps> = ({ initialSubjectsData
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-        <VocabList initialSubjectsData={initialSubjectsData} />
+        <VocabList
+          initialVocabsData={initialVocabsData}
+          initialLanguageFolderData={initialLanguageFolderData}
+          initialSubjectsData={initialSubjectsData}
+        />
       </div>
     </div>
   );
