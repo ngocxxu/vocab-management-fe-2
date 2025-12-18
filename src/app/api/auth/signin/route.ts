@@ -15,7 +15,27 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify({ email, password }),
     });
 
-    const data = await nestResponse.json();
+    // Get response text first to handle both JSON and non-JSON responses
+    const responseText = await nestResponse.text();
+    let data: any;
+
+    try {
+      data = responseText ? JSON.parse(responseText) : {};
+    } catch {
+      // If parsing fails, use the text as error message
+      data = { error: responseText || 'Unknown error' };
+    }
+
+    // If NestJS returned an error status, forward it with proper error message
+    if (!nestResponse.ok) {
+      return NextResponse.json(
+        {
+          error: data.error || data.message || `Signin failed: ${nestResponse.statusText}`,
+          ...data,
+        },
+        { status: nestResponse.status },
+      );
+    }
 
     const response = NextResponse.json(data, { status: nestResponse.status });
 

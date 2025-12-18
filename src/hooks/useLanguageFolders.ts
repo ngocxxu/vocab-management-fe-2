@@ -1,13 +1,37 @@
+import type { ResponseAPI, TLanguageFolder } from '@/types';
 import type { LanguageFolderQueryParams } from '@/utils/api-config';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { languageFoldersApi } from '@/utils/client-api';
 
-export const useLanguageFolders = (params?: LanguageFolderQueryParams) => {
-  const [data, setData] = useState<{ items: any[]; totalItems: number; totalPages: number; currentPage: number } | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+export const useLanguageFolders = (
+  params?: LanguageFolderQueryParams,
+  initialData?: ResponseAPI<TLanguageFolder[]>,
+) => {
+  const [data, setData] = useState<ResponseAPI<TLanguageFolder[]> | null>(
+    initialData || null,
+  );
+  const [isLoading, setIsLoading] = useState(!initialData);
   const [error, setError] = useState<any>(null);
+  const initialParamsRef = useRef<string | null>(initialData ? JSON.stringify(params) : null);
+  const hasUsedInitialDataRef = useRef(false);
+  const initialDataRef = useRef(initialData); // Store initialData in ref to avoid re-fetch on re-render
 
   useEffect(() => {
+    const currentParamsStr = JSON.stringify(params);
+
+    // Skip fetch if we have initialData and this is the first render with matching params
+    if (initialDataRef.current && !hasUsedInitialDataRef.current && currentParamsStr === initialParamsRef.current) {
+      hasUsedInitialDataRef.current = true;
+      return;
+    }
+
+    // If params changed from initial params, fetch
+    if (hasUsedInitialDataRef.current && currentParamsStr === initialParamsRef.current) {
+      // Same params as initial, skip fetch
+      return;
+    }
+
+    // Fetch when params changed or no initialData
     let cancelled = false;
 
     const fetchData = async () => {
@@ -18,6 +42,8 @@ export const useLanguageFolders = (params?: LanguageFolderQueryParams) => {
         const result = await languageFoldersApi.getMy(params);
         if (!cancelled) {
           setData(result);
+          hasUsedInitialDataRef.current = true;
+          initialParamsRef.current = currentParamsStr;
         }
       } catch (err) {
         if (!cancelled) {
@@ -35,7 +61,7 @@ export const useLanguageFolders = (params?: LanguageFolderQueryParams) => {
     return () => {
       cancelled = true;
     };
-  }, [JSON.stringify(params)]);
+  }, [JSON.stringify(params)]); // Only depend on params, not initialData
 
   const mutate = async () => {
     setIsLoading(true);

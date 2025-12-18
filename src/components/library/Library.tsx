@@ -1,7 +1,8 @@
 'use client';
 
 import type { ColumnDef } from '@tanstack/react-table';
-import type { TLanguageFolder as LanguageFolderType } from './LanguageFolder';
+import type { TLanguageFolder as LanguageFolderType, TLanguageFolder } from './LanguageFolder';
+import type { ResponseAPI } from '@/types';
 import type { TCreateLanguageFolder } from '@/types/language-folder';
 import { Edit, Folder, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -30,20 +31,23 @@ import LibraryHeader from './LibraryHeader';
 import LibraryLoadingState from './LibraryLoadingState';
 import LibrarySearch from './LibrarySearch';
 
-const Library: React.FC = () => {
+type LibraryProps = {
+  initialData?: ResponseAPI<TLanguageFolder[]>;
+};
+
+const Library: React.FC<LibraryProps> = ({ initialData }) => {
+  const { pagination, handlers } = useApiPagination({
+    page: initialData?.currentPage || 1,
+    pageSize: 10,
+    sortBy: 'name',
+    sortOrder: 'asc',
+  });
+
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingFolder, setEditingFolder] = useState<LanguageFolderType | null>(null);
   const [showEditDialog, setShowEditDialog] = useState(false);
-
-  // Use reusable pagination hook
-  const { pagination, handlers } = useApiPagination({
-    page: 1,
-    pageSize: 10,
-    sortBy: 'name',
-    sortOrder: 'asc',
-  });
 
   // Build query parameters for the API call
   const queryParams = {
@@ -53,7 +57,10 @@ const Library: React.FC = () => {
     sortOrder: pagination.sortOrder,
   };
 
-  const { languageFolders, totalItems, totalPages, currentPage, isLoading, mutate: refetchFolders } = useLanguageFolders(queryParams);
+  const { languageFolders, totalItems, totalPages, currentPage, isLoading, mutate: refetchFolders } = useLanguageFolders(
+    queryParams,
+    initialData,
+  );
 
   const handleFolderClick = useCallback((folder: LanguageFolderType) => {
     router.push(`/vocab-list?sourceLanguageCode=${folder.sourceLanguageCode}&targetLanguageCode=${folder.targetLanguageCode}&languageFolderId=${folder.id}`);

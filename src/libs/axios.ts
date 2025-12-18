@@ -124,6 +124,8 @@ axiosInstance.interceptors.response.use(
           hasRequest: !!error.request,
           message: error.message,
           url: error.config?.url,
+          status: error.response?.status,
+          statusText: error.response?.statusText,
         });
       }
     } else if (error.request) {

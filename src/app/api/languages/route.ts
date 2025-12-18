@@ -8,9 +8,12 @@ export async function GET(_request: NextRequest) {
     const languages = await languagesApi.getAll();
     return NextResponse.json(languages);
   } catch (error) {
+    const status = (error as any)?.status || 500;
+    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch languages';
+
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to fetch languages' },
-      { status: 500 },
+      { error: errorMessage },
+      { status },
     );
   }
 }
@@ -22,9 +25,12 @@ export async function POST(request: NextRequest) {
     const newLanguage = await languagesApi.create(body);
     return NextResponse.json(newLanguage, { status: 201 });
   } catch (error) {
+    const status = (error as any)?.status || 500;
+    const errorMessage = error instanceof Error ? error.message : 'Failed to create language';
+
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to create language' },
-      { status: 500 },
+      { error: errorMessage },
+      { status },
     );
   }
 }

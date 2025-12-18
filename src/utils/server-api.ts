@@ -1,4 +1,5 @@
 import type { LanguageFolderQueryParams, VocabQueryParams, VocabTrainerQueryParams } from './api-config';
+import type { ResponseAPI, TLanguageFolder } from '@/types';
 import type {
   TDeleteNotificationResponse,
   TMarkAllAsReadResponse,
@@ -385,23 +386,23 @@ export const languagesApi = {
 export const languageFoldersApi = {
   getMy: (params?: LanguageFolderQueryParams) => {
     const config = API_METHODS.languageFolders.getMy(params);
-    return serverApi.get(config.endpoint);
+    return serverApi.get<ResponseAPI<TLanguageFolder[]>>(config.endpoint);
   },
   getById: (id: string) => {
     const config = API_METHODS.languageFolders.getById(id);
-    return serverApi.get(config.endpoint);
+    return serverApi.get<TLanguageFolder>(config.endpoint);
   },
   create: (languageFolderData: { name: string; folderColor: string; sourceLanguageCode: string; targetLanguageCode: string }) => {
     const config = API_METHODS.languageFolders.create(languageFolderData);
-    return serverApi.post(config.endpoint, config.data);
+    return serverApi.post<TLanguageFolder>(config.endpoint, config.data);
   },
   update: (id: string, languageFolderData: { name: string; folderColor: string; sourceLanguageCode: string; targetLanguageCode: string }) => {
     const config = API_METHODS.languageFolders.update(id, languageFolderData);
-    return serverApi.put(config.endpoint, config.data);
+    return serverApi.put<TLanguageFolder>(config.endpoint, config.data);
   },
   delete: (id: string) => {
     const config = API_METHODS.languageFolders.delete(id);
-    return serverApi.delete(config.endpoint);
+    return serverApi.delete<TLanguageFolder>(config.endpoint);
   },
 };
 
