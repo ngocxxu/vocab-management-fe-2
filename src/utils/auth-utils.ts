@@ -24,3 +24,16 @@ export const handleTokenExpiration = () => {
     window.location.href = signInUrl;
   }, 1000);
 };
+
+/**
+ * Check if user has access token cookie (client-side only)
+ * This is a lightweight check that doesn't make an API call
+ * If token exists, assume authenticated. If API calls fail with 401/403,
+ * axios interceptor will handle redirect to login.
+ */
+export const hasAuthToken = (): boolean => {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+  return document.cookie.includes('accessToken=');
+};
