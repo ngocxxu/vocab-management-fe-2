@@ -1,5 +1,6 @@
 'use client';
 
+import type { TSubjectResponse } from '@/types/subject';
 import type { TVocab } from '@/types/vocab-list';
 import { Loader2 } from 'lucide-react';
 import React, { useState } from 'react';
@@ -40,6 +41,7 @@ type AddVocabDialogProps = {
   setOpen: (open: boolean) => void;
   editMode?: boolean;
   editingItem?: TVocab | null;
+  initialSubjectsData?: TSubjectResponse;
 };
 
 const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
@@ -57,6 +59,7 @@ const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
   open,
   setOpen,
   editMode = false,
+  initialSubjectsData,
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -104,6 +107,7 @@ const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
               onRemoveExample={onRemoveExample}
               onAddTextTarget={onAddTextTarget}
               onRemoveTextTarget={onRemoveTextTarget}
+              initialSubjectsData={initialSubjectsData}
             />
           </div>
           <DialogFooter className="pt-4">

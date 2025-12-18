@@ -1,5 +1,6 @@
 'use client';
 
+import type { TSubjectResponse } from '@/types/subject';
 import { Plus, X } from 'lucide-react';
 import React from 'react';
 import { Button } from '@/components/ui/button';
@@ -30,6 +31,7 @@ type TextTargetTabsProps = {
   onRemoveExample: (exampleIndex: number, targetIndex: number) => void;
   onAddTextTarget: () => void;
   onRemoveTextTarget: (index: number) => void;
+  initialSubjectsData?: TSubjectResponse;
 };
 
 const TextTargetTabs: React.FC<TextTargetTabsProps> = ({
@@ -42,9 +44,10 @@ const TextTargetTabs: React.FC<TextTargetTabsProps> = ({
   onRemoveExample,
   onAddTextTarget,
   onRemoveTextTarget,
+  initialSubjectsData,
 }) => {
   const { wordTypes, isLoading, isError } = useWordTypes();
-  const { subjects, isLoading: subjectsLoading, isError: subjectsError } = useSubjects();
+  const { subjects, isLoading: subjectsLoading, isError: subjectsError } = useSubjects(initialSubjectsData);
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">

@@ -505,6 +505,7 @@ const VocabList: React.FC<VocabListProps> = ({ initialSubjectsData }) => {
               setOpen={handleCloseDialog}
               editMode={dialogState.editMode}
               editingItem={dialogState.editingItem}
+              initialSubjectsData={initialSubjectsData}
             />
 
             <ImportVocabDialog

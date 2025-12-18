@@ -1,6 +1,6 @@
 'use client';
 
-import type { TCreateSubject, TSubject } from '@/types/subject';
+import type { TCreateSubject, TSubject, TSubjectResponse } from '@/types/subject';
 import { closestCenter, DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -156,8 +156,12 @@ const SubjectForm: React.FC<SubjectFormProps> = ({ subject, onSubmit, onCancel, 
   );
 };
 
-export const SubjectSection: React.FC = () => {
-  const { subjects, isLoading, mutate } = useSubjects();
+type SubjectSectionProps = {
+  initialSubjectsData?: TSubjectResponse;
+};
+
+export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsData }) => {
+  const { subjects, isLoading, mutate } = useSubjects(initialSubjectsData);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingSubject, setEditingSubject] = useState<TSubject | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);

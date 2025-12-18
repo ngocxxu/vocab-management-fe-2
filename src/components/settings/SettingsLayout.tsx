@@ -1,10 +1,15 @@
 'use client';
 
 import type { TSettings, TSettingsTab } from '@/types/settings';
+import type { TSubjectResponse } from '@/types/subject';
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ProfileSection } from './ProfileSection';
 import { SubjectSection } from './SubjectSection';
+
+type SettingsLayoutProps = {
+  initialSubjectsData?: TSubjectResponse;
+};
 
 const defaultSettings: TSettings = {
   profile: {
@@ -36,7 +41,7 @@ const defaultSettings: TSettings = {
   },
 };
 
-export const SettingsLayout: React.FC = () => {
+export const SettingsLayout: React.FC<SettingsLayoutProps> = ({ initialSubjectsData }) => {
   const [_settings, setSettings] = useState<TSettings>(defaultSettings);
   const [activeTab, setActiveTab] = useState<TSettingsTab>('account');
 
@@ -95,7 +100,7 @@ export const SettingsLayout: React.FC = () => {
           </TabsContent>
 
           <TabsContent value="subjects" className="space-y-6">
-            <SubjectSection />
+            <SubjectSection initialSubjectsData={initialSubjectsData} />
           </TabsContent>
         </Tabs>
       </div>
