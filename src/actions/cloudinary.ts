@@ -1,29 +1,25 @@
-import type { NextRequest } from 'next/server';
+'use server';
+
+import type { GenerateUploadSignatureInput, GenerateUploadSignatureOutput } from '@/types/cloudinary';
 import { cookies } from 'next/headers';
-import { NextResponse } from 'next/server';
 import { Env } from '@/libs/Env';
 
-export async function GET(request: NextRequest) {
+export async function getCloudinaryUploadSignature(
+  params?: GenerateUploadSignatureInput,
+): Promise<GenerateUploadSignatureOutput | { error: string }> {
   try {
-    const { searchParams } = new URL(request.url);
-
-    const folder = searchParams.get('folder');
-    const uploadPreset = searchParams.get('uploadPreset');
-    const resourceType = searchParams.get('resourceType');
-    const maxFileSize = searchParams.get('maxFileSize');
-
     const queryParams = new URLSearchParams();
-    if (folder) {
-      queryParams.append('folder', folder);
+    if (params?.folder) {
+      queryParams.append('folder', params.folder);
     }
-    if (uploadPreset) {
-      queryParams.append('uploadPreset', uploadPreset);
+    if (params?.uploadPreset) {
+      queryParams.append('uploadPreset', params.uploadPreset);
     }
-    if (resourceType) {
-      queryParams.append('resourceType', resourceType);
+    if (params?.resourceType) {
+      queryParams.append('resourceType', params.resourceType);
     }
-    if (maxFileSize) {
-      queryParams.append('maxFileSize', maxFileSize);
+    if (params?.maxFileSize) {
+      queryParams.append('maxFileSize', params.maxFileSize.toString());
     }
 
     const queryString = queryParams.toString();
@@ -55,19 +51,17 @@ export async function GET(request: NextRequest) {
         error: errorText,
       });
 
-      return NextResponse.json(
-        { error: `Backend signature request failed: ${response.status} ${response.statusText}` },
-        { status: response.status },
-      );
+      return {
+        error: `Backend signature request failed: ${response.status} ${response.statusText}`,
+      };
     }
 
     const result = await response.json();
-    return NextResponse.json(result, { status: 200 });
+    return result as GenerateUploadSignatureOutput;
   } catch (error) {
     console.error('Cloudinary signature error:', error);
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to get upload signature' },
-      { status: 500 },
-    );
+    return {
+      error: error instanceof Error ? error.message : 'Failed to get upload signature',
+    };
   }
 }

@@ -4,54 +4,43 @@ import type { VocabQueryParams } from '@/utils/api-config';
 import { Download } from 'lucide-react';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
-import * as XLSX from 'xlsx';
+import { exportVocabsCsv } from '@/actions/vocabs';
 import { Button } from '@/components/ui/button';
 
-type ExportExcelButtonProps = {
+type ExportCsvButtonProps = {
   queryParams: VocabQueryParams;
   disabled?: boolean;
 };
 
-const ExportExcelButton: React.FC<ExportExcelButtonProps> = ({ queryParams, disabled }) => {
+const ExportCsvButton: React.FC<ExportCsvButtonProps> = ({ queryParams, disabled }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleExport = async () => {
     setIsLoading(true);
 
     try {
-      const searchParams = new URLSearchParams();
+      const result = await exportVocabsCsv(queryParams);
 
-      Object.entries(queryParams).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          if (Array.isArray(value)) {
-            value.forEach(item => searchParams.append(key, item));
-          } else {
-            searchParams.append(key, String(value));
-          }
-        }
-      });
-
-      const response = await fetch(`/api/vocabs/export-csv?${searchParams.toString()}`, {
-        credentials: 'include',
-      });
-
-      if (!response.ok) {
-        throw new Error(`Export failed: ${response.status} ${response.statusText}`);
+      if ('error' in result) {
+        throw new Error(result.error);
       }
 
-      const blob = await response.blob();
-      const csvText = await blob.text();
-
-      const workbook = XLSX.read(csvText, { type: 'string', raw: true });
+      const blob = result;
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
 
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-      const filename = `vocabs-export-${timestamp}.xlsx`;
+      link.download = `vocabs-export-${timestamp}.csv`;
 
-      XLSX.writeFile(workbook, filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
 
       toast.success('Vocabularies exported successfully');
     } catch (error) {
-      console.error('Export Excel error:', error);
+      console.error('Export CSV error:', error);
       toast.error('Failed to export vocabularies. Please try again.');
     } finally {
       setIsLoading(false);
@@ -68,9 +57,9 @@ const ExportExcelButton: React.FC<ExportExcelButtonProps> = ({ queryParams, disa
       <Download className="mr-2 h-4 w-4" />
       {isLoading
         ? 'Exporting...'
-        : 'Export Excel'}
+        : 'Export CSV'}
     </Button>
   );
 };
 
-export default ExportExcelButton;
+export default ExportCsvButton;

@@ -5,6 +5,7 @@ import { Download } from 'lucide-react';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import * as XLSX from 'xlsx';
+import { exportVocabsCsv } from '@/actions/vocabs';
 import { Button } from '@/components/ui/button';
 
 type ExportExcelButtonProps = {
@@ -19,27 +20,13 @@ const ExportExcelButton: React.FC<ExportExcelButtonProps> = ({ queryParams, disa
     setIsLoading(true);
 
     try {
-      const searchParams = new URLSearchParams();
+      const result = await exportVocabsCsv(queryParams);
 
-      Object.entries(queryParams).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          if (Array.isArray(value)) {
-            value.forEach(item => searchParams.append(key, item));
-          } else {
-            searchParams.append(key, String(value));
-          }
-        }
-      });
-
-      const response = await fetch(`/api/vocabs/export-csv?${searchParams.toString()}`, {
-        credentials: 'include',
-      });
-
-      if (!response.ok) {
-        throw new Error(`Export failed: ${response.status} ${response.statusText}`);
+      if ('error' in result) {
+        throw new Error(result.error);
       }
 
-      const blob = await response.blob();
+      const blob = result;
       const csvText = await blob.text();
 
       const workbook = XLSX.read(csvText, { type: 'string', raw: true });

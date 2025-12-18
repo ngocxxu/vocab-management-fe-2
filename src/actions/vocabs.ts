@@ -1,6 +1,8 @@
 'use server';
 
-import type { TCreateVocab } from '@/types/vocab-list';
+import type { ResponseAPI } from '@/types';
+import type { TCreateVocab, TVocab } from '@/types/vocab-list';
+import type { VocabQueryParams } from '@/utils/api-config';
 import { revalidatePath } from 'next/cache';
 import { vocabApi } from '@/utils/server-api';
 
@@ -67,5 +69,28 @@ export async function importVocabsCsv(
     return result;
   } catch (error) {
     throw new Error(error instanceof Error ? error.message : 'Failed to import vocabularies');
+  }
+}
+
+export async function exportVocabsCsv(params: VocabQueryParams): Promise<Blob | { error: string }> {
+  try {
+    const response = await vocabApi.exportCsv(params);
+    const blob = await response.blob();
+    return blob;
+  } catch (error) {
+    return {
+      error: error instanceof Error ? error.message : 'Failed to export vocabularies',
+    };
+  }
+}
+
+export async function getVocabsForSelection(params: VocabQueryParams): Promise<ResponseAPI<TVocab[]> | { error: string }> {
+  try {
+    const result = await vocabApi.getAll(params);
+    return result;
+  } catch (error) {
+    return {
+      error: error instanceof Error ? error.message : 'Failed to fetch vocabularies',
+    };
   }
 }

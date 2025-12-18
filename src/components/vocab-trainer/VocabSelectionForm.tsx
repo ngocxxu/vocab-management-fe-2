@@ -5,6 +5,8 @@ import type { ResponseAPI, TLanguage } from '@/types';
 import type { TVocab } from '@/types/vocab-list';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
+import { getVocabsForSelection } from '@/actions';
+import { getMyLanguageFoldersForSelection } from '@/actions/language-folders';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   FormControl,
@@ -16,7 +18,6 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DataTable } from '@/components/ui/table';
 import { useApiPagination, useAuth } from '@/hooks';
-import { languageFoldersApi, vocabApi } from '@/utils/client-api';
 
 type VocabSelectionFormProps = {
   selectedIds: string[];
@@ -53,7 +54,11 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({ selectedIds, in
   useEffect(() => {
     const fetchLanguageFolders = async () => {
       try {
-        const result = await languageFoldersApi.getMy({ page: 1, pageSize: 100 });
+        const result = await getMyLanguageFoldersForSelection({ page: 1, pageSize: 100 });
+        if ('error' in result) {
+          console.error('Failed to fetch language folders:', result.error);
+          return;
+        }
         setLanguageFolders(result.items || []);
       } catch (error) {
         console.error('Failed to fetch language folders:', error);
@@ -66,7 +71,7 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({ selectedIds, in
     const fetchVocabs = async () => {
       setIsLoading(true);
       try {
-        const result = await vocabApi.getAll({
+        const result = await getVocabsForSelection({
           page: pagination.page,
           pageSize: pagination.pageSize,
           sortBy: pagination.sortBy,
@@ -77,6 +82,10 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({ selectedIds, in
           languageFolderId: languageFolderId !== 'ALL' ? languageFolderId : undefined,
           userId: user?.id,
         });
+        if ('error' in result) {
+          console.error('Failed to fetch vocabs:', result.error);
+          return;
+        }
         setVocabs(result.items || []);
         setTotalItems(result.totalItems || 0);
         setTotalPages(result.totalPages || 0);

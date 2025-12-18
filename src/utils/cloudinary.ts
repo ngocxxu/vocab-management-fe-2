@@ -1,4 +1,4 @@
-import { cloudinaryApi } from '@/utils/client-api';
+import { getCloudinaryUploadSignature } from '@/actions/cloudinary';
 
 export type CloudinaryUploadResponse = {
   public_id: string;
@@ -37,11 +37,17 @@ export const uploadAudioToCloudinary = async (
   const cloudinaryResourceType = normalizeResourceType(inputResourceType);
 
   try {
-    const signatureData = await cloudinaryApi.getUploadSignature({
+    const signatureResult = await getCloudinaryUploadSignature({
       uploadPreset,
       resourceType: cloudinaryResourceType,
       maxFileSize,
     });
+
+    if ('error' in signatureResult) {
+      throw new Error(signatureResult.error);
+    }
+
+    const signatureData = signatureResult;
 
     const { signature, timestamp, cloudName, apiKey, uploadPreset: signedUploadPreset, resourceType: signedResourceType } = signatureData;
 

@@ -2,7 +2,6 @@ import type { AxiosRequestConfig } from 'axios';
 import type { LanguageFolderQueryParams, VocabQueryParams, VocabTrainerQueryParams } from './api-config';
 import type { ResponseAPI, TLanguage, TLanguageFolder } from '@/types';
 import type { TAuthResponse } from '@/types/auth';
-import type { GenerateUploadSignatureInput, GenerateUploadSignatureOutput } from '@/types/cloudinary';
 import type {
   TDeleteNotificationResponse,
   TMarkAllAsReadResponse,
@@ -336,14 +335,6 @@ export const notificationsApi = {
   },
 };
 
-// Cloudinary API endpoints
-export const cloudinaryApi = {
-  getUploadSignature: (params?: GenerateUploadSignatureInput) => {
-    const config = API_METHODS.cloudinary.getUploadSignature(params);
-    return ClientAPI.get<GenerateUploadSignatureOutput>(config.endpoint);
-  },
-};
-
 // Main API object for easy access
 export const api = {
   auth: authApi,
@@ -354,7 +345,6 @@ export const api = {
   languages: languagesApi,
   languageFolders: languageFoldersApi,
   notifications: notificationsApi,
-  cloudinary: cloudinaryApi,
   statistics: statisticsApi,
 };
 
