@@ -1,6 +1,7 @@
 'use client';
 
 import type { ColumnDef } from '@tanstack/react-table';
+import type { ResponseAPI, TLanguage } from '@/types';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -17,6 +18,7 @@ import { useApiPagination, useAuth, useLanguageFolders, useLanguages, useVocabs 
 
 type VocabSelectionFormProps = {
   selectedIds: string[];
+  initialLanguagesData?: ResponseAPI<TLanguage[]>;
 };
 
 type RowVocab = {
@@ -27,7 +29,7 @@ type RowVocab = {
   targetLanguageCode: string;
 };
 
-const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({ selectedIds }) => {
+const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({ selectedIds, initialLanguagesData }) => {
   const form = useFormContext();
   const { user } = useAuth();
   const [globalFilter, setGlobalFilter] = useState('');
@@ -50,7 +52,7 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({ selectedIds }) 
     userId: user?.id,
   });
 
-  const { languages } = useLanguages();
+  const { languages } = useLanguages(initialLanguagesData);
   const { languageFolders } = useLanguageFolders({ page: 1, pageSize: 100 });
 
   const data = useMemo<RowVocab[]>(() => vocabs, [vocabs]);

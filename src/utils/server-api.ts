@@ -1,5 +1,5 @@
 import type { LanguageFolderQueryParams, VocabQueryParams, VocabTrainerQueryParams } from './api-config';
-import type { ResponseAPI, TLanguageFolder } from '@/types';
+import type { ResponseAPI, TLanguage, TLanguageFolder } from '@/types';
 import type {
   TDeleteNotificationResponse,
   TMarkAllAsReadResponse,
@@ -12,6 +12,7 @@ import type {
 import type { TSubjectResponse } from '@/types/subject';
 import type { TVocab } from '@/types/vocab-list';
 import type { TVocabTrainer } from '@/types/vocab-trainer';
+import type { TWordTypeResponse } from '@/types/word-type';
 import { cookies } from 'next/headers';
 import { Env } from '@/libs/Env';
 import { handleTokenExpiration } from '@/utils/auth-utils';
@@ -85,9 +86,29 @@ class ServerAPI {
       const response = await this.doFetch(endpoint, options);
 
       if (!response.ok) {
-        const error = new Error(`API call failed: ${response.status} ${response.statusText}`);
+        const errorText = await response.text();
+        let errorBody: any = null;
+        try {
+          errorBody = errorText ? JSON.parse(errorText) : null;
+        } catch {
+          // Not a JSON response, use raw text
+        }
+
+        const errorMessage = errorBody?.message || errorBody?.error || errorText || `API call failed: ${response.status} ${response.statusText}`;
+        const error = new Error(errorMessage);
         (error as any).status = response.status;
         (error as any).statusText = response.statusText;
+        (error as any).responseBody = errorBody;
+
+        console.error('🚨 Server API Error:', {
+          endpoint: `${this.baseURL}${endpoint}`,
+          method: options.method || 'GET',
+          status: response.status,
+          statusText: response.statusText,
+          errorMessage,
+          errorBody,
+          baseURL: this.baseURL,
+        });
         throw error;
       }
 
@@ -116,6 +137,13 @@ class ServerAPI {
   }
 
   post<T>(endpoint: string, data: any) {
+    // Log request details for debugging
+    console.warn('📤 Server API POST Request:', {
+      endpoint: `${this.baseURL}${endpoint}`,
+      dataKeys: data ? Object.keys(data) : [],
+      hasTextTargets: data?.textTargets ? `Array(${data.textTargets.length})` : false,
+    });
+
     return this.request<T>(endpoint, {
       method: 'POST',
       body: JSON.stringify(data),
@@ -340,7 +368,7 @@ export const subjectsApi = {
 export const wordTypesApi = {
   getAll: () => {
     const config = API_METHODS.wordTypes.getAll();
-    return serverApi.get(config.endpoint);
+    return serverApi.get<TWordTypeResponse>(config.endpoint);
   },
   getById: (id: string) => {
     const config = API_METHODS.wordTypes.getById(id);
@@ -364,7 +392,7 @@ export const wordTypesApi = {
 export const languagesApi = {
   getAll: () => {
     const config = API_METHODS.languages.getAll();
-    return serverApi.get(config.endpoint);
+    return serverApi.get<ResponseAPI<TLanguage[]>>(config.endpoint);
   },
   getById: (id: string) => {
     const config = API_METHODS.languages.getById(id);

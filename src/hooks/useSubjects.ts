@@ -136,18 +136,3 @@ export const useSubject = (id: string | null) => {
     mutate,
   };
 };
-
-export const subjectMutations = {
-  create: async (subjectData: { name: string }) => {
-    return await subjectsApi.create(subjectData);
-  },
-  update: async (id: string, subjectData: { name: string; order: number }) => {
-    return await subjectsApi.update(id, subjectData);
-  },
-  delete: async (id: string) => {
-    return await subjectsApi.delete(id);
-  },
-  reorder: async (subjects: { id: string; order: number }[]) => {
-    return await subjectsApi.reorder(subjects);
-  },
-};

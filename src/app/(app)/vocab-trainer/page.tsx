@@ -1,5 +1,5 @@
 import { VocabTrainerLayout } from '@/components/vocab-trainer';
-import { vocabTrainerApi } from '@/utils/server-api';
+import { languagesApi, vocabTrainerApi } from '@/utils/server-api';
 
 type PageProps = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -22,9 +22,12 @@ export default async function VocabTrainerPage({ searchParams }: PageProps) {
 
   try {
     // Fetch data server-side
-    const initialData = await vocabTrainerApi.getAll(queryParams);
+    const [initialData, initialLanguagesData] = await Promise.all([
+      vocabTrainerApi.getAll(queryParams),
+      languagesApi.getAll(),
+    ]);
 
-    return <VocabTrainerLayout initialData={initialData} />;
+    return <VocabTrainerLayout initialData={initialData} initialLanguagesData={initialLanguagesData} />;
   } catch (error) {
     console.error('Failed to fetch vocab trainers:', error);
     throw new Error('Failed to load vocab trainers');

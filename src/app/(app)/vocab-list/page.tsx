@@ -1,5 +1,5 @@
 import { VocabListLayout } from '@/components/vocab-list';
-import { languageFoldersApi, subjectsApi, vocabApi } from '@/utils/server-api';
+import { languageFoldersApi, languagesApi, subjectsApi, vocabApi, wordTypesApi } from '@/utils/server-api';
 
 type PageProps = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -28,10 +28,12 @@ export default async function VocabListPage({ searchParams }: PageProps) {
 
   try {
     // Fetch all data concurrently at server-side
-    const [initialVocabsData, initialLanguageFolderData, initialSubjectsData] = await Promise.all([
+    const [initialVocabsData, initialLanguageFolderData, initialSubjectsData, initialLanguagesData, initialWordTypesData] = await Promise.all([
       vocabApi.getAll(queryParams),
       languageFolderId ? languageFoldersApi.getById(languageFolderId) : Promise.resolve(null),
       subjectsApi.getAll(),
+      languagesApi.getAll(),
+      wordTypesApi.getAll(),
     ]);
 
     return (
@@ -39,6 +41,8 @@ export default async function VocabListPage({ searchParams }: PageProps) {
         initialVocabsData={initialVocabsData}
         initialLanguageFolderData={initialLanguageFolderData || undefined}
         initialSubjectsData={initialSubjectsData}
+        initialLanguagesData={initialLanguagesData}
+        initialWordTypesData={initialWordTypesData}
       />
     );
   } catch (error) {

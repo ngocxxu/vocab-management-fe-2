@@ -1,5 +1,5 @@
 import type { ResponseAPI } from '@/types';
-import type { TCreateVocab, TVocab } from '@/types/vocab-list';
+import type { TVocab } from '@/types/vocab-list';
 import type { VocabQueryParams } from '@/utils/api-config';
 import { useEffect, useRef, useState } from 'react';
 import { vocabApi } from '@/utils/client-api';
@@ -148,22 +148,4 @@ export const useVocab = (id: string | null) => {
     isError: error,
     mutate,
   };
-};
-
-export const vocabMutations = {
-  create: async (vocabData: TCreateVocab) => {
-    return await vocabApi.create(vocabData);
-  },
-  update: async (id: string, vocabData: Partial<TCreateVocab>) => {
-    return await vocabApi.update(id, vocabData);
-  },
-  delete: async (id: string) => {
-    return await vocabApi.delete(id);
-  },
-  createBulk: async (vocabData: TCreateVocab[]) => {
-    return await vocabApi.createBulk(vocabData);
-  },
-  deleteBulk: async (ids: string[]) => {
-    return await vocabApi.deleteBulk(ids);
-  },
 };

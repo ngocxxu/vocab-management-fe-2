@@ -1,6 +1,7 @@
-import type { ResponseAPI, TLanguageFolder } from '@/types';
+import type { ResponseAPI, TLanguage, TLanguageFolder } from '@/types';
 import type { TSubjectResponse } from '@/types/subject';
 import type { TVocab } from '@/types/vocab-list';
+import type { TWordTypeResponse } from '@/types/word-type';
 import Link from 'next/link';
 import React from 'react';
 import {
@@ -17,12 +18,16 @@ type VocabListContentProps = {
   initialVocabsData?: ResponseAPI<TVocab[]>;
   initialLanguageFolderData?: TLanguageFolder;
   initialSubjectsData?: TSubjectResponse;
+  initialLanguagesData?: ResponseAPI<TLanguage[]>;
+  initialWordTypesData?: TWordTypeResponse;
 };
 
 const VocabListContent: React.FC<VocabListContentProps> = ({
   initialVocabsData,
   initialLanguageFolderData,
   initialSubjectsData,
+  initialLanguagesData,
+  initialWordTypesData,
 }) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900/30">
@@ -44,6 +49,8 @@ const VocabListContent: React.FC<VocabListContentProps> = ({
           initialVocabsData={initialVocabsData}
           initialLanguageFolderData={initialLanguageFolderData}
           initialSubjectsData={initialSubjectsData}
+          initialLanguagesData={initialLanguagesData}
+          initialWordTypesData={initialWordTypesData}
         />
       </div>
     </div>

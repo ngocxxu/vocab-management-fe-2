@@ -1,7 +1,9 @@
 'use client';
 
+import type { ResponseAPI, TLanguage } from '@/types';
 import type { TSubjectResponse } from '@/types/subject';
 import type { TVocab } from '@/types/vocab-list';
+import type { TWordTypeResponse } from '@/types/word-type';
 import { Loader2 } from 'lucide-react';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -42,6 +44,8 @@ type AddVocabDialogProps = {
   editMode?: boolean;
   editingItem?: TVocab | null;
   initialSubjectsData?: TSubjectResponse;
+  initialLanguagesData?: ResponseAPI<TLanguage[]>;
+  initialWordTypesData?: TWordTypeResponse;
 };
 
 const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
@@ -60,6 +64,8 @@ const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
   setOpen,
   editMode = false,
   initialSubjectsData,
+  initialLanguagesData,
+  initialWordTypesData,
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -95,9 +101,11 @@ const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-6 p-6 pb-0">
-            <BasicInfoForm />
+            <BasicInfoForm initialLanguagesData={initialLanguagesData} />
 
             <TextTargetTabs
+              initialLanguagesData={initialLanguagesData}
+              initialWordTypesData={initialWordTypesData}
               textTargets={formData.textTargets}
               activeTab={activeTab}
               onActiveTabChange={onActiveTabChange}

@@ -1,9 +1,10 @@
 'use client';
 
 import type { ColumnDef } from '@tanstack/react-table';
-import type { ResponseAPI, TLanguageFolder } from '@/types';
+import type { ResponseAPI, TLanguage, TLanguageFolder } from '@/types';
 import type { TSubjectResponse } from '@/types/subject';
 import type { TVocab } from '@/types/vocab-list';
+import type { TWordTypeResponse } from '@/types/word-type';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronDown, ChevronLeft, Edit, Volume2 } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
@@ -21,6 +22,7 @@ import { useApiPagination, useAuth, useBulkDelete, useDialogState, useLanguageFo
 import { selectVoiceByCode } from '@/utils/textToSpeech';
 import AddVocabDialog from './AddVocabDialog';
 import ExpandedRowContent from './ExpandedRowContent';
+
 import ImportVocabDialog from './ImportVocabDialog';
 
 import VocabListHeader from './VocabListHeader';
@@ -55,12 +57,16 @@ type VocabListProps = {
   initialVocabsData?: ResponseAPI<TVocab[]>;
   initialLanguageFolderData?: TLanguageFolder;
   initialSubjectsData?: TSubjectResponse;
+  initialLanguagesData?: ResponseAPI<TLanguage[]>;
+  initialWordTypesData?: TWordTypeResponse;
 };
 
 const VocabList: React.FC<VocabListProps> = ({
   initialVocabsData,
   initialLanguageFolderData,
   initialSubjectsData,
+  initialLanguagesData,
+  initialWordTypesData,
 }) => {
   const [importDialogOpen, setImportDialogOpen] = React.useState(false);
   const [globalFilter, setGlobalFilter] = useState('');
@@ -342,7 +348,6 @@ const VocabList: React.FC<VocabListProps> = ({
         await createVocab(apiData as any);
       }
 
-      await mutate();
       dialogState.setOpen(false);
       resetForm();
     } catch (error) {
@@ -533,6 +538,8 @@ const VocabList: React.FC<VocabListProps> = ({
               editMode={dialogState.editMode}
               editingItem={dialogState.editingItem}
               initialSubjectsData={initialSubjectsData}
+              initialLanguagesData={initialLanguagesData}
+              initialWordTypesData={initialWordTypesData}
             />
 
             <ImportVocabDialog

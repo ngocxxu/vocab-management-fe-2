@@ -171,25 +171,3 @@ export const useLanguageFolder = (id: string | null, initialData?: TLanguageFold
     mutate,
   };
 };
-
-export const languageFolderMutations = {
-  create: async (languageFolderData: {
-    name: string;
-    folderColor: string;
-    sourceLanguageCode: string;
-    targetLanguageCode: string;
-  }) => {
-    return await languageFoldersApi.create(languageFolderData);
-  },
-  update: async (id: string, languageFolderData: {
-    name: string;
-    folderColor: string;
-    sourceLanguageCode: string;
-    targetLanguageCode: string;
-  }) => {
-    return await languageFoldersApi.update(id, languageFolderData);
-  },
-  delete: async (id: string) => {
-    return await languageFoldersApi.delete(id);
-  },
-};

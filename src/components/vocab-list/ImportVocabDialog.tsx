@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as XLSX from 'xlsx';
 import { z } from 'zod';
+import { importVocabsCsv } from '@/actions/vocabs';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,7 +30,6 @@ import {
 } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { vocabApi } from '@/utils/client-api';
 
 const FormSchema = z.object({
   file: z.instanceof(File, { message: 'Please select a file' }),
@@ -102,7 +102,7 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
         fileToUpload = await convertExcelToCsv(data.file);
       }
 
-      const result = await vocabApi.importCsv(fileToUpload, {
+      const result = await importVocabsCsv(fileToUpload, {
         languageFolderId,
         sourceLanguageCode,
         targetLanguageCode,

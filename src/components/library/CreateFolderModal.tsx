@@ -1,6 +1,7 @@
 'use client';
 
 import type { LanguageFolderFormData } from './LanguageFolderForm';
+import type { ResponseAPI, TLanguage } from '@/types';
 import type { TCreateLanguageFolder } from '@/types/language-folder';
 import React, { useCallback, useState } from 'react';
 import { toast } from 'sonner';
@@ -11,12 +12,14 @@ type CreateFolderModalProps = {
   isOpen: boolean;
   onClose: () => void;
   onCreateFolder: (folderData: TCreateLanguageFolder) => Promise<void>;
+  initialLanguagesData?: ResponseAPI<TLanguage[]>;
 };
 
 const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
   isOpen,
   onClose,
   onCreateFolder,
+  initialLanguagesData,
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -56,6 +59,7 @@ const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
           submitButtonText="Create Folder"
           isSubmitting={isSubmitting}
           showAutoGenerate={true}
+          initialLanguagesData={initialLanguagesData}
         />
       </DialogContent>
     </Dialog>

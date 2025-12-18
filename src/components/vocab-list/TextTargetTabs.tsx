@@ -1,6 +1,8 @@
 'use client';
 
+import type { ResponseAPI, TLanguage } from '@/types';
 import type { TSubjectResponse } from '@/types/subject';
+import type { TWordTypeResponse } from '@/types/word-type';
 import { Plus, X } from 'lucide-react';
 import React from 'react';
 import { Button } from '@/components/ui/button';
@@ -32,6 +34,8 @@ type TextTargetTabsProps = {
   onAddTextTarget: () => void;
   onRemoveTextTarget: (index: number) => void;
   initialSubjectsData?: TSubjectResponse;
+  initialLanguagesData?: ResponseAPI<TLanguage[]>;
+  initialWordTypesData?: TWordTypeResponse;
 };
 
 const TextTargetTabs: React.FC<TextTargetTabsProps> = ({
@@ -45,8 +49,9 @@ const TextTargetTabs: React.FC<TextTargetTabsProps> = ({
   onAddTextTarget,
   onRemoveTextTarget,
   initialSubjectsData,
+  initialWordTypesData,
 }) => {
-  const { wordTypes, isLoading, isError } = useWordTypes();
+  const { wordTypes, isLoading, isError } = useWordTypes(initialWordTypesData);
   const { subjects, isLoading: subjectsLoading, isError: subjectsError } = useSubjects(initialSubjectsData);
   return (
     <div className="space-y-4">

@@ -1,4 +1,4 @@
-import type { ResponseAPI } from '@/types';
+import type { ResponseAPI, TLanguage } from '@/types';
 import type { TVocabTrainer } from '@/types/vocab-trainer';
 import React, { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -6,9 +6,10 @@ import VocabTrainerContent from './VocabTrainerContent';
 
 type VocabTrainerLayoutProps = {
   initialData?: ResponseAPI<TVocabTrainer[]>;
+  initialLanguagesData?: ResponseAPI<TLanguage[]>;
 };
 
-const VocabTrainerLayout: React.FC<VocabTrainerLayoutProps> = ({ initialData }) => {
+const VocabTrainerLayout: React.FC<VocabTrainerLayoutProps> = ({ initialData, initialLanguagesData }) => {
   return (
     <Suspense fallback={(
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900/30">
@@ -20,7 +21,7 @@ const VocabTrainerLayout: React.FC<VocabTrainerLayoutProps> = ({ initialData }) 
       </div>
     )}
     >
-      <VocabTrainerContent initialData={initialData} />
+      <VocabTrainerContent initialData={initialData} initialLanguagesData={initialLanguagesData} />
     </Suspense>
   );
 };

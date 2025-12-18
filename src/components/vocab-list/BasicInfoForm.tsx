@@ -1,5 +1,6 @@
 'use client';
 
+import type { ResponseAPI, TLanguage } from '@/types';
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
 import {
@@ -18,9 +19,13 @@ type Language = {
   name: string;
 };
 
-const BasicInfoForm: React.FC = () => {
+type BasicInfoFormProps = {
+  initialLanguagesData?: ResponseAPI<TLanguage[]>;
+};
+
+const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ initialLanguagesData }) => {
   const form = useFormContext();
-  const { languages, isLoading, isError } = useLanguages();
+  const { languages, isLoading, isError } = useLanguages(initialLanguagesData);
 
   // Get current form values to filter options
   const sourceLanguageCode = form.watch('sourceLanguageCode');

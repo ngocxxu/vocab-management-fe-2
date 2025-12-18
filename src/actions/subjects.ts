@@ -1,10 +1,14 @@
 'use server';
 
+import { revalidatePath } from 'next/cache';
 import { subjectsApi } from '@/utils/server-api';
 
 export async function createSubject(subjectData: { name: string }) {
   try {
-    return await subjectsApi.create({ ...subjectData, order: 0 });
+    const result = await subjectsApi.create({ ...subjectData, order: 0 });
+    revalidatePath('/settings');
+    revalidatePath('/vocab-list');
+    return result;
   } catch (error) {
     throw new Error(error instanceof Error ? error.message : 'Failed to create subject');
   }
@@ -12,7 +16,10 @@ export async function createSubject(subjectData: { name: string }) {
 
 export async function updateSubject(id: string, subjectData: { name: string; order: number }) {
   try {
-    return await subjectsApi.update(id, subjectData);
+    const result = await subjectsApi.update(id, subjectData);
+    revalidatePath('/settings');
+    revalidatePath('/vocab-list');
+    return result;
   } catch (error) {
     throw new Error(error instanceof Error ? error.message : 'Failed to update subject');
   }
@@ -20,7 +27,10 @@ export async function updateSubject(id: string, subjectData: { name: string; ord
 
 export async function deleteSubject(id: string) {
   try {
-    return await subjectsApi.delete(id);
+    const result = await subjectsApi.delete(id);
+    revalidatePath('/settings');
+    revalidatePath('/vocab-list');
+    return result;
   } catch (error) {
     throw new Error(error instanceof Error ? error.message : 'Failed to delete subject');
   }
@@ -28,7 +38,10 @@ export async function deleteSubject(id: string) {
 
 export async function reorderSubjects(subjects: { id: string; order: number }[]) {
   try {
-    return await subjectsApi.reorder(subjects);
+    const result = await subjectsApi.reorder(subjects);
+    revalidatePath('/settings');
+    revalidatePath('/vocab-list');
+    return result;
   } catch (error) {
     throw new Error(error instanceof Error ? error.message : 'Failed to reorder subjects');
   }

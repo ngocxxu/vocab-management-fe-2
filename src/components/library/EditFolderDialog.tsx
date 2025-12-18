@@ -2,6 +2,7 @@
 
 import type { TLanguageFolder } from './LanguageFolder';
 import type { LanguageFolderFormData } from './LanguageFolderForm';
+import type { ResponseAPI, TLanguage } from '@/types';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { updateLanguageFolder } from '@/actions/language-folders';
@@ -13,9 +14,10 @@ type EditFolderDialogProps = {
   onOpenChange: (open: boolean) => void;
   folder: TLanguageFolder;
   onFolderUpdated?: () => void;
+  initialLanguagesData?: ResponseAPI<TLanguage[]>;
 };
 
-const EditFolderDialog = ({ open, onOpenChange, folder, onFolderUpdated }: EditFolderDialogProps) => {
+const EditFolderDialog = ({ open, onOpenChange, folder, onFolderUpdated, initialLanguagesData }: EditFolderDialogProps) => {
   const [isUpdating, setIsUpdating] = useState(false);
 
   const handleSubmit = async (formData: LanguageFolderFormData) => {
@@ -56,6 +58,7 @@ const EditFolderDialog = ({ open, onOpenChange, folder, onFolderUpdated }: EditF
           submitButtonText="Update Folder"
           isSubmitting={isUpdating}
           showAutoGenerate={false}
+          initialLanguagesData={initialLanguagesData}
         />
       </DialogContent>
     </Dialog>

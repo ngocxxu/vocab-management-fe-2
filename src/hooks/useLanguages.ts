@@ -1,12 +1,27 @@
-import { useEffect, useState } from 'react';
+import type { ResponseAPI, TLanguage } from '@/types';
+import { useEffect, useRef, useState } from 'react';
 import { languagesApi } from '@/utils/client-api';
 
-export const useLanguages = () => {
-  const [data, setData] = useState<{ items: any[] } | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+export const useLanguages = (initialData?: ResponseAPI<TLanguage[]>) => {
+  const [data, setData] = useState<ResponseAPI<TLanguage[]> | null>(initialData || null);
+  const [isLoading, setIsLoading] = useState(!initialData);
   const [error, setError] = useState<any>(null);
+  const initialDataRef = useRef(initialData);
+  const hasUsedInitialDataRef = useRef(false);
 
   useEffect(() => {
+    // Skip fetch if we have initialData and this is the first render
+    if (initialDataRef.current && !hasUsedInitialDataRef.current) {
+      hasUsedInitialDataRef.current = true;
+      return;
+    }
+
+    // If already used initialData, skip fetch
+    if (hasUsedInitialDataRef.current && initialDataRef.current) {
+      return;
+    }
+
+    // Fetch when no initialData
     let cancelled = false;
 
     const fetchData = async () => {
@@ -17,6 +32,7 @@ export const useLanguages = () => {
         const result = await languagesApi.getAll();
         if (!cancelled) {
           setData(result);
+          hasUsedInitialDataRef.current = true;
         }
       } catch (err) {
         if (!cancelled) {
@@ -34,7 +50,7 @@ export const useLanguages = () => {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, []); // Only run once on mount
 
   const mutate = async () => {
     setIsLoading(true);
@@ -119,16 +135,4 @@ export const useLanguage = (id: string | null) => {
     isError: error,
     mutate,
   };
-};
-
-export const languageMutations = {
-  create: async (languageData: { name: string; code: string }) => {
-    return await languagesApi.create(languageData);
-  },
-  update: async (id: string, languageData: { name: string; code: string }) => {
-    return await languagesApi.update(id, languageData);
-  },
-  delete: async (id: string) => {
-    return await languagesApi.delete(id);
-  },
 };

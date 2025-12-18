@@ -7,13 +7,14 @@ import { CSS } from '@dnd-kit/utilities';
 import { Edit2, GripVertical, Plus, Save, Trash2, X } from 'lucide-react';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
+import { createSubject, deleteSubject, reorderSubjects, updateSubject } from '@/actions/subjects';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
-import { subjectMutations, useSubjects } from '@/hooks/useSubjects';
+import { useSubjects } from '@/hooks/useSubjects';
 
 type SubjectItemProps = {
   subject: TSubject;
@@ -161,7 +162,7 @@ type SubjectSectionProps = {
 };
 
 export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsData }) => {
-  const { subjects, isLoading, mutate } = useSubjects(initialSubjectsData);
+  const { subjects, isLoading } = useSubjects(initialSubjectsData);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingSubject, setEditingSubject] = useState<TSubject | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -176,8 +177,7 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
   const handleCreate = async (data: TCreateSubject) => {
     try {
       setIsSubmitting(true);
-      await subjectMutations.create(data);
-      await mutate();
+      await createSubject(data);
       setIsCreateDialogOpen(false);
       toast.success('Subject created successfully');
     } catch (error) {
@@ -196,11 +196,10 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
     try {
       setIsSubmitting(true);
       // Include the current order when updating
-      await subjectMutations.update(editingSubject.id, {
+      await updateSubject(editingSubject.id, {
         name: data.name,
         order: editingSubject.order,
       });
-      await mutate();
       setEditingSubject(null);
       toast.success('Subject updated successfully');
     } catch (error) {
@@ -213,8 +212,7 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
 
   const handleDelete = async (id: string) => {
     try {
-      await subjectMutations.delete(id);
-      await mutate();
+      await deleteSubject(id);
       toast.success('Subject deleted successfully');
     } catch (error) {
       toast.error('Failed to delete subject');
@@ -239,12 +237,10 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
           id: subject.id,
           order: index + 1,
         }));
-        await subjectMutations.reorder(subjectsWithOrder);
-        await mutate();
+        await reorderSubjects(subjectsWithOrder);
         toast.success('Subjects reordered successfully');
       } catch (error) {
         // Revert on error
-        await mutate();
         toast.error('Failed to reorder subjects');
         console.error('Reorder subjects error:', error);
       }

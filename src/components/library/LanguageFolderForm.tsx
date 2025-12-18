@@ -1,5 +1,6 @@
 'use client';
 
+import type { ResponseAPI, TLanguage } from '@/types';
 import React, { useCallback, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ColorPicker } from '@/components/ui/color-picker';
@@ -27,6 +28,7 @@ type LanguageFolderFormProps = {
   isSubmitting?: boolean;
   showAutoGenerate?: boolean;
   className?: string;
+  initialLanguagesData?: ResponseAPI<TLanguage[]>;
 };
 
 const LanguageFolderForm: React.FC<LanguageFolderFormProps> = ({
@@ -38,8 +40,9 @@ const LanguageFolderForm: React.FC<LanguageFolderFormProps> = ({
   isSubmitting = false,
   showAutoGenerate = false,
   className,
+  initialLanguagesData,
 }) => {
-  const { languages, isLoading: isLoadingLanguages } = useLanguages();
+  const { languages, isLoading: isLoadingLanguages } = useLanguages(initialLanguagesData);
   const [formData, setFormData] = useState<LanguageFolderFormData>({
     name: '',
     folderColor: '#3b82f6',

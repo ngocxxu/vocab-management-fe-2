@@ -1,6 +1,7 @@
 'use client';
 
 import type { EQuestionType } from '@/enum/vocab-trainer';
+import type { ResponseAPI, TLanguage } from '@/types';
 import type { TVocabTrainer } from '@/types/vocab-trainer';
 import { Loader2 } from 'lucide-react';
 import React, { useState } from 'react';
@@ -25,6 +26,7 @@ type AddVocabTrainerDialogProps = {
   setOpen: (open: boolean) => void;
   editMode?: boolean;
   editingItem?: TVocabTrainer | null;
+  initialLanguagesData?: ResponseAPI<TLanguage[]>;
 };
 
 const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({
@@ -34,6 +36,7 @@ const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({
   open,
   setOpen,
   editMode = false,
+  initialLanguagesData,
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -67,7 +70,7 @@ const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({
           </DialogHeader>
           <div className="space-y-6 p-6 pb-0">
             <BasicInfoForm />
-            <VocabSelectionForm selectedIds={formData.vocabAssignmentIds} />
+            <VocabSelectionForm selectedIds={formData.vocabAssignmentIds} initialLanguagesData={initialLanguagesData} />
           </div>
           <DialogFooter className="pt-4">
             <DialogClose asChild>

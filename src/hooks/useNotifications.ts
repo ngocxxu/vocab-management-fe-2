@@ -1,5 +1,5 @@
 import type { ResponseAPI } from '@/types';
-import type { TNotification, TNotificationInput, TUnreadCountResponse, TUpdateNotificationStatusInput } from '@/types/notification';
+import type { TNotification, TUnreadCountResponse } from '@/types/notification';
 import { useEffect, useRef, useState } from 'react';
 import { notificationsApi } from '@/utils/client-api';
 
@@ -278,25 +278,4 @@ export const useNotification = (id: string | null) => {
     isError: error,
     mutate,
   };
-};
-
-export const notificationMutations = {
-  markAsRead: async (id: string) => {
-    return await notificationsApi.markAsRead(id);
-  },
-  markAllAsRead: async () => {
-    return await notificationsApi.markAllAsRead();
-  },
-  delete: async (id: string) => {
-    return await notificationsApi.delete(id);
-  },
-  create: async (notificationData: TNotificationInput) => {
-    return await notificationsApi.create(notificationData);
-  },
-  update: async (id: string, notificationData: Partial<TNotificationInput>) => {
-    return await notificationsApi.update(id, notificationData);
-  },
-  updateStatus: async (id: string, statusData: TUpdateNotificationStatusInput) => {
-    return await notificationsApi.updateStatus(id, statusData);
-  },
 };

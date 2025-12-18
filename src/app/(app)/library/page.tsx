@@ -1,5 +1,5 @@
 import { Library } from '@/components/library';
-import { languageFoldersApi } from '@/utils/server-api';
+import { languageFoldersApi, languagesApi } from '@/utils/server-api';
 
 // Define the shape of search params explicitly
 type PageProps = {
@@ -25,10 +25,13 @@ export default async function LibraryPage({ searchParams }: PageProps) {
   try {
     // 2. Fetch data server-side
     // This runs on the server before the page is rendered
-    const initialData = await languageFoldersApi.getMy(queryParams);
+    const [initialData, initialLanguagesData] = await Promise.all([
+      languageFoldersApi.getMy(queryParams),
+      languagesApi.getAll(),
+    ]);
 
     // 3. Pass data to the Client Component
-    return <Library initialData={initialData} />;
+    return <Library initialData={initialData} initialLanguagesData={initialLanguagesData} />;
   } catch (error) {
     // 4. Basic Error Handling
     console.error('Failed to fetch library data:', error);

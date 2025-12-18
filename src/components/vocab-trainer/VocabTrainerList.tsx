@@ -1,7 +1,7 @@
 'use client';
 
 import type { ColumnDef } from '@tanstack/react-table';
-import type { ResponseAPI } from '@/types';
+import type { ResponseAPI, TLanguage } from '@/types';
 import type { TVocabTrainer } from '@/types/vocab-trainer';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Edit } from 'lucide-react';
@@ -35,9 +35,10 @@ type FormData = z.infer<typeof FormSchema>;
 
 type VocabTrainerListProps = {
   initialData?: ResponseAPI<TVocabTrainer[]>;
+  initialLanguagesData?: ResponseAPI<TLanguage[]>;
 };
 
-const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData }) => {
+const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initialLanguagesData }) => {
   const [globalFilter, setGlobalFilter] = useState('');
   const [isMounted, setIsMounted] = useState(false);
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
@@ -117,9 +118,6 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData }) => {
       await deleteVocabTrainersBulk(ids);
       return { success: true };
     },
-    onSuccess: async () => {
-      await mutate();
-    },
     itemName: 'vocabulary trainer',
     itemNamePlural: 'vocabulary trainers',
   });
@@ -188,7 +186,6 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData }) => {
         await createVocabTrainer(apiData);
       }
 
-      await mutate();
       dialogState.setOpen(false);
       resetForm();
     } catch (error) {
@@ -309,9 +306,6 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData }) => {
             onDelete={async (id: string) => {
               await deleteVocabTrainer(id);
             }}
-            onSuccess={async () => {
-              await mutate();
-            }}
             successMessage="Vocab trainer deleted successfully!"
             errorMessage="Failed to delete vocab trainer. Please try again."
           />
@@ -353,6 +347,7 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData }) => {
               setOpen={handleCloseDialog}
               editMode={dialogState.editMode}
               editingItem={dialogState.editingItem}
+              initialLanguagesData={initialLanguagesData}
             />
 
             <BulkDeleteDialog

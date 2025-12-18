@@ -2,7 +2,7 @@
 
 import type { ColumnDef } from '@tanstack/react-table';
 import type { TLanguageFolder as LanguageFolderType, TLanguageFolder } from './LanguageFolder';
-import type { ResponseAPI } from '@/types';
+import type { ResponseAPI, TLanguage } from '@/types';
 import type { TCreateLanguageFolder } from '@/types/language-folder';
 import { Edit, Folder, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -33,9 +33,10 @@ import LibrarySearch from './LibrarySearch';
 
 type LibraryProps = {
   initialData?: ResponseAPI<TLanguageFolder[]>;
+  initialLanguagesData?: ResponseAPI<TLanguage[]>;
 };
 
-const Library: React.FC<LibraryProps> = ({ initialData }) => {
+const Library: React.FC<LibraryProps> = ({ initialData, initialLanguagesData }) => {
   const { pagination, handlers } = useApiPagination({
     page: initialData?.currentPage || 1,
     pageSize: 10,
@@ -57,7 +58,7 @@ const Library: React.FC<LibraryProps> = ({ initialData }) => {
     sortOrder: pagination.sortOrder,
   };
 
-  const { languageFolders, totalItems, totalPages, currentPage, isLoading, mutate: refetchFolders } = useLanguageFolders(
+  const { languageFolders, totalItems, totalPages, currentPage, isLoading } = useLanguageFolders(
     queryParams,
     initialData,
   );
@@ -73,21 +74,19 @@ const Library: React.FC<LibraryProps> = ({ initialData }) => {
   const handleCreateFolderSubmit = useCallback(async (folderData: TCreateLanguageFolder) => {
     try {
       await createLanguageFolder(folderData);
-      await refetchFolders();
     } catch (error) {
       console.error('Error creating language folder:', error);
       throw error; // Re-throw to let the modal handle the error display
     }
-  }, [refetchFolders]);
+  }, []);
 
   const handleCloseModal = useCallback(() => {
     setIsCreateModalOpen(false);
   }, []);
 
   const handleFolderUpdated = useCallback(() => {
-    // Refresh the folders list when a folder is updated
-    refetchFolders();
-  }, [refetchFolders]);
+    // Folder updated - revalidatePath will handle refresh automatically
+  }, []);
 
   const handleSearchChange = useCallback((query: string) => {
     setSearchQuery(query);
@@ -102,12 +101,11 @@ const Library: React.FC<LibraryProps> = ({ initialData }) => {
     try {
       await deleteLanguageFolder(folderId);
       toast.success('Language folder deleted successfully!');
-      await refetchFolders();
     } catch (error) {
       console.error('Error deleting language folder:', error);
       toast.error('Failed to delete language folder. Please try again.');
     }
-  }, [refetchFolders]);
+  }, []);
 
   // Use handlers from the reusable pagination hook
   const { handleSort, handlePageChange } = handlers;
@@ -286,6 +284,7 @@ const Library: React.FC<LibraryProps> = ({ initialData }) => {
           isOpen={isCreateModalOpen}
           onClose={handleCloseModal}
           onCreateFolder={handleCreateFolderSubmit}
+          initialLanguagesData={initialLanguagesData}
         />
 
         {/* Edit Folder Dialog */}
@@ -295,6 +294,7 @@ const Library: React.FC<LibraryProps> = ({ initialData }) => {
             onOpenChange={setShowEditDialog}
             folder={editingFolder}
             onFolderUpdated={handleFolderUpdated}
+            initialLanguagesData={initialLanguagesData}
           />
         )}
       </div>

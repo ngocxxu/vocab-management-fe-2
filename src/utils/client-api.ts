@@ -26,6 +26,7 @@ import type {
   TQuestionAPI,
   TVocabTrainer,
 } from '@/types/vocab-trainer';
+import type { TWordTypeResponse } from '@/types/word-type';
 import axiosInstance from '@/libs/axios';
 import { API_METHODS } from './api-config';
 
@@ -223,7 +224,7 @@ export const subjectsApi = {
 export const wordTypesApi = {
   getAll: () => {
     const config = API_METHODS.wordTypes.getAll();
-    return ClientAPI.get(config.endpoint);
+    return ClientAPI.get<TWordTypeResponse>(config.endpoint);
   },
   getById: (id: string) => {
     const config = API_METHODS.wordTypes.getById(id);

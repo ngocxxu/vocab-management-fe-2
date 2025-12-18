@@ -1,6 +1,6 @@
 import type { EQuestionType } from '@/enum/vocab-trainer';
 import type { ResponseAPI } from '@/types';
-import type { TCreateVocabTrainer, TFormTestVocabTrainerUnion, TQuestionAPI, TVocabTrainer } from '@/types/vocab-trainer';
+import type { TQuestionAPI, TVocabTrainer } from '@/types/vocab-trainer';
 import { useEffect, useRef, useState } from 'react';
 import { vocabTrainerApi } from '@/utils/client-api';
 
@@ -223,25 +223,4 @@ export const useVocabTrainerExam = (id: string | null) => {
     isError: error,
     mutate,
   };
-};
-
-export const vocabTrainerMutations = {
-  create: async (trainerData: TCreateVocabTrainer) => {
-    return await vocabTrainerApi.create(trainerData);
-  },
-  update: async (id: string, trainerData: Partial<TCreateVocabTrainer>) => {
-    return await vocabTrainerApi.update(id, trainerData);
-  },
-  delete: async (id: string) => {
-    return await vocabTrainerApi.delete(id);
-  },
-  deleteBulk: async (ids: string[]) => {
-    return await vocabTrainerApi.deleteBulk(ids);
-  },
-  submitExam: async (id: string, examData: TFormTestVocabTrainerUnion) => {
-    return await vocabTrainerApi.submitExam(id, examData);
-  },
-  getExam: async (id: string) => {
-    return await vocabTrainerApi.getExam(id);
-  },
 };

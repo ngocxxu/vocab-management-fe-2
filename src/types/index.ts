@@ -4,6 +4,9 @@ export type TOption = { label: string; value: string };
 
 export type ResponseAPI<T> = { items: T } & TPagination;
 
+// Export auth types
+export * from './auth';
+
 export type TPagination = {
   currentPage: number;
   totalItems: number;
@@ -36,9 +39,6 @@ export enum EUserRole {
   CUSTOMER = 'CUSTOMER',
 }
 
-// Export auth types
-export * from './auth';
-
 // Export language types
 export * from './language';
 
@@ -53,3 +53,5 @@ export * from './statistics';
 
 // Export subject types
 export * from './subject';
+
+export * from './word-type';
