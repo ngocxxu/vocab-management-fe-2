@@ -7,8 +7,8 @@ import type { TVocab } from '@/types/vocab-list';
 import type { TWordTypeResponse } from '@/types/word-type';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronDown, ChevronLeft, Edit, Volume2 } from 'lucide-react';
-import { useSearchParams } from 'next/navigation';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import React, { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSpeechSynthesis } from 'react-speech-kit';
 import { z } from 'zod';
@@ -99,6 +99,8 @@ const VocabList: React.FC<VocabListProps> = ({
   const languageFolderId = searchParams.get('languageFolderId') || undefined;
 
   const { user } = useAuth();
+  const router = useRouter();
+  const [, startTransition] = useTransition();
 
   const queryParams = {
     page: pagination.page,
@@ -195,7 +197,12 @@ const VocabList: React.FC<VocabListProps> = ({
       await deleteVocabsBulk(ids);
       return { success: true };
     },
-    onSuccess: () => void mutate(),
+    onSuccess: () => {
+      mutate();
+      startTransition(() => {
+        router.refresh();
+      });
+    },
     itemName: 'vocabulary item',
     itemNamePlural: 'vocabulary items',
   });
@@ -311,8 +318,11 @@ const VocabList: React.FC<VocabListProps> = ({
   };
 
   const handleImportSuccess = useCallback(() => {
-    mutate(); // Refresh the vocab list
-  }, [mutate]);
+    mutate();
+    startTransition(() => {
+      router.refresh();
+    });
+  }, [mutate, router, startTransition]);
 
   const clearFilters = () => {
     setSelectedSubjectIds([]);
@@ -350,6 +360,9 @@ const VocabList: React.FC<VocabListProps> = ({
 
       dialogState.setOpen(false);
       resetForm();
+      startTransition(() => {
+        router.refresh();
+      });
     } catch (error) {
       console.error('Failed to save vocabulary:', error);
       // Handle any other errors here
@@ -483,7 +496,12 @@ const VocabList: React.FC<VocabListProps> = ({
               const { deleteVocab } = await import('@/actions/vocabs');
               await deleteVocab(id);
             }}
-            onSuccess={() => void mutate()}
+            onSuccess={() => {
+              mutate();
+              startTransition(() => {
+                router.refresh();
+              });
+            }}
             successMessage="Vocabulary deleted successfully!"
             errorMessage="Failed to delete vocabulary. Please try again."
           />
@@ -493,7 +511,7 @@ const VocabList: React.FC<VocabListProps> = ({
       enableHiding: false,
       size: 50,
     },
-  ], [expanded, handleEdit, mutate, handleSpeakTextSource]);
+  ], [expanded, handleEdit, mutate, handleSpeakTextSource, router, startTransition]);
 
   return (
     <Form {...form}>

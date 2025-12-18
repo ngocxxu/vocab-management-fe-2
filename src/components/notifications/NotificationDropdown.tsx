@@ -3,7 +3,8 @@
 import type { ResponseAPI } from '@/types';
 import type { TNotification, TUnreadCountResponse } from '@/types/notification';
 import { Bell, CheckCheck } from 'lucide-react';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import React, { useCallback, useEffect, useRef, useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { markAllNotificationsAsRead } from '@/actions/notifications';
 import { Badge } from '@/components/ui/badge';
@@ -150,6 +151,8 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
 }) => {
   const [displayedCount, setDisplayedCount] = useState(5);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+  const [, startTransition] = useTransition();
 
   const { notifications = [], isLoading: isLoadingAll, mutate: mutateAll } = useNotifications(initialAllNotifications);
   const { unreadNotifications = [], isLoading: isLoadingUnread, mutate: mutateUnread } = useUnreadNotifications(initialUnreadNotifications);
@@ -168,6 +171,9 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
       mutateUnread();
       mutateCount();
       toast.success('All notifications marked as read');
+      startTransition(() => {
+        router.refresh();
+      });
     } catch (error) {
       console.error('Failed to mark all notifications as read:', error);
       toast.error('Failed to mark all notifications as read');

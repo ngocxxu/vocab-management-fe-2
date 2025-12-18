@@ -5,7 +5,8 @@ import { closestCenter, DndContext, KeyboardSensor, PointerSensor, useSensor, us
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Edit2, GripVertical, Plus, Save, Trash2, X } from 'lucide-react';
-import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import React, { useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { createSubject, deleteSubject, reorderSubjects, updateSubject } from '@/actions/subjects';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
@@ -166,6 +167,8 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingSubject, setEditingSubject] = useState<TSubject | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
+  const [, startTransition] = useTransition();
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -180,6 +183,9 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
       await createSubject(data);
       setIsCreateDialogOpen(false);
       toast.success('Subject created successfully');
+      startTransition(() => {
+        router.refresh();
+      });
     } catch (error) {
       toast.error('Failed to create subject');
       console.error('Create subject error:', error);
@@ -202,6 +208,9 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
       });
       setEditingSubject(null);
       toast.success('Subject updated successfully');
+      startTransition(() => {
+        router.refresh();
+      });
     } catch (error) {
       toast.error('Failed to update subject');
       console.error('Update subject error:', error);
@@ -214,6 +223,9 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
     try {
       await deleteSubject(id);
       toast.success('Subject deleted successfully');
+      startTransition(() => {
+        router.refresh();
+      });
     } catch (error) {
       toast.error('Failed to delete subject');
       console.error('Delete subject error:', error);
@@ -239,6 +251,9 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
         }));
         await reorderSubjects(subjectsWithOrder);
         toast.success('Subjects reordered successfully');
+        startTransition(() => {
+          router.refresh();
+        });
       } catch (error) {
         // Revert on error
         toast.error('Failed to reorder subjects');

@@ -3,7 +3,7 @@
 import type { TNotification } from '@/types/notification';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
+import React, { useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { markNotificationAsRead } from '@/actions/notifications';
 import { getExamUrl } from '@/constants/vocab-trainer';
@@ -34,6 +34,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
   // onDelete,
 }) => {
   const router = useRouter();
+  const [, startTransition] = useTransition();
   const [isLoadingExam, setIsLoadingExam] = useState(false);
   const IconComponent = getNotificationIcon(notification.type);
   const StatusIcon = getNotificationStatusIcon(isRead, notification.priority);
@@ -49,6 +50,9 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
         await markNotificationAsRead(notification.id);
         onMarkAsRead();
         toast.success('Notification marked as read');
+        startTransition(() => {
+          router.refresh();
+        });
       } catch (error) {
         console.error('Failed to mark notification as read:', error);
         toast.error('Failed to mark notification as read');

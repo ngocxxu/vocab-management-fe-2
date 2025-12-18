@@ -3,7 +3,8 @@
 import type { TCsvImportResponse } from '@/types/vocab-list';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertCircle, CheckCircle, Upload } from 'lucide-react';
-import React, { useCallback, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import React, { useCallback, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as XLSX from 'xlsx';
@@ -57,6 +58,8 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
   const [isUploading, setIsUploading] = useState(false);
   const [importResult, setImportResult] = useState<TCsvImportResponse | null>(null);
   const [showErrorDialog, setShowErrorDialog] = useState(false);
+  const router = useRouter();
+  const [, startTransition] = useTransition();
 
   const form = useForm<FormData>({
     resolver: zodResolver(FormSchema),
@@ -114,6 +117,9 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
         // Complete success
         toast.success(`Import completed successfully! Created: ${result.created}, Updated: ${result.updated}`);
         onImportSuccess();
+        startTransition(() => {
+          router.refresh();
+        });
         onOpenChange(false);
         form.reset();
       } else if (result.created > 0 || result.updated > 0) {

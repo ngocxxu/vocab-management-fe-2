@@ -5,7 +5,8 @@ import type { ResponseAPI, TLanguage } from '@/types';
 import type { TVocabTrainer } from '@/types/vocab-trainer';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Edit } from 'lucide-react';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import React, { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { createVocabTrainer, deleteVocabTrainer, deleteVocabTrainersBulk, updateVocabTrainer } from '@/actions/vocab-trainers';
@@ -52,6 +53,8 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
   });
 
   const { user } = useAuth();
+  const router = useRouter();
+  const [, startTransition] = useTransition();
 
   const queryParams = {
     page: pagination.page,
@@ -117,6 +120,12 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
     deleteMutation: async (ids: string[]) => {
       await deleteVocabTrainersBulk(ids);
       return { success: true };
+    },
+    onSuccess: () => {
+      mutate();
+      startTransition(() => {
+        router.refresh();
+      });
     },
     itemName: 'vocabulary trainer',
     itemNamePlural: 'vocabulary trainers',
@@ -188,6 +197,9 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
 
       dialogState.setOpen(false);
       resetForm();
+      startTransition(() => {
+        router.refresh();
+      });
     } catch (error) {
       console.error('Failed to save vocab trainer:', error);
     }
@@ -305,6 +317,12 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
             itemName="vocabulary trainer"
             onDelete={async (id: string) => {
               await deleteVocabTrainer(id);
+            }}
+            onSuccess={() => {
+              mutate();
+              startTransition(() => {
+                router.refresh();
+              });
             }}
             successMessage="Vocab trainer deleted successfully!"
             errorMessage="Failed to delete vocab trainer. Please try again."

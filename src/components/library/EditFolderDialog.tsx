@@ -3,7 +3,8 @@
 import type { TLanguageFolder } from './LanguageFolder';
 import type { LanguageFolderFormData } from './LanguageFolderForm';
 import type { ResponseAPI, TLanguage } from '@/types';
-import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { updateLanguageFolder } from '@/actions/language-folders';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
@@ -19,6 +20,8 @@ type EditFolderDialogProps = {
 
 const EditFolderDialog = ({ open, onOpenChange, folder, onFolderUpdated, initialLanguagesData }: EditFolderDialogProps) => {
   const [isUpdating, setIsUpdating] = useState(false);
+  const router = useRouter();
+  const [, startTransition] = useTransition();
 
   const handleSubmit = async (formData: LanguageFolderFormData) => {
     try {
@@ -26,6 +29,9 @@ const EditFolderDialog = ({ open, onOpenChange, folder, onFolderUpdated, initial
       await updateLanguageFolder(folder.id, formData);
       toast.success('Language folder updated successfully!');
       onFolderUpdated?.();
+      startTransition(() => {
+        router.refresh();
+      });
       onOpenChange(false);
     } catch (error) {
       console.error('Error updating language folder:', error);

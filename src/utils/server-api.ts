@@ -100,7 +100,7 @@ class ServerAPI {
         (error as any).statusText = response.statusText;
         (error as any).responseBody = errorBody;
 
-        console.error('🚨 Server API Error:', {
+        console.error('Server API Error:', {
           endpoint: `${this.baseURL}${endpoint}`,
           method: options.method || 'GET',
           status: response.status,
@@ -123,7 +123,7 @@ class ServerAPI {
 
       return JSON.parse(text) as T;
     } catch (error) {
-      console.error('🚨 Server API Error:', {
+      console.error('Server API Error:', {
         endpoint: `${this.baseURL}${endpoint}`,
         error: error instanceof Error ? error.message : 'Unknown error',
         baseURL: this.baseURL,
@@ -138,7 +138,7 @@ class ServerAPI {
 
   post<T>(endpoint: string, data: any) {
     // Log request details for debugging
-    console.warn('📤 Server API POST Request:', {
+    console.warn('Server API POST Request:', {
       endpoint: `${this.baseURL}${endpoint}`,
       dataKeys: data ? Object.keys(data) : [],
       hasTextTargets: data?.textTargets ? `Array(${data.textTargets.length})` : false,

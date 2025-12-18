@@ -1,7 +1,8 @@
 'use client';
 
 import { Edit, Folder, MoreVertical, Trash2 } from 'lucide-react';
-import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import React, { useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { deleteLanguageFolder } from '@/actions/language-folders';
 import {
@@ -37,6 +38,8 @@ const LanguageFolder = ({ folder, onFolderClick, onFolderUpdated, onFolderDelete
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
+  const router = useRouter();
+  const [, startTransition] = useTransition();
 
   const handleEdit = () => {
     setShowEditDialog(true);
@@ -52,6 +55,9 @@ const LanguageFolder = ({ folder, onFolderClick, onFolderUpdated, onFolderDelete
       await deleteLanguageFolder(folder.id);
       toast.success('Language folder deleted successfully!');
       onFolderDeleted?.();
+      startTransition(() => {
+        router.refresh();
+      });
       setShowDeleteDialog(false);
     } catch (error) {
       console.error('Error deleting language folder:', error);

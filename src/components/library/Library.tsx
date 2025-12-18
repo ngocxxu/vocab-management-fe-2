@@ -6,7 +6,7 @@ import type { ResponseAPI, TLanguage } from '@/types';
 import type { TCreateLanguageFolder } from '@/types/language-folder';
 import { Edit, Folder, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { createLanguageFolder, deleteLanguageFolder } from '@/actions/language-folders';
 import {
@@ -45,6 +45,7 @@ const Library: React.FC<LibraryProps> = ({ initialData, initialLanguagesData }) 
   });
 
   const router = useRouter();
+  const [, startTransition] = useTransition();
   const [searchQuery, setSearchQuery] = useState('');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingFolder, setEditingFolder] = useState<LanguageFolderType | null>(null);
@@ -74,19 +75,24 @@ const Library: React.FC<LibraryProps> = ({ initialData, initialLanguagesData }) 
   const handleCreateFolderSubmit = useCallback(async (folderData: TCreateLanguageFolder) => {
     try {
       await createLanguageFolder(folderData);
+      startTransition(() => {
+        router.refresh();
+      });
     } catch (error) {
       console.error('Error creating language folder:', error);
       throw error; // Re-throw to let the modal handle the error display
     }
-  }, []);
+  }, [router, startTransition]);
 
   const handleCloseModal = useCallback(() => {
     setIsCreateModalOpen(false);
   }, []);
 
   const handleFolderUpdated = useCallback(() => {
-    // Folder updated - revalidatePath will handle refresh automatically
-  }, []);
+    startTransition(() => {
+      router.refresh();
+    });
+  }, [router, startTransition]);
 
   const handleSearchChange = useCallback((query: string) => {
     setSearchQuery(query);
@@ -101,11 +107,14 @@ const Library: React.FC<LibraryProps> = ({ initialData, initialLanguagesData }) 
     try {
       await deleteLanguageFolder(folderId);
       toast.success('Language folder deleted successfully!');
+      startTransition(() => {
+        router.refresh();
+      });
     } catch (error) {
       console.error('Error deleting language folder:', error);
       toast.error('Failed to delete language folder. Please try again.');
     }
-  }, []);
+  }, [router, startTransition]);
 
   // Use handlers from the reusable pagination hook
   const { handleSort, handlePageChange } = handlers;
