@@ -5,12 +5,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { resetPassword } from '@/actions';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { authMutations } from '@/hooks/useAuth';
 import { forgotPasswordSchema } from '@/libs/validations/auth';
 
 export default function ForgotPasswordPage() {
@@ -28,10 +28,10 @@ export default function ForgotPasswordPage() {
     setError('');
 
     try {
-      await authMutations.resetPassword(data);
+      await resetPassword(data);
       setSuccess(true);
     } catch (error: any) {
-      setError(error?.response?.data?.error || 'Failed to send reset email. Please try again.');
+      setError(error?.message || 'Failed to send reset email. Please try again.');
     }
   };
 

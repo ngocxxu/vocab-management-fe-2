@@ -1,13 +1,14 @@
 import type { ResponseAPI } from '@/types';
+import type { TUser } from '@/types/auth';
 import type { TNotification, TUnreadCountResponse } from '@/types/notification';
 import { LogOut, Menu, Moon, Search, Sun, User } from 'lucide-react';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { signout, verifyUser } from '@/actions';
 import { NotificationDropdown } from '@/components/notifications/NotificationDropdown';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { authMutations, useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/hooks/useTheme';
 
 type HeaderProps = {
@@ -26,7 +27,15 @@ export const Header: React.FC<HeaderProps> = ({
   const { theme, toggleTheme, mounted } = useTheme();
   const router = useRouter();
   const pathname = usePathname();
-  const { user } = useAuth();
+  const [user, setUser] = useState<TUser | null>(null);
+
+  useEffect(() => {
+    const loadUser = async () => {
+      const userData = await verifyUser();
+      setUser(userData);
+    };
+    loadUser();
+  }, []);
 
   // Navigation items configuration
   const navigationItems = [
@@ -42,7 +51,8 @@ export const Header: React.FC<HeaderProps> = ({
 
   const handleLogout = async () => {
     try {
-      await authMutations.signout();
+      await signout();
+      setUser(null);
       router.push('/');
     } catch (error) {
       console.error('Logout error:', error);

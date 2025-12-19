@@ -1,22 +1,41 @@
 'use client';
 
+import type { TUser } from '@/types/auth';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { verifyUser } from '@/actions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useAuth } from '@/hooks/useAuth';
 
 export default function HomePage() {
   const router = useRouter();
-  const { isAuthenticated, isLoading } = useAuth();
+  const [user, setUser] = useState<TUser | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!isLoading && isAuthenticated) {
+    const loadUser = async () => {
+      try {
+        const userData = await verifyUser();
+        setUser(userData);
+      } catch (error) {
+        console.error('Failed to verify user:', error);
+        setUser(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadUser();
+  }, []);
+
+  useEffect(() => {
+    if (!isLoading && user) {
       router.push('/dashboard');
     }
-  }, [isAuthenticated, isLoading, router]);
+  }, [user, isLoading, router]);
+
+  const isAuthenticated = !!user;
 
   if (isLoading) {
     return (

@@ -1,3 +1,4 @@
+export * from './auth';
 export * from './cloudinary';
 export * from './language-folders';
 export * from './languages';

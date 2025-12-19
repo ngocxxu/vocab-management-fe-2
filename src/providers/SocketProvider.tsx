@@ -1,9 +1,10 @@
 'use client';
 
 import type { Socket } from 'socket.io-client';
+import type { TUser } from '@/types/auth';
 import React, { createContext, useEffect, useMemo, useState } from 'react';
 import { io } from 'socket.io-client';
-import { useAuth } from '@/hooks/useAuth';
+import { verifyUser } from '@/actions';
 import { Env } from '@/libs/Env';
 
 type SocketContextType = {
@@ -23,9 +24,21 @@ type SocketProviderProps = {
 export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
-  const { user } = useAuth();
+  const [user, setUser] = useState<TUser | null>(null);
 
-  // Extract userId to stable reference
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const userData = await verifyUser();
+        setUser(userData);
+      } catch (error) {
+        console.error('Failed to verify user:', error);
+        setUser(null);
+      }
+    };
+    loadUser();
+  }, []);
+
   const userId = user?.id;
 
   useEffect(() => {

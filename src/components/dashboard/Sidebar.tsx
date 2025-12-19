@@ -1,3 +1,4 @@
+import type { TUser } from '@/types/auth';
 import {
   ChevronDown,
   GraduationCap,
@@ -9,9 +10,9 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { signout, verifyUser } from '@/actions';
 import { Button } from '@/components/ui/button';
-import { authMutations, useAuth } from '@/hooks/useAuth';
 
 type MenuItem = {
   id: string;
@@ -42,7 +43,15 @@ type SidebarProps = {
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
   const router = useRouter();
   const pathname = usePathname();
-  const { user, mutate } = useAuth();
+  const [user, setUser] = useState<TUser | null>(null);
+
+  useEffect(() => {
+    const loadUser = async () => {
+      const userData = await verifyUser();
+      setUser(userData);
+    };
+    loadUser();
+  }, []);
 
   // Get the current active item from pathname
   const getCurrentActiveItem = () => {
@@ -56,10 +65,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
 
   const handleSignOut = async () => {
     try {
-      await authMutations.signout();
-      // Clear the auth cache
-      mutate();
-      // Redirect to signin page
+      await signout();
+      setUser(null);
       router.push('/signin');
     } catch (error) {
       console.error('Sign out failed:', error);

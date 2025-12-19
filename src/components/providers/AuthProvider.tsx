@@ -2,8 +2,8 @@
 
 import type { TUser } from '@/types/auth';
 import { createContext, use, useCallback, useEffect, useMemo, useState } from 'react';
+import { signin, signout, signup, verifyUser } from '@/actions';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useAuth } from '@/hooks/useAuth';
 
 type AuthContextType = {
   user: TUser | undefined;
@@ -34,27 +34,44 @@ export const useAuthContext = () => {
 };
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const { user, isAuthenticated, isLoading, isError, mutate } = useAuth();
+  const [user, setUser] = useState<TUser | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    if (!isLoading) {
-      setIsInitialized(true);
-    }
-  }, [isLoading]);
+    const loadUser = async () => {
+      try {
+        setIsLoading(true);
+        const userData = await verifyUser();
+        setUser(userData || undefined);
+        setIsError(false);
+      } catch (error) {
+        console.error('Failed to load user:', error);
+        setIsError(true);
+        setUser(undefined);
+      } finally {
+        setIsLoading(false);
+        setIsInitialized(true);
+      }
+    };
+    loadUser();
+  }, []);
 
-  const signin = useCallback(async (email: string, password: string) => {
+  const isAuthenticated = !!user;
+
+  const handleSignin = useCallback(async (email: string, password: string) => {
     try {
-      const { authMutations } = await import('@/hooks/useAuth');
-      await authMutations.signin({ email, password });
-      await mutate(); // Refresh auth state
+      await signin({ email, password });
+      const userData = await verifyUser();
+      setUser(userData || undefined);
     } catch (error) {
       console.error('Signin failed:', error);
       throw error;
     }
-  }, [mutate]);
+  }, []);
 
-  const signup = useCallback(async (userData: {
+  const handleSignup = useCallback(async (userData: {
     email: string;
     password: string;
     firstName: string;
@@ -64,35 +81,34 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     role: string;
   }) => {
     try {
-      const { authMutations } = await import('@/hooks/useAuth');
-      await authMutations.signup(userData);
-      await mutate(); // Refresh auth state
+      await signup(userData);
+      const userDataResult = await verifyUser();
+      setUser(userDataResult || undefined);
     } catch (error) {
       console.error('Signup failed:', error);
       throw error;
     }
-  }, [mutate]);
+  }, []);
 
-  const signout = useCallback(async () => {
+  const handleSignout = useCallback(async () => {
     try {
-      const { authMutations } = await import('@/hooks/useAuth');
-      await authMutations.signout();
-      await mutate(); // Refresh auth state
+      await signout();
+      setUser(undefined);
     } catch (error) {
       console.error('Signout failed:', error);
       throw error;
     }
-  }, [mutate]);
+  }, []);
 
   const value: AuthContextType = useMemo(() => ({
     user,
     isAuthenticated,
     isLoading,
     isError,
-    signin,
-    signup,
-    signout,
-  }), [user, isAuthenticated, isLoading, isError, signin, signup, signout]);
+    signin: handleSignin,
+    signup: handleSignup,
+    signout: handleSignout,
+  }), [user, isAuthenticated, isLoading, isError, handleSignin, handleSignup, handleSignout]);
 
   if (!isInitialized) {
     return <Skeleton className="h-screen w-full" />;

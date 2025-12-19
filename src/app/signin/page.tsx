@@ -3,7 +3,7 @@
 import type { SignInFormData } from '@/libs/validations/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -12,11 +12,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
-import { authMutations } from '@/hooks/useAuth';
 import { signInSchema } from '@/libs/validations/auth';
+import { authApi } from '@/utils/client-api';
 
 function SignInForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -32,11 +31,15 @@ function SignInForm() {
     setErrorMessage('');
 
     try {
-      await authMutations.signin(data);
+      // Use client API which calls /api/auth/signin route
+      // This route forwards Set-Cookie from NestJS, ensuring cookie is set properly
+      await authApi.signin(data);
       const redirectTo = searchParams.get('redirect') || '/dashboard';
-      router.push(redirectTo);
+
+      // Use window.location for full page reload so middleware can detect cookie
+      window.location.href = redirectTo;
     } catch (error: any) {
-      setErrorMessage(error?.response?.data?.error || 'Failed to sign in. Please try again.');
+      setErrorMessage(error?.response?.data?.error || error?.message || 'Failed to sign in. Please try again.');
     }
   };
 

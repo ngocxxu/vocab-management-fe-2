@@ -1,15 +1,16 @@
 'use client';
 
+import type { TUser } from '@/types/auth';
 import type { TUserProfile } from '@/types/settings';
 import { Camera, Check, Pencil, User, X } from 'lucide-react';
 import Image from 'next/image';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { verifyUser } from '@/actions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useAuth } from '@/hooks/useAuth';
 
 type ProfileSectionProps = {
   onProfileChangeAction: (profile: Partial<TUserProfile>) => void;
@@ -18,9 +19,11 @@ type ProfileSectionProps = {
 export const ProfileSection: React.FC<ProfileSectionProps> = ({
   onProfileChangeAction,
 }) => {
-  const { user, isLoading, isError } = useAuth();
-  const [isEditing, setIsEditing] = React.useState(false);
-  const [formData, setFormData] = React.useState<TUserProfile>({
+  const [user, setUser] = useState<TUser | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState<TUserProfile>({
     id: '',
     email: '',
     phone: '',
@@ -30,6 +33,24 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
     role: '',
     isActive: false,
   });
+
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        setIsLoading(true);
+        setIsError(false);
+        const userData = await verifyUser();
+        setUser(userData);
+      } catch (error) {
+        console.error('Failed to load user:', error);
+        setIsError(true);
+        setUser(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadUser();
+  }, []);
 
   // Convert TUser to TUserProfile format
   const profile: TUserProfile = React.useMemo(() => user
@@ -55,7 +76,7 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
       }, [user]);
 
   // Update form data when profile changes
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isEditing) {
       setFormData(() => profile);
     }

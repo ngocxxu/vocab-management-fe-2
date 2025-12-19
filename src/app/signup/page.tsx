@@ -3,7 +3,6 @@
 import type { SignUpFormData } from '@/libs/validations/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -12,11 +11,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { UserRole } from '@/constants/auth';
-import { authMutations } from '@/hooks/useAuth';
 import { signUpSchema } from '@/libs/validations/auth';
+import { authApi } from '@/utils/client-api';
 
 export default function SignUpPage() {
-  const router = useRouter();
   const [errorMessage, setErrorMessage] = useState('');
 
   const form = useForm<SignUpFormData>({
@@ -46,10 +44,14 @@ export default function SignUpPage() {
         role: UserRole.STAFF,
       };
 
-      await authMutations.signup(signupData);
-      router.push('/dashboard');
+      // Use client API which calls /api/auth/signup route
+      // This route forwards Set-Cookie from NestJS, ensuring cookie is set properly
+      await authApi.signup(signupData);
+
+      // Use window.location for full page reload so middleware can detect cookie
+      window.location.href = '/dashboard';
     } catch (error: any) {
-      setErrorMessage(error?.response?.data?.error || 'Failed to create account. Please try again.');
+      setErrorMessage(error?.message || 'Failed to create account. Please try again.');
     }
   };
 

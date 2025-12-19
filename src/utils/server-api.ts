@@ -1,5 +1,6 @@
 import type { LanguageFolderQueryParams, VocabQueryParams, VocabTrainerQueryParams } from './api-config';
 import type { ResponseAPI, TLanguage, TLanguageFolder, TUser } from '@/types';
+import type { TAuthResponse } from '@/types/auth';
 import type {
   TDeleteNotificationResponse,
   TMarkAllAsReadResponse,
@@ -175,23 +176,23 @@ export const serverApi = new ServerAPI();
 export const authApi = {
   signin: (data: { email: string; password: string }) => {
     const config = API_METHODS.auth.signin(data);
-    return serverApi.post(config.endpoint, config.data);
+    return serverApi.post<TAuthResponse>(config.endpoint, config.data);
   },
   signup: (data: { email: string; password: string; firstName: string; lastName: string; phone: string; avatar: string; role: string }) => {
     const config = API_METHODS.auth.signup(data);
-    return serverApi.post(config.endpoint, config.data);
+    return serverApi.post<TAuthResponse>(config.endpoint, config.data);
   },
   refresh: (data: { refreshToken: string }) => {
     const config = API_METHODS.auth.refresh(data);
-    return serverApi.post(config.endpoint, config.data);
+    return serverApi.post<{ message: string }>(config.endpoint, config.data);
   },
   signout: () => {
     const config = API_METHODS.auth.signout();
-    return serverApi.post(config.endpoint, {});
+    return serverApi.post<{ message: string }>(config.endpoint, {});
   },
   resetPassword: (data: { email: string }) => {
     const config = API_METHODS.auth.resetPassword(data);
-    return serverApi.post(config.endpoint, config.data);
+    return serverApi.post<{ message: string }>(config.endpoint, config.data);
   },
   verify: () => {
     const config = API_METHODS.auth.verify();
