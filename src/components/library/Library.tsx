@@ -114,9 +114,9 @@ const Library: React.FC<LibraryProps> = ({ initialData, initialLanguagesData }) 
   const data = useMemo<LanguageFolderType[]>(() => {
     const languageFolders = initialData?.items || [];
     return languageFolders.filter((folder: LanguageFolderType) => {
-      const matchesSearch = folder.name.toLowerCase().includes(searchQuery.toLowerCase())
-        || folder.sourceLanguageCode.toLowerCase().includes(searchQuery.toLowerCase())
-        || folder.targetLanguageCode.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSearch = folder.name?.toLowerCase().includes(searchQuery.toLowerCase())
+        || folder.sourceLanguageCode?.toLowerCase().includes(searchQuery.toLowerCase())
+        || folder.targetLanguageCode?.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesFilter = true;
 
       return matchesSearch && matchesFilter;

@@ -563,18 +563,16 @@ export const MultiSelect = (
           ...group,
           options: group.options.filter(
             option =>
-              option.label
-                .toLowerCase()
-                .includes(searchValue.toLowerCase())
-                || option.value.toLowerCase().includes(searchValue.toLowerCase()),
+              (option.label?.toLowerCase() || '').includes(searchValue.toLowerCase())
+              || (option.value?.toLowerCase() || '').includes(searchValue.toLowerCase()),
           ),
         }))
         .filter(group => group.options.length > 0);
     }
     return options.filter(
       option =>
-        option.label.toLowerCase().includes(searchValue.toLowerCase())
-        || option.value.toLowerCase().includes(searchValue.toLowerCase()),
+        (option.label?.toLowerCase() || '').includes(searchValue.toLowerCase())
+        || (option.value?.toLowerCase() || '').includes(searchValue.toLowerCase()),
     );
   }, [options, searchValue, searchable, isGroupedOptions]);
 

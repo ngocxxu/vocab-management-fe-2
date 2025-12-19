@@ -3,7 +3,7 @@
 import type { MasterySummary } from '@/types/statistics';
 import { BookOpen, CheckCircle, TrendingUp, XCircle } from 'lucide-react';
 import React from 'react';
-import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
+import { Cell, Pie, PieChart, Tooltip } from 'recharts';
 import { Card, CardContent } from '@/components/ui/card';
 
 type MetricCardProps = {
@@ -47,8 +47,8 @@ const DonutChart: React.FC<{ correct: number; incorrect: number }> = ({ correct,
 
   return (
     <div className="flex flex-col items-center space-y-2">
-      <ResponsiveContainer width={120} height={120}>
-        <PieChart>
+      <div className="h-[120px] w-[120px]">
+        <PieChart width={120} height={120}>
           <Pie
             data={data}
             cx="50%"
@@ -64,7 +64,7 @@ const DonutChart: React.FC<{ correct: number; incorrect: number }> = ({ correct,
           </Pie>
           <Tooltip />
         </PieChart>
-      </ResponsiveContainer>
+      </div>
       <div className="space-y-1 text-center">
         <div className="flex items-center justify-center space-x-2">
           <div className="h-3 w-3 rounded-full bg-emerald-500" />

@@ -11,6 +11,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSpeechSynthesis } from 'react-speech-kit';
+import { toast } from 'sonner';
 import { z } from 'zod';
 import { createVocab, deleteVocabsBulk, updateVocab } from '@/actions/vocabs';
 import { BulkDeleteDialog, DeleteActionButton, ErrorState } from '@/components/shared';
@@ -352,8 +353,10 @@ const VocabList: React.FC<VocabListProps> = ({
 
       if (dialogState.editMode && dialogState.editingItem) {
         await updateVocab(dialogState.editingItem.id, apiData as any);
+        toast.success('Vocabulary updated successfully');
       } else {
         await createVocab(apiData as any);
+        toast.success('Vocabulary created successfully');
       }
 
       dialogState.setOpen(false);
@@ -362,8 +365,11 @@ const VocabList: React.FC<VocabListProps> = ({
         router.refresh();
       });
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to save vocabulary';
+      toast.error('Error', {
+        description: errorMessage,
+      });
       console.error('Failed to save vocabulary:', error);
-      // Handle any other errors here
     }
   };
 
