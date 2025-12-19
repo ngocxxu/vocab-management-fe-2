@@ -2,7 +2,7 @@
 
 import type { TQuestionAPI } from '@/types/vocab-trainer';
 import { useCallback, useEffect, useState } from 'react';
-import { vocabTrainerApi } from '@/utils/client-api';
+import { getExam } from '@/actions';
 
 type UseExamDataOptions = {
   trainerId: string | null;
@@ -49,7 +49,7 @@ export const useExamData = ({ trainerId, autoLoad = true, onSuccessAction, onErr
     setError(null);
 
     try {
-      const data = await vocabTrainerApi.getExam(trainerId);
+      const data = await getExam(trainerId);
       console.warn('API response:', data);
 
       // Cache the data in localStorage

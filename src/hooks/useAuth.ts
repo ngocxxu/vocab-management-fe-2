@@ -1,5 +1,6 @@
 import type { TAuthResponse, TRefreshData, TResetPasswordData, TSigninData, TSignupData } from '@/types/auth';
 import { useEffect, useState } from 'react';
+import { refresh, resetPassword, signout, verifyUser } from '@/actions';
 import { hasAuthToken } from '@/utils/auth-utils';
 import { authApi } from '@/utils/client-api';
 
@@ -22,15 +23,13 @@ export const useAuth = () => {
   }, []);
 
   const mutate = async () => {
-    // Optional: if you want to verify when explicitly called
     setIsLoading(true);
     setError(null);
     try {
-      const result = await authApi.verify();
+      const result = await verifyUser();
       setData(result);
     } catch (err) {
       setError(err);
-      // If verify fails, check cookie as fallback
       const isAuthenticated = hasAuthToken();
       setData(isAuthenticated ? { isAuthenticated: true } : null);
     } finally {
@@ -55,12 +54,12 @@ export const authMutations = {
     return await authApi.signup(signupData);
   },
   signout: async (): Promise<{ message: string }> => {
-    return await authApi.signout();
+    return await signout();
   },
   refresh: async (refreshData: TRefreshData): Promise<{ message: string }> => {
-    return await authApi.refresh(refreshData);
+    return await refresh(refreshData);
   },
   resetPassword: async (resetData: TResetPasswordData): Promise<{ message: string }> => {
-    return await authApi.resetPassword(resetData);
+    return await resetPassword(resetData);
   },
 };

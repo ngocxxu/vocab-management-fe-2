@@ -1,6 +1,6 @@
 'use server';
 
-import type { TCreateVocabTrainer, TFormTestVocabTrainerUnion } from '@/types/vocab-trainer';
+import type { TCreateVocabTrainer, TFormTestVocabTrainerUnion, TQuestionAPI } from '@/types/vocab-trainer';
 import { revalidatePath } from 'next/cache';
 import { vocabTrainerApi } from '@/utils/server-api';
 
@@ -40,6 +40,15 @@ export async function deleteVocabTrainersBulk(ids: string[]): Promise<{ success:
     return { success: true };
   } catch (error) {
     throw new Error(error instanceof Error ? error.message : 'Failed to delete vocab trainers');
+  }
+}
+
+export async function getExam(id: string): Promise<TQuestionAPI> {
+  try {
+    const result = await vocabTrainerApi.getExam(id);
+    return result as TQuestionAPI;
+  } catch (error) {
+    throw new Error(error instanceof Error ? error.message : 'Failed to fetch exam');
   }
 }
 

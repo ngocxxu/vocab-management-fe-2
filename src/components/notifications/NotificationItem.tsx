@@ -5,11 +5,11 @@ import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useState, useTransition } from 'react';
 import { toast } from 'sonner';
+import { getExam } from '@/actions';
 import { markNotificationAsRead } from '@/actions/notifications';
 import { getExamUrl } from '@/constants/vocab-trainer';
 import { cn } from '@/libs/utils';
 import { ENotificationAction, ENotificationType } from '@/types/notification';
-import { vocabTrainerApi } from '@/utils/client-api';
 import {
   formatNotificationMessage,
   formatTimeAgo,
@@ -70,7 +70,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
 
       setIsLoadingExam(true);
       try {
-        const examData = await vocabTrainerApi.getExam(trainerId);
+        const examData = await getExam(trainerId);
 
         if (!examData) {
           throw new Error('No exam data received');
