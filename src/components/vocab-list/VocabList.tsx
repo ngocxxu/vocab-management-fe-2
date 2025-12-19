@@ -18,7 +18,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Form } from '@/components/ui/form';
 import { DataTable } from '@/components/ui/table';
-import { useApiPagination, useAuth, useBulkDelete, useDialogState } from '@/hooks';
+import { useApiPagination, useBulkDelete, useDialogState } from '@/hooks';
 import { selectVoiceByCode } from '@/utils/textToSpeech';
 import AddVocabDialog from './AddVocabDialog';
 import ExpandedRowContent from './ExpandedRowContent';
@@ -100,8 +100,6 @@ const VocabList: React.FC<VocabListProps> = ({
   const textSource = searchParams.get('textSource') || '';
   const subjectIdsParam = searchParams.get('subjectIds');
   const selectedSubjectIds = subjectIdsParam ? subjectIdsParam.split(',') : [];
-
-  const { user } = useAuth();
 
   const totalItems = initialVocabsData?.totalItems || 0;
   const totalPages = initialVocabsData?.totalPages || 0;
@@ -538,7 +536,6 @@ const VocabList: React.FC<VocabListProps> = ({
             targetLanguageCode,
             languageFolderId,
             subjectIds: selectedSubjectIds.length > 0 ? selectedSubjectIds : undefined,
-            userId: user?.id,
           }}
         />
 

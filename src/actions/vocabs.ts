@@ -4,7 +4,7 @@ import type { ResponseAPI } from '@/types';
 import type { TCreateVocab, TVocab } from '@/types/vocab-list';
 import type { VocabQueryParams } from '@/utils/api-config';
 import { revalidatePath } from 'next/cache';
-import { vocabApi } from '@/utils/server-api';
+import { authApi, vocabApi } from '@/utils/server-api';
 
 export async function createVocab(vocabData: TCreateVocab) {
   try {
@@ -72,9 +72,21 @@ export async function importVocabsCsv(
   }
 }
 
-export async function exportVocabsCsv(params: VocabQueryParams): Promise<Blob | { error: string }> {
+export async function exportVocabsCsv(params: Omit<VocabQueryParams, 'userId'>): Promise<Blob | { error: string }> {
   try {
-    const response = await vocabApi.exportCsv(params);
+    const verifyResponse = await authApi.verify();
+    const userId = verifyResponse?.id;
+
+    if (!userId) {
+      return {
+        error: 'User not authenticated',
+      };
+    }
+
+    const response = await vocabApi.exportCsv({
+      ...params,
+      userId,
+    });
     const blob = await response.blob();
     return blob;
   } catch (error) {
@@ -84,9 +96,21 @@ export async function exportVocabsCsv(params: VocabQueryParams): Promise<Blob | 
   }
 }
 
-export async function getVocabsForSelection(params: VocabQueryParams): Promise<ResponseAPI<TVocab[]> | { error: string }> {
+export async function getVocabsForSelection(params: Omit<VocabQueryParams, 'userId'>): Promise<ResponseAPI<TVocab[]> | { error: string }> {
   try {
-    const result = await vocabApi.getAll(params);
+    const verifyResponse = await authApi.verify();
+    const userId = verifyResponse?.id;
+
+    if (!userId) {
+      return {
+        error: 'User not authenticated',
+      };
+    }
+
+    const result = await vocabApi.getAll({
+      ...params,
+      userId,
+    });
     return result;
   } catch (error) {
     return {

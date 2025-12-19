@@ -1,5 +1,5 @@
 import type { LanguageFolderQueryParams, VocabQueryParams, VocabTrainerQueryParams } from './api-config';
-import type { ResponseAPI, TLanguage, TLanguageFolder } from '@/types';
+import type { ResponseAPI, TLanguage, TLanguageFolder, TUser } from '@/types';
 import type {
   TDeleteNotificationResponse,
   TMarkAllAsReadResponse,
@@ -195,7 +195,7 @@ export const authApi = {
   },
   verify: () => {
     const config = API_METHODS.auth.verify();
-    return serverApi.get(config.endpoint);
+    return serverApi.get<TUser>(config.endpoint);
   },
 };
 

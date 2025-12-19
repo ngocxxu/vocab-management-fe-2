@@ -1,12 +1,10 @@
 'use client';
 
 import type { ColumnDef } from '@tanstack/react-table';
+import type { VocabFilters } from '@/hooks';
 import type { ResponseAPI, TLanguage } from '@/types';
-import type { TVocab } from '@/types/vocab-list';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { getVocabsForSelection } from '@/actions';
-import { getMyLanguageFoldersForSelection } from '@/actions/language-folders';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   FormControl,
@@ -17,7 +15,7 @@ import {
 } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DataTable } from '@/components/ui/table';
-import { useApiPagination, useAuth } from '@/hooks';
+import { useApiPagination, useVocabSelection } from '@/hooks';
 
 type VocabSelectionFormProps = {
   selectedIds: string[];
@@ -35,122 +33,34 @@ type RowVocab = {
   targetLanguageCode: string;
 };
 
+const EMPTY_CACHED_FOLDERS: any[] = [];
+
 const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
   selectedIds,
   initialLanguagesData,
   open = true,
-  cachedLanguageFolders = [],
+  cachedLanguageFolders = EMPTY_CACHED_FOLDERS,
   onLanguageFoldersLoaded,
 }) => {
   const form = useFormContext();
-  const { user } = useAuth();
-  const [globalFilter, setGlobalFilter] = useState('');
-  const [sourceLanguageCode, setSourceLanguageCode] = useState<string>('ALL');
-  const [targetLanguageCode, setTargetLanguageCode] = useState<string>('ALL');
-  const [languageFolderId, setLanguageFolderId] = useState<string>('ALL');
-  const [vocabs, setVocabs] = useState<TVocab[]>([]);
-  const [totalItems, setTotalItems] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
-  const [languageFolders, setLanguageFolders] = useState<any[]>(cachedLanguageFolders);
-  const lastFetchParamsRef = useRef<string>('');
+  const { pagination, handlers } = useApiPagination({ page: 1, pageSize: 5, sortBy: 'updatedAt', sortOrder: 'desc' });
 
-  const { pagination, handlers } = useApiPagination({ page: 1, pageSize: 5, sortBy: 'textSource', sortOrder: 'asc' });
+  const [filters, setFilters] = useState<VocabFilters>({
+    globalFilter: '',
+    sourceLanguageCode: 'ALL',
+    targetLanguageCode: 'ALL',
+    languageFolderId: 'ALL',
+  });
+
+  const { vocabs, languageFolders, totalItems, totalPages, currentPage, isLoading } = useVocabSelection({
+    open,
+    pagination,
+    filters,
+    cachedLanguageFolders,
+    onLanguageFoldersLoaded,
+  });
 
   const languages = initialLanguagesData?.items || [];
-
-  useEffect(() => {
-    if (cachedLanguageFolders.length > 0) {
-      setLanguageFolders(cachedLanguageFolders);
-    }
-  }, [cachedLanguageFolders]);
-
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-
-    if (cachedLanguageFolders.length > 0) {
-      return;
-    }
-
-    const fetchLanguageFolders = async () => {
-      try {
-        const result = await getMyLanguageFoldersForSelection({ page: 1, pageSize: 100 });
-        if ('error' in result) {
-          console.error('Failed to fetch language folders:', result.error);
-          return;
-        }
-        const folders = result.items || [];
-        setLanguageFolders(folders);
-        onLanguageFoldersLoaded?.(folders);
-      } catch (error) {
-        console.error('Failed to fetch language folders:', error);
-      }
-    };
-    fetchLanguageFolders();
-  }, [open, cachedLanguageFolders, onLanguageFoldersLoaded]);
-
-  useEffect(() => {
-    if (!open) {
-      lastFetchParamsRef.current = '';
-      return;
-    }
-
-    if (!user?.id) {
-      return;
-    }
-
-    const fetchParams = JSON.stringify({
-      page: pagination.page,
-      pageSize: pagination.pageSize,
-      sortBy: pagination.sortBy,
-      sortOrder: pagination.sortOrder,
-      globalFilter,
-      sourceLanguageCode,
-      targetLanguageCode,
-      languageFolderId,
-      userId: user.id,
-    });
-
-    if (lastFetchParamsRef.current === fetchParams) {
-      return;
-    }
-
-    lastFetchParamsRef.current = fetchParams;
-
-    const fetchVocabs = async () => {
-      setIsLoading(true);
-      try {
-        const result = await getVocabsForSelection({
-          page: pagination.page,
-          pageSize: pagination.pageSize,
-          sortBy: pagination.sortBy,
-          sortOrder: pagination.sortOrder,
-          textSource: globalFilter || undefined,
-          sourceLanguageCode: sourceLanguageCode !== 'ALL' ? sourceLanguageCode : undefined,
-          targetLanguageCode: targetLanguageCode !== 'ALL' ? targetLanguageCode : undefined,
-          languageFolderId: languageFolderId !== 'ALL' ? languageFolderId : undefined,
-          userId: user.id,
-        });
-        if ('error' in result) {
-          console.error('Failed to fetch vocabs:', result.error);
-          return;
-        }
-        setVocabs(result.items || []);
-        setTotalItems(result.totalItems || 0);
-        setTotalPages(result.totalPages || 0);
-        setCurrentPage(result.currentPage || 1);
-      } catch (error) {
-        console.error('Failed to fetch vocabs:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchVocabs();
-  }, [open, pagination.page, pagination.pageSize, pagination.sortBy, pagination.sortOrder, globalFilter, sourceLanguageCode, targetLanguageCode, languageFolderId, user?.id]);
 
   const data = useMemo<RowVocab[]>(() => vocabs, [vocabs]);
 
@@ -165,6 +75,11 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
   }, [data, form]);
 
   const areAllOnPageSelected = data.length > 0 && data.every(v => selectedIds.includes(v.id));
+
+  const handleFilterChange = useCallback((key: keyof VocabFilters, value: string) => {
+    setFilters(prev => ({ ...prev, [key]: value }));
+    handlers.handlePageChange(1);
+  }, [handlers]);
 
   const columns = useMemo<ColumnDef<RowVocab>[]>(() => [
     {
@@ -246,11 +161,8 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
         <div>
           <FormLabel className="mb-1 block text-sm font-medium">Source Language</FormLabel>
           <Select
-            value={sourceLanguageCode}
-            onValueChange={(value) => {
-              setSourceLanguageCode(value);
-              handlers.handlePageChange(1);
-            }}
+            value={filters.sourceLanguageCode}
+            onValueChange={value => handleFilterChange('sourceLanguageCode', value)}
           >
             <SelectTrigger className="w-full">
               <SelectValue />
@@ -266,11 +178,8 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
         <div>
           <FormLabel className="mb-1 block text-sm font-medium">Target Language</FormLabel>
           <Select
-            value={targetLanguageCode}
-            onValueChange={(value) => {
-              setTargetLanguageCode(value);
-              handlers.handlePageChange(1);
-            }}
+            value={filters.targetLanguageCode}
+            onValueChange={value => handleFilterChange('targetLanguageCode', value)}
           >
             <SelectTrigger className="w-full">
               <SelectValue />
@@ -286,11 +195,8 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
         <div>
           <FormLabel className="mb-1 block text-sm font-medium">Language Folder</FormLabel>
           <Select
-            value={languageFolderId}
-            onValueChange={(value) => {
-              setLanguageFolderId(value);
-              handlers.handlePageChange(1);
-            }}
+            value={filters.languageFolderId}
+            onValueChange={value => handleFilterChange('languageFolderId', value)}
           >
             <SelectTrigger className="w-full">
               <SelectValue />
@@ -316,8 +222,8 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
                 columns={columns}
                 data={data}
                 searchPlaceholder="Search vocab..."
-                searchValue={globalFilter}
-                onSearchChangeAction={setGlobalFilter}
+                searchValue={filters.globalFilter}
+                onSearchChangeAction={value => handleFilterChange('globalFilter', value)}
                 showSearch={true}
                 showPagination={true}
                 pageSize={pagination.pageSize}
