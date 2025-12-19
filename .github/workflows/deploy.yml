@@ -32,7 +32,7 @@ jobs:
             BUMP_TYPE="minor"
           fi
 
-          if echo "$COMMITS" | grep -E "BREAKING CHANGE" > /dev/null; then
+          if echo "$COMMITS" | grep -E "(^feat!|^fix!|BREAKING CHANGE:)" > /dev/null; then
             BUMP_TYPE="major"
           fi
 

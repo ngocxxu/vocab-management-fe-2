@@ -27,6 +27,8 @@ type AddVocabTrainerDialogProps = {
   editMode?: boolean;
   editingItem?: TVocabTrainer | null;
   initialLanguagesData?: ResponseAPI<TLanguage[]>;
+  cachedLanguageFolders?: any[];
+  onLanguageFoldersLoaded?: (folders: any[]) => void;
 };
 
 const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({
@@ -37,6 +39,8 @@ const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({
   setOpen,
   editMode = false,
   initialLanguagesData,
+  cachedLanguageFolders = [],
+  onLanguageFoldersLoaded,
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -70,7 +74,13 @@ const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({
           </DialogHeader>
           <div className="space-y-6 p-6 pb-0">
             <BasicInfoForm />
-            <VocabSelectionForm selectedIds={formData.vocabAssignmentIds} initialLanguagesData={initialLanguagesData} open={open} />
+            <VocabSelectionForm
+              selectedIds={formData.vocabAssignmentIds}
+              initialLanguagesData={initialLanguagesData}
+              open={open}
+              cachedLanguageFolders={cachedLanguageFolders}
+              onLanguageFoldersLoaded={onLanguageFoldersLoaded}
+            />
           </div>
           <DialogFooter className="pt-4">
             <DialogClose asChild>

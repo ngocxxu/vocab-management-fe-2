@@ -22,8 +22,8 @@ export default async function VocabListPage({ searchParams }: PageProps) {
   const queryParams = {
     page: !Number.isNaN(rawPage) && rawPage > 0 ? rawPage : 1,
     pageSize: !Number.isNaN(rawPageSize) && rawPageSize > 0 ? rawPageSize : 10,
-    sortBy: typeof resolvedParams.sortBy === 'string' ? resolvedParams.sortBy : 'textSource',
-    sortOrder: (resolvedParams.sortOrder === 'desc' ? 'desc' : 'asc') as 'asc' | 'desc',
+    sortBy: typeof resolvedParams.sortBy === 'string' ? resolvedParams.sortBy : 'updatedAt',
+    sortOrder: (resolvedParams.sortOrder === 'asc' ? 'asc' : 'desc') as 'asc' | 'desc',
     sourceLanguageCode,
     targetLanguageCode,
     languageFolderId,

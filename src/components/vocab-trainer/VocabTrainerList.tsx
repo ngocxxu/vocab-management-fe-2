@@ -41,6 +41,7 @@ type VocabTrainerListProps = {
 
 const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initialLanguagesData }) => {
   const [isMounted, setIsMounted] = useState(false);
+  const [cachedLanguageFolders, setCachedLanguageFolders] = useState<any[]>([]);
 
   const { pagination, handlers } = useApiPagination({
     page: 1,
@@ -384,6 +385,8 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
               editMode={dialogState.editMode}
               editingItem={dialogState.editingItem}
               initialLanguagesData={initialLanguagesData}
+              cachedLanguageFolders={cachedLanguageFolders}
+              onLanguageFoldersLoaded={setCachedLanguageFolders}
             />
 
             <BulkDeleteDialog

@@ -23,6 +23,8 @@ type VocabSelectionFormProps = {
   selectedIds: string[];
   initialLanguagesData?: ResponseAPI<TLanguage[]>;
   open?: boolean;
+  cachedLanguageFolders?: any[];
+  onLanguageFoldersLoaded?: (folders: any[]) => void;
 };
 
 type RowVocab = {
@@ -33,7 +35,13 @@ type RowVocab = {
   targetLanguageCode: string;
 };
 
-const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({ selectedIds, initialLanguagesData, open = true }) => {
+const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
+  selectedIds,
+  initialLanguagesData,
+  open = true,
+  cachedLanguageFolders = [],
+  onLanguageFoldersLoaded,
+}) => {
   const form = useFormContext();
   const { user } = useAuth();
   const [globalFilter, setGlobalFilter] = useState('');
@@ -45,8 +53,7 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({ selectedIds, in
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
-  const [languageFolders, setLanguageFolders] = useState<any[]>([]);
-  const languageFoldersFetchedRef = useRef(false);
+  const [languageFolders, setLanguageFolders] = useState<any[]>(cachedLanguageFolders);
   const lastFetchParamsRef = useRef<string>('');
 
   const { pagination, handlers } = useApiPagination({ page: 1, pageSize: 5, sortBy: 'textSource', sortOrder: 'asc' });
@@ -54,31 +61,36 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({ selectedIds, in
   const languages = initialLanguagesData?.items || [];
 
   useEffect(() => {
+    if (cachedLanguageFolders.length > 0) {
+      setLanguageFolders(cachedLanguageFolders);
+    }
+  }, [cachedLanguageFolders]);
+
+  useEffect(() => {
     if (!open) {
       return;
     }
 
-    if (languageFoldersFetchedRef.current) {
+    if (cachedLanguageFolders.length > 0) {
       return;
     }
 
     const fetchLanguageFolders = async () => {
-      languageFoldersFetchedRef.current = true;
       try {
         const result = await getMyLanguageFoldersForSelection({ page: 1, pageSize: 100 });
         if ('error' in result) {
           console.error('Failed to fetch language folders:', result.error);
-          languageFoldersFetchedRef.current = false;
           return;
         }
-        setLanguageFolders(result.items || []);
+        const folders = result.items || [];
+        setLanguageFolders(folders);
+        onLanguageFoldersLoaded?.(folders);
       } catch (error) {
         console.error('Failed to fetch language folders:', error);
-        languageFoldersFetchedRef.current = false;
       }
     };
     fetchLanguageFolders();
-  }, [open]);
+  }, [open, cachedLanguageFolders, onLanguageFoldersLoaded]);
 
   useEffect(() => {
     if (!open) {
