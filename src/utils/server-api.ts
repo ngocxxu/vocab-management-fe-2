@@ -14,6 +14,7 @@ import type { TSubjectResponse } from '@/types/subject';
 import type { TVocab } from '@/types/vocab-list';
 import type { TVocabTrainer } from '@/types/vocab-trainer';
 import type { TWordTypeResponse } from '@/types/word-type';
+import { ApiError } from 'next/dist/server/api-utils';
 import { cookies } from 'next/headers';
 import { Env } from '@/libs/Env';
 import { handleTokenExpiration } from '@/utils/auth-utils';
@@ -83,54 +84,42 @@ class ServerAPI {
   }
 
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+    const response = await this.doFetch(endpoint, options);
+
+    // 1. Handle Response Content
+    // Check if the response is JSON based on headers or empty body (204)
+    const contentType = response.headers.get('content-type');
+    const isJson = contentType?.includes('application/json');
+    const contentLength = response.headers.get('content-length');
+    const isEmpty = response.status === 204 || contentLength === '0';
+
+    let data: any;
+
     try {
-      const response = await this.doFetch(endpoint, options);
+      if (isEmpty) {
+        data = {} as T;
+      } else if (isJson) {
+        data = await response.json();
+      } else {
+        data = await response.text();
+      }
+    } catch {
+      // Fallback if parsing fails
+      data = null;
+    }
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        let errorBody: any = null;
-        try {
-          errorBody = errorText ? JSON.parse(errorText) : null;
-        } catch {
-          // Not a JSON response, use raw text
-        }
+    // 2. Handle Errors
+    if (!response.ok) {
+      const error = new ApiError(response.status, response.statusText);
 
-        const errorMessage = errorBody?.message || errorBody?.error || errorText || `API call failed: ${response.status} ${response.statusText}`;
-        const error = new Error(errorMessage);
-        (error as any).status = response.status;
-        (error as any).statusText = response.statusText;
-        (error as any).responseBody = errorBody;
-
-        console.error('Server API Error:', {
-          endpoint: `${this.baseURL}${endpoint}`,
-          method: options.method || 'GET',
-          status: response.status,
-          statusText: response.statusText,
-          errorMessage,
-          errorBody,
-          baseURL: this.baseURL,
-        });
-        throw error;
+      if (process.env.NODE_ENV !== 'production') {
+        console.error(`[API Error] ${options.method || 'GET'} ${endpoint}:`, error);
       }
 
-      // Check if response has content before trying to parse JSON
-      const contentType = response.headers.get('content-type');
-      const text = await response.text();
-
-      if (!text || !contentType?.includes('application/json')) {
-        // Return empty object for non-JSON responses (like 204 No Content)
-        return {} as T;
-      }
-
-      return JSON.parse(text) as T;
-    } catch (error) {
-      console.error('Server API Error:', {
-        endpoint: `${this.baseURL}${endpoint}`,
-        error: error instanceof Error ? error.message : 'Unknown error',
-        baseURL: this.baseURL,
-      });
       throw error;
     }
+
+    return data as T;
   }
 
   get<T>(endpoint: string) {

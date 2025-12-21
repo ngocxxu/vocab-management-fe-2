@@ -77,9 +77,20 @@ export async function resetPassword(resetData: TResetPasswordData): Promise<{ me
 
 export async function verifyUser(): Promise<TUser | null> {
   try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get('accessToken')?.value;
+
+    if (!token) {
+      return null;
+    }
+
     const result = await authApi.verify();
     return result;
   } catch (error) {
+    const errorStatus = (error as any)?.status;
+    if (errorStatus === 403 || errorStatus === 401) {
+      return null;
+    }
     console.error('Failed to verify user:', error);
     return null;
   }
