@@ -1,3 +1,5 @@
+'use client';
+
 import type { TVocab } from '@/types/vocab-list';
 import { Volume2 } from 'lucide-react';
 import React, { useCallback } from 'react';
@@ -119,54 +121,49 @@ const ExpandedRowContent: React.FC<ExpandedRowContentProps> = ({
                     </div>
                   )}
 
-                  {showExplanations && target.explanationSource && (
+                  {showExplanations && (target.explanationSource || target.explanationTarget) && (
                     <div className="text-sm">
                       <span className="font-medium text-slate-700 dark:text-slate-300">Explanation:</span>
                       <div className="mt-2 space-y-2">
-                        {target.explanationSource && (
-                          <div className="grid grid-cols-2 gap-2">
-                            <div className="rounded border border-slate-200 bg-slate-50 p-2 dark:border-slate-600 dark:bg-slate-700">
-                              <div>
-                                <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Source:</span>
-                                <p className="text-slate-700 dark:text-slate-300">{target.explanationSource}</p>
-                              </div>
-                            </div>
-
-                            <div className="rounded border border-slate-200 bg-slate-50 p-2 dark:border-slate-600 dark:bg-slate-700">
-                              <div>
-                                <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Target:</span>
-                                <p className="text-slate-700 dark:text-slate-300">{target.explanationTarget}</p>
-                              </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="rounded border border-slate-200 bg-slate-50 p-2 dark:border-slate-600 dark:bg-slate-700">
+                            <div>
+                              <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Source:</span>
+                              <p className="text-slate-700 dark:text-slate-300">{target.explanationSource}</p>
                             </div>
                           </div>
-                        )}
+                          <div className="rounded border border-slate-200 bg-slate-50 p-2 dark:border-slate-600 dark:bg-slate-700">
+                            <div>
+                              <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Target:</span>
+                              <p className="text-slate-700 dark:text-slate-300">{target.explanationTarget}</p>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   )}
 
-                  {showExamples && target.vocabExamples.some(example => example.source && example.target) && (
+                  {showExamples && target.vocabExamples.filter(example => example.source || example.target).length > 0 && (
                     <div className="text-sm">
                       <span className="font-medium text-slate-700 dark:text-slate-300">Examples:</span>
                       <div className="mt-2 space-y-2">
                         {target.vocabExamples.map((example, index) => (
                           <div className="mt-2 space-y-2" key={example.source + index}>
-                            {example.source && (
-                              <div className="grid grid-cols-2 gap-2">
-                                <div className="rounded border border-slate-200 bg-slate-50 p-2 dark:border-slate-600 dark:bg-slate-700">
-                                  <div>
-                                    <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Source:</span>
-                                    <p className="text-slate-700 dark:text-slate-300">{example.source}</p>
-                                  </div>
-                                </div>
-
-                                <div className="rounded border border-slate-200 bg-slate-50 p-2 dark:border-slate-600 dark:bg-slate-700">
-                                  <div>
-                                    <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Target:</span>
-                                    <p className="text-slate-700 dark:text-slate-300">{example.target}</p>
-                                  </div>
+                            <div className="grid grid-cols-2 gap-2">
+                              <div className="rounded border border-slate-200 bg-slate-50 p-2 dark:border-slate-600 dark:bg-slate-700">
+                                <div>
+                                  <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Source:</span>
+                                  <p className="text-slate-700 dark:text-slate-300">{example.source}</p>
                                 </div>
                               </div>
-                            ) }
+
+                              <div className="rounded border border-slate-200 bg-slate-50 p-2 dark:border-slate-600 dark:bg-slate-700">
+                                <div>
+                                  <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Target:</span>
+                                  <p className="text-slate-700 dark:text-slate-300">{example.target}</p>
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         ))}
                       </div>
