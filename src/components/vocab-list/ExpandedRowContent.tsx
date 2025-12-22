@@ -11,7 +11,6 @@ type ExpandedRowContentProps = {
   vocab: TVocab;
   columnsCount: number;
   className?: string;
-  showWordType?: boolean;
   showGrammar?: boolean;
   showExplanations?: boolean;
   showSubjects?: boolean;
@@ -64,7 +63,7 @@ const ExpandedRowContent: React.FC<ExpandedRowContentProps> = ({
           <div className="space-y-3">
             {vocab.textTargets.map((target: TVocab['textTargets'][number], index: number) => (
               <div
-                key={target.textTarget + Math.random()}
+                key={`${target.textTarget}-${index}`}
                 className="rounded-lg border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800"
               >
                 {/* Target Header */}

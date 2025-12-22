@@ -26,8 +26,8 @@ export const generateFolderColor = (seed?: string): string => {
     // Generate a stable color based on the seed
     let hash = 0;
     for (let i = 0; i < seed.length; i++) {
-      const char = seed.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
+      const char = seed.codePointAt(i);
+      hash = ((hash << 5) - hash) + (char || 0);
       hash = hash & hash; // Convert to 32-bit integer
     }
     return colors[Math.abs(hash) % colors.length] || 'from-blue-500 to-blue-600';

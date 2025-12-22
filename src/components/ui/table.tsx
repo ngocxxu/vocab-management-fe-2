@@ -3,6 +3,7 @@
 import type {
   ColumnDef,
   ColumnFiltersState,
+  Row,
   RowSelectionState,
   SortingState,
   Table as TanStackTable,
@@ -37,7 +38,7 @@ type DataTableProps<TData, TValue> = {
   headerClassName?: string;
   rowClassName?: string;
   cellClassName?: string;
-  renderExpandedRow?: (row: any) => React.ReactNode;
+  renderExpandedRow?: (row: Row<TData>) => React.ReactNode;
   expandedState?: Record<string, boolean>;
   onExpandedChange?: (expanded: Record<string, boolean>) => void;
   onRowClick?: (row: TData) => void;
@@ -203,7 +204,7 @@ export function DataTable<TData, TValue>({
                   <tr key={headerGroup.id} className={`border-b border-slate-200 dark:border-slate-700 ${headerClassName}`}>
                     {headerGroup.headers.map(header => (
                       <th
-                        key={header.id + Math.random()}
+                        key={`${header.id}-${header.column.id}`}
                         className={`bg-slate-50/50 px-6 py-4 text-left text-sm font-semibold text-slate-700 dark:bg-slate-800/50 dark:text-slate-300 ${headerClassName}`}
                         style={{ width: header.getSize() !== 150 ? header.getSize() : undefined }}
                       >
@@ -282,7 +283,7 @@ export function DataTable<TData, TValue>({
                           const rowId = (row.original as any).id;
                           const isExpanded = expandedState[rowId];
                           return (
-                            <React.Fragment key={row.id + Math.random()}>
+                            <React.Fragment key={`${rowId}-${isExpanded ? 'expanded' : 'collapsed'}`}>
                               <tr
                                 className={`cursor-pointer border-b border-slate-100 transition-colors duration-200 hover:bg-slate-200/50 dark:border-slate-700 dark:hover:bg-slate-700/50 ${
                                   isExpanded ? 'bg-slate-200/50 dark:bg-slate-700/50' : ''
@@ -311,7 +312,7 @@ export function DataTable<TData, TValue>({
                                 }}
                               >
                                 {row.getVisibleCells().map(cell => (
-                                  <td key={cell.id + Math.random()} className={`px-6 py-4 ${cellClassName}`}>
+                                  <td key={`${cell.id}-${cell.column.id}`} className={`px-6 py-4 ${cellClassName}`}>
                                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                   </td>
                                 ))}
@@ -370,7 +371,7 @@ export function DataTable<TData, TValue>({
                 const isActive = manualPagination ? currentPage === pageNumber : table.getState().pagination.pageIndex === i;
                 return (
                   <Button
-                    key={pageNumber + Math.random()}
+                    key={`${pageNumber}-${i}`}
                     onClick={() => {
                       if (manualPagination && onPageChange) {
                         onPageChange(pageNumber);
@@ -395,7 +396,7 @@ export function DataTable<TData, TValue>({
               )}
               {(manualPagination ? pageCount : table.getPageCount()) > 5 && (
                 <Button
-                  key={(manualPagination ? pageCount : table.getPageCount()) + Math.random()}
+                  key={`${manualPagination ? pageCount : table.getPageCount()}-last`}
                   onClick={() => {
                     if (manualPagination && onPageChange) {
                       onPageChange(pageCount);
@@ -413,7 +414,7 @@ export function DataTable<TData, TValue>({
             </div>
 
             <Button
-              key={(manualPagination ? pageCount : table.getPageCount()) + Math.random()}
+              key={`${manualPagination ? pageCount : table.getPageCount()}-next`}
               onClick={() => {
                 if (manualPagination && onPageChange) {
                   onPageChange(currentPage + 1);

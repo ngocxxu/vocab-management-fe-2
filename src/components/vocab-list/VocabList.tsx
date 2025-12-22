@@ -29,7 +29,7 @@ import ImportVocabDialog from './ImportVocabDialog';
 import VocabListHeader from './VocabListHeader';
 
 // Utility function to generate unique IDs
-const generateId = () => `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+const generateId = () => `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 
 // Define the form schema
 const FormSchema = z.object({
@@ -239,7 +239,7 @@ const VocabList: React.FC<VocabListProps> = ({
   };
 
   const handleInputChange = (field: string, value: string, targetIndex?: number) => {
-    if (targetIndex !== undefined) {
+    if (targetIndex !== undefined && targetIndex !== null) {
       const currentTargets = form.watch('textTargets');
       const updatedTargets = currentTargets.map((target, index) =>
         index === targetIndex
@@ -433,9 +433,9 @@ const VocabList: React.FC<VocabListProps> = ({
 
         return (
           <div className="flex flex-wrap gap-1">
-            {textTargets.map(textTarget => (
+            {textTargets.map((textTarget, index) => (
               <span
-                key={textTarget.textTarget + Math.random()}
+                key={`${textTarget.textTarget}-${index}`}
                 className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-800 dark:bg-slate-700 dark:text-slate-200"
               >
                 {textTarget.textTarget}
