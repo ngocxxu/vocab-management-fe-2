@@ -19,7 +19,7 @@ export async function signin(signinData: TSigninData): Promise<TAuthResponse> {
       });
     }
 
-    return result as TAuthResponse;
+    return result;
   } catch (error) {
     throw new Error(error instanceof Error ? error.message : 'Failed to sign in');
   }

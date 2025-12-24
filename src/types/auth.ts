@@ -41,3 +41,9 @@ export type TVerifyResponse = {
   user: TUser;
   isAuthenticated: boolean;
 };
+
+export type TOAuthSyncInput = {
+  accessToken: string;
+};
+
+export type TOAuthSyncResponse = TAuthResponse;

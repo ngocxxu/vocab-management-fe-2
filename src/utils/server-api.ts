@@ -1,6 +1,6 @@
 import type { LanguageFolderQueryParams, VocabQueryParams, VocabTrainerQueryParams } from './api-config';
 import type { ResponseAPI, TLanguage, TLanguageFolder, TUser } from '@/types';
-import type { TAuthResponse } from '@/types/auth';
+import type { TAuthResponse, TOAuthSyncResponse } from '@/types/auth';
 import type {
   TDeleteNotificationResponse,
   TMarkAllAsReadResponse,
@@ -21,7 +21,7 @@ import { handleTokenExpiration } from '@/utils/auth-utils';
 import { API_ENDPOINTS, API_METHODS } from './api-config';
 
 class ServerAPI {
-  private baseURL = Env.NESTJS_API_URL || 'http://localhost:3002/api/v1';
+  private readonly baseURL = Env.NESTJS_API_URL || 'http://localhost:3002/api/v1';
   private isRefreshing: Promise<Response> | null = null; // avoid race condition
 
   private async doFetch(endpoint: string, options: RequestInit): Promise<Response> {
@@ -42,18 +42,16 @@ class ServerAPI {
     }
 
     // If 401 → try refresh
-    if (!this.isRefreshing) {
-      this.isRefreshing = fetch(`${Env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}${API_ENDPOINTS.auth.refresh}`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-          'Cookie': cookieStore.toString(),
-        },
-      }).finally(() => {
-        this.isRefreshing = null;
-      });
-    }
+    this.isRefreshing ??= fetch(`${Env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}${API_ENDPOINTS.auth.refresh}`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': cookieStore.toString(),
+      },
+    }).finally(() => {
+      this.isRefreshing = null;
+    });
 
     const refreshRes = await this.isRefreshing;
     if (!refreshRes.ok) {
@@ -186,6 +184,10 @@ export const authApi = {
   verify: () => {
     const config = API_METHODS.auth.verify();
     return serverApi.get<TUser>(config.endpoint);
+  },
+  oauthSync: (data: { accessToken: string; refreshToken: string }) => {
+    const config = API_METHODS.auth.oauthSync(data);
+    return serverApi.post<TOAuthSyncResponse>(config.endpoint, config.data);
   },
 };
 

@@ -84,24 +84,55 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     });
 
     socketInstance.on('connect_error', (error) => {
-      console.error('🔌 Socket connection error:', error);
       setIsConnected(false);
 
-      const errorMessage = error instanceof Error ? error.message : (error as any)?.message || String(error);
-      if (errorMessage && errorMessage !== 'websocket error') {
-        console.error('🔌 Error message:', errorMessage);
+      const hasMeaningfulValue = (value: unknown): boolean => {
+        if (!value) {
+          return false;
+        }
+        if (typeof value === 'string') {
+          return value.trim().length > 0;
+        }
+        if (typeof value === 'object') {
+          if (Array.isArray(value)) {
+            return value.length > 0;
+          }
+          return Object.keys(value).length > 0;
+        }
+        return true;
+      };
+
+      const errorDetails: string[] = [];
+
+      if (error instanceof Error) {
+        errorDetails.push(`message: ${error.message}`);
+      } else if (error && typeof error === 'object') {
+        const errorObj = error as Record<string, unknown>;
+
+        if (errorObj.message && hasMeaningfulValue(errorObj.message)) {
+          const msg = String(errorObj.message);
+          if (msg !== 'websocket error') {
+            errorDetails.push(`message: ${msg}`);
+          }
+        }
+
+        if (errorObj.type && hasMeaningfulValue(errorObj.type)) {
+          errorDetails.push(`type: ${errorObj.type}`);
+        }
+
+        if (errorObj.description && hasMeaningfulValue(errorObj.description)) {
+          errorDetails.push(`description: ${JSON.stringify(errorObj.description)}`);
+        }
+
+        if (errorObj.context && hasMeaningfulValue(errorObj.context)) {
+          errorDetails.push(`context: ${JSON.stringify(errorObj.context)}`);
+        }
       }
 
-      if (error && typeof error === 'object') {
-        if ('description' in error && error.description) {
-          console.error('🔌 Error description:', error.description);
-        }
-        if ('context' in error && error.context) {
-          console.error('🔌 Error context:', error.context);
-        }
-        if ('type' in error && error.type) {
-          console.error('🔌 Error type:', error.type);
-        }
+      if (errorDetails.length > 0) {
+        console.error('🔌 Socket connection error:', errorDetails.join(', '));
+      } else {
+        console.error('🔌 Socket connection error:', error);
       }
     });
 
@@ -133,6 +164,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       setIsConnected(false);
     });
 
+    // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
     setSocket(socketInstance);
 
     // Cleanup on unmount
@@ -156,6 +188,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 };
 
 // Hook to access socket context
+// eslint-disable-next-line react-refresh/only-export-components
 export const useSocket = (): SocketContextType => {
   const context = React.use(SocketContext);
   if (!context) {

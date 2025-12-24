@@ -1,5 +1,5 @@
 import type { AxiosRequestConfig } from 'axios';
-import type { TAuthResponse } from '@/types/auth';
+import type { TAuthResponse, TOAuthSyncResponse } from '@/types/auth';
 import axiosInstance from '@/libs/axios';
 import { API_METHODS } from './api-config';
 
@@ -38,5 +38,9 @@ export const authApi = {
   signup: (data: { email: string; password: string; firstName: string; lastName: string; phone: string; avatar: string; role: string }) => {
     const config = API_METHODS.auth.signup(data);
     return ClientAPI.post<TAuthResponse>(config.endpoint, config.data);
+  },
+  oauthSync: (data: { accessToken: string }) => {
+    const config = API_METHODS.auth.oauthSync(data);
+    return ClientAPI.post<TOAuthSyncResponse>(config.endpoint, config.data);
   },
 };

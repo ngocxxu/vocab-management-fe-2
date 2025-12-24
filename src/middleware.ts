@@ -20,6 +20,7 @@ const aj = arcjet.withRule(
 // Define protected routes that require authentication
 const protectedRoutes = ['/dashboard', '/library', '/vocab-list', '/vocab-trainer', '/settings'];
 const authRoutes = ['/signin', '/signup', '/forgot-password'];
+const publicRoutes = ['/auth/callback'];
 
 export default async function middleware(
   request: NextRequest,
@@ -40,6 +41,12 @@ export default async function middleware(
   // Check if the current path is a protected route
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
   const isAuthRoute = authRoutes.some(route => pathname.startsWith(route));
+  const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
+
+  // Allow public routes without authentication checks
+  if (isPublicRoute) {
+    return NextResponse.next();
+  }
 
   // Get the accessToken from cookies
   const token = request.cookies.get('accessToken')?.value;
@@ -66,5 +73,5 @@ export const config = {
   // Match all pathnames except for
   // - … if they start with `/_next`, `/_vercel` or `monitoring`
   // - … the ones containing a dot (e.g. `favicon.ico`)
-  matcher: '/((?!_next|_vercel|monitoring|.*\\..*).*)',
+  matcher: String.raw`/((?!_next|_vercel|monitoring|.*\..*).*)`,
 };

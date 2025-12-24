@@ -69,6 +69,7 @@ export const API_ENDPOINTS = {
     signout: '/auth/signout',
     resetPassword: '/auth/reset-password',
     verify: '/auth/verify',
+    oauthSync: '/auth/oauth/sync',
   },
   vocabs: '/vocabs',
   vocabTrainers: '/vocab-trainers',
@@ -89,6 +90,7 @@ export const API_METHODS = {
     signout: () => ({ endpoint: API_ENDPOINTS.auth.signout }),
     resetPassword: (data: { email: string }) => ({ endpoint: API_ENDPOINTS.auth.resetPassword, data }),
     verify: () => ({ endpoint: API_ENDPOINTS.auth.verify }),
+    oauthSync: (data: { accessToken: string }) => ({ endpoint: API_ENDPOINTS.auth.oauthSync, data }),
   },
   vocabs: {
     getAll: (params?: VocabQueryParams) => {
