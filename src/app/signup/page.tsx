@@ -4,19 +4,20 @@ import type { SignUpFormData } from '@/libs/validations/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/ui/skeleton';
 import { UserRole } from '@/constants/auth';
 import { supabase } from '@/libs/supabase';
 import { signUpSchema } from '@/libs/validations/auth';
 import { authApi } from '@/utils/client-api';
 
-export default function SignUpPage() {
+function SignUpContent() {
   const [errorMessage, setErrorMessage] = useState('');
   const [isOAuthLoading, setIsOAuthLoading] = useState(false);
   const searchParams = useSearchParams();
@@ -288,5 +289,38 @@ export default function SignUpPage() {
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function SignUpPage() {
+  return (
+    <Suspense
+      fallback={(
+        <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 px-4 py-8 dark:from-slate-900 dark:to-slate-800">
+          <div className="w-full max-w-md">
+            <Card className="shadow-xl">
+              <CardHeader className="space-y-1">
+                <div className="mb-4 flex items-center justify-center">
+                  <Skeleton className="h-12 w-12 rounded-lg" />
+                </div>
+                <Skeleton className="mx-auto h-8 w-48" />
+                <Skeleton className="mx-auto h-4 w-64" />
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      )}
+    >
+      <SignUpContent />
+    </Suspense>
   );
 }
