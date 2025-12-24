@@ -1,6 +1,6 @@
 {
   "name": "vocab-management-fe",
-  "version": "0.1.46",
+  "version": "1.0.0",
   "engines": {
     "node": ">=20"
   },
