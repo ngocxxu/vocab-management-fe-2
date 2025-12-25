@@ -2,13 +2,14 @@
 
 import type { TCsvImportResponse } from '@/types/vocab-list';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AlertCircle, CheckCircle, Upload } from 'lucide-react';
+import { AlertCircle, CheckCircle, Loader2, Plus, Upload } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as XLSX from 'xlsx';
 import { z } from 'zod';
+import { createSubject } from '@/actions/subjects';
 import { importVocabsCsv } from '@/actions/vocabs';
 import {
   AlertDialog,
@@ -58,6 +59,8 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
   const [isUploading, setIsUploading] = useState(false);
   const [importResult, setImportResult] = useState<TCsvImportResponse | null>(null);
   const [showErrorDialog, setShowErrorDialog] = useState(false);
+  const [creatingSubjects, setCreatingSubjects] = useState<Set<string>>(() => new Set());
+  const [createdSubjects, setCreatedSubjects] = useState<Set<string>>(() => new Set());
   const router = useRouter();
   const [, startTransition] = useTransition();
 
@@ -68,29 +71,51 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
     },
   });
 
-  const convertExcelToCsv = useCallback((file: File): Promise<File> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const data = e.target?.result;
-          const workbook = XLSX.read(data, { type: 'binary' });
-          const sheetName = workbook.SheetNames[0];
-          const worksheet = workbook.Sheets[sheetName!];
-          const csv = XLSX.utils.sheet_to_csv(worksheet!);
+  const extractSubjectName = useCallback((error: string): string | null => {
+    const match = /Subject '([^']+)' not found/.exec(error);
+    if (match) {
+      return match[1] || null;
+    }
+    return null;
+  }, []);
 
-          // Create a new File object with CSV content
-          const csvFile = new File([csv], file.name.replace(/\.(xlsx|xls)$/i, '.csv'), {
-            type: 'text/csv',
-          });
-          resolve(csvFile);
-        } catch (error) {
-          reject(error);
-        }
-      };
-      reader.onerror = () => reject(new Error('Failed to read file'));
-      reader.readAsBinaryString(file);
+  const handleCreateSubject = async (subjectName: string) => {
+    if (creatingSubjects.has(subjectName) || createdSubjects.has(subjectName)) {
+      return;
+    }
+
+    try {
+      setCreatingSubjects(prev => new Set(prev).add(subjectName));
+      await createSubject({ name: subjectName });
+      setCreatedSubjects(prev => new Set(prev).add(subjectName));
+      toast.success(`Subject '${subjectName}' created successfully`);
+      startTransition(() => {
+        router.refresh();
+      });
+    } catch (error) {
+      toast.error(`Failed to create subject '${subjectName}'. Please try again.`);
+      console.error('Create subject error:', error);
+    } finally {
+      setCreatingSubjects((prev) => {
+        const next = new Set(prev);
+        next.delete(subjectName);
+        return next;
+      });
+    }
+  };
+
+  const convertExcelToCsv = useCallback(async (file: File): Promise<File> => {
+    const arrayBuffer = await file.arrayBuffer();
+    const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+    const sheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[sheetName!];
+    const csv = XLSX.utils.sheet_to_csv(worksheet!);
+
+    // Create a new File object with CSV content
+    const csvFile = new File([csv], file.name.replace(/\.(xlsx|xls)$/i, '.csv'), {
+      type: 'text/csv',
     });
+    return csvFile;
   }, []);
 
   const onSubmit = async (data: FormData) => {
@@ -101,7 +126,7 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
       let fileToUpload = data.file;
 
       // Convert Excel files to CSV
-      if (data.file.name.match(/\.(xlsx|xls)$/i)) {
+      if (data.file.name.endsWith('.xlsx') || data.file.name.endsWith('.xls')) {
         fileToUpload = await convertExcelToCsv(data.file);
       }
 
@@ -164,11 +189,15 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
     form.reset();
     setImportResult(null);
     setShowErrorDialog(false);
+    setCreatingSubjects(new Set());
+    setCreatedSubjects(new Set());
   };
 
   const handleRetry = () => {
     setShowErrorDialog(false);
     setImportResult(null);
+    setCreatingSubjects(new Set());
+    setCreatedSubjects(new Set());
   };
 
   return (
@@ -288,27 +317,71 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
                           <th className="px-4 py-2 text-left text-sm font-medium text-slate-700 dark:text-slate-300">Row</th>
                           <th className="px-4 py-2 text-left text-sm font-medium text-slate-700 dark:text-slate-300">Error</th>
                           <th className="px-4 py-2 text-left text-sm font-medium text-slate-700 dark:text-slate-300">Data</th>
+                          <th className="px-4 py-2 text-left text-sm font-medium text-slate-700 dark:text-slate-300">Action</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {importResult.errors.map(error => (
-                          <tr key={error.error} className="border-b hover:bg-slate-50 dark:hover:bg-slate-800">
-                            <td className="px-4 py-2 font-medium">{error.row}</td>
-                            <td className="px-4 py-2 text-red-600">{error.error}</td>
-                            <td className="max-w-xs px-4 py-2">
-                              {Object.entries(error.data).map(([key, value]) => (
-                                <div key={key} className="text-xs">
-                                  <span className="font-medium">
-                                    {key}
-                                    :
-                                  </span>
-                                  {' '}
-                                  {String(value)}
-                                </div>
-                              ))}
-                            </td>
-                          </tr>
-                        ))}
+                        {importResult.errors.map((error, index) => {
+                          const subjectName = extractSubjectName(error.error);
+                          const isSubjectError = subjectName !== null;
+                          const isCreating = subjectName ? creatingSubjects.has(subjectName) : false;
+                          const isCreated = subjectName ? createdSubjects.has(subjectName) : false;
+
+                          return (
+                            <tr key={`${error.row}-${index}`} className="border-b hover:bg-slate-50 dark:hover:bg-slate-800">
+                              <td className="px-4 py-2 font-medium">{error.row}</td>
+                              <td className="px-4 py-2 text-red-600">{error.error}</td>
+                              <td className="max-w-xs px-4 py-2">
+                                {Object.entries(error.data).map(([key, value]) => (
+                                  <div key={key} className="text-xs">
+                                    <span className="font-medium">
+                                      {key}
+                                      :
+                                    </span>
+                                    {' '}
+                                    {String(value)}
+                                  </div>
+                                ))}
+                              </td>
+                              <td className="px-4 py-2">
+                                {isSubjectError && (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => handleCreateSubject(subjectName)}
+                                    disabled={isCreating || isCreated}
+                                    className="h-7 text-xs"
+                                  >
+                                    {isCreating
+                                      ? (
+                                          <>
+                                            <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                                            Creating...
+                                          </>
+                                        )
+                                      : isCreated
+                                        ? (
+                                            <>
+                                              <CheckCircle className="mr-1 h-3 w-3 text-green-500" />
+                                              Created
+                                            </>
+                                          )
+                                        : (
+                                            <>
+                                              <Plus className="mr-1 h-3 w-3" />
+                                              Create
+                                              {' '}
+                                              &apos;
+                                              {subjectName}
+                                              &apos;
+                                            </>
+                                          )}
+                                  </Button>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>
