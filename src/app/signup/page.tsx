@@ -13,6 +13,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserRole } from '@/constants/auth';
+import { Env } from '@/libs/Env';
 import { supabase } from '@/libs/supabase';
 import { signUpSchema } from '@/libs/validations/auth';
 import { authApi } from '@/utils/client-api';
@@ -66,7 +67,8 @@ function SignUpContent() {
 
     try {
       const redirectTo = searchParams.get('redirect') || '/dashboard';
-      const callbackUrl = `${globalThis.location.origin}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`;
+      const baseUrl = Env.NEXT_PUBLIC_APP_URL || globalThis.location.origin;
+      const callbackUrl = `${baseUrl}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`;
 
       const { error: oauthError } = await supabase.auth.signInWithOAuth({
         provider,

@@ -12,6 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Env } from '@/libs/Env';
 import { supabase } from '@/libs/supabase';
 import { signInSchema } from '@/libs/validations/auth';
 import { authApi } from '@/utils/client-api';
@@ -51,7 +52,8 @@ function SignInForm() {
 
     try {
       const redirectTo = searchParams.get('redirect') || '/dashboard';
-      const callbackUrl = `${globalThis.location.origin}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`;
+      const baseUrl = Env.NEXT_PUBLIC_APP_URL || globalThis.location.origin;
+      const callbackUrl = `${baseUrl}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`;
 
       const { error: oauthError } = await supabase.auth.signInWithOAuth({
         provider,
