@@ -80,6 +80,7 @@ const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({
               open={open}
               cachedLanguageFolders={cachedLanguageFolders}
               onLanguageFoldersLoaded={onLanguageFoldersLoaded}
+              editMode={editMode}
             />
           </div>
           <DialogFooter className="pt-4">

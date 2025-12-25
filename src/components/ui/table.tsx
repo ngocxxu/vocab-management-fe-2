@@ -86,7 +86,7 @@ export function DataTable<TData, TValue>({
   onSortingChange,
   isLoading = false,
   skeletonRowCount,
-}: DataTableProps<TData, TValue>) {
+}: Readonly<DataTableProps<TData, TValue>>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -115,6 +115,7 @@ export function DataTable<TData, TValue>({
   const table = useReactTable({
     data,
     columns: memoizedColumns,
+    getRowId: row => (row as any).id, // Use row ID instead of index
     state: {
       sorting,
       columnFilters,
@@ -160,17 +161,22 @@ export function DataTable<TData, TValue>({
     },
   });
 
+  // Calculate total selected rows across all pages
+  const selectedRowCount = Object.keys(rowSelection).length;
+  const selectedIds = useMemo(() => {
+    return Object.keys(rowSelection).filter((id: string) => rowSelection[id as keyof typeof rowSelection]);
+  }, [rowSelection]);
+
   return (
     <div className={`space-y-4 ${className}`}>
       {/* Search Input */}
       {showSearch && (
         <div className="flex items-center justify-between">
-          {onBulkDelete && table.getSelectedRowModel().rows.length > 0 && (
+          {onBulkDelete && selectedRowCount > 0 && (
             <Button
               variant="destructive"
               size="sm"
               onClick={() => {
-                const selectedIds = table.getSelectedRowModel().rows.map(row => (row.original as any).id);
                 onBulkDelete(selectedIds, setRowSelection);
               }}
               className="flex items-center"
@@ -178,12 +184,12 @@ export function DataTable<TData, TValue>({
               <Trash className="h-4 w-4" />
               <span>
                 Delete (
-                {table.getSelectedRowModel().rows.length}
+                {selectedRowCount}
                 )
               </span>
             </Button>
           )}
-          <div className={onBulkDelete && table.getSelectedRowModel().rows.length > 0 ? '' : 'ml-auto'}>
+          <div className={onBulkDelete && selectedRowCount > 0 ? '' : 'ml-auto'}>
             <input
               placeholder={searchPlaceholder}
               value={globalFilter ?? ''}

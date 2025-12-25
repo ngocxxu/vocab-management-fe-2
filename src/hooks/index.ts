@@ -3,6 +3,8 @@ export * from './useAuth';
 export * from './useBulkDelete';
 export * from './useDialogState';
 export * from './useExamData';
+export { useLocalPagination } from './useLocalPagination';
+export type { LocalPaginationHandlers, LocalPaginationState } from './useLocalPagination';
 export * from './useSocket';
 export * from './useTheme';
 export * from './useVocabSelection';

@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DataTable } from '@/components/ui/table';
-import { useApiPagination, useVocabSelection } from '@/hooks';
+import { useApiPagination, useLocalPagination, useVocabSelection } from '@/hooks';
 
 type VocabSelectionFormProps = {
   selectedIds: string[];
@@ -23,6 +23,7 @@ type VocabSelectionFormProps = {
   open?: boolean;
   cachedLanguageFolders?: any[];
   onLanguageFoldersLoaded?: (folders: any[]) => void;
+  editMode?: boolean; // Add this prop
 };
 
 type RowVocab = {
@@ -41,9 +42,15 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
   open = true,
   cachedLanguageFolders = EMPTY_CACHED_FOLDERS,
   onLanguageFoldersLoaded,
+  editMode = false, // Add this prop with default
 }) => {
   const form = useFormContext();
-  const { pagination, handlers } = useApiPagination({ page: 1, pageSize: 5, sortBy: 'updatedAt', sortOrder: 'desc' });
+
+  // Use local pagination when in edit mode, otherwise use API pagination
+  const apiPagination = useApiPagination({ page: 1, pageSize: 5, sortBy: 'updatedAt', sortOrder: 'desc' });
+  const localPagination = useLocalPagination({ page: 1, pageSize: 5, sortBy: 'updatedAt', sortOrder: 'desc' });
+
+  const { pagination, handlers } = editMode ? localPagination : apiPagination;
 
   const [filters, setFilters] = useState<VocabFilters>({
     globalFilter: '',
