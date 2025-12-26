@@ -91,6 +91,17 @@ export type TQuestionAPI = {
   setCountTime: number;
   questionAnswers: TQuestion[];
   questionType: EQuestionType;
+  jobId?: string;
+};
+
+export type TExamGenerationProgress = {
+  jobId: string;
+  status: 'generating' | 'completed' | 'failed';
+  data?: {
+    questions?: TQuestion[];
+    error?: string;
+  };
+  timestamp: string;
 };
 
 export type TCreateVocabTrainer = {

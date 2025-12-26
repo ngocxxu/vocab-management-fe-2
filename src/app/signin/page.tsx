@@ -52,9 +52,15 @@ function SignInForm() {
 
     try {
       const redirectTo = searchParams.get('redirect') || '/dashboard';
-      const baseUrl = Env.NEXT_PUBLIC_APP_URL || globalThis.location.origin;
-      const callbackUrl = `${baseUrl}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`;
+      const origin = (typeof globalThis !== 'undefined' && globalThis.location.origin)
+        ? globalThis.location.origin
+        : Env.NEXT_PUBLIC_APP_URL;
 
+      if (!origin) {
+        throw new Error('Origin URL could not be determined');
+      }
+
+      const callbackUrl = `${origin}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`;
       const { error: oauthError } = await supabase.auth.signInWithOAuth({
         provider,
         options: {

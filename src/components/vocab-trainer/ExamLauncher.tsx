@@ -13,19 +13,17 @@ type ExamLauncherProps = {
 const ExamLauncher: React.FC<ExamLauncherProps> = ({ trainerId }) => {
   const [isLaunching, setIsLaunching] = useState(false);
 
-  const { loadExamData } = useExamData({
+  const { loadExamData, isLoading, generationStatus, error } = useExamData({
     trainerId,
-    autoLoad: false, // Don't auto-load, only load when button is clicked
+    autoLoad: false,
     onSuccessAction: (examData) => {
       setIsLaunching(false);
       const examUrl = getExamUrl(trainerId, examData.questionType);
-      window.location.href = examUrl;
+      globalThis.location.href = examUrl;
     },
-    onErrorAction: (error) => {
-      // Exam data failed to load, stay on list page
-      console.error('Failed to load exam:', error);
+    onErrorAction: (err) => {
+      console.error('Failed to load exam:', err);
       setIsLaunching(false);
-      // You could show a toast notification here
     },
   });
 
@@ -34,15 +32,19 @@ const ExamLauncher: React.FC<ExamLauncherProps> = ({ trainerId }) => {
     await loadExamData();
   };
 
+  const isProcessing = isLaunching || isLoading;
+  const isGenerating = generationStatus === 'generating';
+
   return (
     <Button
       variant="ghost"
       size="icon"
       className="h-8 w-8 rounded-lg hover:bg-green-100 dark:hover:bg-green-700"
       onClick={handlePlayClick}
-      disabled={isLaunching}
+      disabled={isProcessing}
+      title={isGenerating ? 'Generating questions...' : error ? 'Failed to load exam' : undefined}
     >
-      {isLaunching
+      {isProcessing
         ? (
             <Loader2 className="h-4 w-4 animate-spin text-green-600 dark:text-green-400" />
           )

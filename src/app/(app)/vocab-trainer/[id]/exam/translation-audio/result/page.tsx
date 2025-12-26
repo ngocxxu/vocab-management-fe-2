@@ -7,13 +7,13 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import TranslationAudioResults from '@/components/vocab-trainer/TranslationAudioResults';
 import { useSocket } from '@/hooks/useSocket';
+import { SOCKET_EVENTS } from '@/utils/socket-config';
 
 const TranslationAudioResultPage: React.FC = () => {
   const params = useParams();
   const router = useRouter();
   const trainerId = params.id as string;
   const { socket } = useSocket();
-  const [jobId, setJobId] = useState<string | null>(null);
   const [timeElapsed, setTimeElapsed] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -30,7 +30,6 @@ const TranslationAudioResultPage: React.FC = () => {
     if (cachedData) {
       try {
         const parsedData = JSON.parse(cachedData);
-        setJobId(parsedData.jobId);
         setTimeElapsed(parsedData.timeElapsed || 0);
       } catch (err) {
         console.error('Failed to parse result data:', err);
@@ -47,7 +46,7 @@ const TranslationAudioResultPage: React.FC = () => {
   }, [loadResultData]);
 
   useEffect(() => {
-    if (!socket || !jobId) {
+    if (!socket) {
       return;
     }
 
@@ -61,10 +60,6 @@ const TranslationAudioResultPage: React.FC = () => {
       };
       timestamp: string;
     }) => {
-      if (data.jobId !== jobId) {
-        return;
-      }
-
       if (data.status === 'evaluating') {
         setIsLoading(true);
       } else if (data.status === 'completed') {
@@ -79,12 +74,12 @@ const TranslationAudioResultPage: React.FC = () => {
       }
     };
 
-    socket.on('audio-evaluation-progress', handleAudioEvaluationProgress);
+    socket.on(SOCKET_EVENTS.AUDIO_EVALUATION_PROGRESS, handleAudioEvaluationProgress);
 
     return () => {
-      socket.off('audio-evaluation-progress', handleAudioEvaluationProgress);
+      socket.off(SOCKET_EVENTS.AUDIO_EVALUATION_PROGRESS, handleAudioEvaluationProgress);
     };
-  }, [socket, jobId]);
+  }, [socket]);
 
   const handleBackToTrainers = () => {
     const storageKey = `translation_audio_result_${trainerId}`;

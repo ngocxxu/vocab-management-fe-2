@@ -26,7 +26,7 @@ import VocabTrainerHeader from './VocabTrainerHeader';
 // Define the form schema
 const FormSchema = z.object({
   name: z.string().min(1, 'Name is required'),
-  questionType: z.nativeEnum(EQuestionType),
+  questionType: z.enum(EQuestionType),
   setCountTime: z.number().min(1, 'Time must be at least 1 second'),
   reminderDisabled: z.boolean(),
   vocabAssignmentIds: z.array(z.string()).min(1, 'At least one vocabulary must be selected'),
@@ -289,7 +289,7 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
         const type = row.original.questionType;
         return (
           <Badge variant="outline">
-            {type.replace(/_/g, ' ')}
+            {type.replaceAll('_', ' ')}
           </Badge>
         );
       },
@@ -307,7 +307,7 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
             {count}
             {' '}
             vocab
-            {count !== 1 ? 's' : ''}
+            {count === 1 ? '' : 's'}
           </span>
         );
       },

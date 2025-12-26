@@ -1,96 +1,203 @@
 'use client';
 
-import type { TQuestionAPI } from '@/types/vocab-trainer';
-import { useCallback, useEffect, useState } from 'react';
+import type { TExamGenerationProgress, TQuestionAPI } from '@/types/vocab-trainer';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { getExam } from '@/actions';
+import { EQuestionType } from '@/enum/vocab-trainer';
+import { useSocket } from '@/hooks/useSocket';
+import { SOCKET_EVENTS } from '@/utils/socket-config';
+
+// --- Helpers: Separate storage logic ---
+const getStorageKey = (id: string) => `exam_data_${id}`;
+
+const loadCachedData = (id: string): TQuestionAPI | null => {
+  try {
+    const cached = localStorage.getItem(getStorageKey(id));
+    return cached ? JSON.parse(cached) : null;
+  } catch {
+    return null;
+  }
+};
+
+const saveCachedData = (id: string, data: TQuestionAPI) => {
+  try {
+    localStorage.setItem(getStorageKey(id), JSON.stringify(data));
+  } catch (e) {
+    console.error('Storage save error', e);
+  }
+};
 
 type UseExamDataOptions = {
   trainerId: string | null;
-  autoLoad?: boolean; // Whether to automatically load data on mount
-  onSuccessAction?: (examData: TQuestionAPI) => void;
-  onErrorAction?: (error: any) => void;
+  autoLoad?: boolean;
+  onSuccessAction?: (data: TQuestionAPI) => void;
+  onErrorAction?: (error: unknown) => void;
 };
 
-export const useExamData = ({ trainerId, autoLoad = true, onSuccessAction, onErrorAction }: UseExamDataOptions) => {
-  const [examData, setExamData] = useState<TQuestionAPI | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
-  const [error, setError] = useState<any>(null);
+type GenerationStatus = 'idle' | 'generating' | 'completed' | 'failed';
 
-  // Get exam data from localStorage or fetch from API
+export const useExamData = ({
+  trainerId,
+  autoLoad = true,
+  onSuccessAction,
+  onErrorAction,
+}: UseExamDataOptions) => {
+  // State
+  const [examData, setExamData] = useState<TQuestionAPI | null>(null);
+  const [status, setStatus] = useState<GenerationStatus>('idle');
+  const [error, setError] = useState<unknown>(null);
+
+  // Hooks & Refs
+  const { socket, isConnected } = useSocket();
+  const jobIdRef = useRef<string | null>(null);
+
+  const latestActions = useRef({ onSuccessAction, onErrorAction });
+  const trainerIdRef = useRef(trainerId);
+
+  // Derived state
+  const isLoading = status === 'generating';
+  const isError = status === 'failed';
+
+  // --- Effect: Sync Refs ---
+  useEffect(() => {
+    latestActions.current = { onSuccessAction, onErrorAction };
+    trainerIdRef.current = trainerId;
+  }, [onSuccessAction, onErrorAction, trainerId]);
+
+  // --- Core Logic: Fetch Data ---
   const loadExamData = useCallback(async () => {
     if (!trainerId) {
       return;
     }
 
-    const storageKey = `exam_data_${trainerId}`;
-
-    // Check localStorage first
-    const cachedData = localStorage.getItem(storageKey);
-    console.warn('Checking localStorage for:', storageKey, 'Found:', !!cachedData);
-
-    if (cachedData) {
-      try {
-        const parsedData = JSON.parse(cachedData);
-        console.warn('Using cached exam data:', parsedData);
-        setExamData(parsedData);
-        onSuccessAction?.(parsedData);
-        return;
-      } catch (error) {
-        console.error('Failed to parse cached exam data:', error);
-        localStorage.removeItem(storageKey);
-      }
-    }
-
-    // If no cached data, fetch from API
-    console.warn('Fetching exam data from API for trainer:', trainerId);
-    setIsLoading(true);
-    setIsError(false);
-    setError(null);
-
-    try {
-      const data = await getExam(trainerId);
-      console.warn('API response:', data);
-
-      // Cache the data in localStorage
-      localStorage.setItem(storageKey, JSON.stringify(data));
-      console.warn('Exam data cached to localStorage with key:', storageKey);
-
-      setExamData(data);
-      onSuccessAction?.(data);
-    } catch (err) {
-      console.error('Failed to fetch exam data:', err);
-      setIsError(true);
-      setError(err);
-      onErrorAction?.(err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [trainerId, onSuccessAction, onErrorAction]);
-
-  // Clear exam data from localStorage
-  const clearExamData = useCallback(() => {
-    if (!trainerId) {
+    // 1. Check Cache
+    const cached = loadCachedData(trainerId);
+    if (cached?.questionAnswers?.length) {
+      setExamData(cached);
+      setStatus('completed');
+      // Access callback via Ref to keep this hook's dependency stable
+      latestActions.current.onSuccessAction?.(cached);
       return;
     }
 
-    const storageKey = `exam_data_${trainerId}`;
-    localStorage.removeItem(storageKey);
-    setExamData(null);
-  }, [trainerId]);
+    // 2. Fetch API
+    try {
+      setStatus('generating');
+      setError(null);
 
-  // Load exam data when trainerId changes - ONLY if autoLoad is true
+      const data = await getExam(trainerId);
+      setExamData(data);
+
+      // Case A: Data is ready immediately
+      if (data.questionAnswers?.length > 0) {
+        saveCachedData(trainerId, data);
+        setStatus('completed');
+        latestActions.current.onSuccessAction?.(data);
+        return;
+      }
+
+      // Case B: Need to wait for socket generation
+      jobIdRef.current = data.jobId || trainerId;
+
+      if (!socket?.connected) {
+        console.warn('Socket not connected, waiting for connection...');
+      }
+    } catch (err) {
+      console.error('Fetch error:', err);
+      setError(err);
+      setStatus('failed');
+      latestActions.current.onErrorAction?.(err);
+    }
+    // Dependencies: Only re-create this function if trainerId or socket instance changes.
+    // Actions are accessed via Ref, so they are not needed here.
+  }, [trainerId, socket]);
+
+  // --- Core Logic: Socket Listener ---
   useEffect(() => {
-    if (trainerId && autoLoad) {
+    // Only subscribe if we are in 'generating' state and have a valid socket
+    if (!socket || !isConnected || !jobIdRef.current || status !== 'generating') {
+      return;
+    }
+
+    const handleProgress = (event: TExamGenerationProgress) => {
+      // Security: Ensure event matches the current job
+      if (event.jobId !== jobIdRef.current) {
+        return;
+      }
+
+      // Handle Failure
+      if (event.status === 'failed') {
+        const errMsg = event.data?.error || 'Generation failed';
+        setError(errMsg);
+        setStatus('failed');
+        latestActions.current.onErrorAction?.(new Error(errMsg));
+        return;
+      }
+
+      // Handle Completion
+      if (event.status === 'completed' && event.data?.questions) {
+        setExamData((prev) => {
+          if (!prev) {
+            return null;
+          }
+
+          const completedData: TQuestionAPI = {
+            ...prev,
+            questionAnswers: event.data!.questions || [],
+            questionType: prev.questionType || EQuestionType.MULTIPLE_CHOICE,
+          };
+
+          const currentTrainerId = trainerIdRef.current;
+          if (currentTrainerId) {
+            saveCachedData(currentTrainerId, completedData);
+          }
+
+          return completedData;
+        });
+
+        setStatus('completed');
+      }
+    };
+
+    socket.on(SOCKET_EVENTS.MULTIPLE_CHOICE_GENERATION_PROGRESS, handleProgress);
+
+    return () => {
+      socket.off(SOCKET_EVENTS.MULTIPLE_CHOICE_GENERATION_PROGRESS, handleProgress);
+    };
+  }, [socket, isConnected, status]);
+
+  // --- Effect: Handle completion callback ---
+  useEffect(() => {
+    if (status === 'completed' && examData?.questionAnswers?.length) {
+      // Only call once when transitioning from generating to completed
+      latestActions.current.onSuccessAction?.(examData);
+    }
+  }, [status, examData]);
+
+  // --- Auto Load ---
+  useEffect(() => {
+    if (autoLoad && trainerId) {
       loadExamData();
     }
-  }, [trainerId, loadExamData, autoLoad]);
+  }, [autoLoad, trainerId, loadExamData]);
+
+  // --- Reset Action ---
+  const clearExamData = useCallback(() => {
+    if (trainerId) {
+      localStorage.removeItem(getStorageKey(trainerId));
+    }
+    setExamData(null);
+    setStatus('idle');
+    jobIdRef.current = null;
+    setError(null);
+  }, [trainerId]);
 
   return {
     examData,
     isLoading,
     isError,
     error,
+    generationStatus: status,
     loadExamData,
     clearExamData,
   };
