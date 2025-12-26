@@ -1,10 +1,11 @@
 'use client';
 
-import { Loader2, PlayCircle } from 'lucide-react';
-import React, { useState } from 'react';
-import { toast } from 'sonner';
+import { PlayCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { getExamUrl } from '@/constants/vocab-trainer';
+import { EQuestionType } from '@/enum/vocab-trainer';
 import { useExamData } from '@/hooks/useExamData';
 
 type ExamLauncherProps = {
@@ -12,34 +13,39 @@ type ExamLauncherProps = {
 };
 
 const ExamLauncher: React.FC<ExamLauncherProps> = ({ trainerId }) => {
-  const [isLaunching, setIsLaunching] = useState(false);
-
-  const { loadExamData, isLoading, generationStatus, error } = useExamData({
+  const router = useRouter();
+  const { loadExamData } = useExamData({
     trainerId,
     autoLoad: false,
-    onSuccessAction: (examData) => {
-      setIsLaunching(false);
-      const examUrl = getExamUrl(trainerId, examData.questionType);
-      globalThis.location.href = examUrl;
-    },
-    onErrorAction: (err) => {
-      console.error('Failed to load exam:', err);
-      setIsLaunching(false);
-      const errorMessage = err instanceof Error ? err.message : 'Failed to generate exam questions';
-      toast.error('Failed to load exam', {
-        description: errorMessage,
-        duration: 5000,
-      });
-    },
   });
 
-  const handlePlayClick = async () => {
-    setIsLaunching(true);
-    await loadExamData();
-  };
+  const handlePlayClick = () => {
+    if (!trainerId) {
+      return;
+    }
 
-  const isProcessing = isLaunching || isLoading;
-  const isGenerating = generationStatus === 'generating';
+    const storageKey = `exam_data_${trainerId}`;
+    const cachedData = localStorage.getItem(storageKey);
+
+    let questionType = EQuestionType.MULTIPLE_CHOICE;
+    if (cachedData) {
+      try {
+        const parsedData = JSON.parse(cachedData);
+        if (parsedData?.questionType) {
+          questionType = parsedData.questionType;
+        }
+      } catch {
+        questionType = EQuestionType.MULTIPLE_CHOICE;
+      }
+    }
+
+    const examUrl = getExamUrl(trainerId, questionType);
+    router.push(examUrl);
+
+    loadExamData().catch((err) => {
+      console.error('Failed to load exam data in background:', err);
+    });
+  };
 
   return (
     <Button
@@ -47,16 +53,9 @@ const ExamLauncher: React.FC<ExamLauncherProps> = ({ trainerId }) => {
       size="icon"
       className="h-8 w-8 rounded-lg hover:bg-green-100 dark:hover:bg-green-700"
       onClick={handlePlayClick}
-      disabled={isProcessing}
-      title={isGenerating ? 'Generating questions...' : error ? 'Failed to load exam' : undefined}
+      title="Start exam"
     >
-      {isProcessing
-        ? (
-            <Loader2 className="h-4 w-4 animate-spin text-green-600 dark:text-green-400" />
-          )
-        : (
-            <PlayCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
-          )}
+      <PlayCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
     </Button>
   );
 };
