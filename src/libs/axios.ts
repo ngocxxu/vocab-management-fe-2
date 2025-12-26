@@ -8,7 +8,7 @@ import { Env } from './Env';
 // Use relative paths to call Next.js API routes instead of backend directly
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: '/api',
-  timeout: 60000, // 60 seconds timeout
+  timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
   },

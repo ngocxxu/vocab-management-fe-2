@@ -166,3 +166,13 @@ export type TAudioEvaluationProgress = {
   };
   timestamp: string;
 };
+
+export type TFillInBlankEvaluationProgress = {
+  jobId: string;
+  status: 'evaluating' | 'completed' | 'failed';
+  data?: {
+    results?: TExamResult[];
+    error?: string;
+  };
+  timestamp: string;
+};

@@ -7,7 +7,6 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { submitExam } from '@/actions/vocab-trainers';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import ExamResults from './ExamResults';
 import FillInBlankCard from './FillInBlankCard';
 import VocabExamHeader from './VocabExamHeader';
 
@@ -25,7 +24,6 @@ const FillInBlankExam: React.FC<FillInBlankExamProps> = ({ trainerId, examData }
   const [timeRemaining, setTimeRemaining] = useState(() => examData.setCountTime || 900);
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [examState, setExamState] = useState<ExamState>('taking');
-  const [examResults, setExamResults] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
   const selectedAnswersRef = useRef(selectedAnswers);
@@ -87,14 +85,56 @@ const FillInBlankExam: React.FC<FillInBlankExamProps> = ({ trainerId, examData }
       };
 
       const result = await submitExam(trainerId, examSubmissionData as any);
-      setExamResults(result);
-      setExamState('completed');
-    } catch (err) {
+
+      if (result && typeof result === 'object' && 'error' in result) {
+        const errorMessage = result.error as string;
+        setError(errorMessage || 'Failed to submit exam. Please try again.');
+        setExamState('error');
+        return;
+      }
+
+      let jobId: string | null = null;
+
+      if (result && typeof result === 'object') {
+        if ('jobId' in result && result.jobId) {
+          jobId = result.jobId as string;
+        } else if ('data' in result && result.data && typeof result.data === 'object' && 'jobId' in result.data) {
+          jobId = result.data.jobId as string;
+        } else if ('result' in result && result.result && typeof result.result === 'object' && 'jobId' in result.result) {
+          jobId = result.result.jobId as string;
+        }
+      }
+
+      if (jobId) {
+        const resultData = { jobId, timeElapsed, questions, answers: Array.from(currentAnswers.entries()) };
+        const storageKey = `fill_in_blank_result_${trainerId}`;
+        localStorage.setItem(storageKey, JSON.stringify(resultData));
+        router.push(`/vocab-trainer/${trainerId}/exam/fill-in-blank/result`);
+      } else {
+        console.error('Response does not contain jobId. Full response:', JSON.stringify(result, null, 2));
+        setError('Failed to get evaluation job ID. The server response was invalid. Please check the console for details.');
+        setExamState('error');
+      }
+    } catch (err: any) {
       console.error('Failed to submit exam:', err);
-      setError('Failed to submit exam. Please try again.');
+
+      let errorMessage = 'Failed to submit exam. Please try again.';
+
+      if (err?.response?.data) {
+        const responseData = err.response.data;
+        if (typeof responseData === 'object' && 'error' in responseData) {
+          errorMessage = responseData.error as string;
+        } else if (typeof responseData === 'string') {
+          errorMessage = responseData;
+        }
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+
+      setError(errorMessage);
       setExamState('error');
     }
-  }, [totalQuestions, questions, questionType, timeElapsed, trainerId]);
+  }, [totalQuestions, questions, questionType, timeElapsed, trainerId, router]);
 
   const handleBackToTrainers = () => {
     router.push('/vocab-trainer');
@@ -134,19 +174,6 @@ const FillInBlankExam: React.FC<FillInBlankExamProps> = ({ trainerId, examData }
           </div>
         </div>
       </div>
-    );
-  }
-
-  if (examState === 'completed' && examResults) {
-    return (
-      <ExamResults
-        trainerId={trainerId}
-        results={examResults}
-        questions={questions}
-        selectedAnswers={selectedAnswers}
-        timeElapsed={timeElapsed}
-        onBackToTrainers={handleBackToTrainers}
-      />
     );
   }
 
