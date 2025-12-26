@@ -2,6 +2,7 @@
 
 import { Loader2, PlayCircle } from 'lucide-react';
 import React, { useState } from 'react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { getExamUrl } from '@/constants/vocab-trainer';
 import { useExamData } from '@/hooks/useExamData';
@@ -24,6 +25,11 @@ const ExamLauncher: React.FC<ExamLauncherProps> = ({ trainerId }) => {
     onErrorAction: (err) => {
       console.error('Failed to load exam:', err);
       setIsLaunching(false);
+      const errorMessage = err instanceof Error ? err.message : 'Failed to generate exam questions';
+      toast.error('Failed to load exam', {
+        description: errorMessage,
+        duration: 5000,
+      });
     },
   });
 
