@@ -1,18 +1,19 @@
 'use client';
 
+import type { EQuestionType } from '@/enum/vocab-trainer';
 import { PlayCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { getExamUrl } from '@/constants/vocab-trainer';
-import { EQuestionType } from '@/enum/vocab-trainer';
 import { useExamData } from '@/hooks/useExamData';
 
 type ExamLauncherProps = {
   trainerId: string;
+  questionType: EQuestionType;
 };
 
-const ExamLauncher: React.FC<ExamLauncherProps> = ({ trainerId }) => {
+const ExamLauncher: React.FC<ExamLauncherProps> = ({ trainerId, questionType }) => {
   const router = useRouter();
   const { loadExamData } = useExamData({
     trainerId,
@@ -22,21 +23,6 @@ const ExamLauncher: React.FC<ExamLauncherProps> = ({ trainerId }) => {
   const handlePlayClick = () => {
     if (!trainerId) {
       return;
-    }
-
-    const storageKey = `exam_data_${trainerId}`;
-    const cachedData = localStorage.getItem(storageKey);
-
-    let questionType = EQuestionType.MULTIPLE_CHOICE;
-    if (cachedData) {
-      try {
-        const parsedData = JSON.parse(cachedData);
-        if (parsedData?.questionType) {
-          questionType = parsedData.questionType;
-        }
-      } catch {
-        questionType = EQuestionType.MULTIPLE_CHOICE;
-      }
     }
 
     const examUrl = getExamUrl(trainerId, questionType);

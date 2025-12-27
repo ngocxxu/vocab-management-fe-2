@@ -322,6 +322,7 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
         <div className="flex items-center space-x-2">
           <ExamLauncher
             trainerId={_row.original.id}
+            questionType={_row.original.questionType}
           />
           <Button
             variant="ghost"
