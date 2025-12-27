@@ -5,6 +5,8 @@ import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
 import { toast } from 'sonner';
 import { LoadingComponent } from '@/components/shared';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import VocabExam from '@/components/vocab-trainer/VocabExam';
 import { useExamData } from '@/hooks/useExamData';
 
@@ -18,6 +20,7 @@ const MultipleChoiceExamPage: React.FC = () => {
     isLoading,
     generationStatus,
     isError,
+    error,
   } = useExamData({
     trainerId,
     autoLoad: true,
@@ -28,7 +31,7 @@ const MultipleChoiceExamPage: React.FC = () => {
         description: errorMessage,
         duration: 5000,
       });
-      router.push('/vocab-trainer');
+      // Don't redirect here - let the error UI handle it
     },
   });
 
@@ -41,8 +44,33 @@ const MultipleChoiceExamPage: React.FC = () => {
     };
   }, [trainerId]);
 
+  const handleBackToTrainers = () => {
+    router.push('/vocab-trainer');
+  };
+
   if (isError) {
-    return null;
+    const errorMessage = error instanceof Error
+      ? error.message
+      : typeof error === 'string'
+        ? error
+        : 'Failed to load exam. Please try again.';
+
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+        <div className="mx-auto max-w-2xl space-y-6 px-4">
+          <Alert variant="destructive">
+            <AlertDescription>
+              {errorMessage}
+            </AlertDescription>
+          </Alert>
+          <div className="flex justify-center">
+            <Button onClick={handleBackToTrainers} variant="outline">
+              Back to Trainers
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (isLoading || !examData?.questionAnswers?.length) {

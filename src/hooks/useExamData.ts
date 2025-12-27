@@ -121,7 +121,11 @@ export const useExamData = ({
 
     const handleProgress = (event: TExamGenerationProgress) => {
       // Security: Ensure event matches the current job
-      if (event.jobId !== jobIdRef.current) {
+      // Convert both to string for comparison to handle type mismatch
+      const currentJobId = String(jobIdRef.current);
+      const eventJobId = String(event.jobId);
+
+      if (eventJobId !== currentJobId) {
         return;
       }
 
