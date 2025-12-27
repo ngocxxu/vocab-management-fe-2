@@ -1,10 +1,10 @@
 'use client';
 
 import type { TQuestionAPI } from '@/types/vocab-trainer';
-import { Loader2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
 import { toast } from 'sonner';
+import { LoadingComponent } from '@/components/shared';
 import TranslationAudioExam from '@/components/vocab-trainer/TranslationAudioExam';
 import { useExamData } from '@/hooks/useExamData';
 
@@ -51,19 +51,10 @@ const TranslationAudioExamPage: React.FC = () => {
       : 'Loading exam...';
 
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-        <div className="space-y-6 text-center">
-          <Loader2 className="mx-auto h-16 w-16 animate-spin text-yellow-600 dark:text-yellow-400" />
-          <div className="space-y-2">
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
-              {loadingMessage}
-            </h2>
-            <p className="text-slate-600 dark:text-slate-300">
-              This may take a few moments. Please wait.
-            </p>
-          </div>
-        </div>
-      </div>
+      <LoadingComponent
+        title={loadingMessage}
+        description="This may take a few moments. Please wait."
+      />
     );
   }
 

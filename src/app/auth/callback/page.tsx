@@ -2,8 +2,8 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
+import { LoadingComponent } from '@/components/shared';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/libs/supabase';
 
 function AuthCallbackContent() {
@@ -88,16 +88,9 @@ function AuthCallbackContent() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 px-4 dark:from-slate-900 dark:to-slate-800">
-      <div className="w-full max-w-md space-y-4">
-        <Skeleton className="h-12 w-full" />
-        <Skeleton className="h-4 w-3/4" />
-        <Skeleton className="h-4 w-1/2" />
-        <p className="text-center text-sm text-gray-600 dark:text-gray-400">
-          Completing sign in...
-        </p>
-      </div>
-    </div>
+    <LoadingComponent
+      title="Completing sign in..."
+    />
   );
 }
 
@@ -105,16 +98,9 @@ export default function AuthCallbackPage() {
   return (
     <Suspense
       fallback={(
-        <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 px-4 dark:from-slate-900 dark:to-slate-800">
-          <div className="w-full max-w-md space-y-4">
-            <Skeleton className="h-12 w-full" />
-            <Skeleton className="h-4 w-3/4" />
-            <Skeleton className="h-4 w-1/2" />
-            <p className="text-center text-sm text-gray-600 dark:text-gray-400">
-              Loading...
-            </p>
-          </div>
-        </div>
+        <LoadingComponent
+          title="Loading..."
+        />
       )}
     >
       <AuthCallbackContent />
