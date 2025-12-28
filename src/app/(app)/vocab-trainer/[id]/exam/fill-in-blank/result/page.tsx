@@ -13,7 +13,7 @@ const FillInBlankResultPage: React.FC = () => {
   const params = useParams();
   const router = useRouter();
   const trainerId = params.id as string;
-  const { socket } = useSocket();
+  const { socket, isConnected } = useSocket();
   const [jobId, setJobId] = useState<string | null>(null);
   const [timeElapsed, setTimeElapsed] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -58,7 +58,7 @@ const FillInBlankResultPage: React.FC = () => {
   }, [loadResultData]);
 
   useEffect(() => {
-    if (!socket || !jobId) {
+    if (!socket || !jobId || !isConnected) {
       return;
     }
 
@@ -93,7 +93,7 @@ const FillInBlankResultPage: React.FC = () => {
     return () => {
       socket.off(SOCKET_EVENTS.FILL_IN_BLANK_EVALUATION_PROGRESS, handleFillInBlankEvaluationProgress);
     };
-  }, [socket, jobId]);
+  }, [socket, jobId, isConnected]);
 
   const handleBackToTrainers = () => {
     const storageKey = `fill_in_blank_result_${trainerId}`;
