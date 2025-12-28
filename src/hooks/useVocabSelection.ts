@@ -62,18 +62,10 @@ export const useVocabSelection = ({
       return;
     }
 
-    let isCancelled = false;
-
     const fetchLanguageFolders = async () => {
       hasFetchedLanguageFoldersRef.current = true;
       try {
         const result = await getMyLanguageFoldersForSelection({ page: 1, pageSize: 100 });
-
-        if (isCancelled) {
-          hasFetchedLanguageFoldersRef.current = false;
-          return;
-        }
-
         if ('error' in result) {
           console.error('Failed to fetch language folders:', result.error);
           hasFetchedLanguageFoldersRef.current = false;
@@ -83,23 +75,16 @@ export const useVocabSelection = ({
         setLanguageFolders(folders);
         onLanguageFoldersLoaded?.(folders);
       } catch (error) {
-        if (!isCancelled) {
-          console.error('Failed to fetch language folders:', error);
-          hasFetchedLanguageFoldersRef.current = false;
-        }
+        console.error('Failed to fetch language folders:', error);
+        hasFetchedLanguageFoldersRef.current = false;
       }
     };
     fetchLanguageFolders();
-
-    return () => {
-      isCancelled = true;
-    };
   }, [open, cachedLanguageFolders, onLanguageFoldersLoaded]);
 
   useEffect(() => {
     if (!open) {
       lastFetchParamsRef.current = '';
-      setIsLoading(false);
       return;
     }
 
@@ -117,8 +102,6 @@ export const useVocabSelection = ({
 
     lastFetchParamsRef.current = fetchParams;
 
-    let isCancelled = false;
-
     const fetchVocabs = async () => {
       setIsLoading(true);
       try {
@@ -132,11 +115,6 @@ export const useVocabSelection = ({
           targetLanguageCode: filters.targetLanguageCode !== 'ALL' ? filters.targetLanguageCode : undefined,
           languageFolderId: filters.languageFolderId !== 'ALL' ? filters.languageFolderId : undefined,
         });
-
-        if (isCancelled) {
-          return;
-        }
-
         if ('error' in result) {
           console.error('Failed to fetch vocabs:', result.error);
           return;
@@ -146,21 +124,13 @@ export const useVocabSelection = ({
         setTotalPages(result.totalPages || 0);
         setCurrentPage(result.currentPage || 1);
       } catch (error) {
-        if (!isCancelled) {
-          console.error('Failed to fetch vocabs:', error);
-        }
+        console.error('Failed to fetch vocabs:', error);
       } finally {
-        if (!isCancelled) {
-          setIsLoading(false);
-        }
+        setIsLoading(false);
       }
     };
 
     fetchVocabs();
-
-    return () => {
-      isCancelled = true;
-    };
   }, [open, pagination, filters]);
 
   return {
