@@ -1,5 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import { logger } from '@/libs/Logger';
 import { API_ENDPOINTS } from '@/utils/api-config';
 
 export async function POST(request: NextRequest) {
@@ -19,7 +20,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(data, { status: nestResponse.status });
   } catch (error) {
-    console.error('Signup error:', error);
+    logger.error('Signup error:', { error });
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to signup' },
       { status: 500 },

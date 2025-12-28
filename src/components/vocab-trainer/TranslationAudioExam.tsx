@@ -9,6 +9,7 @@ import { ExamErrorState } from '@/components/shared';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { EQuestionType } from '@/enum/vocab-trainer';
+import { logger } from '@/libs/Logger';
 import { uploadAudioToCloudinary } from '@/utils/cloudinary';
 import AudioRecorder from './AudioRecorder';
 import DialogueDisplay from './DialogueDisplay';
@@ -30,27 +31,39 @@ const TranslationAudioExam: React.FC<TranslationAudioExamProps> = ({ trainerId, 
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const [fileId, setFileId] = useState<string | null>(null);
 
-  const dialogue = useMemo(() => {
+  const isTranslationAudioDialogue = (item: unknown): item is TTranslationAudioDialogue => {
+    return (
+      typeof item === 'object'
+      && item !== null
+      && 'speaker' in item
+      && 'text' in item
+      && typeof (item as { speaker: unknown }).speaker === 'string'
+      && typeof (item as { text: unknown }).text === 'string'
+    );
+  };
+
+  const dialogue = useMemo((): TTranslationAudioDialogue[] => {
     const questionAnswers = examData.questionAnswers || [];
     if (questionAnswers.length === 0) {
       return [];
     }
 
-    const firstItem = questionAnswers[0] as any;
+    const firstItem = questionAnswers[0];
     if (!firstItem) {
       return [];
     }
 
-    if (firstItem.speaker && firstItem.text) {
-      if (Array.isArray(questionAnswers) && questionAnswers.every((item: any) => item.speaker && item.text)) {
-        return questionAnswers as unknown as TTranslationAudioDialogue[];
+    if (isTranslationAudioDialogue(firstItem)) {
+      const filtered = questionAnswers.filter(isTranslationAudioDialogue);
+      if (filtered.length === questionAnswers.length) {
+        return filtered as unknown as TTranslationAudioDialogue[];
       }
     }
 
-    if (firstItem.content) {
+    if ('content' in firstItem && firstItem.content) {
       try {
-        const parsed = JSON.parse(firstItem.content) as TTranslationAudioDialogue[];
-        if (Array.isArray(parsed) && parsed.every(item => item.speaker && item.text)) {
+        const parsed = JSON.parse(firstItem.content as string) as TTranslationAudioDialogue[];
+        if (Array.isArray(parsed) && parsed.every(isTranslationAudioDialogue)) {
           return parsed;
         }
       } catch {
@@ -88,7 +101,7 @@ const TranslationAudioExam: React.FC<TranslationAudioExamProps> = ({ trainerId, 
           currentFileId = await uploadAudioToCloudinary(audioBlob);
           setFileId(currentFileId);
         } catch (uploadErr) {
-          console.error('Failed to upload audio:', uploadErr);
+          logger.error('Failed to upload audio:', { error: uploadErr, trainerId });
           setError(uploadErr instanceof Error ? uploadErr.message : 'Failed to upload audio. Please try again.');
           setExamState('error');
           return;
@@ -103,15 +116,11 @@ const TranslationAudioExam: React.FC<TranslationAudioExamProps> = ({ trainerId, 
         countTime: timeElapsed,
       };
 
-      const result = await submitExam(trainerId, examSubmissionData as any);
-
-      console.warn('Submit exam response:', result);
-      console.warn('Response type:', typeof result);
-      console.warn('Response keys:', result && typeof result === 'object' ? Object.keys(result) : 'N/A');
+      const result = await submitExam(trainerId, examSubmissionData);
 
       if (result && typeof result === 'object' && 'error' in result) {
         const errorMessage = result.error as string;
-        console.error('Server error:', errorMessage);
+        logger.error('Server error:', { error: errorMessage, trainerId });
         setError(errorMessage || 'Failed to submit exam. Please try again.');
         setExamState('error');
         return;
@@ -122,16 +131,12 @@ const TranslationAudioExam: React.FC<TranslationAudioExamProps> = ({ trainerId, 
       if (result && typeof result === 'object') {
         if ('jobId' in result && result.jobId) {
           jobId = result.jobId as string;
-          console.warn('Found jobId in result.jobId:', jobId);
         } else if ('data' in result && result.data && typeof result.data === 'object' && 'jobId' in result.data) {
           jobId = result.data.jobId as string;
-          console.warn('Found jobId in result.data.jobId:', jobId);
         } else if ('result' in result && result.result && typeof result.result === 'object' && 'jobId' in result.result) {
           jobId = result.result.jobId as string;
-          console.warn('Found jobId in result.result.jobId:', jobId);
         } else {
-          console.warn('No jobId found in response. Checking all possible fields...');
-          console.warn('Available fields:', Object.keys(result));
+          logger.warn('No jobId found in response:', { result, trainerId });
         }
       }
 
@@ -141,19 +146,20 @@ const TranslationAudioExam: React.FC<TranslationAudioExamProps> = ({ trainerId, 
         localStorage.setItem(storageKey, JSON.stringify(resultData));
         router.push(`/vocab-trainer/${trainerId}/exam/translation-audio/result`);
       } else {
-        console.error('Response does not contain jobId. Full response:', JSON.stringify(result, null, 2));
-        setError('Failed to get evaluation job ID. The server response was invalid. Please check the console for details.');
+        logger.error('Response does not contain jobId:', { result, trainerId });
+        setError('Failed to get evaluation job ID. The server response was invalid.');
         setExamState('error');
       }
-    } catch (err: any) {
-      console.error('Failed to submit exam:', err);
+    } catch (err: unknown) {
+      logger.error('Failed to submit exam:', { error: err, trainerId });
 
       let errorMessage = 'Failed to submit exam. Please try again.';
 
-      if (err?.response?.data) {
-        const responseData = err.response.data;
-        if (typeof responseData === 'object' && 'error' in responseData) {
-          errorMessage = responseData.error as string;
+      if (err && typeof err === 'object' && 'response' in err) {
+        const apiError = err as { response?: { data?: unknown } };
+        const responseData = apiError.response?.data;
+        if (responseData && typeof responseData === 'object' && 'error' in responseData) {
+          errorMessage = String(responseData.error);
         } else if (typeof responseData === 'string') {
           errorMessage = responseData;
         }

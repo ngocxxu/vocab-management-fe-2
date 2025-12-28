@@ -7,6 +7,7 @@ import type {
   RowSelectionState,
   SortingState,
   Table as TanStackTable,
+  Updater,
   VisibilityState,
 } from '@tanstack/react-table';
 import {
@@ -97,14 +98,14 @@ export function DataTable<TData, TValue>({
   const memoizedColumns = useMemo(() => columns, [columns]);
 
   // Handle sorting change for server-side sorting
-  const handleSortingChange = React.useCallback((updaterOrValue: any) => {
+  const handleSortingChange = React.useCallback((updaterOrValue: Updater<SortingState>) => {
     if (manualSorting && onSortingChange) {
       const newSorting = typeof updaterOrValue === 'function' ? updaterOrValue(sorting) : updaterOrValue;
       setSorting(newSorting);
 
-      if (newSorting.length > 0) {
-        const { id, desc } = newSorting[0];
-        onSortingChange(id, desc ? 'desc' : 'asc');
+      if (newSorting.length > 0 && newSorting[0]) {
+        const firstSort = newSorting[0];
+        onSortingChange(firstSort.id, firstSort.desc ? 'desc' : 'asc');
       }
     } else {
       setSorting(updaterOrValue);
@@ -115,7 +116,13 @@ export function DataTable<TData, TValue>({
   const table = useReactTable({
     data,
     columns: memoizedColumns,
-    getRowId: row => (row as any).id, // Use row ID instead of index
+    getRowId: (row): string => {
+      const rowWithId = row as { id: string };
+      if (!rowWithId.id || typeof rowWithId.id !== 'string') {
+        throw new Error('Row must have an id property of type string');
+      }
+      return rowWithId.id;
+    },
     state: {
       sorting,
       columnFilters,

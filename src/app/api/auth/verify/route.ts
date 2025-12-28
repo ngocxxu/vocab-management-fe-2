@@ -1,15 +1,19 @@
+import type { TUser } from '@/types/auth';
 import { NextResponse } from 'next/server';
+import { logger } from '@/libs/Logger';
 import { serverApi } from '@/utils/server-api';
 
-// GET /api/auth/verify - Verify authentication status
+type VerifyResponse = {
+  user: TUser;
+  isAuthenticated: boolean;
+};
+
 export async function GET() {
   try {
-    // Call NestJS backend to verify authentication
-    const verifyResponse = await serverApi.get<{ user: any; isAuthenticated: boolean }>('/auth/verify');
-
+    const verifyResponse = await serverApi.get<VerifyResponse>('/auth/verify');
     return NextResponse.json(verifyResponse);
   } catch (error) {
-    console.error('Verify error:', error);
+    logger.error('Verify error:', { error });
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to verify authentication' },
       { status: 500 },

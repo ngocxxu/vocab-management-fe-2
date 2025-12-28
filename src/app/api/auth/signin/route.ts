@@ -1,11 +1,31 @@
 import type { NextRequest } from 'next/server';
+import type { TAuthResponse } from '@/types/auth';
 import { NextResponse } from 'next/server';
+import { logger } from '@/libs/Logger';
 import { API_ENDPOINTS } from '@/utils/api-config';
+
+type SigninRequestBody = {
+  email: string;
+  password: string;
+};
+
+type SigninErrorResponse = {
+  error: string;
+  message?: string;
+  [key: string]: unknown;
+};
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const body = await request.json() as SigninRequestBody;
     const { email, password } = body;
+
+    if (!email || !password) {
+      return NextResponse.json(
+        { error: 'Email and password are required' },
+        { status: 400 },
+      );
+    }
 
     const nestResponse = await fetch(`${process.env.NESTJS_API_URL || 'http://localhost:3002/api/v1'}${API_ENDPOINTS.auth.signin}`, {
       method: 'POST',
@@ -15,22 +35,20 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify({ email, password }),
     });
 
-    // Get response text first to handle both JSON and non-JSON responses
     const responseText = await nestResponse.text();
-    let data: any;
+    let data: TAuthResponse | SigninErrorResponse;
 
     try {
       data = responseText ? JSON.parse(responseText) : {};
     } catch {
-      // If parsing fails, use the text as error message
       data = { error: responseText || 'Unknown error' };
     }
 
-    // If NestJS returned an error status, forward it with proper error message
     if (!nestResponse.ok) {
+      const errorMessage = 'error' in data ? data.error : ('message' in data ? data.message : `Signin failed: ${nestResponse.statusText}`);
       return NextResponse.json(
         {
-          error: data.error || data.message || `Signin failed: ${nestResponse.statusText}`,
+          error: errorMessage,
           ...data,
         },
         { status: nestResponse.status },
@@ -47,7 +65,7 @@ export async function POST(request: NextRequest) {
 
     return response;
   } catch (error) {
-    console.error('Signin error:', error);
+    logger.error('Signin error:', { error });
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to signin' },
       { status: 500 },

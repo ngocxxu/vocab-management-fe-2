@@ -1,5 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import { logger } from '@/libs/Logger';
 import { API_ENDPOINTS } from '@/utils/api-config';
 
 // POST /api/auth/refresh - Refresh authentication token
@@ -36,7 +37,7 @@ export async function POST(request: NextRequest) {
 
     return response;
   } catch (error) {
-    console.error('Refresh error:', error);
+    logger.error('Refresh error:', { error });
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to refresh token' },
       { status: 500 },

@@ -3,6 +3,7 @@ import axios from 'axios';
 import { API_ENDPOINTS } from '@/utils/api-config';
 import { handleTokenExpiration } from '@/utils/auth-utils';
 import { Env } from './Env';
+import { logger } from './Logger';
 
 // Create axios instance with default configuration
 // Use relative paths to call Next.js API routes instead of backend directly
@@ -30,9 +31,8 @@ axiosInstance.interceptors.request.use(
       // config.headers.Authorization = `Bearer ${token}`;
     }
 
-    // Log request in development
     if (process.env.NODE_ENV === 'development') {
-      console.warn('🚀 Request:', {
+      logger.debug('Request:', {
         method: config.method?.toUpperCase(),
         url: config.url,
         data: config.data,
@@ -42,7 +42,7 @@ axiosInstance.interceptors.request.use(
     return config;
   },
   (error) => {
-    console.error('❌ Request Error:', error);
+    logger.error('Request Error:', { error });
     return Promise.reject(error);
   },
 );
@@ -50,9 +50,8 @@ axiosInstance.interceptors.request.use(
 // Response interceptor
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => {
-    // Log response in development
     if (process.env.NODE_ENV === 'development') {
-      console.warn('✅ Response:', {
+      logger.debug('Response:', {
         status: response.status,
         url: response.config.url,
         data: response.data,
@@ -91,16 +90,13 @@ axiosInstance.interceptors.response.use(
           }
         }
       } catch (refreshError) {
-        console.error('Token refresh failed:', refreshError);
-        // Handle token expiration with toast notification
+        logger.error('Token refresh failed:', { error: refreshError });
         handleTokenExpiration();
       }
     }
 
-    // Handle common error scenarios
     if (error.response) {
-      // Server responded with error status
-      const errorInfo: Record<string, any> = {};
+      const errorInfo: Record<string, unknown> = {};
       if (error.response.status !== undefined) {
         errorInfo.status = error.response.status;
       }
@@ -114,12 +110,10 @@ axiosInstance.interceptors.response.use(
         errorInfo.data = error.response.data;
       }
 
-      // Only log if we have meaningful information
       if (Object.keys(errorInfo).length > 0) {
-        console.error('❌ Response Error:', errorInfo);
+        logger.error('Response Error:', errorInfo);
       } else {
-        // Fallback: log the error object itself if response is empty
-        console.error('❌ Response Error (empty response):', {
+        logger.error('Response Error (empty response):', {
           hasResponse: !!error.response,
           hasRequest: !!error.request,
           message: error.message,
@@ -129,11 +123,9 @@ axiosInstance.interceptors.response.use(
         });
       }
     } else if (error.request) {
-      // Request was made but no response received
-      console.error('❌ Network Error:', error.message || error);
+      logger.error('Network Error:', { message: error.message || error });
     } else {
-      // Something else happened
-      console.error('❌ Error:', error.message || error);
+      logger.error('Error:', { message: error.message || error });
     }
 
     return Promise.reject(error);

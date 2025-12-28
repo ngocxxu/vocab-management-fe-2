@@ -1,6 +1,6 @@
 'use client';
 
-import type { TFlipCardExamData, TFlipCardQuestion, TFlipCardResult } from '@/types/vocab-trainer';
+import type { TFlipCardExamData, TFlipCardQuestion, TFlipCardResult, TQuestionAPI } from '@/types/vocab-trainer';
 import { ChevronLeft, ChevronRight, Clock } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -15,19 +15,30 @@ import FlipCardResults from './FlipCardResults';
 
 type FlipCardExamProps = {
   trainerId: string;
-  examData: any;
+  examData: TQuestionAPI | TFlipCardExamData;
 };
 
 type ExamState = 'taking' | 'completed' | 'error';
+
+const isTQuestionAPI = (data: TQuestionAPI | TFlipCardExamData): data is TQuestionAPI => {
+  return 'questionAnswers' in data;
+};
 
 const FlipCardExam: React.FC<FlipCardExamProps> = ({ trainerId, examData }) => {
   const router = useRouter();
   const { speak, cancel, voices } = useSpeechSynthesis();
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
+
+  const questions: TFlipCardQuestion[] = useMemo(() => {
+    if (isTQuestionAPI(examData)) {
+      return (examData.questionAnswers || []) as unknown as TFlipCardQuestion[];
+    }
+    return examData.questions || [];
+  }, [examData]);
+
   const [assessments, setAssessments] = useState<Map<number, 'known' | 'unknown'>>(() => {
     const map = new Map<number, 'known' | 'unknown'>();
-    const questions = examData.questionAnswers || [];
     questions.forEach((_: TFlipCardQuestion, index: number) => {
       map.set(index, 'known');
     });
@@ -38,8 +49,6 @@ const FlipCardExam: React.FC<FlipCardExamProps> = ({ trainerId, examData }) => {
   const [examState, setExamState] = useState<ExamState>('taking');
   const [examResults, setExamResults] = useState<TFlipCardExamData | null>(null);
   const [error] = useState<string | null>(null);
-
-  const questions: TFlipCardQuestion[] = useMemo(() => examData.questionAnswers || [], [examData.questionAnswers]);
   const currentQuestion = questions[currentCardIndex];
   const totalCards = questions.length;
   const isLastCard = currentCardIndex === totalCards - 1;
@@ -143,9 +152,10 @@ const FlipCardExam: React.FC<FlipCardExamProps> = ({ trainerId, examData }) => {
       });
     }
 
+    const trainerName = isTQuestionAPI(examData) ? examData.name : examData.trainerName;
     const finalExamData: TFlipCardExamData = {
       trainerId,
-      trainerName: examData.name || 'FlipCard Exam',
+      trainerName: trainerName || 'FlipCard Exam',
       questions,
       results,
       totalTimeElapsed: timeElapsed,
@@ -225,7 +235,7 @@ const FlipCardExam: React.FC<FlipCardExamProps> = ({ trainerId, examData }) => {
         <div className="flex items-center justify-between">
           <div className="space-y-2">
             <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
-              {examData.name || 'FlipCard Exam'}
+              {isTQuestionAPI(examData) ? examData.name : examData.trainerName || 'FlipCard Exam'}
             </h1>
             <Badge variant="outline" className="border-yellow-500/50 bg-yellow-500/10 p-2 text-yellow-600 dark:border-yellow-400/50 dark:bg-yellow-400/10 dark:text-yellow-400">
               <Clock className="h-4 w-4" />

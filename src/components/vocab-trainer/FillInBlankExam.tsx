@@ -8,6 +8,7 @@ import { submitExam } from '@/actions/vocab-trainers';
 import { ExamErrorState } from '@/components/shared';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import { logger } from '@/libs/Logger';
 import FillInBlankCard from './FillInBlankCard';
 import VocabExamHeader from './VocabExamHeader';
 
@@ -112,19 +113,20 @@ const FillInBlankExam: React.FC<FillInBlankExamProps> = ({ trainerId, examData }
         localStorage.setItem(storageKey, JSON.stringify(resultData));
         router.push(`/vocab-trainer/${trainerId}/exam/fill-in-blank/result`);
       } else {
-        console.error('Response does not contain jobId. Full response:', JSON.stringify(result, null, 2));
-        setError('Failed to get evaluation job ID. The server response was invalid. Please check the console for details.');
+        logger.error('Response does not contain jobId:', { result, trainerId });
+        setError('Failed to get evaluation job ID. The server response was invalid.');
         setExamState('error');
       }
-    } catch (err: any) {
-      console.error('Failed to submit exam:', err);
+    } catch (err: unknown) {
+      logger.error('Failed to submit exam:', { error: err, trainerId });
 
       let errorMessage = 'Failed to submit exam. Please try again.';
 
-      if (err?.response?.data) {
-        const responseData = err.response.data;
-        if (typeof responseData === 'object' && 'error' in responseData) {
-          errorMessage = responseData.error as string;
+      if (err && typeof err === 'object' && 'response' in err) {
+        const apiError = err as { response?: { data?: unknown } };
+        const responseData = apiError.response?.data;
+        if (responseData && typeof responseData === 'object' && 'error' in responseData) {
+          errorMessage = String(responseData.error);
         } else if (typeof responseData === 'string') {
           errorMessage = responseData;
         }

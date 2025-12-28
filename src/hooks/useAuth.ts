@@ -1,13 +1,15 @@
-import type { TAuthResponse, TRefreshData, TResetPasswordData, TSigninData, TSignupData } from '@/types/auth';
+import type { TAuthResponse, TRefreshData, TResetPasswordData, TSigninData, TSignupData, TUser } from '@/types/auth';
 import { useEffect, useState } from 'react';
 import { refresh, resetPassword, signout, verifyUser } from '@/actions';
 import { hasAuthToken } from '@/utils/auth-utils';
 import { authApi } from '@/utils/client-api';
 
+type AuthData = TUser | { isAuthenticated: boolean } | null;
+
 export const useAuth = () => {
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<AuthData>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<any>(null);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     // Check cookie instead of calling API verify
@@ -29,7 +31,7 @@ export const useAuth = () => {
       const result = await verifyUser();
       setData(result);
     } catch (err) {
-      setError(err);
+      setError(err instanceof Error ? err : new Error(String(err)));
       const isAuthenticated = hasAuthToken();
       setData(isAuthenticated ? { isAuthenticated: true } : null);
     } finally {
@@ -37,11 +39,14 @@ export const useAuth = () => {
     }
   };
 
+  const isAuthenticated = data !== null && ('isAuthenticated' in data ? data.isAuthenticated : true);
+
   return {
-    user: data,
-    isAuthenticated: data?.isAuthenticated || false,
+    user: data && 'id' in data ? data : null,
+    isAuthenticated,
     isLoading,
-    isError: error,
+    isError: error !== null,
+    error,
     mutate,
   };
 };

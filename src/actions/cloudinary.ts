@@ -3,6 +3,7 @@
 import type { GenerateUploadSignatureInput, GenerateUploadSignatureOutput } from '@/types/cloudinary';
 import { cookies } from 'next/headers';
 import { Env } from '@/libs/Env';
+import { logger } from '@/libs/Logger';
 
 export async function getCloudinaryUploadSignature(
   params?: GenerateUploadSignatureInput,
@@ -45,7 +46,7 @@ export async function getCloudinaryUploadSignature(
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Backend cloudinary signature failed:', {
+      logger.error('Backend cloudinary signature failed:', {
         status: response.status,
         statusText: response.statusText,
         error: errorText,
@@ -59,7 +60,7 @@ export async function getCloudinaryUploadSignature(
     const result = await response.json();
     return result as GenerateUploadSignatureOutput;
   } catch (error) {
-    console.error('Cloudinary signature error:', error);
+    logger.error('Cloudinary signature error:', { error });
     return {
       error: error instanceof Error ? error.message : 'Failed to get upload signature',
     };

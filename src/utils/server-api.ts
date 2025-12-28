@@ -11,12 +11,13 @@ import type {
   TUpdateNotificationStatusInput,
 } from '@/types/notification';
 import type { TSubjectResponse } from '@/types/subject';
-import type { TVocab } from '@/types/vocab-list';
-import type { TVocabTrainer } from '@/types/vocab-trainer';
+import type { TCreateVocab, TVocab } from '@/types/vocab-list';
+import type { TCreateVocabTrainer, TFormTestVocabTrainerUnion, TVocabTrainer } from '@/types/vocab-trainer';
 import type { TWordTypeResponse } from '@/types/word-type';
 import { ApiError } from 'next/dist/server/api-utils';
 import { cookies } from 'next/headers';
 import { Env } from '@/libs/Env';
+import { logger } from '@/libs/Logger';
 import { handleTokenExpiration } from '@/utils/auth-utils';
 import { API_ENDPOINTS, API_METHODS } from './api-config';
 
@@ -56,7 +57,7 @@ class ServerAPI {
     const refreshRes = await this.isRefreshing;
     if (!refreshRes.ok) {
       const errorText = await refreshRes.text();
-      console.error('Refresh failed:', {
+      logger.error('Refresh failed:', {
         status: refreshRes.status,
         statusText: refreshRes.statusText,
         error: errorText,
@@ -82,6 +83,10 @@ class ServerAPI {
   }
 
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+    if (!endpoint || typeof endpoint !== 'string') {
+      throw new Error('Endpoint must be a non-empty string');
+    }
+
     const response = await this.doFetch(endpoint, options);
 
     // 1. Handle Response Content
@@ -91,7 +96,7 @@ class ServerAPI {
     const contentLength = response.headers.get('content-length');
     const isEmpty = response.status === 204 || contentLength === '0';
 
-    let data: any;
+    let data: T | string | null;
 
     try {
       if (isEmpty) {
@@ -110,9 +115,7 @@ class ServerAPI {
     if (!response.ok) {
       const error = new ApiError(response.status, response.statusText);
 
-      if (process.env.NODE_ENV !== 'production') {
-        console.error(`[API Error] ${options.method || 'GET'} ${endpoint}:`, error);
-      }
+      logger.error(`[API Error] ${options.method || 'GET'} ${endpoint}:`, { error });
 
       throw error;
     }
@@ -124,12 +127,14 @@ class ServerAPI {
     return this.request<T>(endpoint, { method: 'GET' });
   }
 
-  post<T>(endpoint: string, data: any) {
-    // Log request details for debugging
-    console.warn('Server API POST Request:', {
+  post<T>(endpoint: string, data: unknown) {
+    if (!endpoint || typeof endpoint !== 'string') {
+      throw new Error('Endpoint must be a non-empty string');
+    }
+
+    logger.debug('Server API POST Request:', {
       endpoint: `${this.baseURL}${endpoint}`,
-      dataKeys: data ? Object.keys(data) : [],
-      hasTextTargets: data?.textTargets ? `Array(${data.textTargets.length})` : false,
+      dataKeys: data && typeof data === 'object' ? Object.keys(data) : [],
     });
 
     return this.request<T>(endpoint, {
@@ -138,7 +143,11 @@ class ServerAPI {
     });
   }
 
-  put<T>(endpoint: string, data: any) {
+  put<T>(endpoint: string, data: unknown) {
+    if (!endpoint || typeof endpoint !== 'string') {
+      throw new Error('Endpoint must be a non-empty string');
+    }
+
     return this.request<T>(endpoint, {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -146,10 +155,18 @@ class ServerAPI {
   }
 
   delete<T>(endpoint: string) {
+    if (!endpoint || typeof endpoint !== 'string') {
+      throw new Error('Endpoint must be a non-empty string');
+    }
+
     return this.request<T>(endpoint, { method: 'DELETE' });
   }
 
-  patch<T>(endpoint: string, data: any) {
+  patch<T>(endpoint: string, data: unknown) {
+    if (!endpoint || typeof endpoint !== 'string') {
+      throw new Error('Endpoint must be a non-empty string');
+    }
+
     return this.request<T>(endpoint, {
       method: 'PATCH',
       body: JSON.stringify(data),
@@ -201,21 +218,36 @@ export const vocabApi = {
     const config = API_METHODS.vocabs.getById(id);
     return serverApi.get<TVocab>(config.endpoint);
   },
-  create: (vocabData: any) => {
+  create: (vocabData: TCreateVocab) => {
+    if (!vocabData || typeof vocabData !== 'object') {
+      throw new Error('Vocab data is required');
+    }
     const config = API_METHODS.vocabs.create(vocabData);
-    return serverApi.post(config.endpoint, config.data);
+    return serverApi.post<TVocab>(config.endpoint, config.data);
   },
-  update: (id: string, vocabData: any) => {
+  update: (id: string, vocabData: Partial<TCreateVocab>) => {
+    if (!id || typeof id !== 'string') {
+      throw new Error('Vocab ID is required');
+    }
+    if (!vocabData || typeof vocabData !== 'object') {
+      throw new Error('Vocab data is required');
+    }
     const config = API_METHODS.vocabs.update(id, vocabData);
-    return serverApi.put(config.endpoint, config.data);
+    return serverApi.put<TVocab>(config.endpoint, config.data);
   },
   delete: (id: string) => {
+    if (!id || typeof id !== 'string') {
+      throw new Error('Vocab ID is required');
+    }
     const config = API_METHODS.vocabs.delete(id);
-    return serverApi.delete(config.endpoint);
+    return serverApi.delete<void>(config.endpoint);
   },
-  createBulk: (vocabData: any[]) => {
+  createBulk: (vocabData: TCreateVocab[]) => {
+    if (!Array.isArray(vocabData) || vocabData.length === 0) {
+      throw new Error('Vocab data array is required and must not be empty');
+    }
     const config = API_METHODS.vocabs.createBulk(vocabData);
-    return serverApi.post(config.endpoint, config.data);
+    return serverApi.post<{ created: number; failed: number }>(config.endpoint, config.data);
   },
   deleteBulk: (ids: string[]) => {
     const config = API_METHODS.vocabs.deleteBulk(ids);
@@ -302,25 +334,46 @@ export const vocabTrainerApi = {
     const config = API_METHODS.vocabTrainers.getById(id);
     return serverApi.get(config.endpoint);
   },
-  create: (trainerData: any) => {
+  create: (trainerData: TCreateVocabTrainer) => {
+    if (!trainerData || typeof trainerData !== 'object') {
+      throw new Error('Trainer data is required');
+    }
     const config = API_METHODS.vocabTrainers.create(trainerData);
-    return serverApi.post(config.endpoint, config.data);
+    return serverApi.post<TVocabTrainer>(config.endpoint, config.data);
   },
-  update: (id: string, trainerData: any) => {
+  update: (id: string, trainerData: Partial<TCreateVocabTrainer>) => {
+    if (!id || typeof id !== 'string') {
+      throw new Error('Trainer ID is required');
+    }
+    if (!trainerData || typeof trainerData !== 'object') {
+      throw new Error('Trainer data is required');
+    }
     const config = API_METHODS.vocabTrainers.update(id, trainerData);
-    return serverApi.put(config.endpoint, config.data);
+    return serverApi.put<TVocabTrainer>(config.endpoint, config.data);
   },
   delete: (id: string) => {
+    if (!id || typeof id !== 'string') {
+      throw new Error('Trainer ID is required');
+    }
     const config = API_METHODS.vocabTrainers.delete(id);
-    return serverApi.delete(config.endpoint);
+    return serverApi.delete<void>(config.endpoint);
   },
   getExam: (id: string) => {
+    if (!id || typeof id !== 'string') {
+      throw new Error('Trainer ID is required');
+    }
     const config = API_METHODS.vocabTrainers.getExam(id);
-    return serverApi.get(config.endpoint);
+    return serverApi.get<import('@/types/vocab-trainer').TQuestionAPI>(config.endpoint);
   },
-  submitExam: (id: string, testData: any) => {
+  submitExam: (id: string, testData: TFormTestVocabTrainerUnion) => {
+    if (!id || typeof id !== 'string') {
+      throw new Error('Trainer ID is required');
+    }
+    if (!testData || typeof testData !== 'object') {
+      throw new Error('Test data is required');
+    }
     const config = API_METHODS.vocabTrainers.submitExam(id, testData);
-    return serverApi.patch(config.endpoint, config.data);
+    return serverApi.patch<{ jobId: string } | { error: string }>(config.endpoint, config.data);
   },
   deleteBulk: (ids: string[]) => {
     const config = API_METHODS.vocabTrainers.deleteBulk(ids);

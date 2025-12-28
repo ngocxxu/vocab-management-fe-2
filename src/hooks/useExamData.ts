@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { getExam } from '@/actions';
 import { EQuestionType } from '@/enum/vocab-trainer';
 import { useSocket } from '@/hooks/useSocket';
+import { logger } from '@/libs/Logger';
 import { SOCKET_EVENTS } from '@/utils/socket-config';
 
 // --- Helpers: Separate storage logic ---
@@ -23,7 +24,7 @@ const saveCachedData = (id: string, data: TQuestionAPI) => {
   try {
     localStorage.setItem(getStorageKey(id), JSON.stringify(data));
   } catch (e) {
-    console.error('Storage save error', e);
+    logger.error('Storage save error', { error: e, id });
   }
 };
 
@@ -100,10 +101,10 @@ export const useExamData = ({
       jobIdRef.current = data.jobId || trainerId;
 
       if (!socket?.connected) {
-        console.warn('Socket not connected, waiting for connection...');
+        logger.warn('Socket not connected, waiting for connection...', { trainerId });
       }
     } catch (err) {
-      console.error('Fetch error:', err);
+      logger.error('Fetch error:', { error: err, trainerId });
       setError(err);
       setStatus('failed');
       latestActions.current.onErrorAction?.(err);

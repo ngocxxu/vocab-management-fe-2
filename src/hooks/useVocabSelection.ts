@@ -1,9 +1,10 @@
 import type { PaginationState } from './useApiPagination';
 import type { TLanguageFolder } from '@/types';
 import type { TVocab } from '@/types/vocab-list';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { getVocabsForSelection } from '@/actions';
 import { getMyLanguageFoldersForSelection } from '@/actions/language-folders';
+import { logger } from '@/libs/Logger';
 
 export type VocabFilters = {
   globalFilter: string;
@@ -41,16 +42,13 @@ export const useVocabSelection = ({
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
-  const [languageFolders, setLanguageFolders] = useState<TLanguageFolder[]>(cachedLanguageFolders);
+  const [fetchedLanguageFolders, setFetchedLanguageFolders] = useState<TLanguageFolder[]>([]);
   const lastFetchParamsRef = useRef<string>('');
   const hasFetchedLanguageFoldersRef = useRef<boolean>(false);
 
-  useEffect(() => {
-    if (cachedLanguageFolders.length > 0) {
-      setLanguageFolders(cachedLanguageFolders);
-      hasFetchedLanguageFoldersRef.current = true;
-    }
-  }, [cachedLanguageFolders]);
+  const languageFolders = useMemo(() => {
+    return cachedLanguageFolders.length > 0 ? cachedLanguageFolders : fetchedLanguageFolders;
+  }, [cachedLanguageFolders, fetchedLanguageFolders]);
 
   useEffect(() => {
     if (!open) {
@@ -67,15 +65,15 @@ export const useVocabSelection = ({
       try {
         const result = await getMyLanguageFoldersForSelection({ page: 1, pageSize: 100 });
         if ('error' in result) {
-          console.error('Failed to fetch language folders:', result.error);
+          logger.error('Failed to fetch language folders:', { error: result.error });
           hasFetchedLanguageFoldersRef.current = false;
           return;
         }
         const folders = result.items || [];
-        setLanguageFolders(folders);
+        setFetchedLanguageFolders(folders);
         onLanguageFoldersLoaded?.(folders);
       } catch (error) {
-        console.error('Failed to fetch language folders:', error);
+        logger.error('Failed to fetch language folders:', { error });
         hasFetchedLanguageFoldersRef.current = false;
       }
     };
@@ -111,12 +109,12 @@ export const useVocabSelection = ({
           sortBy: pagination.sortBy,
           sortOrder: pagination.sortOrder,
           textSource: filters.globalFilter || undefined,
-          sourceLanguageCode: filters.sourceLanguageCode !== 'ALL' ? filters.sourceLanguageCode : undefined,
-          targetLanguageCode: filters.targetLanguageCode !== 'ALL' ? filters.targetLanguageCode : undefined,
-          languageFolderId: filters.languageFolderId !== 'ALL' ? filters.languageFolderId : undefined,
+          sourceLanguageCode: filters.sourceLanguageCode === 'ALL' ? undefined : filters.sourceLanguageCode,
+          targetLanguageCode: filters.targetLanguageCode === 'ALL' ? undefined : filters.targetLanguageCode,
+          languageFolderId: filters.languageFolderId === 'ALL' ? undefined : filters.languageFolderId,
         });
         if ('error' in result) {
-          console.error('Failed to fetch vocabs:', result.error);
+          logger.error('Failed to fetch vocabs:', { error: result.error });
           return;
         }
         setVocabs(result.items || []);
@@ -124,7 +122,7 @@ export const useVocabSelection = ({
         setTotalPages(result.totalPages || 0);
         setCurrentPage(result.currentPage || 1);
       } catch (error) {
-        console.error('Failed to fetch vocabs:', error);
+        logger.error('Failed to fetch vocabs:', { error });
       } finally {
         setIsLoading(false);
       }

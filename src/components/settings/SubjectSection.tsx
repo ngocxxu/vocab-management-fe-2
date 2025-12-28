@@ -1,5 +1,6 @@
 'use client';
 
+import type { DragEndEvent } from '@dnd-kit/core';
 import type { TCreateSubject, TSubject, TSubjectResponse } from '@/types/subject';
 import { closestCenter, DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
@@ -232,12 +233,19 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
     }
   };
 
-  const handleDragEnd = async (event: any) => {
+  const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
 
-    if (active.id !== over.id) {
-      const oldIndex = subjects.findIndex(item => item.id === active.id);
-      const newIndex = subjects.findIndex(item => item.id === over.id);
+    if (!over) {
+      return;
+    }
+
+    const activeId = String(active.id);
+    const overId = String(over.id);
+
+    if (activeId !== overId) {
+      const oldIndex = subjects.findIndex(item => item.id === activeId);
+      const newIndex = subjects.findIndex(item => item.id === overId);
 
       const newOrder = arrayMove(subjects, oldIndex, newIndex);
 

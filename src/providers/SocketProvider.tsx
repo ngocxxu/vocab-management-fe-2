@@ -6,6 +6,7 @@ import React, { createContext, useEffect, useMemo, useState } from 'react';
 import { io } from 'socket.io-client';
 import { verifyUser } from '@/actions';
 import { Env } from '@/libs/Env';
+import { logger } from '@/libs/Logger';
 
 type SocketContextType = {
   socket: Socket | null;
@@ -32,7 +33,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         const userData = await verifyUser();
         setUser(userData);
       } catch (error) {
-        console.error('Failed to verify user:', error);
+        logger.error('Failed to verify user:', { error });
         setUser(null);
       }
     };
@@ -46,9 +47,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       return;
     }
 
-    // Check if socket URL is configured
     if (!Env.NEXT_PUBLIC_SOCKET_URL) {
-      console.warn('🔌 Socket URL not configured. WebSocket notifications will be disabled.');
+      logger.warn('Socket URL not configured. WebSocket notifications will be disabled.');
       return;
     }
 
@@ -63,23 +63,22 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       withCredentials: true,
     });
 
-    // Connection event handlers
     socketInstance.on('connect', () => {
-      console.warn('🔌 Connected to notification socket');
+      logger.debug('Connected to notification socket');
       setIsConnected(true);
 
       if (userId) {
-        console.warn('🔌 Joining user room:', userId);
+        logger.debug('Joining user room:', { userId });
         socketInstance.emit('join-user-room', { userId });
       }
     });
 
     socketInstance.on('joined-user-room', (data) => {
-      console.warn('🔌 Joined user room:', data);
+      logger.debug('Joined user room:', { data });
     });
 
     socketInstance.on('disconnect', () => {
-      console.warn('🔌 Disconnected from notification socket');
+      logger.debug('Disconnected from notification socket');
       setIsConnected(false);
     });
 
@@ -130,37 +129,30 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       }
 
       if (errorDetails.length > 0) {
-        console.error('🔌 Socket connection error:', errorDetails.join(', '));
+        logger.error('Socket connection error:', { details: errorDetails.join(', ') });
       } else {
-        console.error('🔌 Socket connection error:', error);
+        logger.error('Socket connection error:', { error });
       }
     });
 
-    // Listen for notification events
     socketInstance.on('notification', (data) => {
-      console.warn('🔔 Received notification:', data);
-
-      // Notifications will be refreshed via their own hooks/components
+      logger.debug('Received notification:', { data });
     });
 
-    // Listen for connection confirmation
     socketInstance.on('connected', (data) => {
-      console.warn('🔌 Socket connected:', data);
+      logger.debug('Socket connected:', { data });
     });
 
-    // Handle reconnection errors
     socketInstance.on('reconnect_error', (error) => {
-      console.error('🔌 Socket reconnection error:', error);
+      logger.error('Socket reconnection error:', { error });
     });
 
-    // Handle reconnection attempts
     socketInstance.on('reconnect_attempt', (attemptNumber) => {
-      console.warn(`🔌 Socket reconnection attempt ${attemptNumber}`);
+      logger.debug('Socket reconnection attempt:', { attemptNumber });
     });
 
-    // Handle failed reconnection
     socketInstance.on('reconnect_failed', () => {
-      console.error('🔌 Socket reconnection failed after all attempts');
+      logger.error('Socket reconnection failed after all attempts');
       setIsConnected(false);
     });
 

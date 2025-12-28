@@ -1,3 +1,5 @@
+import type { TNotificationData } from './notification-data';
+
 // Notification types based on backend Prisma schema
 export enum ENotificationType {
   VOCAB = 'VOCAB',
@@ -24,7 +26,7 @@ export type TNotification = {
   type: NotificationType;
   action: ENotificationAction;
   priority: PriorityLevel;
-  data: Record<string, any>; // JSON data from backend
+  data: TNotificationData;
   isActive: boolean;
   expiresAt: string; // ISO date string
   createdAt: string; // ISO date string
@@ -74,7 +76,7 @@ export type TNotificationInput = {
   type: NotificationType;
   action: ENotificationAction;
   priority: PriorityLevel;
-  data: Record<string, any>;
+  data: TNotificationData;
   isActive: boolean;
   expiresAt: string; // ISO date string
   recipientUserIds: string[];

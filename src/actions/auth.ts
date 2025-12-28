@@ -2,6 +2,7 @@
 
 import type { TAuthResponse, TRefreshData, TResetPasswordData, TSigninData, TSignupData, TUser } from '@/types/auth';
 import { cookies } from 'next/headers';
+import { logger } from '@/libs/Logger';
 import { authApi } from '@/utils/server-api';
 
 export async function signin(signinData: TSigninData): Promise<TAuthResponse> {
@@ -87,11 +88,13 @@ export async function verifyUser(): Promise<TUser | null> {
     const result = await authApi.verify();
     return result;
   } catch (error) {
-    const errorStatus = (error as any)?.status;
-    if (errorStatus === 403 || errorStatus === 401) {
-      return null;
+    if (error && typeof error === 'object' && 'status' in error) {
+      const errorStatus = (error as { status: number }).status;
+      if (errorStatus === 403 || errorStatus === 401) {
+        return null;
+      }
     }
-    console.error('Failed to verify user:', error);
+    logger.error('Failed to verify user:', { error });
     return null;
   }
 }

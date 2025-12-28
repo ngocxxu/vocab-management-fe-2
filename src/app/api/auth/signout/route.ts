@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { logger } from '@/libs/Logger';
 import { API_ENDPOINTS } from '@/utils/api-config';
 import { serverApi } from '@/utils/server-api';
 
@@ -15,7 +16,7 @@ export async function POST() {
 
     return response;
   } catch (error) {
-    console.error('Signout error:', error);
+    logger.error('Signout error:', { error });
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to signout' },
       { status: 500 },

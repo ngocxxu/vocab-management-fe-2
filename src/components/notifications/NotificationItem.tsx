@@ -1,5 +1,6 @@
 'use client';
 
+import type { EQuestionType } from '@/enum/vocab-trainer';
 import type { TNotification } from '@/types/notification';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -8,6 +9,7 @@ import { toast } from 'sonner';
 import { getExam } from '@/actions';
 import { markNotificationAsRead } from '@/actions/notifications';
 import { getExamUrl } from '@/constants/vocab-trainer';
+import { logger } from '@/libs/Logger';
 import { cn } from '@/libs/utils';
 import { ENotificationAction, ENotificationType } from '@/types/notification';
 import {
@@ -60,10 +62,12 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
     }
 
     if (isVocabTrainerRemind) {
-      const { trainerId, questionType } = notification.data || {};
+      const data = notification.data || {};
+      const trainerId = 'trainerId' in data && typeof data.trainerId === 'string' ? data.trainerId : undefined;
+      const questionType = 'questionType' in data && typeof data.questionType === 'string' ? data.questionType as EQuestionType : undefined;
 
       if (!trainerId || !questionType) {
-        console.error('Missing trainerId or questionType:', { trainerId, questionType });
+        logger.error('Missing trainerId or questionType:', { trainerId, questionType, data });
         toast.error('Invalid notification data');
         return;
       }

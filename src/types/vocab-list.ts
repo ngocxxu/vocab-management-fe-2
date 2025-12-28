@@ -49,6 +49,6 @@ export type TCsvImportResponse = {
   errors?: Array<{
     row: number;
     error: string;
-    data: Record<string, any>;
+    data: Record<string, unknown>;
   }>;
 };

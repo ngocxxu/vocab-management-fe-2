@@ -18,21 +18,38 @@ const getColor = (mastery: number): string => {
   return '#ef4444';
 };
 
-const CustomTooltip = ({ active, payload }: any) => {
-  if (active && payload && payload.length) {
-    const data = payload[0].payload;
+type TooltipProps = {
+  active?: boolean;
+  payload?: Array<{
+    payload: {
+      subjectName: string;
+      averageMastery: number;
+      [key: string]: unknown;
+    };
+    [key: string]: unknown;
+  }>;
+};
+
+const CustomTooltip = ({ active, payload }: TooltipProps) => {
+  if (active && payload && payload.length && payload[0]) {
+    const firstPayload = payload[0];
+    const data = firstPayload.payload;
+    const subjectName = 'subjectName' in data ? String(data.subjectName) : 'N/A';
+    const averageMastery = 'averageMastery' in data && typeof data.averageMastery === 'number' ? data.averageMastery : 0;
+    const vocabCount = 'vocabCount' in data ? String(data.vocabCount) : '0';
+
     return (
       <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-lg dark:border-slate-700 dark:bg-slate-800">
-        <p className="font-semibold text-slate-900 dark:text-white">{data.subjectName}</p>
+        <p className="font-semibold text-slate-900 dark:text-white">{subjectName}</p>
         <p className="text-sm text-slate-600 dark:text-slate-400">
           Average Mastery:
           {' '}
-          <span className="font-medium">{data.averageMastery.toFixed(1)}</span>
+          <span className="font-medium">{averageMastery.toFixed(1)}</span>
         </p>
         <p className="text-sm text-slate-600 dark:text-slate-400">
           Vocab Count:
           {' '}
-          <span className="font-medium">{data.vocabCount}</span>
+          <span className="font-medium">{vocabCount}</span>
         </p>
       </div>
     );

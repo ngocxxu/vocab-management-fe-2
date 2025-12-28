@@ -3,6 +3,7 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import type { VocabFilters } from '@/hooks';
 import type { ResponseAPI, TLanguage } from '@/types';
+import type { TVocabSelectionFolderArray } from '@/types/vocab-selection';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -21,9 +22,9 @@ type VocabSelectionFormProps = {
   selectedIds: string[];
   initialLanguagesData?: ResponseAPI<TLanguage[]>;
   open?: boolean;
-  cachedLanguageFolders?: any[];
-  onLanguageFoldersLoaded?: (folders: any[]) => void;
-  editMode?: boolean; // Add this prop
+  cachedLanguageFolders?: TVocabSelectionFolderArray;
+  onLanguageFoldersLoaded?: (folders: TVocabSelectionFolderArray) => void;
+  editMode?: boolean;
 };
 
 type RowVocab = {
@@ -34,7 +35,7 @@ type RowVocab = {
   targetLanguageCode: string;
 };
 
-const EMPTY_CACHED_FOLDERS: any[] = [];
+const EMPTY_CACHED_FOLDERS: TVocabSelectionFolderArray = [];
 
 const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
   selectedIds,
@@ -176,7 +177,7 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="ALL">All</SelectItem>
-              {languages?.map((lng: any) => (
+              {languages?.map(lng => (
                 <SelectItem key={lng.code} value={lng.code}>{lng.name}</SelectItem>
               ))}
             </SelectContent>
@@ -193,7 +194,7 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="ALL">All</SelectItem>
-              {languages?.map((lng: any) => (
+              {languages?.map(lng => (
                 <SelectItem key={lng.code} value={lng.code}>{lng.name}</SelectItem>
               ))}
             </SelectContent>
@@ -210,7 +211,7 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="ALL">All</SelectItem>
-              {languageFolders?.map((f: any) => (
+              {languageFolders?.map(f => (
                 <SelectItem key={f.id} value={f.id}>{f.name}</SelectItem>
               ))}
             </SelectContent>

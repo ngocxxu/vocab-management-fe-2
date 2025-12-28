@@ -7,6 +7,13 @@ import { revalidatePath } from 'next/cache';
 import { authApi, vocabApi } from '@/utils/server-api';
 
 export async function createVocab(vocabData: TCreateVocab) {
+  if (!vocabData || typeof vocabData !== 'object') {
+    throw new Error('Vocab data is required');
+  }
+  if (!vocabData.textSource || !vocabData.languageFolderId) {
+    throw new Error('Text source and language folder ID are required');
+  }
+
   try {
     const result = await vocabApi.create(vocabData);
     revalidatePath('/vocab-list');
@@ -17,6 +24,13 @@ export async function createVocab(vocabData: TCreateVocab) {
 }
 
 export async function updateVocab(id: string, vocabData: Partial<TCreateVocab>) {
+  if (!id || typeof id !== 'string') {
+    throw new Error('Vocab ID is required');
+  }
+  if (!vocabData || typeof vocabData !== 'object') {
+    throw new Error('Vocab data is required');
+  }
+
   try {
     const result = await vocabApi.update(id, vocabData);
     revalidatePath('/vocab-list');
@@ -27,6 +41,10 @@ export async function updateVocab(id: string, vocabData: Partial<TCreateVocab>) 
 }
 
 export async function deleteVocab(id: string): Promise<void> {
+  if (!id || typeof id !== 'string') {
+    throw new Error('Vocab ID is required');
+  }
+
   try {
     await vocabApi.delete(id);
     revalidatePath('/vocab-list');
@@ -36,6 +54,10 @@ export async function deleteVocab(id: string): Promise<void> {
 }
 
 export async function createVocabsBulk(vocabData: TCreateVocab[]) {
+  if (!Array.isArray(vocabData) || vocabData.length === 0) {
+    throw new Error('Vocab data array is required and must not be empty');
+  }
+
   try {
     const result = await vocabApi.createBulk(vocabData);
     revalidatePath('/vocab-list');
@@ -46,6 +68,10 @@ export async function createVocabsBulk(vocabData: TCreateVocab[]) {
 }
 
 export async function deleteVocabsBulk(ids: string[]): Promise<{ success: boolean }> {
+  if (!Array.isArray(ids) || ids.length === 0) {
+    throw new Error('IDs array is required and must not be empty');
+  }
+
   try {
     await vocabApi.deleteBulk(ids);
     revalidatePath('/vocab-list');
@@ -63,6 +89,13 @@ export async function importVocabsCsv(
     targetLanguageCode: string;
   },
 ) {
+  if (!file || !(file instanceof File)) {
+    throw new Error('File is required');
+  }
+  if (!options?.languageFolderId || !options?.sourceLanguageCode || !options?.targetLanguageCode) {
+    throw new Error('Language folder ID, source language code, and target language code are required');
+  }
+
   try {
     const result = await vocabApi.importCsv(file, options);
     revalidatePath('/vocab-list');

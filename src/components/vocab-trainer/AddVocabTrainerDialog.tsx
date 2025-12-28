@@ -2,6 +2,7 @@
 
 import type { EQuestionType } from '@/enum/vocab-trainer';
 import type { ResponseAPI, TLanguage } from '@/types';
+import type { TVocabSelectionFolderArray } from '@/types/vocab-selection';
 import type { TVocabTrainer } from '@/types/vocab-trainer';
 import { Loader2 } from 'lucide-react';
 import React, { useState } from 'react';
@@ -27,8 +28,8 @@ type AddVocabTrainerDialogProps = {
   editMode?: boolean;
   editingItem?: TVocabTrainer | null;
   initialLanguagesData?: ResponseAPI<TLanguage[]>;
-  cachedLanguageFolders?: any[];
-  onLanguageFoldersLoaded?: (folders: any[]) => void;
+  cachedLanguageFolders?: TVocabSelectionFolderArray;
+  onLanguageFoldersLoaded?: (folders: TVocabSelectionFolderArray) => void;
 };
 
 const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({

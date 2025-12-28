@@ -6,16 +6,32 @@ import { Area, AreaChart, CartesianGrid, Line, LineChart, ResponsiveContainer, T
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-const CustomTooltip = ({ active, payload }: any) => {
-  if (active && payload && payload.length) {
-    const data = payload[0].payload;
+type TooltipProps = {
+  active?: boolean;
+  payload?: Array<{
+    payload: {
+      date: string;
+      averageMastery: number;
+      [key: string]: unknown;
+    };
+    [key: string]: unknown;
+  }>;
+};
+
+const CustomTooltip = ({ active, payload }: TooltipProps) => {
+  if (active && payload && payload.length && payload[0]) {
+    const firstPayload = payload[0];
+    const data = firstPayload.payload;
+    const date = 'date' in data ? String(data.date) : 'N/A';
+    const averageMastery = 'averageMastery' in data && typeof data.averageMastery === 'number' ? data.averageMastery : 0;
+
     return (
       <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-lg dark:border-slate-700 dark:bg-slate-800">
-        <p className="font-semibold text-slate-900 dark:text-white">{data.date}</p>
+        <p className="font-semibold text-slate-900 dark:text-white">{date}</p>
         <p className="text-sm text-slate-600 dark:text-slate-400">
           Average Mastery:
           {' '}
-          <span className="font-medium">{data.averageMastery.toFixed(1)}</span>
+          <span className="font-medium">{averageMastery.toFixed(1)}</span>
         </p>
       </div>
     );

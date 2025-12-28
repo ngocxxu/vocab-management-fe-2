@@ -1,5 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import { logger } from '@/libs/Logger';
 import { API_ENDPOINTS } from '@/utils/api-config';
 import { serverApi } from '@/utils/server-api';
 
@@ -23,7 +24,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(resetResponse);
   } catch (error) {
-    console.error('Reset password error:', error);
+    logger.error('Reset password error:', { error });
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to reset password' },
       { status: 500 },
