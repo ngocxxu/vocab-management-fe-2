@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { getExamUrl } from '@/constants/vocab-trainer';
-import { useExamData } from '@/hooks/useExamData';
 
 type ExamLauncherProps = {
   trainerId: string;
@@ -15,10 +14,11 @@ type ExamLauncherProps = {
 
 const ExamLauncher: React.FC<ExamLauncherProps> = ({ trainerId, questionType }) => {
   const router = useRouter();
-  const { loadExamData } = useExamData({
-    trainerId,
-    autoLoad: false,
-  });
+  // Remove useExamData hook since we don't need to load here
+  // const { loadExamData } = useExamData({
+  //   trainerId,
+  //   autoLoad: false,
+  // });
 
   const handlePlayClick = () => {
     if (!trainerId) {
@@ -27,10 +27,10 @@ const ExamLauncher: React.FC<ExamLauncherProps> = ({ trainerId, questionType }) 
 
     const examUrl = getExamUrl(trainerId, questionType);
     router.push(examUrl);
-
-    loadExamData().catch((err) => {
-      console.error('Failed to load exam data in background:', err);
-    });
+    // Remove this - the page will auto-load when it mounts
+    // loadExamData().catch((err) => {
+    //   console.error('Failed to load exam data in background:', err);
+    // });
   };
 
   return (

@@ -74,14 +74,16 @@ const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({
           </DialogHeader>
           <div className="space-y-6 p-6 pb-0">
             <BasicInfoForm />
-            <VocabSelectionForm
-              selectedIds={formData.vocabAssignmentIds}
-              initialLanguagesData={initialLanguagesData}
-              open={open}
-              cachedLanguageFolders={cachedLanguageFolders}
-              onLanguageFoldersLoaded={onLanguageFoldersLoaded}
-              editMode={editMode}
-            />
+            {open && (
+              <VocabSelectionForm
+                selectedIds={formData.vocabAssignmentIds}
+                initialLanguagesData={initialLanguagesData}
+                open={open}
+                cachedLanguageFolders={cachedLanguageFolders}
+                onLanguageFoldersLoaded={onLanguageFoldersLoaded}
+                editMode={editMode}
+              />
+            )}
           </div>
           <DialogFooter className="pt-4">
             <DialogClose asChild>

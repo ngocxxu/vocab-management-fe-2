@@ -3,8 +3,7 @@
 import { Loader2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
+import { ExamErrorState } from '@/components/shared';
 import TranslationAudioResults from '@/components/vocab-trainer/TranslationAudioResults';
 import { useSocket } from '@/hooks/useSocket';
 import { SOCKET_EVENTS } from '@/utils/socket-config';
@@ -14,6 +13,7 @@ const TranslationAudioResultPage: React.FC = () => {
   const router = useRouter();
   const trainerId = params.id as string;
   const { socket } = useSocket();
+  const [jobId, setJobId] = useState<string | null>(null);
   const [timeElapsed, setTimeElapsed] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -30,6 +30,7 @@ const TranslationAudioResultPage: React.FC = () => {
     if (cachedData) {
       try {
         const parsedData = JSON.parse(cachedData);
+        setJobId(parsedData.jobId);
         setTimeElapsed(parsedData.timeElapsed || 0);
       } catch (err) {
         console.error('Failed to parse result data:', err);
@@ -46,7 +47,7 @@ const TranslationAudioResultPage: React.FC = () => {
   }, [loadResultData]);
 
   useEffect(() => {
-    if (!socket) {
+    if (!socket || !jobId) {
       return;
     }
 
@@ -60,8 +61,16 @@ const TranslationAudioResultPage: React.FC = () => {
       };
       timestamp: string;
     }) => {
+      const currentJobId = String(jobId);
+      const eventJobId = String(data.jobId);
+
+      if (eventJobId !== currentJobId) {
+        return;
+      }
+
       if (data.status === 'evaluating') {
         setIsLoading(true);
+        setError(null);
       } else if (data.status === 'completed') {
         setEvaluationResult({
           transcript: data.data?.transcript,
@@ -79,7 +88,7 @@ const TranslationAudioResultPage: React.FC = () => {
     return () => {
       socket.off(SOCKET_EVENTS.AUDIO_EVALUATION_PROGRESS, handleAudioEvaluationProgress);
     };
-  }, [socket]);
+  }, [socket, jobId]);
 
   const handleBackToTrainers = () => {
     const storageKey = `translation_audio_result_${trainerId}`;
@@ -107,20 +116,11 @@ const TranslationAudioResultPage: React.FC = () => {
 
   if (error) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-        <div className="mx-auto max-w-2xl space-y-6 px-4">
-          <Alert variant="destructive">
-            <AlertDescription>
-              {error || 'An error occurred. Please try again.'}
-            </AlertDescription>
-          </Alert>
-          <div className="flex justify-center">
-            <Button onClick={handleBackToTrainers} variant="outline">
-              Back to Trainers
-            </Button>
-          </div>
-        </div>
-      </div>
+      <ExamErrorState
+        error={error}
+        onBackToTrainers={handleBackToTrainers}
+        variant="fullscreen"
+      />
     );
   }
 

@@ -5,6 +5,7 @@ import { CheckCircle, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { submitExam } from '@/actions/vocab-trainers';
+import { ExamErrorState } from '@/components/shared';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import FillInBlankCard from './FillInBlankCard';
@@ -179,18 +180,11 @@ const FillInBlankExam: React.FC<FillInBlankExamProps> = ({ trainerId, examData }
 
   if (examState === 'error') {
     return (
-      <div className="space-y-6">
-        <Alert variant="destructive">
-          <AlertDescription>
-            {error || 'An error occurred while submitting the exam.'}
-          </AlertDescription>
-        </Alert>
-        <div className="flex justify-center">
-          <Button onClick={handleBackToTrainers} variant="outline">
-            Back to Trainers
-          </Button>
-        </div>
-      </div>
+      <ExamErrorState
+        error={error}
+        onBackToTrainers={handleBackToTrainers}
+        fallbackMessage="An error occurred while submitting the exam."
+      />
     );
   }
 

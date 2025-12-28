@@ -5,7 +5,7 @@ import { CheckCircle, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { submitExam } from '@/actions/vocab-trainers';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { ExamErrorState } from '@/components/shared';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { EQuestionType } from '@/enum/vocab-trainer';
@@ -226,18 +226,10 @@ const TranslationAudioExam: React.FC<TranslationAudioExamProps> = ({ trainerId, 
 
   if (examState === 'error') {
     return (
-      <div className="space-y-6">
-        <Alert variant="destructive">
-          <AlertDescription>
-            {error || 'An error occurred. Please try again.'}
-          </AlertDescription>
-        </Alert>
-        <div className="flex justify-center">
-          <Button onClick={handleBackToTrainers} variant="outline">
-            Back to Trainers
-          </Button>
-        </div>
-      </div>
+      <ExamErrorState
+        error={error}
+        onBackToTrainers={handleBackToTrainers}
+      />
     );
   }
 

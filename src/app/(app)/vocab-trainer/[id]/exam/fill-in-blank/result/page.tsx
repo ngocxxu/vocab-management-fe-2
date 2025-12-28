@@ -4,8 +4,7 @@ import type { TExamSubmitResponse, TFillInBlankEvaluationProgress } from '@/type
 import { Loader2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
+import { ExamErrorState } from '@/components/shared';
 import ExamResults from '@/components/vocab-trainer/ExamResults';
 import { useSocket } from '@/hooks/useSocket';
 import { SOCKET_EVENTS } from '@/utils/socket-config';
@@ -64,7 +63,10 @@ const FillInBlankResultPage: React.FC = () => {
     }
 
     const handleFillInBlankEvaluationProgress = (data: TFillInBlankEvaluationProgress) => {
-      if (data.jobId !== jobId) {
+      const currentJobId = String(jobId);
+      const eventJobId = String(data.jobId);
+
+      if (eventJobId !== currentJobId) {
         return;
       }
 
@@ -119,20 +121,11 @@ const FillInBlankResultPage: React.FC = () => {
 
   if (error) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-        <div className="mx-auto max-w-2xl space-y-6 px-4">
-          <Alert variant="destructive">
-            <AlertDescription>
-              {error}
-            </AlertDescription>
-          </Alert>
-          <div className="flex justify-center">
-            <Button onClick={handleBackToTrainers} variant="outline">
-              Back to Trainers
-            </Button>
-          </div>
-        </div>
-      </div>
+      <ExamErrorState
+        error={error}
+        onBackToTrainers={handleBackToTrainers}
+        variant="fullscreen"
+      />
     );
   }
 

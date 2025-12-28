@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight, Clock } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSpeechSynthesis } from 'react-speech-kit';
+import { ExamErrorState } from '@/components/shared';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -199,18 +200,11 @@ const FlipCardExam: React.FC<FlipCardExamProps> = ({ trainerId, examData }) => {
   // Show error state
   if (examState === 'error') {
     return (
-      <div className="space-y-6">
-        <Alert variant="destructive">
-          <AlertDescription>
-            {error || 'An error occurred during the exam.'}
-          </AlertDescription>
-        </Alert>
-        <div className="flex justify-center">
-          <Button onClick={handleBackToTrainers} variant="outline">
-            Back to Trainers
-          </Button>
-        </div>
-      </div>
+      <ExamErrorState
+        error={error}
+        onBackToTrainers={handleBackToTrainers}
+        fallbackMessage="An error occurred during the exam."
+      />
     );
   }
 
