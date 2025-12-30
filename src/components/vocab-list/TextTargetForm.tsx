@@ -2,7 +2,7 @@
 
 import type { TSubject } from '@/types/subject';
 import { Loader2, Sparkles } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { generateTextTargetContent } from '@/actions/vocabs';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import ExamplesSection from './ExamplesSection';
 import SubjectsSection from './SubjectsSection';
+
+const COOLDOWN_DURATION_MS = 60000;
+const GLOBAL_STORAGE_KEY = 'play_button_last_click_global';
 
 type WordType = {
   id: string;
@@ -66,6 +69,53 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
   onRemoveExample,
 }) => {
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isCooldownActive, setIsCooldownActive] = useState(false);
+  const [cooldownRemaining, setCooldownRemaining] = useState(0);
+
+  const checkCooldown = useCallback(() => {
+    try {
+      const lastClickTimeStr = localStorage.getItem(GLOBAL_STORAGE_KEY);
+      if (!lastClickTimeStr) {
+        setIsCooldownActive(false);
+        setCooldownRemaining(0);
+        return;
+      }
+
+      const lastClickTime = Number.parseInt(lastClickTimeStr, 10);
+      if (Number.isNaN(lastClickTime)) {
+        localStorage.removeItem(GLOBAL_STORAGE_KEY);
+        setIsCooldownActive(false);
+        setCooldownRemaining(0);
+        return;
+      }
+
+      const now = Date.now();
+      const timeSinceLastClick = now - lastClickTime;
+      const remaining = Math.ceil((COOLDOWN_DURATION_MS - timeSinceLastClick) / 1000);
+
+      if (remaining > 0) {
+        setIsCooldownActive(true);
+        setCooldownRemaining(remaining);
+      } else {
+        setIsCooldownActive(false);
+        setCooldownRemaining(0);
+      }
+    } catch (error) {
+      console.error('Error checking cooldown:', error);
+      setIsCooldownActive(false);
+      setCooldownRemaining(0);
+    }
+  }, []);
+
+  useEffect(() => {
+    checkCooldown();
+
+    const interval = setInterval(() => {
+      checkCooldown();
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [checkCooldown]);
 
   const handleGenerateAI = async () => {
     if (!textSource || !sourceLanguageCode || !targetLanguageCode) {
@@ -101,6 +151,13 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
       }
 
       toast.success('AI generated content successfully');
+
+      try {
+        localStorage.setItem(GLOBAL_STORAGE_KEY, Date.now().toString());
+        checkCooldown();
+      } catch (error) {
+        console.error('Error saving cooldown timestamp:', error);
+      }
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Failed to generate content');
     } finally {
@@ -118,7 +175,7 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
             variant="outline"
             size="sm"
             onClick={handleGenerateAI}
-            disabled={isGenerating || !textSource || !sourceLanguageCode || !targetLanguageCode}
+            disabled={isGenerating || isCooldownActive || !textSource || !sourceLanguageCode || !targetLanguageCode}
             className="h-7 gap-1.5 text-xs"
           >
             {isGenerating
@@ -128,12 +185,22 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
                     Generating...
                   </>
                 )
-              : (
-                  <>
-                    <Sparkles className="h-3 w-3" />
-                    AI Generate
-                  </>
-                )}
+              : isCooldownActive
+                ? (
+                    <>
+                      <Loader2 className="h-3 w-3" />
+                      Wait
+                      {' '}
+                      {cooldownRemaining}
+                      s
+                    </>
+                  )
+                : (
+                    <>
+                      <Sparkles className="h-3 w-3" />
+                      AI Generate
+                    </>
+                  )}
           </Button>
         </div>
         <Input
