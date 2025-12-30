@@ -1,7 +1,11 @@
 'use client';
 
 import type { TSubject } from '@/types/subject';
-import React from 'react';
+import { Loader2, Sparkles } from 'lucide-react';
+import React, { useState } from 'react';
+import { toast } from 'sonner';
+import { generateTextTargetContent } from '@/actions/vocabs';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -35,6 +39,9 @@ type TextTargetFormProps = {
   subjects: TSubject[];
   subjectsLoading: boolean;
   subjectsError: boolean;
+  textSource: string;
+  sourceLanguageCode: string;
+  targetLanguageCode: string;
   onInputChange: (field: string, value: string, targetIndex: number) => void;
   onExampleChange: (exampleIndex: number, field: 'source' | 'target', value: string, targetIndex: number) => void;
   onAddExample: (targetIndex: number) => void;
@@ -50,25 +57,95 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
   subjects,
   subjectsLoading,
   subjectsError,
+  textSource,
+  sourceLanguageCode,
+  targetLanguageCode,
   onInputChange,
   onExampleChange,
   onAddExample,
   onRemoveExample,
 }) => {
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const handleGenerateAI = async () => {
+    if (!textSource || !sourceLanguageCode || !targetLanguageCode) {
+      toast.error('Please fill in source text and language codes first');
+      return;
+    }
+
+    setIsGenerating(true);
+    try {
+      const result = await generateTextTargetContent({
+        textSource,
+        sourceLanguageCode,
+        targetLanguageCode,
+      });
+
+      onInputChange('textTarget', result.textTarget, targetIndex);
+      onInputChange('grammar', result.grammar, targetIndex);
+      onInputChange('explanationSource', result.explanationSource, targetIndex);
+      onInputChange('explanationTarget', result.explanationTarget, targetIndex);
+
+      if (result.vocabExamples && result.vocabExamples.length > 0) {
+        const firstExample = result.vocabExamples[0];
+        if (target.vocabExamples.length > 0) {
+          onExampleChange(0, 'source', firstExample?.source || '', targetIndex);
+          onExampleChange(0, 'target', firstExample?.target || '', targetIndex);
+        } else {
+          onAddExample(targetIndex);
+          setTimeout(() => {
+            onExampleChange(0, 'source', firstExample?.source || '', targetIndex);
+            onExampleChange(0, 'target', firstExample?.target || '', targetIndex);
+          }, 0);
+        }
+      }
+
+      toast.success('AI generated content successfully');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to generate content');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <div>
+      <div>
+        <div className="flex items-center justify-between">
           <Label htmlFor={`textTarget-${targetIndex}`}>Target Text</Label>
-          <Input
-            id={`textTarget-${targetIndex}`}
-            placeholder="Enter target text..."
-            value={target.textTarget}
-            onChange={e => onInputChange('textTarget', e.target.value, targetIndex)}
-            className="mt-1"
-          />
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={handleGenerateAI}
+            disabled={isGenerating || !textSource || !sourceLanguageCode || !targetLanguageCode}
+            className="h-7 gap-1.5 text-xs"
+          >
+            {isGenerating
+              ? (
+                  <>
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                    Generating...
+                  </>
+                )
+              : (
+                  <>
+                    <Sparkles className="h-3 w-3" />
+                    AI Generate
+                  </>
+                )}
+          </Button>
         </div>
+        <Input
+          id={`textTarget-${targetIndex}`}
+          placeholder="Enter target text..."
+          value={target.textTarget}
+          onChange={e => onInputChange('textTarget', e.target.value, targetIndex)}
+          className="mt-1 w-full"
+        />
+      </div>
 
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div>
           <Label htmlFor={`wordType-${targetIndex}`}>Word Type</Label>
           <Select
@@ -101,9 +178,7 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
             </SelectContent>
           </Select>
         </div>
-      </div>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div>
           <Label htmlFor={`grammar-${targetIndex}`}>Grammar</Label>
           <Input

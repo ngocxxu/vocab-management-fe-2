@@ -298,6 +298,20 @@ export const vocabApi = {
 
     return response;
   },
+  generateTextTarget: (data: { textSource: string; sourceLanguageCode: string; targetLanguageCode: string }) => {
+    if (!data.textSource || !data.sourceLanguageCode || !data.targetLanguageCode) {
+      throw new Error('textSource, sourceLanguageCode, and targetLanguageCode are required');
+    }
+    const config = API_METHODS.vocabs.generateTextTarget(data);
+    return serverApi.post<{
+      textTarget: string;
+      grammar: string;
+      explanationSource: string;
+      explanationTarget: string;
+      subjectIds: string[];
+      vocabExamples: Array<{ source: string; target: string }>;
+    }>(config.endpoint, config.data);
+  },
 };
 
 // Statistics API endpoints

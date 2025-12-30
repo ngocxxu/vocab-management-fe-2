@@ -115,6 +115,9 @@ const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
               onRemoveExample={onRemoveExample}
               onAddTextTarget={onAddTextTarget}
               onRemoveTextTarget={onRemoveTextTarget}
+              textSource={formData.textSource}
+              sourceLanguageCode={formData.sourceLanguageCode}
+              targetLanguageCode={formData.targetLanguageCode}
               initialSubjectsData={initialSubjectsData}
             />
           </div>

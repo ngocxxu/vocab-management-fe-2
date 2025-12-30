@@ -31,6 +31,9 @@ type TextTargetTabsProps = {
   onRemoveExample: (exampleIndex: number, targetIndex: number) => void;
   onAddTextTarget: () => void;
   onRemoveTextTarget: (index: number) => void;
+  textSource: string;
+  sourceLanguageCode: string;
+  targetLanguageCode: string;
   initialSubjectsData?: TSubjectResponse;
   initialLanguagesData?: ResponseAPI<TLanguage[]>;
   initialWordTypesData?: TWordTypeResponse;
@@ -46,6 +49,9 @@ const TextTargetTabs: React.FC<TextTargetTabsProps> = ({
   onRemoveExample,
   onAddTextTarget,
   onRemoveTextTarget,
+  textSource,
+  sourceLanguageCode,
+  targetLanguageCode,
   initialSubjectsData,
   initialWordTypesData,
 }) => {
@@ -130,6 +136,9 @@ const TextTargetTabs: React.FC<TextTargetTabsProps> = ({
               subjects={subjects}
               subjectsLoading={subjectsLoading}
               subjectsError={subjectsError}
+              textSource={textSource}
+              sourceLanguageCode={sourceLanguageCode}
+              targetLanguageCode={targetLanguageCode}
               onInputChange={onInputChange}
               onExampleChange={onExampleChange}
               onAddExample={onAddExample}
