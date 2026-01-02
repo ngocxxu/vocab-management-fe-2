@@ -6,24 +6,26 @@ export const dynamic = 'force-dynamic';
 export default async function Layout(props: {
   children: React.ReactNode;
 }) {
-  // Use Promise.allSettled to handle errors gracefully without try-catch
-  const results = await Promise.allSettled([
-    notificationsApi.getMy(),
-    notificationsApi.getUnread(),
-    notificationsApi.getUnreadCount(),
-  ]);
+  let allNotifications;
+  let unreadNotifications;
+  let unreadCount;
 
-  // Extract values, defaulting to undefined if rejected
-  const allNotifications = results[0].status === 'fulfilled' ? results[0].value : undefined;
-  const unreadNotifications = results[1].status === 'fulfilled' ? results[1].value : undefined;
-  const unreadCount = results[2].status === 'fulfilled' ? results[2].value : undefined;
+  try {
+    const [allRes, unreadRes, countRes] = await Promise.allSettled([
+      notificationsApi.getMy().catch(() => undefined),
+      notificationsApi.getUnread().catch(() => undefined),
+      notificationsApi.getUnreadCount().catch(() => undefined),
+    ]);
 
-  // Log errors if any occurred
-  results.forEach((result, index) => {
-    if (result.status === 'rejected') {
-      console.error(`Failed to fetch notification data (${index}):`, result.reason);
+    allNotifications = allRes.status === 'fulfilled' ? allRes.value : undefined;
+    unreadNotifications = unreadRes.status === 'fulfilled' ? unreadRes.value : undefined;
+    unreadCount = countRes.status === 'fulfilled' ? countRes.value : undefined;
+  } catch (error) {
+    // Silently fail - production doesn't need error details
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Layout fetch error:', error);
     }
-  });
+  }
 
   return (
     <LayoutClient
