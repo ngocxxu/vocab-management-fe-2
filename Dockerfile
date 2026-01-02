@@ -71,6 +71,10 @@ RUN chown nextjs:nodejs .next
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
+# Copy BUILD_ID and server directory to ensure client reference manifest is available
+COPY --from=builder --chown=nextjs:nodejs /app/.next/BUILD_ID ./.next/BUILD_ID
+COPY --from=builder --chown=nextjs:nodejs /app/.next/server ./.next/server
+
 USER nextjs
 
 EXPOSE 3000
