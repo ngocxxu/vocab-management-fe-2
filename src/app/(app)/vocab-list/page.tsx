@@ -1,6 +1,8 @@
 import { VocabListLayout } from '@/components/vocab-list';
 import { languageFoldersApi, languagesApi, subjectsApi, vocabApi, wordTypesApi } from '@/utils/server-api';
 
+export const dynamic = 'force-dynamic';
+
 type PageProps = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };

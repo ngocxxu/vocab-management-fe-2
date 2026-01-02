@@ -2,6 +2,8 @@ import type { EQuestionType } from '@/enum/vocab-trainer';
 import { VocabTrainerLayout } from '@/components/vocab-trainer';
 import { languagesApi, vocabTrainerApi } from '@/utils/server-api';
 
+export const dynamic = 'force-dynamic';
+
 type PageProps = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };

@@ -1,6 +1,8 @@
 import { SettingsLayout } from '@/components/settings';
 import { subjectsApi } from '@/utils/server-api';
 
+export const dynamic = 'force-dynamic';
+
 export default async function SettingsPage() {
   try {
     // Fetch subjects data server-side

@@ -1,6 +1,8 @@
 import { notificationsApi } from '@/utils/server-api';
 import { LayoutClient } from './LayoutClient';
 
+export const dynamic = 'force-dynamic';
+
 export default async function Layout(props: {
   children: React.ReactNode;
 }) {

@@ -22,14 +22,14 @@ const protectedRoutes = ['/dashboard', '/library', '/vocab-list', '/vocab-traine
 const authRoutes = ['/signin', '/signup', '/forgot-password'];
 const publicRoutes = ['/auth/callback'];
 
-export default async function middleware(
+export default async function proxy(
   request: NextRequest,
   _event: NextFetchEvent,
 ) {
   const { pathname } = request.nextUrl;
 
   // Verify the request with Arcjet
-  // Use `process.env` instead of Env to reduce bundle size in middleware
+  // Use `process.env` instead of Env to reduce bundle size in proxy
   if (process.env.ARCJET_KEY) {
     const decision = await aj.protect(request);
 

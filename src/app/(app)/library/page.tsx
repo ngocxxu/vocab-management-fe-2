@@ -1,6 +1,8 @@
 import { Library } from '@/components/library';
 import { languageFoldersApi, languagesApi } from '@/utils/server-api';
 
+export const dynamic = 'force-dynamic';
+
 // Define the shape of search params explicitly
 type PageProps = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
