@@ -32,6 +32,8 @@ class ServerAPI {
       ...options,
       headers: {
         'Content-Type': 'application/json',
+        'User-Agent': 'Next.js Server/1.0',
+        'Accept': 'application/json',
         'Cookie': cookieStore.toString(),
         ...options.headers,
       },
@@ -76,6 +78,8 @@ class ServerAPI {
       ...options,
       headers: {
         'Content-Type': 'application/json',
+        'User-Agent': 'Next.js Server/1.0',
+        'Accept': 'application/json',
         'Cookie': updatedCookieStore.toString(),
         ...options.headers,
       },
@@ -267,7 +271,9 @@ export const vocabApi = {
       method: 'POST',
       body: formData,
       headers: {
-        Cookie: cookieStore.toString(),
+        'User-Agent': 'Next.js Server/1.0',
+        'Accept': 'application/json',
+        'Cookie': cookieStore.toString(),
       },
     });
 
@@ -288,7 +294,9 @@ export const vocabApi = {
     const response = await fetch(backendUrl, {
       method: 'GET',
       headers: {
-        Cookie: cookieStore.toString(),
+        'User-Agent': 'Next.js Server/1.0',
+        'Accept': 'application/json',
+        'Cookie': cookieStore.toString(),
       },
     });
 
