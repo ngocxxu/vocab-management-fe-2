@@ -2,7 +2,7 @@
 
 import { Edit, Folder, MoreVertical, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import React, { useState, useTransition } from 'react';
+import { useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { deleteLanguageFolder } from '@/actions/language-folders';
 import {

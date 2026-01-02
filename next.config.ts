@@ -6,9 +6,6 @@ import './src/libs/Env';
 
 // Define the base Next.js configuration
 const baseConfig: NextConfig = {
-  eslint: {
-    dirs: ['.'],
-  },
   poweredByHeader: false,
   reactStrictMode: true,
   // Fix for Vercel deployment
@@ -18,13 +15,10 @@ const baseConfig: NextConfig = {
   // Enable standalone output for Docker
   output: 'standalone',
   // Fix ENOENT error when copying traced files in Docker
-  experimental: {
-    outputFileTracingRoot: path.join(__dirname, './'),
-
-    outputFileTracingIncludes: {
-      '/**': ['./.next/server/app/**/*_client-reference-manifest.js'],
-    },
-  } as NextConfig['experimental'],
+  outputFileTracingRoot: path.join(__dirname, './'),
+  outputFileTracingIncludes: {
+    '/**': ['./.next/server/app/**/*_client-reference-manifest.js'],
+  },
   // Configure external image domains
   images: {
     remotePatterns: [
