@@ -14,8 +14,6 @@ export async function GET() {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'User-Agent': 'Next.js Server/1.0',
-        'Accept': 'application/json',
       },
     });
 

@@ -20,8 +20,6 @@ export async function POST(request: NextRequest) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'User-Agent': 'Next.js Server/1.0',
-        'Accept': 'application/json',
       },
       body: JSON.stringify({ refreshToken }),
     });
