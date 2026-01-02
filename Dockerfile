@@ -55,25 +55,24 @@ WORKDIR /app
 ENV NODE_ENV production
 ENV NEXT_TELEMETRY_DISABLED 1
 
-# Create a non-root user
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+# Create a non-root user (User ID 1001 for Sentry compatibility)
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
 
-# Copy the public folder
+# 1. Copy standalone (Contains server.js)
+COPY --from=builder /app/.next/standalone ./
+
+# 2. Copy static (For CSS/JS/Images)
+COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 
-# Set the correct permission for prerender cache
-RUN mkdir .next
-RUN chown nextjs:nodejs .next
+# 3. FIX: Manually copy server folder and BUILD_ID
+# This contains the 'clientReferenceManifest' that Sentry reports as missing
+COPY --from=builder /app/.next/server ./.next/server
+COPY --from=builder /app/.next/BUILD_ID ./.next/BUILD_ID
 
-# Automatically leverage output traces to reduce image size
-# https://nextjs.org/docs/advanced-features/output-file-tracing
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-
-# Copy BUILD_ID and server directory to ensure client reference manifest is available
-COPY --from=builder --chown=nextjs:nodejs /app/.next/BUILD_ID ./.next/BUILD_ID
-COPY --from=builder --chown=nextjs:nodejs /app/.next/server ./.next/server
+# Set correct permissions for nextjs user
+RUN chown -R nextjs:nodejs .next
 
 USER nextjs
 

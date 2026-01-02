@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next';
+import path from 'node:path';
 import withBundleAnalyzer from '@next/bundle-analyzer';
 import { withSentryConfig } from '@sentry/nextjs';
 import './src/libs/Env';
@@ -16,6 +17,10 @@ const baseConfig: NextConfig = {
   trailingSlash: false,
   // Enable standalone output for Docker
   output: 'standalone',
+  // Fix ENOENT error when copying traced files in Docker
+  experimental: {
+    outputFileTracingRoot: path.join(__dirname, './'),
+  } as NextConfig['experimental'],
   // Configure external image domains
   images: {
     remotePatterns: [
