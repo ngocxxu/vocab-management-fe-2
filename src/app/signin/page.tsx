@@ -4,7 +4,7 @@ import type { SignInFormData } from '@/libs/validations/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { Suspense, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -29,6 +29,77 @@ function SignInForm() {
       password: '',
     },
   });
+
+  // Test direct call to NestJS health endpoint
+  useEffect(() => {
+    const testHealthCheck = async () => {
+      try {
+        // Try to get BE URL from env or construct from API URL
+        const apiUrl = Env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+
+        // Extract base URL and construct BE URL
+        // For production: https://vocab.ngocquach.com/api -> https://vocab-be.ngocquach.com/api/v1
+        // For local: http://localhost:3001/api -> http://localhost:3002/api/v1
+        let backendUrl: string;
+
+        if (apiUrl.includes('vocab.ngocquach.com')) {
+          backendUrl = 'https://vocab-be.ngocquach.com/api/v1/health';
+        } else if (apiUrl.includes('localhost:3001')) {
+          backendUrl = 'http://localhost:3002/api/v1/health';
+        } else {
+          // Fallback: try to construct from API URL
+          const baseUrl = apiUrl.replace('/api', '');
+          backendUrl = `${baseUrl.replace('vocab.', 'vocab-be.')}/api/v1/health`;
+        }
+
+        console.error('[Health Check] Testing direct call to:', backendUrl);
+        const startTime = Date.now();
+
+        const response = await fetch(backendUrl, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+          credentials: 'omit', // Don't send cookies for health check
+        });
+
+        const duration = Date.now() - startTime;
+        const responseText = await response.text();
+
+        let data: unknown;
+        try {
+          data = responseText ? JSON.parse(responseText) : {};
+        } catch {
+          data = { message: responseText };
+        }
+
+        if (response.ok) {
+          console.error('[Health Check] ✅ Success:', {
+            status: response.status,
+            data,
+            duration: `${duration}ms`,
+          });
+        } else {
+          console.error('[Health Check] ❌ Failed:', {
+            status: response.status,
+            statusText: response.statusText,
+            data,
+            duration: `${duration}ms`,
+            headers: Object.fromEntries(response.headers.entries()),
+          });
+        }
+      } catch (error) {
+        console.error('[Health Check] ❌ Exception:', {
+          error: error instanceof Error ? error.message : String(error),
+          stack: error instanceof Error ? error.stack : undefined,
+        });
+      }
+    };
+
+    // Only run once on mount
+    testHealthCheck();
+  }, []);
 
   const onSubmit = async (data: SignInFormData) => {
     setErrorMessage('');
