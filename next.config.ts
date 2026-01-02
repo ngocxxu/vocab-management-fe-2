@@ -20,6 +20,10 @@ const baseConfig: NextConfig = {
   // Fix ENOENT error when copying traced files in Docker
   experimental: {
     outputFileTracingRoot: path.join(__dirname, './'),
+
+    outputFileTracingIncludes: {
+      '/**': ['./.next/server/app/**/*_client-reference-manifest.js'],
+    },
   } as NextConfig['experimental'],
   // Configure external image domains
   images: {
