@@ -13,16 +13,20 @@ import { useTheme } from '@/hooks/useTheme';
 
 type HeaderProps = {
   onSidebarToggle: () => void;
-  initialAllNotifications?: ResponseAPI<TNotification[]>;
-  initialUnreadNotifications?: ResponseAPI<TNotification[]>;
-  initialUnreadCount?: TUnreadCountResponse;
+  allNotifications?: ResponseAPI<TNotification[]> | null;
+  unreadNotifications?: ResponseAPI<TNotification[]> | null;
+  unreadCount?: TUnreadCountResponse | null;
+  isLoading?: boolean;
+  error?: string | null;
 };
 
 export const Header: React.FC<HeaderProps> = ({
   onSidebarToggle,
-  initialAllNotifications,
-  initialUnreadNotifications,
-  initialUnreadCount,
+  allNotifications,
+  unreadNotifications,
+  unreadCount,
+  isLoading = false,
+  error = null,
 }) => {
   const { theme, toggleTheme, mounted } = useTheme();
   const router = useRouter();
@@ -133,9 +137,11 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Notifications */}
           <NotificationDropdown
-            initialAllNotifications={initialAllNotifications}
-            initialUnreadNotifications={initialUnreadNotifications}
-            initialUnreadCount={initialUnreadCount}
+            allNotifications={allNotifications}
+            unreadNotifications={unreadNotifications}
+            unreadCount={unreadCount}
+            isLoading={isLoading}
+            error={error}
           />
 
           {/* User Profile & Logout */}

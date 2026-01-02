@@ -22,9 +22,11 @@ import { NotificationItem } from './NotificationItem';
 
 type NotificationDropdownProps = {
   className?: string;
-  initialAllNotifications?: ResponseAPI<TNotification[]>;
-  initialUnreadNotifications?: ResponseAPI<TNotification[]>;
-  initialUnreadCount?: TUnreadCountResponse;
+  allNotifications?: ResponseAPI<TNotification[]> | null;
+  unreadNotifications?: ResponseAPI<TNotification[]> | null;
+  unreadCount?: TUnreadCountResponse | null;
+  isLoading?: boolean;
+  error?: string | null;
 };
 
 type NotificationWithReadStatus = TNotification & {
@@ -144,24 +146,22 @@ const NotificationTabContent: React.FC<NotificationTabContentProps> = ({
 
 export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
   className,
-  initialAllNotifications,
-  initialUnreadNotifications,
-  initialUnreadCount,
+  allNotifications,
+  unreadNotifications,
+  unreadCount,
+  isLoading = false,
+  error = null,
 }) => {
   const [displayedCount, setDisplayedCount] = useState(5);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const [, startTransition] = useTransition();
 
-  const notifications = initialAllNotifications?.items || [];
-  const isLoadingAll = false;
-  const unreadNotifications = initialUnreadNotifications?.items || [];
-  const isLoadingUnread = false;
-  const unreadCount = initialUnreadCount?.count || 0;
+  const notifications = allNotifications?.items || [];
+  const unreadNotificationsList = unreadNotifications?.items || [];
+  const count = unreadCount?.count || 0;
 
-  // Reset displayed count when dropdown opens
   useEffect(() => {
-    // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
     setDisplayedCount(5);
   }, []);
 
@@ -199,7 +199,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
     }
   }, []);
 
-  const unreadNotificationsWithRecipients = unreadNotifications.map(notification => ({
+  const unreadNotificationsWithRecipients = unreadNotificationsList.map(notification => ({
     ...notification,
     isRead: false,
   }));
@@ -229,12 +229,12 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
           )}
         >
           <Bell className="h-5 w-5 text-slate-600 dark:text-slate-400" />
-          {unreadCount > 0 && (
+          {count > 0 && (
             <Badge
               variant="destructive"
               className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full p-0 text-xs"
             >
-              {unreadCount > 99 ? '99+' : unreadCount}
+              {count > 99 ? '99+' : count}
             </Badge>
           )}
         </Button>
@@ -247,7 +247,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
             Notifications
           </h3>
           <div className="flex items-center space-x-2">
-            {unreadCount > 0 && (
+            {count > 0 && (
               <Button
                 variant="ghost"
                 size="sm"
@@ -261,6 +261,13 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
           </div>
         </div>
 
+        {/* Error Message */}
+        {error && (
+          <div className="px-4 py-2 text-sm text-red-600 dark:text-red-400">
+            {error}
+          </div>
+        )}
+
         {/* Tabs */}
         <Tabs defaultValue="unread" className="w-full">
           <TabsList className="grid w-full grid-cols-2 rounded-none border-b border-slate-200 dark:border-slate-700">
@@ -268,9 +275,9 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
               value="unread"
             >
               Unread
-              {unreadCount > 0 && (
+              {count > 0 && (
                 <Badge variant="secondary" className="ml-2 h-4 px-1 text-xs">
-                  {unreadCount}
+                  {count}
                 </Badge>
               )}
             </TabsTrigger>
@@ -288,7 +295,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
           <TabsContent value="unread" className="m-0">
             <NotificationTabContent
               notifications={displayedUnreadNotifications}
-              isLoading={isLoadingUnread}
+              isLoading={isLoading}
               emptyMessage="No unread notifications"
               displayedCount={displayedUnreadNotifications.length}
               totalCount={unreadNotificationsWithRecipients.length}
@@ -303,7 +310,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
           <TabsContent value="all" className="m-0">
             <NotificationTabContent
               notifications={displayedAllNotifications}
-              isLoading={isLoadingAll}
+              isLoading={isLoading}
               emptyMessage="No notifications yet"
               displayedCount={displayedAllNotifications.length}
               totalCount={allNotificationsWithRecipients?.length || 0}

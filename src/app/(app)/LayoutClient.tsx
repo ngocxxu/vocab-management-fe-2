@@ -36,9 +36,11 @@ export function LayoutClient({
         >
           <Header
             onSidebarToggle={toggleSidebar}
-            initialAllNotifications={initialAllNotifications}
-            initialUnreadNotifications={initialUnreadNotifications}
-            initialUnreadCount={initialUnreadCount}
+            allNotifications={initialAllNotifications}
+            unreadNotifications={initialUnreadNotifications}
+            unreadCount={initialUnreadCount}
+            isLoading={false}
+            error={null}
           />
           <div className="flex-1 overflow-auto">
             {children}
