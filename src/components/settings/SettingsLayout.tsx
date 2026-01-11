@@ -54,8 +54,8 @@ export const SettingsLayout: React.FC<SettingsLayoutProps> = ({ initialSubjectsD
 
   const tabs = [
     { id: 'account', label: 'Account' },
-    { id: 'notifications', label: 'Notifications' },
     { id: 'subjects', label: 'Subjects' },
+    { id: 'notifications', label: 'Notifications' },
   ] as const;
 
   return (
@@ -88,6 +88,10 @@ export const SettingsLayout: React.FC<SettingsLayoutProps> = ({ initialSubjectsD
             />
           </TabsContent>
 
+          <TabsContent value="subjects" className="space-y-6">
+            <SubjectSection initialSubjectsData={initialSubjectsData} />
+          </TabsContent>
+
           <TabsContent value="notifications" className="space-y-6">
             <div className="py-12 text-center">
               <h3 className="mb-2 text-lg font-medium text-slate-900 dark:text-slate-100">
@@ -97,10 +101,6 @@ export const SettingsLayout: React.FC<SettingsLayoutProps> = ({ initialSubjectsD
                 Notification preferences will be available here.
               </p>
             </div>
-          </TabsContent>
-
-          <TabsContent value="subjects" className="space-y-6">
-            <SubjectSection initialSubjectsData={initialSubjectsData} />
           </TabsContent>
         </Tabs>
       </div>

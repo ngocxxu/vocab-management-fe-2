@@ -27,12 +27,12 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
       <div className="relative mx-auto max-w-4xl">
         {/* Speech bubble with gradient border */}
         <div className="relative rounded-3xl border-4 bg-gradient-to-br from-yellow-400 via-yellow-500 to-pink-500 p-1">
-          <div className="rounded-3xl bg-white p-8 dark:bg-slate-900">
+          <div className="rounded-3xl bg-white p-4 sm:p-6 md:p-8 dark:bg-slate-900">
             {/* Question mark icon with sparkle effect */}
-            <div className="absolute -top-4 -left-4">
+            <div className="absolute -top-2 -left-2 sm:-top-4 sm:-left-4">
               <div className="relative">
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-pink-500 shadow-lg">
-                  <HelpCircle className="h-8 w-8 text-white" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-pink-500 shadow-lg sm:h-16 sm:w-16">
+                  <HelpCircle className="h-6 w-6 text-white sm:h-8 sm:w-8" />
                 </div>
                 {/* Sparkle effects */}
                 <div className="absolute -top-2 -right-2 h-3 w-3 animate-pulse rounded-full bg-yellow-400" />
@@ -42,17 +42,17 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
             </div>
 
             {/* Question content */}
-            <div className="ml-8 text-center">
+            <div className="ml-6 text-center sm:ml-8">
               <Badge
                 variant="outline"
-                className="mb-4 border-yellow-500/50 bg-yellow-500/10 px-4 py-2 text-lg font-semibold text-yellow-600 dark:border-yellow-400/50 dark:bg-yellow-400/10 dark:text-yellow-400"
+                className="mb-3 border-yellow-500/50 bg-yellow-500/10 px-3 py-1 text-sm font-semibold text-yellow-600 sm:mb-4 sm:px-4 sm:py-2 sm:text-lg dark:border-yellow-400/50 dark:bg-yellow-400/10 dark:text-yellow-400"
               >
                 Question
                 {' '}
                 {questionNumber}
               </Badge>
 
-              <h2 className="text-2xl leading-relaxed font-bold text-slate-900 lg:text-3xl dark:text-white">
+              <h2 className="text-xl leading-relaxed font-bold text-slate-900 sm:text-2xl lg:text-3xl dark:text-white">
                 {question.content}
               </h2>
             </div>

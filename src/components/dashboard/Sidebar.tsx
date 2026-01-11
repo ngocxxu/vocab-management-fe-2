@@ -38,9 +38,10 @@ const menuItems: MenuItem[] = [
 
 type SidebarProps = {
   isOpen: boolean;
+  onClose?: () => void;
 };
 
-export const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const router = useRouter();
   const pathname = usePathname();
   const [user, setUser] = useState<TUser | null>(null);
@@ -61,6 +62,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
 
   const handleButtonClick = (buttonId: string) => {
     router.push(`/${buttonId}`);
+    if (onClose && window.innerWidth < 768) {
+      onClose();
+    }
   };
 
   const handleSignOut = async () => {
@@ -75,7 +79,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
 
   return (
     <aside
-      className={`fixed top-0 left-0 z-40 flex h-screen w-72 flex-col border-r border-slate-200/60 bg-white shadow-sm transition-all duration-300 ease-in-out dark:border-slate-700/60 dark:bg-slate-900 ${
+      className={`fixed top-0 left-0 z-40 flex h-screen w-72 flex-col border-r border-slate-200/60 bg-white shadow-sm transition-all duration-300 ease-in-out md:translate-x-0 dark:border-slate-700/60 dark:bg-slate-900 ${
         isOpen ? 'translate-x-0' : '-translate-x-full'
       }`}
     >

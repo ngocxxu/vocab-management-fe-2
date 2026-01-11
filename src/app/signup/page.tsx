@@ -97,18 +97,18 @@ function SignUpContent() {
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 px-4 py-8 dark:from-slate-900 dark:to-slate-800">
       <div className="w-full max-w-md">
         <Card className="shadow-xl">
-          <CardHeader className="space-y-1">
+          <CardHeader className="space-y-1 px-4 pt-6 sm:px-6 sm:pt-6">
             <div className="mb-4 flex items-center justify-center">
               <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-r from-purple-600 to-blue-600">
                 <span className="text-xl font-bold text-white">V</span>
               </div>
             </div>
-            <CardTitle className="text-center text-2xl">Create Account</CardTitle>
-            <CardDescription className="text-center text-gray-600 dark:text-gray-400">
+            <CardTitle className="text-center text-xl sm:text-2xl">Create Account</CardTitle>
+            <CardDescription className="text-center text-sm text-gray-600 sm:text-base dark:text-gray-400">
               Sign up to get started with your vocabulary management
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4 pb-6 sm:px-6 sm:pb-6">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 {errorMessage && (
@@ -117,7 +117,7 @@ function SignUpContent() {
                   </Alert>
                 )}
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <FormField
                     control={form.control}
                     name="firstName"
@@ -128,6 +128,7 @@ function SignUpContent() {
                           <Input
                             type="text"
                             placeholder="John"
+                            className="h-11"
                             {...field}
                           />
                         </FormControl>
@@ -146,6 +147,7 @@ function SignUpContent() {
                           <Input
                             type="text"
                             placeholder="Doe"
+                            className="h-11"
                             {...field}
                           />
                         </FormControl>
@@ -165,6 +167,7 @@ function SignUpContent() {
                         <Input
                           type="email"
                           placeholder="john@example.com"
+                          className="h-11"
                           {...field}
                         />
                       </FormControl>
@@ -183,6 +186,7 @@ function SignUpContent() {
                         <Input
                           type="tel"
                           placeholder="+1 (555) 123-4567"
+                          className="h-11"
                           {...field}
                         />
                       </FormControl>
@@ -201,6 +205,7 @@ function SignUpContent() {
                         <Input
                           type="password"
                           placeholder="Create a strong password"
+                          className="h-11"
                           {...field}
                         />
                       </FormControl>
@@ -219,6 +224,7 @@ function SignUpContent() {
                         <Input
                           type="password"
                           placeholder="Confirm your password"
+                          className="h-11"
                           {...field}
                         />
                       </FormControl>
@@ -229,7 +235,7 @@ function SignUpContent() {
 
                 <Button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+                  className="h-11 w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
                   disabled={form.formState.isSubmitting}
                 >
                   {form.formState.isSubmitting ? 'Creating Account...' : 'Create Account'}
@@ -249,7 +255,7 @@ function SignUpContent() {
                 <Button
                   type="button"
                   variant="outline"
-                  className="w-full"
+                  className="h-11 w-full"
                   onClick={() => handleProviderSignIn('google')}
                   disabled={isOAuthLoading || form.formState.isSubmitting}
                 >

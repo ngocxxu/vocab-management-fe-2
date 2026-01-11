@@ -210,143 +210,145 @@ export function DataTable<TData, TValue>({
       {/* Table */}
       <Card className="overflow-hidden border-0 bg-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.08)] backdrop-blur-sm dark:bg-slate-800/80">
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                {table.getHeaderGroups().map(headerGroup => (
-                  <tr key={headerGroup.id} className={`border-b border-slate-200 dark:border-slate-700 ${headerClassName}`}>
-                    {headerGroup.headers.map(header => (
-                      <th
-                        key={`${header.id}-${header.column.id}`}
-                        className={`bg-slate-50/50 px-6 py-4 text-left text-sm font-semibold text-slate-700 dark:bg-slate-800/50 dark:text-slate-300 ${headerClassName}`}
-                        style={{ width: header.getSize() !== 150 ? header.getSize() : undefined }}
-                      >
-                        {header.isPlaceholder
-                          ? null
-                          : (
-                              <div
-                                className={`w-full cursor-pointer p-0 text-left font-semibold text-slate-700 select-none dark:text-slate-300 ${
-                                  header.column.getCanSort()
-                                    ? 'hover:text-slate-900 dark:hover:text-slate-100'
-                                    : 'cursor-default'
-                                }`}
-                                onClick={header.column.getCanSort() ? header.column.getToggleSortingHandler() : undefined}
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter' || e.key === ' ') {
-                                    e.preventDefault();
-                                    const handler = header.column.getToggleSortingHandler();
-                                    if (handler) {
-                                      handler(e);
+          <div className="-mx-4 overflow-x-auto sm:mx-0">
+            <div className="inline-block min-w-full align-middle sm:px-0">
+              <table className="w-full">
+                <thead>
+                  {table.getHeaderGroups().map(headerGroup => (
+                    <tr key={headerGroup.id} className={`border-b border-slate-200 dark:border-slate-700 ${headerClassName}`}>
+                      {headerGroup.headers.map(header => (
+                        <th
+                          key={`${header.id}-${header.column.id}`}
+                          className={`bg-slate-50/50 px-3 py-3 text-left text-xs font-semibold text-slate-700 sm:px-6 sm:py-4 sm:text-sm dark:bg-slate-800/50 dark:text-slate-300 ${headerClassName}`}
+                          style={{ width: header.getSize() !== 150 ? header.getSize() : undefined }}
+                        >
+                          {header.isPlaceholder
+                            ? null
+                            : (
+                                <div
+                                  className={`w-full cursor-pointer p-0 text-left font-semibold text-slate-700 select-none dark:text-slate-300 ${
+                                    header.column.getCanSort()
+                                      ? 'hover:text-slate-900 dark:hover:text-slate-100'
+                                      : 'cursor-default'
+                                  }`}
+                                  onClick={header.column.getCanSort() ? header.column.getToggleSortingHandler() : undefined}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                      e.preventDefault();
+                                      const handler = header.column.getToggleSortingHandler();
+                                      if (handler) {
+                                        handler(e);
+                                      }
                                     }
+                                  }}
+                                  role={header.column.getCanSort() ? 'button' : undefined}
+                                  tabIndex={header.column.getCanSort() ? 0 : undefined}
+                                  title={
+                                    header.column.getCanSort()
+                                      ? header.column.getNextSortingOrder() === 'asc'
+                                        ? 'Sort ascending'
+                                        : header.column.getNextSortingOrder() === 'desc'
+                                          ? 'Sort descending'
+                                          : 'Clear sort'
+                                      : undefined
                                   }
-                                }}
-                                role={header.column.getCanSort() ? 'button' : undefined}
-                                tabIndex={header.column.getCanSort() ? 0 : undefined}
-                                title={
-                                  header.column.getCanSort()
-                                    ? header.column.getNextSortingOrder() === 'asc'
-                                      ? 'Sort ascending'
-                                      : header.column.getNextSortingOrder() === 'desc'
-                                        ? 'Sort descending'
-                                        : 'Clear sort'
-                                    : undefined
-                                }
-                              >
-                                {flexRender(header.column.columnDef.header, header.getContext())}
-                                {header.column.getCanSort() && (
-                                  <span className="ml-2 inline-block">
-                                    {{
-                                      asc: <ArrowUp className="h-4 w-4" />,
-                                      desc: <ArrowDown className="h-4 w-4" />,
-                                    }[header.column.getIsSorted() as string] ?? <ArrowUpDown className="h-4 w-4" />}
-                                  </span>
-                                )}
-                              </div>
-                            )}
-                      </th>
-                    ))}
-                  </tr>
-                ))}
-              </thead>
-              <tbody>
-                {isLoading
-                  ? (
-                      Array.from({ length: skeletonRowCount ?? pageSize }).map((_, idx) => (
-                        <tr key={`skeleton-row-${idx}`} className={`border-b border-slate-100 dark:border-slate-700 ${rowClassName}`}>
-                          <td className={`px-6 py-4 ${cellClassName}`} colSpan={memoizedColumns.length}>
-                            <div className="flex items-center gap-4">
-                              <Skeleton className="h-5 w-5" />
-                              <Skeleton className="h-5 w-1/3" />
-                              <Skeleton className="h-5 w-1/2" />
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    )
-                  : table.getRowModel().rows.length === 0
-                    ? (
-                        <tr className={`border-b border-slate-100 dark:border-slate-700 ${rowClassName}`}>
-                          <td className={`px-6 py-6 text-sm text-slate-500 dark:text-slate-400 ${cellClassName}`} colSpan={memoizedColumns.length}>
-                            No results
-                          </td>
-                        </tr>
-                      )
-                    : (
-                        table.getRowModel().rows.map((row) => {
-                          const rowId = (row.original as any).id;
-                          const isExpanded = expandedState[rowId];
-                          return (
-                            <React.Fragment key={`${rowId}-${isExpanded ? 'expanded' : 'collapsed'}`}>
-                              <tr
-                                className={`cursor-pointer border-b border-slate-100 transition-colors duration-200 hover:bg-slate-200/50 dark:border-slate-700 dark:hover:bg-slate-700/50 ${
-                                  isExpanded ? 'bg-slate-200/50 dark:bg-slate-700/50' : ''
-                                } ${rowClassName}`}
-                                onClick={(e) => {
-                                // Don't expand if clicking on interactive elements
-                                  const target = e.target as HTMLElement;
-                                  if (target.closest('input[type="checkbox"], button, [role="button"], [data-no-expand]')) {
-                                    return;
-                                  }
-
-                                  // Handle row click for navigation
-                                  if (onRowClick) {
-                                    onRowClick(row.original);
-                                    return;
-                                  }
-
-                                  // Handle expand/collapse if no row click handler
-                                  if (renderExpandedRow && onExpandedChange) {
-                                    const rowId = (row.original as any).id;
-                                    onExpandedChange({
-                                      ...expandedState,
-                                      [rowId]: !expandedState[rowId],
-                                    });
-                                  }
-                                }}
-                              >
-                                {row.getVisibleCells().map(cell => (
-                                  <td key={`${cell.id}-${cell.column.id}`} className={`px-6 py-4 ${cellClassName}`}>
-                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                  </td>
-                                ))}
-                              </tr>
-                              {renderExpandedRow && expandedState[(row.original as any).id] && (
-                                renderExpandedRow(row)
+                                >
+                                  {flexRender(header.column.columnDef.header, header.getContext())}
+                                  {header.column.getCanSort() && (
+                                    <span className="ml-2 inline-block">
+                                      {{
+                                        asc: <ArrowUp className="h-4 w-4" />,
+                                        desc: <ArrowDown className="h-4 w-4" />,
+                                      }[header.column.getIsSorted() as string] ?? <ArrowUpDown className="h-4 w-4" />}
+                                    </span>
+                                  )}
+                                </div>
                               )}
-                            </React.Fragment>
-                          );
-                        })
-                      )}
-              </tbody>
-            </table>
+                        </th>
+                      ))}
+                    </tr>
+                  ))}
+                </thead>
+                <tbody>
+                  {isLoading
+                    ? (
+                        Array.from({ length: skeletonRowCount ?? pageSize }).map((_, idx) => (
+                          <tr key={`skeleton-row-${idx}`} className={`border-b border-slate-100 dark:border-slate-700 ${rowClassName}`}>
+                            <td className={`px-3 py-3 sm:px-6 sm:py-4 ${cellClassName}`} colSpan={memoizedColumns.length}>
+                              <div className="flex items-center gap-4">
+                                <Skeleton className="h-5 w-5" />
+                                <Skeleton className="h-5 w-1/3" />
+                                <Skeleton className="h-5 w-1/2" />
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      )
+                    : table.getRowModel().rows.length === 0
+                      ? (
+                          <tr className={`border-b border-slate-100 dark:border-slate-700 ${rowClassName}`}>
+                            <td className={`px-3 py-4 text-xs text-slate-500 sm:px-6 sm:py-6 sm:text-sm dark:text-slate-400 ${cellClassName}`} colSpan={memoizedColumns.length}>
+                              No results
+                            </td>
+                          </tr>
+                        )
+                      : (
+                          table.getRowModel().rows.map((row) => {
+                            const rowId = (row.original as any).id;
+                            const isExpanded = expandedState[rowId];
+                            return (
+                              <React.Fragment key={`${rowId}-${isExpanded ? 'expanded' : 'collapsed'}`}>
+                                <tr
+                                  className={`cursor-pointer border-b border-slate-100 transition-colors duration-200 hover:bg-slate-200/50 dark:border-slate-700 dark:hover:bg-slate-700/50 ${
+                                    isExpanded ? 'bg-slate-200/50 dark:bg-slate-700/50' : ''
+                                  } ${rowClassName}`}
+                                  onClick={(e) => {
+                                    // Don't expand if clicking on interactive elements
+                                    const target = e.target as HTMLElement;
+                                    if (target.closest('input[type="checkbox"], button, [role="button"], [data-no-expand]')) {
+                                      return;
+                                    }
+
+                                    // Handle row click for navigation
+                                    if (onRowClick) {
+                                      onRowClick(row.original);
+                                      return;
+                                    }
+
+                                    // Handle expand/collapse if no row click handler
+                                    if (renderExpandedRow && onExpandedChange) {
+                                      const rowId = (row.original as any).id;
+                                      onExpandedChange({
+                                        ...expandedState,
+                                        [rowId]: !expandedState[rowId],
+                                      });
+                                    }
+                                  }}
+                                >
+                                  {row.getVisibleCells().map(cell => (
+                                    <td key={`${cell.id}-${cell.column.id}`} className={`px-3 py-3 sm:px-6 sm:py-4 ${cellClassName}`}>
+                                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                    </td>
+                                  ))}
+                                </tr>
+                                {renderExpandedRow && expandedState[(row.original as any).id] && (
+                                  renderExpandedRow(row)
+                                )}
+                              </React.Fragment>
+                            );
+                          })
+                        )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </CardContent>
       </Card>
 
       {/* Pagination */}
       {showPagination && (
-        <div className="flex items-center justify-between">
-          <div className="text-sm text-slate-600 dark:text-slate-400">
+        <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
+          <div className="text-xs text-slate-600 sm:text-sm dark:text-slate-400">
             Showing
             {' '}
             {manualPagination ? data.length : table.getFilteredRowModel().rows.length}

@@ -61,10 +61,10 @@ export default function HomePage() {
               <span className="text-2xl font-bold text-white">V</span>
             </div>
           </div>
-          <h1 className="mb-4 text-5xl font-bold text-gray-900 dark:text-white">
+          <h1 className="mb-4 text-3xl font-bold text-gray-900 sm:text-4xl lg:text-5xl dark:text-white">
             Vocabulary Management
           </h1>
-          <p className="mx-auto max-w-2xl text-xl text-gray-600 dark:text-gray-400">
+          <p className="mx-auto max-w-2xl text-base text-gray-600 sm:text-lg lg:text-xl dark:text-gray-400">
             Master new languages with our intelligent vocabulary management system.
             Track, learn, and practice words efficiently.
           </p>

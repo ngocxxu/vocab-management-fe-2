@@ -2,7 +2,7 @@
 
 import type { ResponseAPI } from '@/types';
 import type { TNotification, TUnreadCountResponse } from '@/types/notification';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Header, Sidebar } from '@/components/dashboard';
 import { SocketProvider } from '@/providers/SocketProvider';
 
@@ -19,19 +19,46 @@ export function LayoutClient({
   initialUnreadNotifications,
   initialUnreadCount,
 }: LayoutClientProps) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setIsSidebarOpen(true);
+      } else {
+        setIsSidebarOpen(false);
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+  const closeSidebar = () => {
+    if (window.innerWidth < 768) {
+      setIsSidebarOpen(false);
+    }
+  };
+
   return (
     <SocketProvider>
       <div className="flex h-screen bg-slate-50 dark:bg-slate-900">
-        <Sidebar isOpen={isSidebarOpen} />
+        {isSidebarOpen && (
+          <div
+            className="fixed inset-0 z-30 bg-black/50 md:hidden"
+            onClick={closeSidebar}
+            aria-hidden="true"
+          />
+        )}
+        <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
         <div
-          className={`flex flex-1 flex-col transition-all duration-300 ease-in-out ${
-            isSidebarOpen ? 'ml-72' : 'ml-0'
+          className={`flex flex-1 flex-col transition-all duration-300 ease-in-out md:ml-72 ${
+            isSidebarOpen ? 'ml-0 md:ml-72' : 'ml-0'
           }`}
         >
           <Header

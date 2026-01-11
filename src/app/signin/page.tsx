@@ -79,18 +79,18 @@ function SignInForm() {
 
   return (
     <Card className="shadow-xl">
-      <CardHeader className="space-y-1">
+      <CardHeader className="space-y-1 px-4 pt-6 sm:px-6 sm:pt-6">
         <div className="mb-4 flex items-center justify-center">
           <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-r from-purple-600 to-blue-600">
             <span className="text-xl font-bold text-white">V</span>
           </div>
         </div>
-        <CardTitle className="text-center text-2xl">Welcome back</CardTitle>
-        <CardDescription className="text-center text-gray-600 dark:text-gray-400">
+        <CardTitle className="text-center text-xl sm:text-2xl">Welcome back</CardTitle>
+        <CardDescription className="text-center text-sm text-gray-600 sm:text-base dark:text-gray-400">
           Sign in to your account to continue
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-4 pb-6 sm:px-6 sm:pb-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             {errorMessage && (
@@ -146,7 +146,7 @@ function SignInForm() {
 
             <Button
               type="submit"
-              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+              className="h-11 w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
               disabled={form.formState.isSubmitting}
             >
               {form.formState.isSubmitting ? 'Signing in...' : 'Sign In'}
@@ -166,7 +166,7 @@ function SignInForm() {
             <Button
               type="button"
               variant="outline"
-              className="w-full"
+              className="h-11 w-full"
               onClick={() => handleProviderSignIn('google')}
               disabled={isOAuthLoading || form.formState.isSubmitting}
             >
@@ -218,7 +218,7 @@ function SignInForm() {
 
 export default function SignInPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 px-4 dark:from-slate-900 dark:to-slate-800">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 px-4 py-8 dark:from-slate-900 dark:to-slate-800">
       <div className="w-full max-w-md">
         <Suspense fallback={<Skeleton className="h-96 w-full" />}>
           <SignInForm />

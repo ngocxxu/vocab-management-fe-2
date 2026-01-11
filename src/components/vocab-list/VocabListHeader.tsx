@@ -96,15 +96,15 @@ const VocabListHeader: React.FC<VocabListHeaderProps> = ({
         </p>
       </div>
 
-      <div className="flex items-center space-x-3">
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3">
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="outline" className="border-slate-200 bg-white/80 backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/80">
+            <Button variant="outline" className="h-10 border-slate-200 bg-white/80 backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/80">
               <Filter className="mr-2 h-4 w-4" />
-              Filter
+              <span className="hidden sm:inline">Filter</span>
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-80" align="end">
+          <PopoverContent className="w-[calc(100vw-2rem)] sm:w-80" align="end">
             <div className="space-y-4">
               <div className="space-y-2">
                 <h4 className="font-medium text-slate-900 dark:text-white">Filter Vocabularies</h4>
@@ -153,17 +153,17 @@ const VocabListHeader: React.FC<VocabListHeaderProps> = ({
         <Button
           onClick={onImportExcel}
           variant="outline"
-          className="border-slate-200 bg-white/80 backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/80"
+          className="h-10 border-slate-200 bg-white/80 backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/80"
         >
           <Upload className="mr-2 h-4 w-4" />
-          Import Excel
+          <span className="hidden sm:inline">Import Excel</span>
         </Button>
         <Button
           onClick={onAddVocab}
-          className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg hover:from-blue-700 hover:to-indigo-700 dark:from-blue-500 dark:to-indigo-500 dark:hover:from-blue-600 dark:hover:to-indigo-600"
+          className="h-10 bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg hover:from-blue-700 hover:to-indigo-700 dark:from-blue-500 dark:to-indigo-500 dark:hover:from-blue-600 dark:hover:to-indigo-600"
         >
           <Plus className="mr-2 h-4 w-4" />
-          Add Vocab
+          <span className="hidden sm:inline">Add Vocab</span>
         </Button>
       </div>
     </div>

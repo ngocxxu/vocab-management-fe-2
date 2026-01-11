@@ -15,26 +15,27 @@ const LibraryHeader: React.FC<LibraryHeaderProps> = memo(({
     onCreateFolder();
   }, [onCreateFolder]);
   return (
-    <div className="flex items-center justify-between text-center">
+    <div className="flex flex-col items-start justify-between gap-4 text-center sm:flex-row sm:items-center sm:gap-0">
       <div className="flex items-center justify-center space-x-3">
         <div className="text-left">
-          <h1 className="bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-3xl font-bold text-transparent dark:from-white dark:to-slate-200">
+          <h1 className="bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-2xl font-bold text-transparent sm:text-3xl dark:from-white dark:to-slate-200">
             Language Library
           </h1>
-          <p className="text-base text-slate-600 dark:text-slate-400">
+          <p className="text-sm text-slate-600 sm:text-base dark:text-slate-400">
             Organize and explore your vocabulary by language combinations
           </p>
         </div>
       </div>
 
       {/* Action Buttons */}
-      <div className="flex items-center justify-end space-x-4">
+      <div className="flex w-full items-center justify-end space-x-4 sm:w-auto">
         <Button
           onClick={handleCreateFolder}
-          className="transform bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg transition-all duration-300 hover:scale-105 hover:from-blue-700 hover:to-indigo-700 hover:shadow-xl"
+          className="h-10 w-full transform bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg transition-all duration-300 hover:scale-105 hover:from-blue-700 hover:to-indigo-700 hover:shadow-xl sm:w-auto"
         >
           <Plus className="mr-2 h-5 w-5" />
-          Create New Folder
+          <span className="hidden sm:inline">Create New Folder</span>
+          <span className="sm:hidden">Create Folder</span>
         </Button>
       </div>
     </div>

@@ -39,11 +39,11 @@ const VocabExamHeader: React.FC<VocabExamHeaderProps> = ({
     <div className="space-y-6">
       {/* Main Header */}
       <div className="relative mx-auto max-w-4xl">
-        <div className="rounded-3xl border-2 border-yellow-500/30 bg-white p-6 backdrop-blur-sm dark:border-yellow-400/30 dark:bg-slate-900">
+        <div className="rounded-3xl border-2 border-yellow-500/30 bg-white p-4 backdrop-blur-sm sm:p-6 dark:border-yellow-400/30 dark:bg-slate-900">
           <div className="flex flex-col items-center justify-between space-y-4 sm:flex-row sm:space-y-0">
             {/* Title and Progress */}
             <div className="text-center sm:text-left">
-              <h1 className="mb-2 text-2xl font-bold text-slate-900 lg:text-3xl dark:text-white">
+              <h1 className="mb-2 text-xl font-bold text-slate-900 sm:text-2xl lg:text-3xl dark:text-white">
                 {trainerName}
               </h1>
 
@@ -65,11 +65,11 @@ const VocabExamHeader: React.FC<VocabExamHeaderProps> = ({
             </div>
 
             {/* Time Remaining Display */}
-            <div className={`flex items-center space-x-3 rounded-2xl border-2 border-yellow-500/30 bg-yellow-500/10 px-6 py-3 dark:border-yellow-400/30 dark:bg-yellow-400/10 ${getTimeColor(timeRemaining)}`}>
-              <Clock className="h-6 w-6" />
+            <div className={`flex items-center space-x-2 rounded-2xl border-2 border-yellow-500/30 bg-yellow-500/10 px-4 py-2 sm:space-x-3 sm:px-6 sm:py-3 dark:border-yellow-400/30 dark:bg-yellow-400/10 ${getTimeColor(timeRemaining)}`}>
+              <Clock className="h-5 w-5 sm:h-6 sm:w-6" />
               <div className="flex flex-col">
                 <span className="text-xs font-medium opacity-80">Time Remaining</span>
-                <span className="font-mono text-2xl font-bold">
+                <span className="font-mono text-lg font-bold sm:text-2xl">
                   {formatTime(timeRemaining)}
                 </span>
               </div>

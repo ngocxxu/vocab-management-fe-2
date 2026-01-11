@@ -64,31 +64,31 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="border-b border-slate-200/60 bg-white px-6 py-4 shadow-sm dark:border-slate-700/60 dark:bg-slate-900">
-      <div className="flex items-center justify-between">
+    <header className="border-b border-slate-200/60 bg-white px-4 py-3 shadow-sm md:px-6 md:py-4 dark:border-slate-700/60 dark:bg-slate-900">
+      <div className="flex items-center justify-between gap-2">
         {/* Left Section */}
-        <div className="flex items-center space-x-6">
+        <div className="flex flex-1 items-center gap-2 md:gap-6">
           {/* Hamburger Menu */}
           <Button
             variant="ghost"
             size="icon"
-            className="h-10 w-10 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800"
+            className="h-10 w-10 flex-shrink-0 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800"
             onClick={onSidebarToggle}
           >
             <Menu className="h-5 w-5 text-slate-600 dark:text-slate-400" />
           </Button>
 
           {/* Search */}
-          <div className="relative">
+          <div className="relative flex-1 md:flex-none">
             <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
             <Input
               placeholder="Search..."
-              className="h-10 w-64 rounded-xl border-slate-200 bg-slate-50 pl-10 text-sm focus:border-blue-500 focus:bg-white focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:placeholder:text-slate-500 dark:focus:border-blue-400 dark:focus:bg-slate-700 dark:focus:ring-blue-400"
+              className="h-10 w-full rounded-xl border-slate-200 bg-slate-50 pl-10 text-sm focus:border-blue-500 focus:bg-white focus:ring-blue-500 md:w-64 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:placeholder:text-slate-500 dark:focus:border-blue-400 dark:focus:bg-slate-700 dark:focus:ring-blue-400"
             />
           </div>
 
-          {/* Navigation Links */}
-          <div className="flex items-center space-x-6">
+          {/* Navigation Links - Hidden on mobile */}
+          <div className="hidden items-center space-x-6 lg:flex">
             {navigationItems.map((item) => {
               // Special handling for vocab-trainer to include exam pages
               const isActive = item.path === '/vocab-trainer'
@@ -113,12 +113,12 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Right Section */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center gap-2 md:gap-4">
           {/* Dark Mode Toggle */}
           <Button
             variant="ghost"
             size="icon"
-            className="h-10 w-10 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800"
+            className="h-10 w-10 flex-shrink-0 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800"
             onClick={toggleTheme}
             title={
               mounted ? (theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode') : 'Toggle theme'
@@ -144,8 +144,8 @@ export const Header: React.FC<HeaderProps> = ({
             error={error}
           />
 
-          {/* User Profile & Logout */}
-          <div className="flex items-center space-x-2">
+          {/* User Profile & Logout - Stack on mobile */}
+          <div className="hidden items-center space-x-2 sm:flex">
             {user?.avatar
               ? (
                   <Image
@@ -161,7 +161,7 @@ export const Header: React.FC<HeaderProps> = ({
                     <User className="h-5 w-5 text-white" />
                   </div>
                 )}
-            <div className="text-sm">
+            <div className="hidden text-sm lg:block">
               <div className="font-medium text-slate-900 dark:text-slate-100">
                 {user?.firstName}
                 {' '}

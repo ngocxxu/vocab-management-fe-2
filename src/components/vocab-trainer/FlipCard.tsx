@@ -37,7 +37,7 @@ const FlipCard: React.FC<FlipCardProps> = ({
           }
         }}
         onClick={onFlip}
-        className={`relative h-96 w-full transform-gpu transition-transform duration-700 ${
+        className={`relative h-64 w-full transform-gpu transition-transform duration-700 sm:h-80 md:h-96 ${
           isFlipped ? 'rotate-y-180' : ''
         }`}
         style={{ transformStyle: 'preserve-3d' }}
@@ -47,10 +47,10 @@ const FlipCard: React.FC<FlipCardProps> = ({
           className="absolute inset-0 rounded-3xl border-4 bg-gradient-to-br from-yellow-400 via-yellow-500 to-pink-500 p-1 backface-hidden"
           style={{ backfaceVisibility: 'hidden' }}
         >
-          <div className="flex h-full w-full flex-col items-center justify-center rounded-3xl bg-white p-8 dark:bg-slate-900">
+          <div className="flex h-full w-full flex-col items-center justify-center rounded-3xl bg-white p-4 sm:p-6 md:p-8 dark:bg-slate-900">
             {/* Language Badge */}
-            <div className="mb-6">
-              <span className="rounded-full bg-yellow-400/20 px-4 py-2 text-sm font-semibold text-yellow-600 dark:text-yellow-400">
+            <div className="mb-3 sm:mb-4 md:mb-6">
+              <span className="rounded-full bg-yellow-400/20 px-3 py-1 text-xs font-semibold text-yellow-600 sm:px-4 sm:py-2 sm:text-sm dark:text-yellow-400">
                 {safeFrontLanguageCode.toUpperCase()}
               </span>
             </div>
@@ -60,7 +60,7 @@ const FlipCard: React.FC<FlipCardProps> = ({
               {safeFrontText.map((text, index) => (
                 <h2
                   key={text + index}
-                  className="text-3xl font-bold text-slate-900 lg:text-4xl dark:text-white"
+                  className="text-xl font-bold text-slate-900 sm:text-2xl md:text-3xl lg:text-4xl dark:text-white"
                 >
                   {text}
                   {index < safeFrontText.length - 1 && ', '}
@@ -95,10 +95,10 @@ const FlipCard: React.FC<FlipCardProps> = ({
           className="absolute inset-0 rotate-y-180 rounded-3xl border-4 bg-gradient-to-br from-emerald-500 via-teal-500 to-teal-600 p-1 backface-hidden dark:from-emerald-600 dark:via-teal-600 dark:to-emerald-700"
           style={{ backfaceVisibility: 'hidden' }}
         >
-          <div className="flex h-full w-full flex-col items-center justify-center rounded-3xl bg-white p-8 dark:bg-slate-900">
+          <div className="flex h-full w-full flex-col items-center justify-center rounded-3xl bg-white p-4 sm:p-6 md:p-8 dark:bg-slate-900">
             {/* Language Badge */}
-            <div className="mb-6">
-              <span className="rounded-full bg-emerald-500/20 px-4 py-2 text-sm font-semibold text-emerald-700 dark:text-emerald-400">
+            <div className="mb-3 sm:mb-4 md:mb-6">
+              <span className="rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-semibold text-emerald-700 sm:px-4 sm:py-2 sm:text-sm dark:text-emerald-400">
                 {safeBackLanguageCode.toUpperCase()}
               </span>
             </div>
@@ -108,7 +108,7 @@ const FlipCard: React.FC<FlipCardProps> = ({
               {safeBackText.map((text, index) => (
                 <h2
                   key={text + index}
-                  className="text-3xl font-bold text-slate-900 lg:text-4xl dark:text-white"
+                  className="text-xl font-bold text-slate-900 sm:text-2xl md:text-3xl lg:text-4xl dark:text-white"
                 >
                   {text}
                   {index < safeBackText.length - 1 && ', '}

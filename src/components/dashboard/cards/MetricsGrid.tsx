@@ -14,19 +14,19 @@ type MetricCardProps = {
 
 const MetricCard: React.FC<MetricCardProps> = ({ title, value, icon, iconColor, trend, trendColor }) => (
   <Card className="group overflow-hidden border-0 bg-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.08)] backdrop-blur-sm transition-all duration-500 hover:scale-[1.02] hover:bg-white/90 hover:shadow-[0_20px_40px_rgb(0,0,0,0.12)] dark:bg-slate-800/80 dark:hover:bg-slate-800/90">
-    <CardContent className="p-6">
+    <CardContent className="p-4 sm:p-6">
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-5">
-          <div className={`flex h-16 w-16 items-center justify-center rounded-2xl ${iconColor} shadow-xl transition-transform duration-300 group-hover:scale-110`}>
+        <div className="flex items-center space-x-3 sm:space-x-5">
+          <div className={`flex h-12 w-12 items-center justify-center rounded-2xl sm:h-16 sm:w-16 ${iconColor} shadow-xl transition-transform duration-300 group-hover:scale-110`}>
             {icon}
           </div>
-          <div className="space-y-2">
-            <p className="text-sm font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">{title}</p>
-            <p className="text-4xl font-bold tracking-tight text-slate-900 dark:text-white">{value}</p>
+          <div className="space-y-1 sm:space-y-2">
+            <p className="text-xs font-semibold tracking-wide text-slate-500 uppercase sm:text-sm dark:text-slate-400">{title}</p>
+            <p className="text-2xl font-bold tracking-tight text-slate-900 sm:text-4xl dark:text-white">{value}</p>
             {trend && (
               <div className="flex items-center space-x-2">
-                <TrendingUp className={`h-4 w-4 ${trendColor} drop-shadow-sm`} />
-                <span className={`text-sm font-semibold ${trendColor} tracking-wide`}>{trend}</span>
+                <TrendingUp className={`h-3 w-3 sm:h-4 sm:w-4 ${trendColor} drop-shadow-sm`} />
+                <span className={`text-xs font-semibold sm:text-sm ${trendColor} tracking-wide`}>{trend}</span>
               </div>
             )}
           </div>
@@ -34,7 +34,7 @@ const MetricCard: React.FC<MetricCardProps> = ({ title, value, icon, iconColor, 
         <Button
           variant="ghost"
           size="icon"
-          className="h-10 w-10 rounded-xl opacity-0 transition-all duration-300 group-hover:opacity-100 hover:scale-110 hover:bg-slate-100/80 dark:hover:bg-slate-700/80"
+          className="h-10 w-10 flex-shrink-0 rounded-xl opacity-0 transition-all duration-300 group-hover:opacity-100 hover:scale-110 hover:bg-slate-100/80 dark:hover:bg-slate-700/80"
         >
           <TrendingUp className="h-5 w-5 text-slate-400 dark:text-slate-500" />
         </Button>
@@ -84,7 +84,7 @@ export const MetricsGrid: React.FC = () => {
       {/* Subtle background pattern */}
       <div className="absolute inset-0 -z-10 rounded-3xl bg-gradient-to-br from-slate-50/50 via-transparent to-blue-50/30 dark:from-slate-900/50 dark:to-slate-800/30" />
 
-      <div className="grid grid-cols-1 gap-8 p-1 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 p-1 sm:gap-6 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
         {metrics.map(metric => (
           <div key={metric.title} className="relative">
             {/* Subtle glow effect on hover */}
