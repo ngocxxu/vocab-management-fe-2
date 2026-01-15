@@ -158,7 +158,7 @@ export async function generateTextTargetContent(data: {
   targetLanguageCode: string;
 }): Promise<{
   textTarget: string;
-  grammar: string;
+  wordTypeId: string;
   explanationSource: string;
   explanationTarget: string;
   subjectIds: string[];

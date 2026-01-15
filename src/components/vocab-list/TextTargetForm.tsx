@@ -132,7 +132,7 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
       });
 
       onInputChange('textTarget', result.textTarget, targetIndex);
-      onInputChange('grammar', result.grammar, targetIndex);
+      onInputChange('wordTypeId', result.wordTypeId, targetIndex);
       onInputChange('explanationSource', result.explanationSource, targetIndex);
       onInputChange('explanationTarget', result.explanationTarget, targetIndex);
 

@@ -305,7 +305,7 @@ export const vocabApi = {
     const config = API_METHODS.vocabs.generateTextTarget(data);
     return serverApi.post<{
       textTarget: string;
-      grammar: string;
+      wordTypeId: string;
       explanationSource: string;
       explanationTarget: string;
       subjectIds: string[];
