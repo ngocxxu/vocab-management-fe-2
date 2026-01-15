@@ -1,4 +1,4 @@
-import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import type { AxiosInstance, AxiosResponse } from 'axios';
 import axios from 'axios';
 import { API_ENDPOINTS } from '@/utils/api-config';
 import { handleTokenExpiration } from '@/utils/auth-utils';
@@ -66,7 +66,7 @@ axiosInstance.interceptors.response.use(
     // Handle 403 Forbidden - redirect to login
     if (error.response?.status === 403) {
       handleTokenExpiration();
-      return Promise.reject(error);
+      throw error;
     }
 
     // Handle 401 Unauthorized - token expired
@@ -96,9 +96,10 @@ axiosInstance.interceptors.response.use(
     }
 
     if (error.response) {
+      const status = error.response.status;
       const errorInfo: Record<string, unknown> = {};
-      if (error.response.status !== undefined) {
-        errorInfo.status = error.response.status;
+      if (status !== undefined) {
+        errorInfo.status = status;
       }
       if (error.response.statusText) {
         errorInfo.statusText = error.response.statusText;
@@ -110,15 +111,19 @@ axiosInstance.interceptors.response.use(
         errorInfo.data = error.response.data;
       }
 
+      const isClientError = status >= 400 && status < 500;
+      const logMethod = isClientError ? logger.warn : logger.error;
+      const logLabel = isClientError ? 'Response Warning:' : 'Response Error:';
+
       if (Object.keys(errorInfo).length > 0) {
-        logger.error('Response Error:', errorInfo);
+        logMethod(logLabel, errorInfo);
       } else {
-        logger.error('Response Error (empty response):', {
+        logMethod(`${logLabel} (empty response)`, {
           hasResponse: !!error.response,
           hasRequest: !!error.request,
           message: error.message,
           url: error.config?.url,
-          status: error.response?.status,
+          status,
           statusText: error.response?.statusText,
         });
       }
@@ -128,7 +133,7 @@ axiosInstance.interceptors.response.use(
       logger.error('Error:', { message: error.message || error });
     }
 
-    return Promise.reject(error);
+    throw error;
   },
 );
 
@@ -136,4 +141,4 @@ axiosInstance.interceptors.response.use(
 export default axiosInstance;
 
 // Export axios types for convenience
-export type { AxiosInstance, AxiosRequestConfig, AxiosResponse };
+export type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
