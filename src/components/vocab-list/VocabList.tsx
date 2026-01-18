@@ -6,6 +6,7 @@ import type { TSubjectResponse } from '@/types/subject';
 import type { TVocab } from '@/types/vocab-list';
 import type { TWordTypeResponse } from '@/types/word-type';
 import { zodResolver } from '@hookform/resolvers/zod';
+import clsx from 'clsx';
 import { ChevronDown, ChevronLeft, Edit, Volume2 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
@@ -20,12 +21,12 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Form } from '@/components/ui/form';
 import { DataTable } from '@/components/ui/table';
 import { useApiPagination, useBulkDelete, useDialogState } from '@/hooks';
+
 import { selectVoiceByCode } from '@/utils/textToSpeech';
+
 import AddVocabDialog from './AddVocabDialog';
 import ExpandedRowContent from './ExpandedRowContent';
-
 import ImportVocabDialog from './ImportVocabDialog';
-
 import VocabListHeader from './VocabListHeader';
 
 // Utility function to generate unique IDs
@@ -373,6 +374,19 @@ const VocabList: React.FC<VocabListProps> = ({
     }
   };
 
+  const handleColorMasteryScore = (masteryScore: number) => {
+    if (masteryScore >= 8) {
+      return 'bg-green-500 dark:bg-green-700';
+    }
+    if (masteryScore >= 4) {
+      return 'bg-blue-500 dark:bg-blue-700';
+    }
+    if (masteryScore < 0) {
+      return 'bg-red-500 dark:bg-red-700';
+    }
+    return 'bg-yellow-500 dark:bg-yellow-700';
+  };
+
   const data = useMemo<TVocab[]>(() => initialVocabsData?.items || [], [initialVocabsData]);
 
   // Memoize columns to prevent unnecessary re-renders
@@ -445,6 +459,24 @@ const VocabList: React.FC<VocabListProps> = ({
         );
       },
       enableSorting: false,
+      enableHiding: true,
+      size: 1000,
+    },
+    {
+      accessorKey: 'masteryScore',
+      header: 'Mastery Score',
+      cell: ({ row }) => {
+        return (
+          row.original.masteryScore
+            ? (
+                <span className={clsx('inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium text-white', handleColorMasteryScore(row.original.masteryScore))}>
+                  {row.original.masteryScore}
+                </span>
+              )
+            : ''
+        );
+      },
+      enableSorting: true,
       enableHiding: true,
       size: 1000,
     },
