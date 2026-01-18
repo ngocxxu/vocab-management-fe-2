@@ -8,7 +8,9 @@ import { submitExam } from '@/actions/vocab-trainers';
 import { ExamErrorState } from '@/components/shared';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import { Kbd, KbdGroup } from '@/components/ui/kbd';
 import { logger } from '@/libs/Logger';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 import FillInBlankCard from './FillInBlankCard';
 import VocabExamHeader from './VocabExamHeader';
 
@@ -143,6 +145,14 @@ const FillInBlankExam: React.FC<FillInBlankExamProps> = ({ trainerId, examData }
     router.push('/vocab-trainer');
   };
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.ctrlKey && event.key === 'Enter') {
+      handlePrevious();
+    } else if (event.key === 'Enter') {
+      handleNext();
+    }
+  };
+
   useEffect(() => {
     if (examState !== 'taking') {
       return;
@@ -214,19 +224,33 @@ const FillInBlankExam: React.FC<FillInBlankExamProps> = ({ trainerId, examData }
         questionNumber={currentQuestionIndex + 1}
         selectedAnswer={selectedAnswers.get(currentQuestionIndex) || null}
         onAnswerSelect={handleAnswerSelect}
+        handleKeyDown={handleKeyDown}
       />
 
       <div className="mx-auto max-w-4xl">
         <div className="flex items-center justify-between">
-          <Button
-            variant="outline"
-            onClick={handlePrevious}
-            disabled={isFirstQuestion}
-            className="group rounded-2xl border-2 border-yellow-500/50 bg-white px-6 py-3 text-slate-900 transition-all duration-300 hover:scale-105 hover:border-yellow-500 dark:border-yellow-400/50 dark:bg-slate-900 dark:text-white dark:hover:border-yellow-400"
-          >
-            <ChevronLeft className="mr-2 h-5 w-5 transition-transform duration-300 group-hover:-translate-x-1" />
-            <span className="font-semibold">Previous</span>
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                onClick={handlePrevious}
+                disabled={isFirstQuestion}
+                className="group rounded-2xl border-2 border-yellow-500/50 bg-white px-6 py-3 text-slate-900 transition-all duration-300 hover:scale-105 hover:border-yellow-500 dark:border-yellow-400/50 dark:bg-slate-900 dark:text-white dark:hover:border-yellow-400"
+              >
+                <ChevronLeft className="mr-2 h-5 w-5 transition-transform duration-300 group-hover:-translate-x-1" />
+                <span className="font-semibold">
+                  Previous
+
+                </span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" align="center">
+              <KbdGroup>
+                <Kbd>Ctrl</Kbd>
+                <Kbd>↵</Kbd>
+              </KbdGroup>
+            </TooltipContent>
+          </Tooltip>
 
           <div className="rounded-2xl border border-yellow-500/30 bg-white px-6 py-3 backdrop-blur-sm dark:border-yellow-400/30 dark:bg-slate-900">
             <div className="text-center">
@@ -257,14 +281,27 @@ const FillInBlankExam: React.FC<FillInBlankExamProps> = ({ trainerId, examData }
                 </Button>
               )
             : (
-                <Button
-                  variant="outline"
-                  onClick={handleNext}
-                  className="group rounded-2xl border-2 border-yellow-500/50 bg-white px-6 py-3 text-slate-900 transition-all duration-300 hover:scale-105 hover:border-yellow-500 dark:border-yellow-400/50 dark:bg-slate-900 dark:text-white dark:hover:border-yellow-400"
-                >
-                  <span className="font-semibold">Next</span>
-                  <ChevronRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
-                </Button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      onClick={handleNext}
+                      className="group rounded-2xl border-2 border-yellow-500/50 bg-white px-6 py-3 text-slate-900 transition-all duration-300 hover:scale-105 hover:border-yellow-500 dark:border-yellow-400/50 dark:bg-slate-900 dark:text-white dark:hover:border-yellow-400"
+                    >
+                      <span className="font-semibold">
+                        Next
+
+                      </span>
+                      <ChevronRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" align="center">
+                    <KbdGroup>
+                      <Kbd>↵</Kbd>
+                    </KbdGroup>
+                  </TooltipContent>
+                </Tooltip>
+
               )}
         </div>
       </div>

@@ -11,6 +11,7 @@ type FillInBlankCardProps = {
   questionNumber: number;
   selectedAnswer: string | null;
   onAnswerSelect: (answer: string) => void;
+  handleKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => void;
 };
 
 const FillInBlankCard: React.FC<FillInBlankCardProps> = ({
@@ -18,6 +19,7 @@ const FillInBlankCard: React.FC<FillInBlankCardProps> = ({
   questionNumber,
   selectedAnswer,
   onAnswerSelect,
+  handleKeyDown,
 }) => {
   const [answer, setAnswer] = useState(selectedAnswer || '');
 
@@ -78,6 +80,7 @@ const FillInBlankCard: React.FC<FillInBlankCardProps> = ({
             onChange={e => handleInputChange(e.target.value)}
             placeholder="Enter your answer here..."
             className="h-16 rounded-2xl border-2 border-yellow-500/50 bg-white px-6 text-lg font-semibold text-slate-900 transition-all duration-300 focus:border-yellow-500 focus:ring-4 focus:ring-yellow-500/20 dark:border-yellow-400/50 dark:bg-slate-900 dark:text-white dark:focus:border-yellow-400 dark:focus:ring-yellow-400/20"
+            onKeyDown={handleKeyDown}
           />
         </div>
       </div>
