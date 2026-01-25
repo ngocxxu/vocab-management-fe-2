@@ -37,12 +37,12 @@ class ServerAPI {
       },
     });
 
-    // If not 401, return normally
-    if (response.status !== 401) {
+    // If not 401 or 403, return normally
+    if (response.status !== 401 && response.status !== 403) {
       return response;
     }
 
-    // If 401 → try refresh
+    // If 401 or 403 → try refresh
     this.isRefreshing ??= fetch(`${Env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}${API_ENDPOINTS.auth.refresh}`, {
       method: 'POST',
       credentials: 'include',
