@@ -45,6 +45,10 @@ class ServerAPI {
       return response;
     }
 
+    if (!cookieStore.get('refreshToken')?.value) {
+      return response;
+    }
+
     this.isRefreshing ??= fetch(`${Env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}${API_ENDPOINTS.auth.refresh}`, {
       method: 'POST',
       credentials: 'include',
@@ -113,11 +117,14 @@ class ServerAPI {
       data = null;
     }
 
-    // 2. Handle Errors
     if (!response.ok) {
       const error = new ApiError(response.status, response.statusText);
 
-      logger.error(`[API Error] ${options.method || 'GET'} ${endpoint}:`, { error });
+      if (response.status === 401) {
+        logger.debug(`[API] ${options.method || 'GET'} ${endpoint}: unauthenticated`);
+      } else {
+        logger.error(`[API Error] ${options.method || 'GET'} ${endpoint}:`, { error });
+      }
 
       throw error;
     }
