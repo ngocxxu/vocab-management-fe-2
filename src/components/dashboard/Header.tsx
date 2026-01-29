@@ -56,11 +56,12 @@ export const Header: React.FC<HeaderProps> = ({
   const handleLogout = async () => {
     try {
       await signout();
-      setUser(null);
-      router.push('/');
     } catch (error) {
       console.error('Logout error:', error);
     }
+    setUser(null);
+    router.refresh();
+    router.push('/');
   };
 
   return (

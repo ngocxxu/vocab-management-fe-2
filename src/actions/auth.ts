@@ -50,11 +50,13 @@ export async function signup(signupData: TSignupData): Promise<TAuthResponse> {
 export async function signout(): Promise<{ message: string }> {
   try {
     const result = await authApi.signout();
-    const cookieStore = await cookies();
-    cookieStore.delete('accessToken');
     return result;
   } catch (error) {
     throw new Error(error instanceof Error ? error.message : 'Failed to sign out');
+  } finally {
+    const cookieStore = await cookies();
+    cookieStore.delete('accessToken');
+    cookieStore.delete('refreshToken');
   }
 }
 
