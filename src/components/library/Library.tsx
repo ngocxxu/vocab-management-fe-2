@@ -147,10 +147,10 @@ const Library: React.FC<LibraryProps> = ({ initialData, initialLanguagesData }) 
       header: 'Folder Name',
       cell: ({ row }) => (
         <div>
-          <div className="text-sm font-medium text-slate-900 dark:text-white">
+          <div className="text-sm font-medium text-foreground">
             {row.original.name}
           </div>
-          <div className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+          <div className="mt-1 text-xs text-muted-foreground">
             {row.original.sourceLanguageCode.toUpperCase()}
             {' → '}
             {row.original.targetLanguageCode.toUpperCase()}
@@ -164,7 +164,7 @@ const Library: React.FC<LibraryProps> = ({ initialData, initialLanguagesData }) 
       id: 'lastModified',
       header: 'Last Modified',
       cell: () => (
-        <div className="text-sm text-slate-600 dark:text-slate-400">
+        <div className="text-sm text-muted-foreground">
           {new Date().toLocaleDateString('en-GB', {
             day: '2-digit',
             month: '2-digit',
@@ -183,25 +183,25 @@ const Library: React.FC<LibraryProps> = ({ initialData, initialLanguagesData }) 
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700"
+            className="h-8 w-8 rounded-lg hover:bg-accent"
             onClick={(e) => {
               e.stopPropagation();
               handleEdit(row.original);
             }}
           >
-            <Edit className="h-4 w-4 text-slate-500" />
+            <Edit className="h-4 w-4 text-muted-foreground" />
           </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 rounded-lg hover:bg-red-100 dark:hover:bg-red-700"
+                className="h-8 w-8 rounded-lg hover:bg-destructive/10"
                 onClick={(e) => {
                   e.stopPropagation();
                 }}
               >
-                <Trash2 className="h-4 w-4 text-slate-500" />
+                <Trash2 className="h-4 w-4 text-muted-foreground" />
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
@@ -233,7 +233,7 @@ const Library: React.FC<LibraryProps> = ({ initialData, initialLanguagesData }) 
   ], [handleEdit, handleDelete]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900/30">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto flex flex-col gap-6 px-4 py-4 sm:gap-8 sm:py-6 md:gap-10 md:py-8">
         {/* Header Section */}
         <LibraryHeader

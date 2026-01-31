@@ -254,7 +254,7 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
       cell: ({ row }) => {
         return (
           <div className="flex items-center space-x-3">
-            <div className="font-semibold text-slate-900 dark:text-white">{row.original.name}</div>
+            <div className="font-semibold text-foreground">{row.original.name}</div>
           </div>
         );
       },
@@ -273,7 +273,7 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
           FAILED: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-200',
         };
         return (
-          <Badge className={statusColors[status as keyof typeof statusColors] || 'bg-slate-100 text-slate-800'}>
+          <Badge className={statusColors[status as keyof typeof statusColors] || 'bg-muted text-muted-foreground'}>
             {status}
           </Badge>
         );
@@ -303,7 +303,7 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
       cell: ({ row }) => {
         const count = row.original.vocabAssignments?.length || 0;
         return (
-          <span className="text-slate-600 dark:text-slate-400">
+          <span className="text-muted-foreground">
             {count}
             {' '}
             vocab
@@ -327,10 +327,10 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700"
+            className="h-8 w-8 rounded-lg hover:bg-accent"
             onClick={() => handleEdit(_row.original)}
           >
-            <Edit className="h-4 w-4 text-slate-500" />
+            <Edit className="h-4 w-4 text-muted-foreground" />
           </Button>
           <DeleteActionButton
             itemId={_row.original.id}

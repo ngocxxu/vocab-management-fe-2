@@ -50,14 +50,14 @@ const VocabListHeader: React.FC<VocabListHeaderProps> = ({
     <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
       <div className="space-y-3">
         <div className="flex items-center space-x-3">
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Vocab List</h1>
-          <span className="inline-flex items-center rounded-full bg-purple-100 px-2.5 py-0.5 text-sm font-medium text-purple-800 dark:bg-purple-900/20 dark:text-purple-200">
+          <h1 className="text-3xl font-bold text-foreground">Vocab List</h1>
+          <span className="inline-flex items-center rounded-full bg-accent px-2.5 py-0.5 text-sm font-medium text-accent-foreground">
             {totalCount}
             {' '}
             Total
           </span>
 
-          <p className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-sm font-medium text-blue-800 dark:bg-blue-900/20 dark:text-blue-200">
+          <p className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-sm font-medium text-primary">
             {getLanguageName(sourceLanguageCode)}
             {' '}
             →
@@ -82,8 +82,8 @@ const VocabListHeader: React.FC<VocabListHeaderProps> = ({
                     style={{ backgroundColor: languageFolder.folderColor }}
                   />
                   <div className="flex items-center space-x-2">
-                    <Folder className="h-4 w-4 text-slate-500 dark:text-slate-400" />
-                    <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                    <Folder className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm font-medium text-foreground">
                       {languageFolder.name}
                     </span>
                   </div>
@@ -91,7 +91,7 @@ const VocabListHeader: React.FC<VocabListHeaderProps> = ({
               )
             : null}
 
-        <p className="text-slate-600 dark:text-slate-400">
+        <p className="text-muted-foreground">
           Track your vocabulary learning progress and review history.
         </p>
       </div>
@@ -99,7 +99,7 @@ const VocabListHeader: React.FC<VocabListHeaderProps> = ({
       <div className="flex flex-wrap items-center gap-2 sm:gap-3">
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="outline" className="h-10 border-slate-200 bg-white/80 backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/80">
+            <Button variant="outline" className="h-10 border-border bg-card/80 backdrop-blur-sm">
               <Filter className="mr-2 h-4 w-4" />
               <span className="hidden sm:inline">Filter</span>
             </Button>
@@ -107,17 +107,17 @@ const VocabListHeader: React.FC<VocabListHeaderProps> = ({
           <PopoverContent className="w-[calc(100vw-2rem)] sm:w-80" align="end">
             <div className="space-y-4">
               <div className="space-y-2">
-                <h4 className="font-medium text-slate-900 dark:text-white">Filter Vocabularies</h4>
+                <h4 className="font-medium text-foreground">Filter Vocabularies</h4>
                 <div className="space-y-2">
                   <label
                     htmlFor="subject-filter"
-                    className="text-sm font-medium text-slate-700 dark:text-slate-300"
+                    className="text-sm font-medium text-foreground"
                   >
                     Filter by Subjects
                   </label>
                   {isSubjectsLoading
                     ? (
-                        <div className="h-10 w-full animate-pulse rounded-md bg-slate-200 dark:bg-slate-700" />
+                        <div className="h-10 w-full animate-pulse rounded-md bg-muted" />
                       )
                     : (
                         <MultiSelect
@@ -153,14 +153,14 @@ const VocabListHeader: React.FC<VocabListHeaderProps> = ({
         <Button
           onClick={onImportExcel}
           variant="outline"
-          className="h-10 border-slate-200 bg-white/80 backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/80"
+          className="h-10 border-border bg-card/80 backdrop-blur-sm"
         >
           <Upload className="mr-2 h-4 w-4" />
           <span className="hidden sm:inline">Import Excel</span>
         </Button>
         <Button
           onClick={onAddVocab}
-          className="h-10 bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg hover:from-blue-700 hover:to-indigo-700 dark:from-blue-500 dark:to-indigo-500 dark:hover:from-blue-600 dark:hover:to-indigo-600"
+          className="h-10 bg-primary text-primary-foreground shadow-lg hover:opacity-90"
         >
           <Plus className="mr-2 h-4 w-4" />
           <span className="hidden sm:inline">Add Vocab</span>

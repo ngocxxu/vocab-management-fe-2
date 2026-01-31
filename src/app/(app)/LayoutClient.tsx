@@ -47,7 +47,7 @@ export function LayoutClient({
 
   return (
     <SocketProvider>
-      <div className="flex h-screen bg-slate-50 dark:bg-slate-900">
+      <div className="flex h-screen bg-background">
         {isSidebarOpen && (
           <div
             className="fixed inset-0 z-30 bg-black/50 md:hidden"

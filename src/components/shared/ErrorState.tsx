@@ -10,7 +10,7 @@ type ErrorStateProps = {
 const ErrorState: React.FC<ErrorStateProps> = ({ message, className = '' }) => {
   return (
     <div className={`flex items-center justify-center p-8 ${className}`}>
-      <div className="text-lg text-red-600">{message}</div>
+      <div className="text-lg text-destructive">{message}</div>
     </div>
   );
 };

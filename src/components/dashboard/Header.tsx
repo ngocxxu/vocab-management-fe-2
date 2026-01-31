@@ -65,33 +65,28 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="border-b border-slate-200/60 bg-white px-4 py-3 shadow-sm md:px-6 md:py-4 dark:border-slate-700/60 dark:bg-slate-900">
+    <header className="border-b border-border bg-card px-4 py-3 shadow-sm md:px-6 md:py-4">
       <div className="flex items-center justify-between gap-2">
-        {/* Left Section */}
         <div className="flex flex-1 items-center gap-2 md:gap-6">
-          {/* Hamburger Menu */}
           <Button
             variant="ghost"
             size="icon"
-            className="h-10 w-10 flex-shrink-0 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800"
+            className="h-10 w-10 flex-shrink-0 rounded-xl hover:bg-accent"
             onClick={onSidebarToggle}
           >
-            <Menu className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+            <Menu className="h-5 w-5 text-muted-foreground" />
           </Button>
 
-          {/* Search */}
           <div className="relative flex-1 md:flex-none">
-            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
+            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Search..."
-              className="h-10 w-full rounded-xl border-slate-200 bg-slate-50 pl-10 text-sm focus:border-blue-500 focus:bg-white focus:ring-blue-500 md:w-64 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:placeholder:text-slate-500 dark:focus:border-blue-400 dark:focus:bg-slate-700 dark:focus:ring-blue-400"
+              className="h-10 w-full rounded-xl border-border bg-muted pl-10 text-sm focus:border-primary focus:ring-primary md:w-64"
             />
           </div>
 
-          {/* Navigation Links - Hidden on mobile */}
           <div className="hidden items-center space-x-6 lg:flex">
             {navigationItems.map((item) => {
-              // Special handling for vocab-trainer to include exam pages
               const isActive = item.path === '/vocab-trainer'
                 ? pathname.startsWith('/vocab-trainer')
                 : pathname === item.path;
@@ -99,10 +94,8 @@ export const Header: React.FC<HeaderProps> = ({
                 <Button
                   key={item.path}
                   variant="ghost"
-                  className={`h-auto p-0 text-sm font-medium transition-colors hover:bg-transparent hover:text-slate-900 dark:text-slate-400 dark:hover:bg-transparent dark:hover:text-slate-200 ${
-                    isActive
-                      ? 'text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-500'
-                      : 'text-slate-600  hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200'
+                  className={`h-auto p-0 text-sm font-medium transition-colors hover:bg-transparent ${
+                    isActive ? 'text-primary hover:text-primary' : 'text-muted-foreground hover:text-foreground'
                   }`}
                   onClick={() => handleNavigation(item.path)}
                 >
@@ -113,13 +106,11 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* Right Section */}
         <div className="flex items-center gap-2 md:gap-4">
-          {/* Dark Mode Toggle */}
           <Button
             variant="ghost"
             size="icon"
-            className="h-10 w-10 flex-shrink-0 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800"
+            className="h-10 w-10 flex-shrink-0 rounded-xl hover:bg-accent"
             onClick={toggleTheme}
             title={
               mounted ? (theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode') : 'Toggle theme'
@@ -128,15 +119,14 @@ export const Header: React.FC<HeaderProps> = ({
             {mounted
               ? (
                   theme === 'dark'
-                    ? <Sun className="h-5 w-5 text-slate-400" />
-                    : <Moon className="h-5 w-5 text-slate-600" />
+                    ? <Sun className="h-5 w-5 text-muted-foreground" />
+                    : <Moon className="h-5 w-5 text-muted-foreground" />
                 )
               : (
                   <div className="h-5 w-5" />
                 )}
           </Button>
 
-          {/* Notifications */}
           <NotificationDropdown
             allNotifications={allNotifications}
             unreadNotifications={unreadNotifications}
@@ -145,7 +135,6 @@ export const Header: React.FC<HeaderProps> = ({
             error={error}
           />
 
-          {/* User Profile & Logout - Stack on mobile */}
           <div className="hidden items-center space-x-2 sm:flex">
             {user?.avatar
               ? (
@@ -158,28 +147,28 @@ export const Header: React.FC<HeaderProps> = ({
                   />
                 )
               : (
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-blue-400 to-blue-600 shadow-sm">
-                    <User className="h-5 w-5 text-white" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary shadow-sm">
+                    <User className="h-5 w-5 text-primary-foreground" />
                   </div>
                 )}
             <div className="hidden text-sm lg:block">
-              <div className="font-medium text-slate-900 dark:text-slate-100">
+              <div className="font-medium text-foreground">
                 {user?.firstName}
                 {' '}
                 {user?.lastName}
               </div>
-              <div className="text-slate-500 dark:text-slate-400">
+              <div className="text-muted-foreground">
                 {user?.email}
               </div>
             </div>
             <Button
               variant="ghost"
               size="icon"
-              className="h-10 w-10 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800"
+              className="h-10 w-10 rounded-xl hover:bg-accent"
               onClick={handleLogout}
               title="Sign out"
             >
-              <LogOut className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+              <LogOut className="h-5 w-5 text-muted-foreground" />
             </Button>
           </div>
         </div>

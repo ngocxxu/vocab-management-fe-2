@@ -69,7 +69,7 @@ const LanguageFolder = ({ folder, onFolderClick, onFolderUpdated, onFolderDelete
   return (
     <>
       <div
-        className="group cursor-pointer border-b border-slate-100 bg-white px-6 py-4 transition-all duration-200 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700/50"
+        className="group cursor-pointer border-b border-border bg-card px-6 py-4 transition-all duration-200 hover:bg-accent/50"
         onClick={() => onFolderClick(folder)}
         role="button"
         tabIndex={0}
@@ -89,10 +89,10 @@ const LanguageFolder = ({ folder, onFolderClick, onFolderUpdated, onFolderDelete
 
           {/* Name Column */}
           <div className="min-w-0 flex-1">
-            <div className="text-sm font-medium text-slate-900 dark:text-white">
+            <div className="text-sm font-medium text-foreground">
               {folder.name}
             </div>
-            <div className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+            <div className="mt-1 text-xs text-muted-foreground">
               {folder.sourceLanguageCode.toUpperCase()}
               {' '}
               →
@@ -102,7 +102,7 @@ const LanguageFolder = ({ folder, onFolderClick, onFolderUpdated, onFolderDelete
           </div>
 
           {/* Last Modified Column */}
-          <div className="w-22 text-sm text-slate-600 dark:text-slate-400">
+          <div className="w-22 text-sm text-muted-foreground">
             {new Date().toLocaleDateString('en-GB', {
               day: '2-digit',
               month: '2-digit',
@@ -119,7 +119,7 @@ const LanguageFolder = ({ folder, onFolderClick, onFolderUpdated, onFolderDelete
                     e.stopPropagation();
                   }}
                   variant="ghost"
-                  className="rounded p-1 text-slate-400 transition-colors duration-200 hover:bg-slate-200 hover:text-slate-600 dark:hover:bg-slate-600 dark:hover:text-slate-300"
+                  className="rounded p-1 text-muted-foreground transition-colors duration-200 hover:bg-accent hover:text-foreground"
                 >
                   <MoreVertical className="h-4 w-4" />
                 </Button>
@@ -139,7 +139,7 @@ const LanguageFolder = ({ folder, onFolderClick, onFolderUpdated, onFolderDelete
                     handleDeleteClick();
                   }}
                   disabled={isDeleting}
-                  className="text-red-600 focus:text-red-600 dark:text-red-400 dark:focus:text-red-400"
+                  className="text-destructive focus:text-destructive"
                 >
                   <Trash2 className="mr-2 h-4 w-4" />
                   {isDeleting ? 'Deleting...' : 'Delete Folder'}

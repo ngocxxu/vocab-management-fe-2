@@ -59,13 +59,13 @@ export const SettingsLayout: React.FC<SettingsLayoutProps> = ({ initialSubjectsD
   ] as const;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900/30">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto flex flex-col gap-10 px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">
+          <h1 className="text-3xl font-bold text-foreground">
             Settings
           </h1>
-          <p className="mt-2 text-slate-600 dark:text-slate-400">
+          <p className="mt-2 text-muted-foreground">
             Manage your account settings and preferences
           </p>
         </div>
@@ -94,10 +94,10 @@ export const SettingsLayout: React.FC<SettingsLayoutProps> = ({ initialSubjectsD
 
           <TabsContent value="notifications" className="space-y-6">
             <div className="py-12 text-center">
-              <h3 className="mb-2 text-lg font-medium text-slate-900 dark:text-slate-100">
+              <h3 className="mb-2 text-lg font-medium text-foreground">
                 Notifications Settings
               </h3>
-              <p className="text-slate-600 dark:text-slate-400">
+              <p className="text-muted-foreground">
                 Notification preferences will be available here.
               </p>
             </div>

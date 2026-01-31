@@ -16,13 +16,13 @@ const LibrarySearch: React.FC<LibrarySearchProps> = ({
   return (
     <div className="relative mx-auto w-1/2">
       <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-        <Search className="h-6 w-6 text-slate-400" />
+        <Search className="h-6 w-6 text-muted-foreground" />
       </div>
       <Input
         placeholder={placeholder}
         value={searchQuery}
         onChange={e => onSearchChange(e.target.value)}
-        className="h-14 rounded-xl border-2 border-slate-200 pl-12 text-lg shadow-xs transition-all duration-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:border-slate-600 dark:focus:ring-blue-800"
+        className="h-14 rounded-xl border-2 border-border pl-12 text-lg shadow-xs transition-all duration-300 focus:border-primary focus:ring-2 focus:ring-primary/20"
       />
     </div>
   );

@@ -20,7 +20,7 @@ type VocabTrainerContentProps = {
 const VocabTrainerContent: React.FC<VocabTrainerContentProps> = ({ initialData, initialLanguagesData }) => {
   return (
     <div
-      className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900/30"
+      className="min-h-screen bg-background"
       suppressHydrationWarning
     >
       <div

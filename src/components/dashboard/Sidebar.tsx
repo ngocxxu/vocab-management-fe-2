@@ -80,23 +80,20 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
   return (
     <aside
-      className={`fixed top-0 left-0 z-40 flex h-screen w-72 flex-col border-r border-slate-200/60 bg-white shadow-sm transition-all duration-300 ease-in-out md:translate-x-0 dark:border-slate-700/60 dark:bg-slate-900 ${
+      className={`fixed top-0 left-0 z-40 flex h-screen w-72 flex-col border-r border-border bg-card shadow-sm transition-all duration-300 ease-in-out md:translate-x-0 ${
         isOpen ? 'translate-x-0' : '-translate-x-full'
       }`}
     >
-      {/* Logo Section - Fixed at top */}
-      <div className="flex-shrink-0 border-b border-slate-200/60 p-4 dark:border-slate-700/60">
+      <div className="flex-shrink-0 border-b border-border p-4">
         <div className="flex items-center space-x-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 shadow-lg">
-            <span className="text-lg font-bold text-white">V</span>
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary shadow-lg">
+            <span className="text-lg font-bold text-primary-foreground">V</span>
           </div>
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white">Vocabulary</h1>
+          <h1 className="text-xl font-bold text-foreground">Vocabulary</h1>
         </div>
       </div>
 
-      {/* Scrollable Menu Items Section */}
       <div className="flex-1 space-y-6 overflow-y-auto p-6">
-        {/* Main navigation items */}
         <div className="space-y-2">
           {menuItems.filter(item => !item.category).map((item) => {
             const isActive = getCurrentActiveItem() === item.id;
@@ -104,8 +101,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               <div key={item.id}>
                 <Button
                   variant="ghost"
-                  className={`h-11 w-full cursor-pointer justify-between rounded-xl px-4 text-slate-700 transition-all duration-300 ease-in-out hover:bg-blue-50 hover:text-blue-500 dark:text-slate-300 dark:hover:bg-blue-950/50 dark:hover:text-blue-400 ${
-                    isActive ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:bg-blue-600 hover:text-white dark:text-white dark:hover:bg-blue-600 dark:hover:text-white' : 'text-slate-700 dark:text-slate-300'
+                  className={`h-11 w-full cursor-pointer justify-between rounded-xl px-4 transition-all duration-300 ease-in-out hover:bg-accent hover:text-primary ${
+                    isActive ? 'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground' : 'text-muted-foreground'
                   }`}
                   onClick={() => handleButtonClick(item.id)}
                 >
@@ -121,9 +118,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         </div>
       </div>
 
-      {/* User Profile Section - Fixed at bottom */}
-      <div className="flex-shrink-0 border-t border-slate-200/60 p-4 dark:border-slate-700/60">
-        <div className="flex items-center justify-between rounded-xl bg-blue-50 p-4 dark:bg-blue-950/30">
+      <div className="flex-shrink-0 border-t border-border p-4">
+        <div className="flex items-center justify-between rounded-xl bg-accent p-4">
           <div className="flex items-center space-x-3">
             {user?.avatar
               ? (
@@ -136,17 +132,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                   />
                 )
               : (
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-blue-400 to-blue-600">
-                    <User className="h-6 w-6 text-white" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary">
+                    <User className="h-6 w-6 text-primary-foreground" />
                   </div>
                 )}
             <div>
-              <p className="font-semibold text-slate-900 dark:text-white">
+              <p className="font-semibold text-foreground">
                 {user?.firstName && user?.lastName
                   ? `${user.firstName} ${user.lastName}`
                   : 'User'}
               </p>
-              <p className="max-w-36 truncate text-sm text-slate-600 dark:text-slate-400" title={user?.email || 'user@example.com'}>
+              <p className="max-w-36 truncate text-sm text-muted-foreground" title={user?.email || 'user@example.com'}>
                 {user?.email || 'user@example.com'}
               </p>
             </div>
@@ -154,10 +150,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 w-8 p-0 hover:bg-slate-100 dark:hover:bg-slate-700"
+            className="h-8 w-8 p-0 hover:bg-secondary"
             onClick={handleSignOut}
           >
-            <Power className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+            <Power className="h-4 w-4 text-muted-foreground" />
           </Button>
         </div>
       </div>

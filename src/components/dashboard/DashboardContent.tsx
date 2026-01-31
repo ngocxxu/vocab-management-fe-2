@@ -18,11 +18,11 @@ export const DashboardContent: React.FC = async () => {
     ]);
 
     return (
-      <main className="flex-1 overflow-y-auto bg-slate-50 p-4 md:p-6 lg:p-8 dark:bg-slate-900">
+      <main className="flex-1 overflow-y-auto bg-background p-4 md:p-6 lg:p-8">
         <div className="container mx-auto space-y-6 md:space-y-8">
           <div className="mb-4 md:mb-8">
-            <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl dark:text-white">Statistics Dashboard</h1>
-            <p className="mt-2 text-sm text-slate-600 sm:text-base dark:text-slate-400">
+            <h1 className="text-2xl font-bold text-foreground sm:text-3xl">Statistics Dashboard</h1>
+            <p className="mt-2 text-sm text-muted-foreground sm:text-base">
               View your vocabulary learning statistics and track your progress over time.
             </p>
           </div>
@@ -46,7 +46,7 @@ export const DashboardContent: React.FC = async () => {
     );
   } catch (error) {
     return (
-      <main className="flex-1 overflow-y-auto bg-slate-50 p-4 md:p-6 lg:p-8 dark:bg-slate-900">
+      <main className="flex-1 overflow-y-auto bg-background p-4 md:p-6 lg:p-8">
         <div className="container mx-auto">
           <ErrorState message={error instanceof Error ? error.message : 'Failed to load dashboard statistics'} />
         </div>
