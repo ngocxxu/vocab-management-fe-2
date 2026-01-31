@@ -178,7 +178,9 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
         }
       }
 
-      toast.error('Failed to import file. Please check the file format and try again.');
+      toast.error('error', {
+        description: error instanceof Error ? error.message : 'Failed to import file. Please check the file format and try again.',
+      });
     } finally {
       setIsUploading(false);
     }
