@@ -1,147 +1,76 @@
 'use client';
 
-import type { MasterySummary } from '@/types/statistics';
-import { BookOpen, CheckCircle, TrendingUp, XCircle } from 'lucide-react';
-import React from 'react';
-import { Cell, Pie, PieChart, Tooltip } from 'recharts';
 import { Card, CardContent } from '@/components/ui/card';
+import type { MasterySummary } from '@/types/statistics';
+import {
+  AltArrowDown,
+  AltArrowUp,
+  Book,
+  CheckCircle,
+  ClockCircle,
+  CloseCircle,
+  Star,
+} from '@solar-icons/react/ssr';
+import React from 'react';
+
+type TrendConfig = {
+  text: string;
+  icon: 'arrowUp' | 'arrowDown' | 'clock';
+  color: 'success' | 'muted' | 'destructive';
+};
 
 type MetricCardProps = {
   title: string;
-  value: string | number;
+  value: React.ReactNode;
   icon: React.ReactNode;
-  iconColor: string;
-  subtitle?: string;
+  iconBgClass: string;
+  trend?: TrendConfig;
 };
 
-const MetricCard: React.FC<MetricCardProps> = ({ title, value, icon, iconColor, subtitle }) => (
-  <Card className="group overflow-hidden border-0 bg-card/80 shadow-[0_8px_30px_rgb(0,0,0,0.08)] backdrop-blur-sm transition-all duration-500 hover:scale-[1.02] hover:bg-card hover:shadow-[0_20px_40px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.3)] dark:hover:shadow-[0_20px_40px_rgb(0,0,0,0.4)]">
-    <CardContent className="px-4 sm:px-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-3 sm:space-x-5">
-          <div className={`flex h-12 w-12 items-center justify-center rounded-2xl sm:h-16 sm:w-16 ${iconColor} shadow-xl transition-transform duration-300 group-hover:scale-110`}>
+const trendIconMap = {
+  arrowUp: AltArrowUp,
+  arrowDown: AltArrowDown,
+  clock: ClockCircle,
+};
+
+const trendPillClass: Record<TrendConfig['color'], string> = {
+  success: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+  muted: 'bg-muted text-muted-foreground',
+  destructive: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+};
+
+const MetricCard: React.FC<MetricCardProps> = ({
+  title,
+  value,
+  icon,
+  iconBgClass,
+  trend,
+}) => {
+  const TrendIcon = trend ? trendIconMap[trend.icon] : null;
+  return (
+    <Card className="h-full overflow-hidden rounded-2xl border border-border bg-card shadow-md">
+      <CardContent className="flex flex-col px-6 py-2">
+        <div className="flex items-start justify-between gap-4">
+          <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg ${iconBgClass}`}>
             {icon}
           </div>
-          <div className="space-y-1 sm:space-y-2">
-            <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase sm:text-sm">{title}</p>
-            <p className="text-2xl font-bold tracking-tight text-foreground sm:text-4xl">{value}</p>
-            {subtitle && (
-              <p className="text-xs text-muted-foreground sm:text-sm">{subtitle}</p>
-            )}
-          </div>
+          {trend && (
+            <span
+              className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium min-[1600px]:gap-1.5 min-[1600px]:px-3 min-[1600px]:py-1.5 min-[1600px]:text-sm ${trendPillClass[trend.color]}`}
+            >
+              {TrendIcon && <TrendIcon size={12} weight="BoldDuotone" className="flex-shrink-0 min-[1600px]:!size-4" />}
+              <span>{trend.text}</span>
+            </span>
+          )}
         </div>
-      </div>
-    </CardContent>
-  </Card>
-);
-
-const DonutChart: React.FC<{ correct: number; incorrect: number }> = ({ correct, incorrect }) => {
-  const data = [
-    { name: 'Correct', value: correct, color: '#10b981' },
-    { name: 'Incorrect', value: incorrect, color: '#ef4444' },
-  ];
-
-  const total = correct + incorrect;
-  const correctPercentage = total > 0 ? ((correct / total) * 100).toFixed(1) : '0';
-  const incorrectPercentage = total > 0 ? ((incorrect / total) * 100).toFixed(1) : '0';
-
-  return (
-    <div className="flex flex-col items-center space-y-2">
-      <div className="h-[120px] w-[120px]">
-        <PieChart width={120} height={120}>
-          <Pie
-            data={data}
-            cx="50%"
-            cy="50%"
-            innerRadius={35}
-            outerRadius={50}
-            paddingAngle={5}
-            dataKey="value"
-          >
-            {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.color} />
-            ))}
-          </Pie>
-          <Tooltip />
-        </PieChart>
-      </div>
-      <div className="space-y-1 text-center">
-        <div className="flex items-center justify-center space-x-2">
-          <div className="h-3 w-3 rounded-full bg-emerald-500" />
-          <span className="text-sm font-medium text-foreground">
-            Correct:
-            {' '}
-            {correctPercentage}
-            %
-          </span>
+        <p className="mt-4 text-xs font-semibold text-muted-foreground min-[1600px]:text-base sm:text-xl">
+          {title}
+        </p>
+        <div className="mt-2 text-2xl font-bold tracking-tight text-foreground min-[1600px]:text-4xl sm:text-3xl">
+          {value}
         </div>
-        <div className="flex items-center justify-center space-x-2">
-          <div className="h-3 w-3 rounded-full bg-red-500" />
-          <span className="text-sm font-medium text-foreground">
-            Incorrect:
-            {' '}
-            {incorrectPercentage}
-            %
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const MasteryProgress: React.FC<{ mastery: number }> = ({ mastery }) => {
-  const percentage = (mastery / 10) * 100;
-  const circumference = 2 * Math.PI * 40;
-  const offset = circumference - (percentage / 100) * circumference;
-
-  const getColor = () => {
-    if (mastery >= 8) {
-      return '#10b981';
-    }
-    if (mastery >= 6) {
-      return '#3b82f6';
-    }
-    if (mastery >= 4) {
-      return '#f59e0b';
-    }
-    return '#ef4444';
-  };
-
-  return (
-    <div className="flex flex-col items-center space-y-2">
-      <div className="relative h-28 w-28">
-        <svg className="h-28 w-28 -rotate-90 transform">
-          <circle
-            cx="56"
-            cy="56"
-            r="40"
-            stroke="currentColor"
-            strokeWidth="8"
-            fill="none"
-            className="text-muted"
-          />
-          <circle
-            cx="56"
-            cy="56"
-            r="40"
-            stroke={getColor()}
-            strokeWidth="8"
-            fill="none"
-            strokeDasharray={circumference}
-            strokeDashoffset={offset}
-            strokeLinecap="round"
-            className="transition-all duration-500"
-          />
-        </svg>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-foreground">{mastery.toFixed(1)}</div>
-            <div className="text-xs text-muted-foreground">/ 10</div>
-          </div>
-        </div>
-      </div>
-      <p className="text-sm font-medium text-foreground">Average Mastery</p>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 
@@ -150,61 +79,63 @@ type SummaryStatsCardProps = {
 };
 
 export const SummaryStatsCard: React.FC<SummaryStatsCardProps> = ({ data }) => {
-  const metrics = [
+  const totalAnswers = data.totalCorrect + data.totalIncorrect;
+  const accuracyPct = totalAnswers > 0 ? Math.round((data.totalCorrect / totalAnswers) * 100) : 0;
+
+  const cards: Array<{
+    title: string;
+    value: React.ReactNode;
+    icon: React.ReactNode;
+    iconBgClass: string;
+    trend?: TrendConfig;
+  }> = [
     {
       title: 'Total Vocabs',
-      value: data.totalVocabs,
-      icon: <BookOpen className="h-7 w-7 text-white" />,
-      iconColor: 'bg-gradient-to-br from-indigo-400 via-blue-500 to-indigo-600',
+      value: data.totalVocabs.toLocaleString(),
+      icon: <Book size={20} weight="BoldDuotone" className="text-violet-600 dark:text-violet-400" />,
+      iconBgClass: 'bg-violet-100 dark:bg-violet-900/30',
+      trend: { text: '+12 this week', icon: 'arrowUp', color: 'success' },
     },
     {
-      title: 'Total Correct',
-      value: data.totalCorrect,
-      icon: <CheckCircle className="h-7 w-7 text-white" />,
-      iconColor: 'bg-gradient-to-br from-emerald-400 via-green-500 to-teal-600',
+      title: 'Correct Answers',
+      value: data.totalCorrect.toLocaleString(),
+      icon: <CheckCircle size={20} weight="BoldDuotone" className="text-success" />,
+      iconBgClass: 'bg-success/10',
+      trend: { text: `${accuracyPct}% Accuracy`, icon: 'arrowUp', color: 'success' },
     },
     {
-      title: 'Total Incorrect',
-      value: data.totalIncorrect,
-      icon: <XCircle className="h-7 w-7 text-white" />,
-      iconColor: 'bg-gradient-to-br from-red-400 via-rose-500 to-red-600',
+      title: 'Incorrect',
+      value: data.totalIncorrect.toLocaleString(),
+      icon: <CloseCircle size={20} weight="BoldDuotone" className="text-destructive" />,
+      iconBgClass: 'bg-destructive/10',
+      trend: { text: 'Updated 2h ago', icon: 'clock', color: 'muted' },
     },
     {
-      title: 'Average Mastery',
-      value: data.averageMastery.toFixed(1),
-      icon: <TrendingUp className="h-7 w-7 text-white" />,
-      iconColor: 'bg-gradient-to-br from-amber-400 via-orange-500 to-red-500',
+      title: 'Avg. Mastery',
+      value: (
+        <span className="inline-flex items-baseline gap-0.5">
+          <span className="text-2xl font-bold tracking-tight text-foreground min-[1600px]:text-4xl sm:text-3xl">{data.averageMastery.toFixed(1)}</span>
+          <span className="text-base font-normal text-muted-foreground min-[1600px]:text-xl">/10</span>
+        </span>
+      ),
+      icon: <Star size={20} weight="BoldDuotone" className="text-amber-600 dark:text-amber-400" />,
+      iconBgClass: 'bg-amber-100 dark:bg-amber-900/30',
+      trend: { text: '-0.2 from last month', icon: 'arrowDown', color: 'destructive' },
     },
   ];
 
   return (
-    <div className="relative space-y-6">
-      <div className="absolute inset-0 -z-10 rounded-3xl bg-gradient-to-br from-background/50 via-transparent to-primary/5" />
-
-      <div className="grid grid-cols-1 gap-4 p-1 sm:gap-6 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
-        {metrics.map(metric => (
-          <div key={metric.title} className="relative">
-            <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-primary/10 to-transparent opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100" />
-            <MetricCard {...metric} />
-          </div>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
-        <Card className="border-0 bg-card/80 shadow-lg">
-          <CardContent className="px-4 sm:px-6">
-            <h3 className="mb-4 text-base font-semibold text-foreground sm:text-lg">Answer Distribution</h3>
-            <DonutChart correct={data.totalCorrect} incorrect={data.totalIncorrect} />
-          </CardContent>
-        </Card>
-
-        <Card className="border-0 bg-card/80 shadow-lg">
-          <CardContent className="px-4 sm:px-6">
-            <h3 className="mb-4 text-base font-semibold text-foreground sm:text-lg">Mastery Progress</h3>
-            <MasteryProgress mastery={data.averageMastery} />
-          </CardContent>
-        </Card>
-      </div>
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
+      {cards.map(c => (
+        <MetricCard
+          key={c.title}
+          title={c.title}
+          value={c.value}
+          icon={c.icon}
+          iconBgClass={c.iconBgClass}
+          trend={c.trend}
+        />
+      ))}
     </div>
   );
 };

@@ -4,7 +4,7 @@ import type { ResponseAPI, TLanguage } from '@/types';
 import type { TSubjectResponse } from '@/types/subject';
 import type { TVocab } from '@/types/vocab-list';
 import type { TWordTypeResponse } from '@/types/word-type';
-import { Loader2 } from 'lucide-react';
+import { RefreshCircle } from '@solar-icons/react/ssr';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -135,7 +135,7 @@ const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
               {isSubmitting
                 ? (
                     <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      <RefreshCircle size={16} weight="BoldDuotone" className="mr-2 animate-spin" />
                       {editMode ? 'Updating...' : 'Validating...'}
                     </>
                   )

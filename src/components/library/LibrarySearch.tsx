@@ -1,4 +1,4 @@
-import { Search } from 'lucide-react';
+import { Magnifer } from '@solar-icons/react/ssr';
 import React from 'react';
 import { Input } from '@/components/ui/input';
 
@@ -16,7 +16,7 @@ const LibrarySearch: React.FC<LibrarySearchProps> = ({
   return (
     <div className="relative mx-auto w-1/2">
       <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-        <Search className="h-6 w-6 text-muted-foreground" />
+        <Magnifer size={24} weight="BoldDuotone" className="text-muted-foreground" />
       </div>
       <Input
         placeholder={placeholder}

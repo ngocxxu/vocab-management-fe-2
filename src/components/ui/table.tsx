@@ -18,7 +18,14 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { ArrowDown, ArrowUp, ArrowUpDown, Trash } from 'lucide-react';
+import {
+  AltArrowDown,
+  AltArrowLeft,
+  AltArrowRight,
+  AltArrowUp,
+  SortVertical,
+  TrashBin2,
+} from '@solar-icons/react/ssr';
 import React, { useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from './button';
@@ -188,7 +195,7 @@ export function DataTable<TData, TValue>({
               }}
               className="flex items-center"
             >
-              <Trash className="h-4 w-4" />
+              <TrashBin2 size={16} weight="BoldDuotone" />
               <span>
                 Delete (
                 {selectedRowCount}
@@ -257,9 +264,9 @@ export function DataTable<TData, TValue>({
                                   {header.column.getCanSort() && (
                                     <span className="ml-2 inline-block">
                                       {{
-                                        asc: <ArrowUp className="h-4 w-4" />,
-                                        desc: <ArrowDown className="h-4 w-4" />,
-                                      }[header.column.getIsSorted() as string] ?? <ArrowUpDown className="h-4 w-4" />}
+                                        asc: <AltArrowUp size={16} weight="BoldDuotone" />,
+                                        desc: <AltArrowDown size={16} weight="BoldDuotone" />,
+                                      }[header.column.getIsSorted() as string] ?? <SortVertical size={16} weight="BoldDuotone" />}
                                     </span>
                                   )}
                                 </div>
@@ -374,9 +381,7 @@ export function DataTable<TData, TValue>({
               size="sm"
               className="flex items-center space-x-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200"
             >
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
+              <AltArrowLeft size={16} weight="BoldDuotone" />
               <span>Previous</span>
             </Button>
 
@@ -443,9 +448,7 @@ export function DataTable<TData, TValue>({
               className="flex items-center space-x-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200"
             >
               <span>Next</span>
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
+              <AltArrowRight size={16} weight="BoldDuotone" />
             </Button>
           </div>
         </div>

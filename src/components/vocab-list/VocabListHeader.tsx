@@ -2,7 +2,7 @@
 
 import type { TLanguageFolder } from '@/types/language-folder';
 import type { VocabQueryParams } from '@/utils/api-config';
-import { Filter, Folder, Plus, Upload } from 'lucide-react';
+import { AddCircle, Filter, Folder, Upload } from '@solar-icons/react/ssr';
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { MultiSelect } from '@/components/ui/multi-select';
@@ -82,7 +82,7 @@ const VocabListHeader: React.FC<VocabListHeaderProps> = ({
                     style={{ backgroundColor: languageFolder.folderColor }}
                   />
                   <div className="flex items-center space-x-2">
-                    <Folder className="h-4 w-4 text-muted-foreground" />
+                    <Folder size={16} weight="BoldDuotone" className="text-muted-foreground" />
                     <span className="text-sm font-medium text-foreground">
                       {languageFolder.name}
                     </span>
@@ -100,7 +100,7 @@ const VocabListHeader: React.FC<VocabListHeaderProps> = ({
         <Popover>
           <PopoverTrigger asChild>
             <Button variant="outline" className="h-10 border-border bg-card/80 backdrop-blur-sm">
-              <Filter className="mr-2 h-4 w-4" />
+              <Filter size={16} weight="BoldDuotone" className="mr-2" />
               <span className="hidden sm:inline">Filter</span>
             </Button>
           </PopoverTrigger>
@@ -155,14 +155,14 @@ const VocabListHeader: React.FC<VocabListHeaderProps> = ({
           variant="outline"
           className="h-10 border-border bg-card/80 backdrop-blur-sm"
         >
-          <Upload className="mr-2 h-4 w-4" />
+          <Upload size={16} weight="BoldDuotone" className="mr-2" />
           <span className="hidden sm:inline">Import Excel</span>
         </Button>
         <Button
           onClick={onAddVocab}
           className="h-10 bg-primary text-primary-foreground shadow-lg hover:opacity-90"
         >
-          <Plus className="mr-2 h-4 w-4" />
+          <AddCircle size={16} weight="BoldDuotone" className="mr-2" />
           <span className="hidden sm:inline">Add Vocab</span>
         </Button>
       </div>

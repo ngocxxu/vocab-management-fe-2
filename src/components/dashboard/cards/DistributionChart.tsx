@@ -5,65 +5,38 @@ import React from 'react';
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-const getColor = (scoreRange: string): string => {
-  const range = scoreRange.split('-');
-  const min = Number.parseInt(range[0] || '0', 10);
+const BAR_GROUPS = [
+  { key: 'low', label: 'LOW (0-2)', scoreRanges: ['0', '1-2', '3-4'], color: '#EA4335' },
+  { key: 'mid', label: 'MID (5-7)', scoreRanges: ['5-6', '7-8'], color: '#FBBC04' },
+  { key: 'high', label: 'HIGH (8-10)', scoreRanges: ['9-10'], color: '#34A853' },
+] as const;
 
-  if (min >= 9) {
-    return '#10b981';
+function aggregateToBars(data: MasteryDistribution[]): { name: string; count: number; color: string }[] {
+  if (!data.length) {
+    return BAR_GROUPS.map(g => ({ name: g.label, count: 0, color: g.color }));
   }
-  if (min >= 7) {
-    return '#3b82f6';
-  }
-  if (min >= 5) {
-    return '#f59e0b';
-  }
-  if (min >= 3) {
-    return '#f97316';
-  }
-  return '#ef4444';
-};
+  return BAR_GROUPS.map((group) => {
+    const count = data
+      .filter(d => (group.scoreRanges as readonly string[]).includes(d.scoreRange))
+      .reduce((sum, d) => sum + d.count, 0);
+    return { name: group.label, count, color: group.color };
+  });
+}
 
 type TooltipProps = {
   active?: boolean;
-  payload?: Array<{
-    payload: {
-      count: number;
-      total?: number;
-      [key: string]: unknown;
-    };
-    [key: string]: unknown;
-  }>;
+  payload?: Array<{ payload: { name: string; count: number } }>;
 };
 
 const CustomTooltip = ({ active, payload }: TooltipProps) => {
-  if (active && payload && payload.length && payload[0]) {
-    const firstPayload = payload[0];
-    const data = firstPayload.payload;
-    const total = 'total' in data && typeof data.total === 'number' ? data.total : 0;
-    const count = 'count' in data && typeof data.count === 'number' ? data.count : 0;
-    const percentage = total > 0 ? ((count / total) * 100).toFixed(1) : '0';
-    const scoreRange = 'scoreRange' in data ? String(data.scoreRange) : 'N/A';
-
+  if (active && payload?.length && payload[0]) {
+    const { name, count } = payload[0].payload;
     return (
-      <div className="rounded-lg border border-border bg-card p-3 shadow-lg">
-        <p className="font-semibold text-foreground">
-          Score Range:
-          {' '}
-          {scoreRange}
-        </p>
+      <div className="rounded-lg border border-border bg-card px-3 py-2 shadow-lg">
+        <p className="font-medium text-foreground">{name}</p>
         <p className="text-sm text-muted-foreground">
           Count:
-          {' '}
-          <span className="font-medium">{count}</span>
-        </p>
-        <p className="text-sm text-muted-foreground">
-          Percentage:
-          {' '}
-          <span className="font-medium">
-            {percentage}
-            %
-          </span>
+          {count}
         </p>
       </div>
     );
@@ -78,10 +51,9 @@ type DistributionChartProps = {
 export const DistributionChart: React.FC<DistributionChartProps> = ({ data }) => {
   if (!data || data.length === 0) {
     return (
-      <Card className="overflow-hidden border-0 bg-card shadow-lg">
-        <CardHeader className="border-b border-border pb-4">
+      <Card className="overflow-hidden border-0 bg-card shadow-sm">
+        <CardHeader className="pb-4">
           <CardTitle className="text-xl font-bold text-foreground">Mastery Distribution</CardTitle>
-          <p className="text-sm text-muted-foreground">Distribution of mastery scores across all vocabs.</p>
         </CardHeader>
         <CardContent className="p-6">
           <div className="flex h-64 items-center justify-center text-muted-foreground">
@@ -92,33 +64,19 @@ export const DistributionChart: React.FC<DistributionChartProps> = ({ data }) =>
     );
   }
 
-  const total = data.reduce((sum, item) => sum + item.count, 0);
-  const chartData = data.map(item => ({
-    ...item,
-    total,
-  }));
-
-  const scoreOrder = ['0', '1-2', '3-4', '5-6', '7-8', '9-10'];
-  const sortedData = [...chartData].sort((a, b) => {
-    const indexA = scoreOrder.indexOf(a.scoreRange);
-    const indexB = scoreOrder.indexOf(b.scoreRange);
-    return indexA - indexB;
-  });
+  const barData = aggregateToBars(data);
 
   return (
-    <Card className="overflow-hidden border-0 bg-card shadow-lg">
-      <CardHeader className="border-b border-border pb-4">
-        <div>
-          <CardTitle className="text-xl font-bold text-foreground">Mastery Distribution</CardTitle>
-          <p className="text-sm text-muted-foreground">Distribution of mastery scores across all vocabs.</p>
-        </div>
+    <Card className="overflow-hidden border-0 bg-card shadow-sm">
+      <CardHeader className="pb-4">
+        <CardTitle className="text-xl font-bold text-foreground">Mastery Distribution</CardTitle>
       </CardHeader>
       <CardContent className="p-6">
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={sortedData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+        <ResponsiveContainer width="100%" height={280}>
+          <BarChart data={barData} margin={{ top: 5, right: 20, left: 20, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
             <XAxis
-              dataKey="scoreRange"
+              dataKey="name"
               className="text-xs text-muted-foreground"
               tick={{ fill: 'currentColor' }}
             />
@@ -127,9 +85,9 @@ export const DistributionChart: React.FC<DistributionChartProps> = ({ data }) =>
               tick={{ fill: 'currentColor' }}
             />
             <Tooltip content={<CustomTooltip />} />
-            <Bar dataKey="count" radius={[8, 8, 0, 0]}>
-              {sortedData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={getColor(entry.scoreRange)} />
+            <Bar dataKey="count" radius={[6, 6, 0, 0]}>
+              {barData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
             </Bar>
           </BarChart>

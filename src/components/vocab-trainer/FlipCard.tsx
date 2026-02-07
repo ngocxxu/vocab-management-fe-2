@@ -1,7 +1,7 @@
 'use client';
 
 import type { TFlipCardQuestion } from '@/types/vocab-trainer';
-import { Volume2 } from 'lucide-react';
+import { VolumeLoud } from '@solar-icons/react/ssr';
 import React from 'react';
 import { Button } from '@/components/ui/button';
 
@@ -79,7 +79,7 @@ const FlipCard: React.FC<FlipCardProps> = ({
                   onPlayAudio();
                 }}
               >
-                <Volume2 className="h-5 w-5" />
+                <VolumeLoud size={20} weight="BoldDuotone" />
               </Button>
             )}
 
@@ -127,7 +127,7 @@ const FlipCard: React.FC<FlipCardProps> = ({
                   onPlayAudio();
                 }}
               >
-                <Volume2 className="h-5 w-5" />
+                <VolumeLoud size={20} weight="BoldDuotone" />
               </Button>
             )}
 

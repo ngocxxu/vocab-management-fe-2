@@ -1,6 +1,6 @@
 'use client';
 
-import { CheckCircle, Copy } from 'lucide-react';
+import { CheckCircle, Copy } from '@solar-icons/react/ssr';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -245,13 +245,13 @@ const MarkdownReport: React.FC<MarkdownReportProps> = ({ markdown }) => {
           {copied
             ? (
                 <>
-                  <CheckCircle className="mr-2 h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                  <CheckCircle size={16} weight="BoldDuotone" className="mr-2 text-emerald-600 dark:text-emerald-400" />
                   Copied!
                 </>
               )
             : (
                 <>
-                  <Copy className="mr-2 h-4 w-4" />
+                  <Copy size={16} weight="BoldDuotone" className="mr-2" />
                   Copy
                 </>
               )}

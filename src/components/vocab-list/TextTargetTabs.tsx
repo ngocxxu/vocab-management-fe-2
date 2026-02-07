@@ -3,7 +3,7 @@
 import type { ResponseAPI, TLanguage } from '@/types';
 import type { TSubjectResponse } from '@/types/subject';
 import type { TWordTypeResponse } from '@/types/word-type';
-import { Plus, X } from 'lucide-react';
+import { AddCircle, CloseCircle } from '@solar-icons/react/ssr';
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -72,7 +72,7 @@ const TextTargetTabs: React.FC<TextTargetTabsProps> = ({
           onClick={onAddTextTarget}
           disabled={textTargets.length >= 5}
         >
-          <Plus className="mr-1 h-4 w-4" />
+          <AddCircle size={16} weight="BoldDuotone" className="mr-1" />
           Add Target
         </Button>
       </div>
@@ -111,7 +111,7 @@ const TextTargetTabs: React.FC<TextTargetTabsProps> = ({
                     }
                   }}
                 >
-                  <X className="h-3 w-3" />
+                  <CloseCircle size={12} weight="BoldDuotone" />
                 </div>
               )}
             </TabsTrigger>

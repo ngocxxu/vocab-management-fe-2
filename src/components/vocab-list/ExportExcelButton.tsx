@@ -1,7 +1,7 @@
 'use client';
 
 import type { VocabQueryParams } from '@/utils/api-config';
-import { Download } from 'lucide-react';
+import { Download } from '@solar-icons/react/ssr';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import * as XLSX from 'xlsx';
@@ -52,7 +52,7 @@ const ExportExcelButton: React.FC<ExportExcelButtonProps> = ({ queryParams, disa
       variant="outline"
       className="border-slate-200 bg-white/80 backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/80"
     >
-      <Download className="mr-2 h-4 w-4" />
+      <Download size={16} weight="BoldDuotone" className="mr-2" />
       {isLoading
         ? 'Exporting...'
         : 'Export Excel'}

@@ -1,6 +1,7 @@
 'use client';
 
 import type { ForgotPasswordFormData } from '@/libs/validations/auth';
+import { CheckCircle } from '@solar-icons/react/ssr';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -43,19 +44,7 @@ export default function ForgotPasswordPage() {
             <CardHeader className="space-y-1 text-center">
               <div className="mb-4 flex items-center justify-center">
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
-                  <svg
-                    className="h-6 w-6 text-green-600 dark:text-green-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
+                  <CheckCircle size={24} weight="BoldDuotone" className="text-green-600 dark:text-green-400" />
                 </div>
               </div>
               <CardTitle className="text-2xl text-green-600 dark:text-green-400">

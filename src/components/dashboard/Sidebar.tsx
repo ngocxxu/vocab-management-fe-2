@@ -1,49 +1,50 @@
-import type { TUser } from '@/types/auth';
-import {
-  ChevronDown,
-  GraduationCap,
-  LayoutDashboard,
-  Library,
-  Power,
-  Settings,
-  User,
-} from 'lucide-react';
-import Image from 'next/image';
-import { usePathname, useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
 import { signout, verifyUser } from '@/actions';
 import { Button } from '@/components/ui/button';
+import type { TUser } from '@/types/auth';
+import {
+  Bell,
+  Bookmark,
+  HomeSmile,
+  Library,
+  Power,
+  SquareAcademicCap,
+  User,
+} from '@solar-icons/react/ssr';
+import Image from 'next/image';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
 
 type MenuItem = {
   id: string;
+  path: string;
   label: string;
   icon: React.ReactNode;
-  hasArrow?: boolean;
-  subItems?: Array<{
-    id: string;
-    label: string;
-    status: 'active' | 'done' | 'hold';
-  }>;
-  notification?: number;
   category?: string;
 };
 
-const menuItems: MenuItem[] = [
-  // Main navigation items
-  { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="h-5 w-5" /> },
-  { id: 'library', label: 'Library', icon: <Library className="h-5 w-5" /> },
-  { id: 'vocab-trainer', label: 'Vocab Trainer', icon: <GraduationCap className="h-5 w-5" /> },
-  { id: 'settings', label: 'Settings', icon: <Settings className="h-5 w-5" /> },
+const mainMenuItems: MenuItem[] = [
+  { id: 'dashboard', path: '/dashboard', label: 'Dashboard', icon: <HomeSmile size={20} weight="BoldDuotone" /> },
+  { id: 'library', path: '/library', label: 'Library', icon: <Library size={20} weight="BoldDuotone" /> },
+  { id: 'vocab-trainer', path: '/vocab-trainer', label: 'Vocab Trainer', icon: <SquareAcademicCap size={20} weight="BoldDuotone" /> },
+];
+
+const settingsMenuItems: MenuItem[] = [
+  { id: 'profile', path: '/settings?tab=account', label: 'Profile', icon: <User size={20} weight="BoldDuotone" /> },
+  { id: 'subjects', path: '/settings?tab=subjects', label: 'Subjects', icon: <Bookmark size={20} weight="BoldDuotone" /> },
+  { id: 'notifications', path: '/settings?tab=notifications', label: 'Notifications', icon: <Bell size={20} weight="BoldDuotone" /> },
 ];
 
 type SidebarProps = {
   isOpen: boolean;
   onClose?: () => void;
+  isExpanded?: boolean;
 };
 
-export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, isExpanded = true }) => {
+  const collapsed = !isExpanded;
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [user, setUser] = useState<TUser | null>(null);
 
   useEffect(() => {
@@ -54,14 +55,31 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     loadUser();
   }, []);
 
-  // Get the current active item from pathname
-  const getCurrentActiveItem = () => {
-    const currentPath = pathname.split('/')[1];
-    return currentPath || 'dashboard'; // Default to dashboard if no path
+  const isActivePath = (path: string) => {
+    if (path === '/dashboard') {
+      return pathname === '/dashboard' || pathname === '/';
+    }
+    if (path.startsWith('/settings')) {
+      if (pathname !== '/settings') {
+        return false;
+      }
+      const tab = searchParams.get('tab');
+      if (path.includes('tab=account') && (!tab || tab === 'account')) {
+        return true;
+      }
+      if (path.includes('tab=subjects') && tab === 'subjects') {
+        return true;
+      }
+      if (path.includes('tab=notifications') && tab === 'notifications') {
+        return true;
+      }
+      return false;
+    }
+    return pathname === path || pathname.startsWith(`${path}/`);
   };
 
-  const handleButtonClick = (buttonId: string) => {
-    router.push(`/${buttonId}`);
+  const handleNav = (path: string) => {
+    router.push(path);
     if (onClose && window.innerWidth < 768) {
       onClose();
     }
@@ -80,82 +98,146 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
   return (
     <aside
-      className={`fixed top-0 left-0 z-40 flex h-screen w-72 flex-col border-r border-border bg-card shadow-sm transition-all duration-300 ease-in-out md:translate-x-0 ${
-        isOpen ? 'translate-x-0' : '-translate-x-full'
-      }`}
+      className={`fixed top-0 left-0 z-40 flex h-screen flex-col border-r border-border bg-card shadow-sm transition-all duration-300 ease-in-out md:translate-x-0 ${
+        collapsed ? 'w-16' : 'w-72'
+      } ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
     >
-      <div className="flex-shrink-0 border-b border-border p-4">
-        <div className="flex items-center space-x-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary shadow-lg">
-            <span className="text-lg font-bold text-primary-foreground">V</span>
+      <div className="flex-shrink-0 p-4">
+        <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'}`}>
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary shadow-lg">
+            <SquareAcademicCap size={20} weight="BoldDuotone" className="text-primary-foreground" />
           </div>
-          <h1 className="text-xl font-bold text-foreground">Vocabulary</h1>
+          {!collapsed && (
+            <h1 className="text-xl font-bold text-foreground">VocabMaster</h1>
+          )}
         </div>
       </div>
 
-      <div className="flex-1 space-y-6 overflow-y-auto p-6">
+      <div className={`flex-1 space-y-6 overflow-y-auto transition-all duration-300 ${collapsed ? 'space-y-2 p-3' : 'p-6'}`}>
         <div className="space-y-2">
-          {menuItems.filter(item => !item.category).map((item) => {
-            const isActive = getCurrentActiveItem() === item.id;
+          {!collapsed && (
+            <p className="px-4 text-xs font-medium tracking-wide text-muted-foreground uppercase">Main Menu</p>
+          )}
+          {mainMenuItems.map((item) => {
+            const isActive = isActivePath(item.path);
             return (
-              <div key={item.id}>
-                <Button
-                  variant="ghost"
-                  className={`h-11 w-full cursor-pointer justify-between rounded-xl px-4 transition-all duration-300 ease-in-out hover:bg-accent hover:text-primary ${
-                    isActive ? 'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground' : 'text-muted-foreground'
-                  }`}
-                  onClick={() => handleButtonClick(item.id)}
-                >
-                  <div className="flex items-center space-x-3">
-                    {item.icon}
-                    <span className="font-medium">{item.label}</span>
-                  </div>
-                  {item.hasArrow && <ChevronDown className="h-4 w-4" />}
-                </Button>
-              </div>
+              <Button
+                key={`${item.id}-${item.label}`}
+                variant="ghost"
+                className={`w-full cursor-pointer transition-all duration-300 ease-in-out hover:bg-accent ${
+                  collapsed ? 'h-10 justify-center rounded-lg px-0' : 'h-11 justify-start rounded-xl px-4'
+                } ${
+                  isActive ? 'bg-accent text-primary hover:bg-accent hover:text-primary' : 'text-foreground hover:bg-accent hover:text-foreground'
+                }`}
+                onClick={() => handleNav(item.path)}
+                title={collapsed ? item.label : undefined}
+              >
+                <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'}`}>
+                  <span className={isActive ? 'text-primary' : 'text-muted-foreground'}>{item.icon}</span>
+                  {!collapsed && <span className="font-medium">{item.label}</span>}
+                </div>
+              </Button>
+            );
+          })}
+        </div>
+        {collapsed && <div className="border-t border-border" />}
+        <div className="space-y-2">
+          {!collapsed && (
+            <p className="px-4 text-xs font-medium tracking-wide text-muted-foreground uppercase">Settings</p>
+          )}
+          {settingsMenuItems.map((item) => {
+            const isActive = isActivePath(item.path);
+            return (
+              <Button
+                key={`${item.id}-${item.label}`}
+                variant="ghost"
+                className={`w-full cursor-pointer transition-all duration-300 ease-in-out hover:bg-accent ${
+                  collapsed ? 'h-10 justify-center rounded-lg px-0' : 'h-11 justify-start rounded-xl px-4'
+                } ${
+                  isActive ? 'bg-accent text-primary hover:bg-accent hover:text-primary' : 'text-foreground hover:bg-accent hover:text-foreground'
+                }`}
+                onClick={() => handleNav(item.path)}
+                title={collapsed ? item.label : undefined}
+              >
+                <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'}`}>
+                  <span className={isActive ? 'text-primary' : 'text-muted-foreground'}>{item.icon}</span>
+                  {!collapsed && <span className="font-medium">{item.label}</span>}
+                </div>
+              </Button>
             );
           })}
         </div>
       </div>
 
-      <div className="flex-shrink-0 border-t border-border p-4">
-        <div className="flex items-center justify-between rounded-xl bg-accent p-4">
-          <div className="flex items-center space-x-3">
-            {user?.avatar
-              ? (
-                  <Image
-                    src={user.avatar}
-                    alt={`${user?.firstName ?? ''} ${user?.lastName ?? ''}`.trim() || 'Avatar'}
-                    width={40}
-                    height={40}
-                    className="h-10 w-10 rounded-full object-cover"
-                  />
-                )
-              : (
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary">
-                    <User className="h-6 w-6 text-primary-foreground" />
+      <div className={`flex-shrink-0 border-t border-border p-4 ${collapsed ? 'flex justify-center' : ''}`}>
+        {collapsed
+          ? (
+              <div className="flex flex-col items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-10 w-10 rounded-lg hover:bg-accent"
+                  onClick={handleSignOut}
+                  title="Sign out"
+                >
+                  <Power size={20} weight="BoldDuotone" className="text-muted-foreground" />
+                </Button>
+                {user?.avatar
+                  ? (
+                      <Image
+                        src={user.avatar}
+                        alt=""
+                        width={32}
+                        height={32}
+                        className="h-8 w-8 rounded-full object-cover"
+                      />
+                    )
+                  : (
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary">
+                        <User className="h-4 w-4 text-primary-foreground" />
+                      </div>
+                    )}
+              </div>
+            )
+          : (
+              <div className="flex items-center justify-between rounded-xl bg-muted-foreground/10 p-4">
+                <div className="flex items-center space-x-3">
+                  {user?.avatar
+                    ? (
+                        <Image
+                          src={user.avatar}
+                          alt={`${user?.firstName ?? ''} ${user?.lastName ?? ''}`.trim() || 'Avatar'}
+                          width={40}
+                          height={40}
+                          className="h-10 w-10 rounded-full object-cover"
+                        />
+                      )
+                    : (
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary">
+                          <User className="h-6 w-6 text-primary-foreground" />
+                        </div>
+                      )}
+                  <div>
+                    <p className="font-semibold text-foreground">
+                      {user?.firstName && user?.lastName
+                        ? `${user.firstName} ${user.lastName}`
+                        : 'User'}
+                    </p>
+                    <p className="max-w-36 truncate text-sm text-muted-foreground" title={user?.email || 'user@example.com'}>
+                      {user?.email || 'user@example.com'}
+                    </p>
                   </div>
-                )}
-            <div>
-              <p className="font-semibold text-foreground">
-                {user?.firstName && user?.lastName
-                  ? `${user.firstName} ${user.lastName}`
-                  : 'User'}
-              </p>
-              <p className="max-w-36 truncate text-sm text-muted-foreground" title={user?.email || 'user@example.com'}>
-                {user?.email || 'user@example.com'}
-              </p>
-            </div>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0 hover:bg-secondary"
-            onClick={handleSignOut}
-          >
-            <Power className="h-4 w-4 text-muted-foreground" />
-          </Button>
-        </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0 hover:bg-secondary"
+                  onClick={handleSignOut}
+                >
+                  <Power size={16} weight="BoldDuotone" className="text-muted-foreground" />
+                </Button>
+              </div>
+            )}
       </div>
     </aside>
   );

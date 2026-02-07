@@ -1,7 +1,7 @@
 'use client';
 
 import type { TFormTestVocabTrainerTranslationAudio, TQuestionAPI, TTranslationAudioDialogue } from '@/types/vocab-trainer';
-import { CheckCircle, Loader2 } from 'lucide-react';
+import { CheckCircle, RefreshCircle } from '@solar-icons/react/ssr';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { submitExam } from '@/actions/vocab-trainers';
@@ -198,7 +198,7 @@ const TranslationAudioExam: React.FC<TranslationAudioExamProps> = ({ trainerId, 
     return (
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
         <div className="space-y-6 text-center">
-          <Loader2 className="mx-auto h-16 w-16 animate-spin text-yellow-600 dark:text-yellow-400" />
+          <RefreshCircle size={64} weight="BoldDuotone" className="mx-auto animate-spin text-yellow-600 dark:text-yellow-400" />
           <div className="space-y-2">
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
               Uploading your recording...
@@ -216,7 +216,7 @@ const TranslationAudioExam: React.FC<TranslationAudioExamProps> = ({ trainerId, 
     return (
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
         <div className="space-y-6 text-center">
-          <Loader2 className="mx-auto h-16 w-16 animate-spin text-yellow-600 dark:text-yellow-400" />
+          <RefreshCircle size={64} weight="BoldDuotone" className="mx-auto animate-spin text-yellow-600 dark:text-yellow-400" />
           <div className="space-y-2">
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
               Submitting your exam...
@@ -270,7 +270,7 @@ const TranslationAudioExam: React.FC<TranslationAudioExamProps> = ({ trainerId, 
                         : 'bg-slate-400 text-slate-700 dark:bg-slate-600 dark:text-slate-300'
                     }`}
                   >
-                    <CheckCircle className="mr-2 h-5 w-5" />
+                    <CheckCircle size={20} weight="BoldDuotone" className="mr-2" />
                     Submit Exam
                   </Button>
                 </div>

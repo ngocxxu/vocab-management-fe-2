@@ -1,4 +1,10 @@
-import { BookOpen, CheckCircle, HelpCircle, Pencil, TrendingUp } from 'lucide-react';
+import {
+  Book,
+  CheckCircle,
+  GraphUp,
+  Pen,
+  QuestionCircle,
+} from '@solar-icons/react/ssr';
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -25,7 +31,7 @@ const MetricCard: React.FC<MetricCardProps> = ({ title, value, icon, iconColor, 
             <p className="text-2xl font-bold tracking-tight text-slate-900 sm:text-4xl dark:text-white">{value}</p>
             {trend && (
               <div className="flex items-center space-x-2">
-                <TrendingUp className={`h-3 w-3 sm:h-4 sm:w-4 ${trendColor} drop-shadow-sm`} />
+                <GraphUp size={16} weight="BoldDuotone" className={`${trendColor} drop-shadow-sm`} />
                 <span className={`text-xs font-semibold sm:text-sm ${trendColor} tracking-wide`}>{trend}</span>
               </div>
             )}
@@ -36,7 +42,7 @@ const MetricCard: React.FC<MetricCardProps> = ({ title, value, icon, iconColor, 
           size="icon"
           className="h-10 w-10 flex-shrink-0 rounded-xl opacity-0 transition-all duration-300 group-hover:opacity-100 hover:scale-110 hover:bg-slate-100/80 dark:hover:bg-slate-700/80"
         >
-          <TrendingUp className="h-5 w-5 text-slate-400 dark:text-slate-500" />
+          <GraphUp size={20} weight="BoldDuotone" className="text-slate-400 dark:text-slate-500" />
         </Button>
       </div>
     </CardContent>
@@ -48,7 +54,7 @@ export const MetricsGrid: React.FC = () => {
     {
       title: 'Total Vocab',
       value: '547',
-      icon: <BookOpen className="h-7 w-7 text-white" />,
+      icon: <Book size={28} weight="BoldDuotone" className="text-white" />,
       iconColor: 'bg-gradient-to-br from-indigo-400 via-blue-500 to-indigo-600',
       trend: '+12%',
       trendColor: 'text-emerald-600',
@@ -56,7 +62,7 @@ export const MetricsGrid: React.FC = () => {
     {
       title: 'New Vocab',
       value: '339',
-      icon: <Pencil className="h-7 w-7 text-white" />,
+      icon: <Pen size={28} weight="BoldDuotone" className="text-white" />,
       iconColor: 'bg-gradient-to-br from-emerald-400 via-green-500 to-teal-600',
       trend: '+8%',
       trendColor: 'text-emerald-600',
@@ -64,7 +70,7 @@ export const MetricsGrid: React.FC = () => {
     {
       title: 'Not Known',
       value: '147',
-      icon: <HelpCircle className="h-7 w-7 text-white" />,
+      icon: <QuestionCircle size={28} weight="BoldDuotone" className="text-white" />,
       iconColor: 'bg-gradient-to-br from-violet-400 via-purple-500 to-indigo-600',
       trend: '+5%',
       trendColor: 'text-emerald-600',
@@ -72,7 +78,7 @@ export const MetricsGrid: React.FC = () => {
     {
       title: 'Mastered',
       value: '89',
-      icon: <CheckCircle className="h-7 w-7 text-white" />,
+      icon: <CheckCircle size={28} weight="BoldDuotone" className="text-white" />,
       iconColor: 'bg-gradient-to-br from-amber-400 via-orange-500 to-red-500',
       trend: '+2.5%',
       trendColor: 'text-emerald-600',

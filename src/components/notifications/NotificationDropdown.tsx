@@ -2,7 +2,7 @@
 
 import type { ResponseAPI } from '@/types';
 import type { TNotification, TUnreadCountResponse } from '@/types/notification';
-import { Bell, CheckCheck } from 'lucide-react';
+import { Bell, CheckRead } from '@solar-icons/react/ssr';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useRef, useState, useTransition } from 'react';
 import { toast } from 'sonner';
@@ -61,7 +61,7 @@ const NotificationList: React.FC<NotificationListProps> = ({
   if (notifications.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-8 text-center">
-        <Bell className="h-8 w-8 text-slate-300 dark:text-slate-600" />
+        <Bell size={32} weight="BoldDuotone" className="text-slate-300 dark:text-slate-600" />
         <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
           {emptyMessage}
         </p>
@@ -228,7 +228,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
             className,
           )}
         >
-          <Bell className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+          <Bell size={20} weight="BoldDuotone" className="text-slate-600 dark:text-slate-400" />
           {count > 0 && (
             <Badge
               variant="destructive"
@@ -254,7 +254,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                 className="h-8 px-2 text-xs text-blue-600 hover:bg-blue-50 hover:text-blue-700 dark:text-blue-400 dark:hover:bg-blue-950/50"
                 onClick={handleMarkAllAsRead}
               >
-                <CheckCheck className="mr-1 h-3 w-3" />
+                <CheckRead size={12} weight="BoldDuotone" className="mr-1" />
                 Mark all as read
               </Button>
             )}

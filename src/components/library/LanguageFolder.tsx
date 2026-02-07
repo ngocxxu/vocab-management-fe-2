@@ -1,6 +1,6 @@
 'use client';
 
-import { Edit, Folder, MoreVertical, Trash2 } from 'lucide-react';
+import { Folder, MenuDots, Pen, TrashBin2 } from '@solar-icons/react/ssr';
 import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
 import { toast } from 'sonner';
@@ -83,7 +83,7 @@ const LanguageFolder = ({ folder, onFolderClick, onFolderUpdated, onFolderDelete
           {/* Icon Column */}
           <div className="flex w-12 items-center justify-center">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br shadow-sm" style={{ backgroundColor: folder.folderColor }}>
-              <Folder className="h-5 w-5 text-white" />
+              <Folder size={20} weight="BoldDuotone" className="text-white" />
             </div>
           </div>
 
@@ -121,7 +121,7 @@ const LanguageFolder = ({ folder, onFolderClick, onFolderUpdated, onFolderDelete
                   variant="ghost"
                   className="rounded p-1 text-muted-foreground transition-colors duration-200 hover:bg-accent hover:text-foreground"
                 >
-                  <MoreVertical className="h-4 w-4" />
+                  <MenuDots size={16} weight="BoldDuotone" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
@@ -130,7 +130,7 @@ const LanguageFolder = ({ folder, onFolderClick, onFolderUpdated, onFolderDelete
                   handleEdit();
                 }}
                 >
-                  <Edit className="mr-2 h-4 w-4" />
+                  <Pen size={16} weight="BoldDuotone" className="mr-2" />
                   Edit Folder
                 </DropdownMenuItem>
                 <DropdownMenuItem
@@ -141,7 +141,7 @@ const LanguageFolder = ({ folder, onFolderClick, onFolderUpdated, onFolderDelete
                   disabled={isDeleting}
                   className="text-destructive focus:text-destructive"
                 >
-                  <Trash2 className="mr-2 h-4 w-4" />
+                  <TrashBin2 size={16} weight="BoldDuotone" className="mr-2" />
                   {isDeleting ? 'Deleting...' : 'Delete Folder'}
                 </DropdownMenuItem>
               </DropdownMenuContent>

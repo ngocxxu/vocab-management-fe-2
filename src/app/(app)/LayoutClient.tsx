@@ -20,10 +20,14 @@ export function LayoutClient({
   initialUnreadCount,
 }: LayoutClientProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
+  const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth >= 768) {
+      const desktop = window.innerWidth >= 768;
+      setIsDesktop(desktop);
+      if (desktop) {
         setIsSidebarOpen(true);
       } else {
         setIsSidebarOpen(false);
@@ -36,7 +40,11 @@ export function LayoutClient({
   }, []);
 
   const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
+    if (isDesktop) {
+      setIsSidebarExpanded(prev => !prev);
+    } else {
+      setIsSidebarOpen(prev => !prev);
+    }
   };
 
   const closeSidebar = () => {
@@ -44,6 +52,8 @@ export function LayoutClient({
       setIsSidebarOpen(false);
     }
   };
+
+  const mainMargin = isDesktop ? (isSidebarExpanded ? 'md:ml-72' : 'md:ml-16') : '';
 
   return (
     <SocketProvider>
@@ -55,21 +65,18 @@ export function LayoutClient({
             aria-hidden="true"
           />
         )}
-        <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
-        <div
-          className={`flex flex-1 flex-col transition-all duration-300 ease-in-out md:ml-72 ${
-            isSidebarOpen ? 'ml-0 md:ml-72' : 'ml-0'
-          }`}
-        >
+        <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} isExpanded={isDesktop ? isSidebarExpanded : true} />
+        <div className={`ml-0 flex flex-1 flex-col transition-all duration-300 ease-in-out ${mainMargin}`}>
           <Header
             onSidebarToggle={toggleSidebar}
+            isSidebarExpanded={isSidebarExpanded}
             allNotifications={initialAllNotifications}
             unreadNotifications={initialUnreadNotifications}
             unreadCount={initialUnreadCount}
             isLoading={false}
             error={null}
           />
-          <div className="flex-1 overflow-auto">
+          <div className="flex-1 overflow-auto bg-background">
             {children}
           </div>
         </div>

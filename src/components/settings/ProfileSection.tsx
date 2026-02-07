@@ -2,7 +2,13 @@
 
 import type { TUser } from '@/types/auth';
 import type { TUserProfile } from '@/types/settings';
-import { Camera, Check, Pencil, User, X } from 'lucide-react';
+import {
+  Camera,
+  CheckCircle,
+  CloseCircle,
+  Pen,
+  User,
+} from '@solar-icons/react/ssr';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { verifyUser } from '@/actions';
@@ -160,7 +166,7 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
               onClick={handleEditClick}
               className="flex items-center gap-2"
             >
-              <Pencil className="h-4 w-4" />
+              <Pen size={16} weight="BoldDuotone" />
               Edit Profile
             </Button>
           )}
@@ -240,13 +246,13 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
                   )
                 : (
                     <div className="flex h-20 w-20 items-center justify-center rounded-full bg-slate-200 dark:bg-slate-700">
-                      <User className="h-8 w-8 text-slate-500" />
+                      <User size={32} weight="BoldDuotone" className="text-slate-500" />
                     </div>
                   )}
             </div>
             <div className="flex gap-2">
               <Button variant="outline" size="sm">
-                <Camera className="mr-2 h-4 w-4" />
+                <Camera size={16} weight="BoldDuotone" className="mr-2" />
                 Edit photo
               </Button>
             </div>
@@ -261,14 +267,14 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
               onClick={handleCancelClick}
               className="flex items-center gap-2"
             >
-              <X className="h-4 w-4" />
+              <CloseCircle size={16} weight="BoldDuotone" />
               Cancel
             </Button>
             <Button
               onClick={handleApplyClick}
               className="flex items-center gap-2"
             >
-              <Check className="h-4 w-4" />
+              <CheckCircle size={16} weight="BoldDuotone" />
               Apply Changes
             </Button>
           </div>

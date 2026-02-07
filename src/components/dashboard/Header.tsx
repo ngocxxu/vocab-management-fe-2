@@ -1,18 +1,36 @@
-import type { ResponseAPI } from '@/types';
-import type { TUser } from '@/types/auth';
-import type { TNotification, TUnreadCountResponse } from '@/types/notification';
-import { LogOut, Menu, Moon, Search, Sun, User } from 'lucide-react';
-import Image from 'next/image';
-import { usePathname, useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
 import { signout, verifyUser } from '@/actions';
 import { NotificationDropdown } from '@/components/notifications/NotificationDropdown';
 import { Button } from '@/components/ui/button';
+import {
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
 import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
 import { useTheme } from '@/hooks/useTheme';
+import type { ResponseAPI } from '@/types';
+import type { TUser } from '@/types/auth';
+import type { TNotification, TUnreadCountResponse } from '@/types/notification';
+import {
+  HamburgerMenu,
+  Logout,
+  Magnifer,
+  Moon,
+  Siderbar,
+  Sun,
+  User,
+} from '@solar-icons/react/ssr';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import React, { useCallback, useEffect, useState } from 'react';
 
 type HeaderProps = {
   onSidebarToggle: () => void;
+  isSidebarExpanded?: boolean;
   allNotifications?: ResponseAPI<TNotification[]> | null;
   unreadNotifications?: ResponseAPI<TNotification[]> | null;
   unreadCount?: TUnreadCountResponse | null;
@@ -22,6 +40,7 @@ type HeaderProps = {
 
 export const Header: React.FC<HeaderProps> = ({
   onSidebarToggle,
+  isSidebarExpanded = true,
   allNotifications,
   unreadNotifications,
   unreadCount,
@@ -30,8 +49,8 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const { theme, toggleTheme, mounted } = useTheme();
   const router = useRouter();
-  const pathname = usePathname();
   const [user, setUser] = useState<TUser | null>(null);
+  const [commandOpen, setCommandOpen] = useState(false);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -41,17 +60,17 @@ export const Header: React.FC<HeaderProps> = ({
     loadUser();
   }, []);
 
-  // Navigation items configuration
-  const navigationItems = [
-    { label: 'Dashboard', path: '/dashboard' },
-    { label: 'Library', path: '/library' },
-    { label: 'Vocab Trainer', path: '/vocab-trainer' },
-    { label: 'Settings', path: '/settings' },
-  ];
-
-  const handleNavigation = (path: string) => {
-    router.push(path);
-  };
+  const openCommand = useCallback(() => setCommandOpen(true), []);
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        setCommandOpen(open => !open);
+      }
+    };
+    document.addEventListener('keydown', down);
+    return () => document.removeEventListener('keydown', down);
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -73,40 +92,34 @@ export const Header: React.FC<HeaderProps> = ({
             size="icon"
             className="h-10 w-10 flex-shrink-0 rounded-xl hover:bg-accent"
             onClick={onSidebarToggle}
+            title={isSidebarExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
           >
-            <Menu className="h-5 w-5 text-muted-foreground" />
+            {isSidebarExpanded
+              ? <HamburgerMenu size={64} weight="BoldDuotone" className="text-muted-foreground" />
+              : <Siderbar size={20} weight="BoldDuotone" className="text-muted-foreground" />}
           </Button>
 
-          <div className="relative flex-1 md:flex-none">
-            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <div className="relative flex flex-1 items-center rounded-full border border-border bg-muted md:max-w-xl">
+            <Magnifer size={16} weight="BoldDuotone" className="ml-4 shrink-0 text-muted-foreground" />
             <Input
-              placeholder="Search..."
-              className="h-10 w-full rounded-xl border-border bg-muted pl-10 text-sm focus:border-primary focus:ring-primary md:w-64"
+              placeholder="Search words, lists, or tags..."
+              className="h-10 flex-1 border-0 bg-transparent pr-2 pl-3 text-sm focus-visible:ring-0 focus-visible:ring-offset-0"
+              onFocus={openCommand}
+              readOnly
+              aria-label="Search"
             />
-          </div>
-
-          <div className="hidden items-center space-x-6 lg:flex">
-            {navigationItems.map((item) => {
-              const isActive = item.path === '/vocab-trainer'
-                ? pathname.startsWith('/vocab-trainer')
-                : pathname === item.path;
-              return (
-                <Button
-                  key={item.path}
-                  variant="ghost"
-                  className={`h-auto p-0 text-sm font-medium transition-colors hover:bg-transparent ${
-                    isActive ? 'text-primary hover:text-primary' : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                  onClick={() => handleNavigation(item.path)}
-                >
-                  {item.label}
-                </Button>
-              );
-            })}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="mr-2 h-7 shrink-0 rounded-md bg-muted-foreground/10 px-2 text-xs text-muted-foreground hover:bg-muted-foreground/20"
+              onClick={openCommand}
+            >
+              CMD K
+            </Button>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 md:gap-4">
+        <div className="flex h-10 items-center gap-2">
           <Button
             variant="ghost"
             size="icon"
@@ -119,8 +132,8 @@ export const Header: React.FC<HeaderProps> = ({
             {mounted
               ? (
                   theme === 'dark'
-                    ? <Sun className="h-5 w-5 text-muted-foreground" />
-                    : <Moon className="h-5 w-5 text-muted-foreground" />
+                    ? <Sun size={20} weight="BoldDuotone" className="text-muted-foreground" />
+                    : <Moon size={20} weight="BoldDuotone" className="text-muted-foreground" />
                 )
               : (
                   <div className="h-5 w-5" />
@@ -135,6 +148,8 @@ export const Header: React.FC<HeaderProps> = ({
             error={error}
           />
 
+          <Separator orientation="vertical" />
+
           <div className="hidden items-center space-x-2 sm:flex">
             {user?.avatar
               ? (
@@ -148,7 +163,7 @@ export const Header: React.FC<HeaderProps> = ({
                 )
               : (
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary shadow-sm">
-                    <User className="h-5 w-5 text-primary-foreground" />
+                    <User size={20} weight="BoldDuotone" className="text-primary-foreground" />
                   </div>
                 )}
             <div className="hidden text-sm lg:block">
@@ -157,22 +172,33 @@ export const Header: React.FC<HeaderProps> = ({
                 {' '}
                 {user?.lastName}
               </div>
-              <div className="text-muted-foreground">
-                {user?.email}
-              </div>
+              <span className="inline-flex items-center rounded-full bg-violet-100 px-2 py-0.5 text-xs font-semibold tracking-wide text-violet-700 uppercase dark:bg-violet-900/40 dark:text-violet-300">
+                PRO
+              </span>
             </div>
             <Button
               variant="ghost"
               size="icon"
-              className="h-10 w-10 rounded-xl hover:bg-accent"
+              className="h-10 w-10 shrink-0 rounded-lg border-muted-foreground/30 hover:bg-accent"
               onClick={handleLogout}
               title="Sign out"
             >
-              <LogOut className="h-5 w-5 text-muted-foreground" />
+              <Logout size={20} weight="BoldDuotone" className="text-muted-foreground" />
             </Button>
           </div>
         </div>
       </div>
+      <CommandDialog open={commandOpen} onOpenChange={setCommandOpen} title="Search" description="Search words, lists, or tags.">
+        <CommandInput placeholder="Search words, lists, or tags..." />
+        <CommandList>
+          <CommandEmpty>No results.</CommandEmpty>
+          <CommandGroup heading="Suggestions">
+            <CommandItem onSelect={() => router.push('/dashboard')}>Dashboard</CommandItem>
+            <CommandItem onSelect={() => router.push('/library')}>Library</CommandItem>
+            <CommandItem onSelect={() => router.push('/vocab-trainer')}>Flashcards</CommandItem>
+          </CommandGroup>
+        </CommandList>
+      </CommandDialog>
     </header>
   );
 };

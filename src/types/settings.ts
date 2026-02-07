@@ -47,4 +47,4 @@ export type TSettings = {
   work: TWorkSettings;
 };
 
-export type TSettingsTab = 'account' | 'notifications' | 'sharing' | 'update-schedule' | 'billing' | 'questions';
+export type TSettingsTab = 'account' | 'subjects' | 'notifications' | 'sharing' | 'update-schedule' | 'billing' | 'questions';

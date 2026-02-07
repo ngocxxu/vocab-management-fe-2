@@ -1,7 +1,12 @@
 'use client';
 
 import type { TFormTestVocabTrainerFillInBlank, TQuestionAPI, TWordTestInput } from '@/types/vocab-trainer';
-import { CheckCircle, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import {
+  AltArrowLeft,
+  AltArrowRight,
+  CheckCircle,
+  RefreshCircle,
+} from '@solar-icons/react/ssr';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { submitExam } from '@/actions/vocab-trainers';
@@ -176,7 +181,7 @@ const FillInBlankExam: React.FC<FillInBlankExamProps> = ({ trainerId, examData }
     return (
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
         <div className="space-y-6 text-center">
-          <Loader2 className="mx-auto h-16 w-16 animate-spin text-yellow-600 dark:text-yellow-400" />
+          <RefreshCircle size={64} weight="BoldDuotone" className="mx-auto animate-spin text-yellow-600 dark:text-yellow-400" />
           <div className="space-y-2">
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
               Submitting your exam...
@@ -237,7 +242,7 @@ const FillInBlankExam: React.FC<FillInBlankExamProps> = ({ trainerId, examData }
                 disabled={isFirstQuestion}
                 className="group rounded-2xl border-2 border-yellow-500/50 bg-white px-6 py-3 text-slate-900 transition-all duration-300 hover:scale-105 hover:border-yellow-500 dark:border-yellow-400/50 dark:bg-slate-900 dark:text-white dark:hover:border-yellow-400"
               >
-                <ChevronLeft className="mr-2 h-5 w-5 transition-transform duration-300 group-hover:-translate-x-1" />
+                <AltArrowLeft size={20} weight="BoldDuotone" className="mr-2 transition-transform duration-300 group-hover:-translate-x-1" />
                 <span className="font-semibold">
                   Previous
 
@@ -276,7 +281,7 @@ const FillInBlankExam: React.FC<FillInBlankExamProps> = ({ trainerId, examData }
                       : 'bg-slate-400 text-slate-700 dark:bg-slate-600 dark:text-slate-300'
                   }`}
                 >
-                  <CheckCircle className="mr-2 h-5 w-5" />
+                  <CheckCircle size={20} weight="BoldDuotone" className="mr-2" />
                   Submit Exam
                 </Button>
               )
@@ -292,7 +297,7 @@ const FillInBlankExam: React.FC<FillInBlankExamProps> = ({ trainerId, examData }
                         Next
 
                       </span>
-                      <ChevronRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
+                      <AltArrowRight size={20} weight="BoldDuotone" className="ml-2 transition-transform duration-300 group-hover:translate-x-1" />
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent side="bottom" align="center">

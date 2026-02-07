@@ -2,7 +2,7 @@
 
 import type { EQuestionType } from '@/enum/vocab-trainer';
 import type { TNotification } from '@/types/notification';
-import { Loader2 } from 'lucide-react';
+import { RefreshCircle } from '@solar-icons/react/ssr';
 import { useRouter } from 'next/navigation';
 import React, { useState, useTransition } from 'react';
 import { toast } from 'sonner';
@@ -165,7 +165,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
       {/* Status Indicator / Loading */}
       <div className="flex flex-shrink-0 flex-col items-end justify-end gap-1">
         {isLoadingExam && (
-          <Loader2 className="h-3 w-3 animate-spin text-blue-500" />
+          <RefreshCircle size={12} weight="BoldDuotone" className="animate-spin text-blue-500" />
         )}
         {!isRead && !isLoadingExam && (
           <StatusIcon className={cn(

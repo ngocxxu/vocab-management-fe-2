@@ -1,7 +1,7 @@
 'use client';
 
 import type { TQuestion } from '@/types/vocab-trainer';
-import { HelpCircle } from 'lucide-react';
+import { QuestionCircle } from '@solar-icons/react/ssr';
 import React, { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -40,7 +40,7 @@ const FillInBlankCard: React.FC<FillInBlankCardProps> = ({
             <div className="absolute -top-2 -left-2 sm:-top-4 sm:-left-4">
               <div className="relative">
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-pink-500 shadow-lg sm:h-16 sm:w-16">
-                  <HelpCircle className="h-6 w-6 text-white sm:h-8 sm:w-8" />
+                  <QuestionCircle size={24} weight="BoldDuotone" className="text-white sm:!size-8" />
                 </div>
                 <div className="absolute -top-2 -right-2 h-3 w-3 animate-pulse rounded-full bg-yellow-400" />
                 <div className="absolute -bottom-1 -left-1 h-2 w-2 animate-pulse rounded-full bg-pink-400" />

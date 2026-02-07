@@ -1,6 +1,6 @@
 'use client';
 
-import { PlayCircle } from 'lucide-react';
+import { PlayCircle } from '@solar-icons/react/ssr';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -91,7 +91,7 @@ const ExamLauncher: React.FC<ExamLauncherProps> = ({ trainerId, questionType }) 
       disabled={isDisabled}
       title={isDisabled ? 'Please wait before starting another exam' : 'Start exam'}
     >
-      <PlayCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
+      <PlayCircle size={16} weight="BoldDuotone" className="text-green-600 dark:text-green-400" />
     </Button>
   );
 };

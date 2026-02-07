@@ -1,7 +1,7 @@
 'use client';
 
 import type { TSubject } from '@/types/subject';
-import { Loader2, Sparkles } from 'lucide-react';
+import { MagicStick, RefreshCircle } from '@solar-icons/react/ssr';
 import React, { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { generateTextTargetContent } from '@/actions/vocabs';
@@ -181,14 +181,14 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
             {isGenerating
               ? (
                   <>
-                    <Loader2 className="h-3 w-3 animate-spin" />
+                    <RefreshCircle size={12} weight="BoldDuotone" className="animate-spin" />
                     Generating...
                   </>
                 )
               : isCooldownActive
                 ? (
                     <>
-                      <Loader2 className="h-3 w-3" />
+                      <RefreshCircle size={12} weight="BoldDuotone" />
                       Wait
                       {' '}
                       {cooldownRemaining}
@@ -197,7 +197,7 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
                   )
                 : (
                     <>
-                      <Sparkles className="h-3 w-3" />
+                      <MagicStick size={12} weight="BoldDuotone" />
                       AI Generate
                     </>
                   )}

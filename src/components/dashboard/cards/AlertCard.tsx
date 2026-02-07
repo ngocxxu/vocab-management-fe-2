@@ -1,4 +1,4 @@
-import { AlertTriangle } from 'lucide-react';
+import { DangerTriangle } from '@solar-icons/react/ssr';
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -10,7 +10,7 @@ export const AlertCard: React.FC = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-r from-red-100 to-orange-100 dark:from-red-900/50 dark:to-orange-900/50">
-              <AlertTriangle className="h-7 w-7 text-red-600 dark:text-red-400" />
+              <DangerTriangle size={28} weight="BoldDuotone" className="text-red-600 dark:text-red-400" />
             </div>
             <div>
               <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Performance Alert</h3>

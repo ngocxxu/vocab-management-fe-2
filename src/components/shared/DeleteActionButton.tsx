@@ -1,6 +1,6 @@
 'use client';
 
-import { Trash } from 'lucide-react';
+import { TrashBin2 } from '@solar-icons/react/ssr';
 import React from 'react';
 import { toast } from 'sonner';
 import {
@@ -56,7 +56,7 @@ const DeleteActionButton: React.FC<DeleteActionButtonProps> = ({
           size="icon"
           className="h-8 w-8 rounded-lg hover:bg-red-100 dark:hover:bg-red-700"
         >
-          <Trash className="h-4 w-4 text-slate-500" />
+          <TrashBin2 size={16} weight="BoldDuotone" className="text-slate-500" />
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>

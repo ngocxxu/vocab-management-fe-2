@@ -1,6 +1,6 @@
 'use client';
 
-import { Filter, Plus } from 'lucide-react';
+import { AddCircle, Filter } from '@solar-icons/react/ssr';
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { MultiSelect } from '@/components/ui/multi-select';
@@ -53,7 +53,7 @@ const VocabTrainerHeader: React.FC<VocabTrainerHeaderProps> = ({
         <Popover>
           <PopoverTrigger asChild>
             <Button variant="outline" className="border-slate-200 bg-white/80 backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/80">
-              <Filter className="mr-2 h-4 w-4" />
+              <Filter size={16} weight="BoldDuotone" className="mr-2" />
               Filter
             </Button>
           </PopoverTrigger>
@@ -115,7 +115,7 @@ const VocabTrainerHeader: React.FC<VocabTrainerHeaderProps> = ({
           onClick={onAddTrainer}
           className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg hover:from-blue-700 hover:to-indigo-700 dark:from-blue-500 dark:to-indigo-500 dark:hover:from-blue-600 dark:hover:to-indigo-600"
         >
-          <Plus className="mr-2 h-4 w-4" />
+          <AddCircle size={16} weight="BoldDuotone" className="mr-2" />
           Create Trainer
         </Button>
       </div>

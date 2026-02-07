@@ -1,6 +1,12 @@
 'use client';
 
-import { Mic, Pause, Play, Square, Trash2 } from 'lucide-react';
+import {
+  Microphone,
+  Pause,
+  Play,
+  Stop,
+  TrashBin2,
+} from '@solar-icons/react/ssr';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -179,7 +185,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onRecordingComplete, onRe
                             onClick={startRecording}
                             className="rounded-2xl bg-gradient-to-r from-red-600 to-pink-600 px-8 py-3 text-lg font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:from-red-700 hover:to-pink-700 hover:shadow-red-500/25 dark:from-red-500 dark:to-pink-500 dark:hover:from-red-600 dark:hover:to-pink-600"
                           >
-                            <Mic className="mr-2 h-5 w-5" />
+                            <Microphone size={20} weight="BoldDuotone" className="mr-2" />
                             Start Recording
                           </Button>
                         )
@@ -191,7 +197,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onRecordingComplete, onRe
                                     onClick={resumeRecording}
                                     className="rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-3 font-semibold text-white transition-all duration-300 hover:scale-105"
                                   >
-                                    <Play className="mr-2 h-5 w-5" />
+                                    <Play size={20} weight="BoldDuotone" className="mr-2" />
                                     Resume
                                   </Button>
                                 )
@@ -200,7 +206,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onRecordingComplete, onRe
                                     onClick={pauseRecording}
                                     className="rounded-2xl bg-gradient-to-r from-yellow-600 to-orange-600 px-6 py-3 font-semibold text-white transition-all duration-300 hover:scale-105"
                                   >
-                                    <Pause className="mr-2 h-5 w-5" />
+                                    <Pause size={20} weight="BoldDuotone" className="mr-2" />
                                     Pause
                                   </Button>
                                 )}
@@ -208,7 +214,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onRecordingComplete, onRe
                               onClick={stopRecording}
                               className="rounded-2xl bg-gradient-to-r from-red-600 to-pink-600 px-6 py-3 font-semibold text-white transition-all duration-300 hover:scale-105"
                             >
-                              <Square className="mr-2 h-5 w-5" />
+                              <Stop size={20} weight="BoldDuotone" className="mr-2" />
                               Stop
                             </Button>
                           </>
@@ -247,13 +253,13 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onRecordingComplete, onRe
                       {isPlaying
                         ? (
                             <>
-                              <Pause className="mr-2 h-5 w-5" />
+                              <Pause size={20} weight="BoldDuotone" className="mr-2" />
                               Pause
                             </>
                           )
                         : (
                             <>
-                              <Play className="mr-2 h-5 w-5" />
+                              <Play size={20} weight="BoldDuotone" className="mr-2" />
                               Play
                             </>
                           )}
@@ -263,7 +269,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onRecordingComplete, onRe
                       variant="outline"
                       className="rounded-2xl border-2 border-red-500/50 bg-white px-6 py-3 font-semibold text-slate-900 transition-all duration-300 hover:scale-105 hover:border-red-500 dark:border-red-400/50 dark:bg-slate-900 dark:text-white dark:hover:border-red-400"
                     >
-                      <Trash2 className="mr-2 h-5 w-5" />
+                      <TrashBin2 size={20} weight="BoldDuotone" className="mr-2" />
                       Record Again
                     </Button>
                   </div>

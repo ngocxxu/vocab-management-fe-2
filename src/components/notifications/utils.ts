@@ -1,13 +1,13 @@
 import type { NotificationType, TNotification } from '@/types/notification';
 import {
-  AlertCircle,
-  BookOpen,
+  Book,
   CheckCircle,
+  DangerCircle,
   FolderOpen,
-  GraduationCap,
-  Info,
+  InfoCircle,
   Settings,
-} from 'lucide-react';
+  SquareAcademicCap,
+} from '@solar-icons/react/ssr';
 import { CircleFill } from '@/components/ui/circle-fill';
 
 /**
@@ -88,15 +88,15 @@ export const formatNotificationMessage = (notification: TNotification): string =
 export const getNotificationIcon = (type: NotificationType) => {
   switch (type) {
     case 'VOCAB':
-      return BookOpen;
+      return Book;
     case 'VOCAB_TRAINER':
-      return GraduationCap;
+      return SquareAcademicCap;
     case 'VOCAB_SUBJECT':
       return FolderOpen;
     case 'SYSTEM':
       return Settings;
     default:
-      return Info;
+      return InfoCircle;
   }
 };
 
@@ -177,7 +177,7 @@ export const getNotificationStatusIcon = (isRead: boolean, priority: string) => 
 
   switch (priority) {
     case 'HIGH':
-      return AlertCircle;
+      return DangerCircle;
     case 'MEDIUM':
       return CircleFill;
     default:

@@ -1,4 +1,4 @@
-import { Download } from 'lucide-react';
+import { Download } from '@solar-icons/react/ssr';
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -30,7 +30,7 @@ export const GraphsAnalysis: React.FC = () => {
               </SelectContent>
             </Select>
             <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl border-slate-200 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700">
-              <Download className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+              <Download size={16} weight="BoldDuotone" className="text-slate-600 dark:text-slate-400" />
             </Button>
           </div>
         </div>

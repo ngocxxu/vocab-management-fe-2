@@ -1,7 +1,11 @@
 'use client';
 
 import * as SelectPrimitive from '@radix-ui/react-select';
-import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from 'lucide-react';
+import {
+  AltArrowDown,
+  AltArrowUp,
+  CheckCircle,
+} from '@solar-icons/react/ssr';
 import * as React from 'react';
 
 import { cn } from '@/libs/utils';
@@ -44,7 +48,7 @@ function SelectTrigger({
     >
       {children}
       <SelectPrimitive.Icon asChild>
-        <ChevronDownIcon className="size-4 opacity-50" />
+        <AltArrowDown size={16} weight="BoldDuotone" className="opacity-50" />
       </SelectPrimitive.Icon>
     </SelectPrimitive.Trigger>
   );
@@ -114,7 +118,7 @@ function SelectItem({
     >
       <span className="absolute right-2 flex size-3.5 items-center justify-center">
         <SelectPrimitive.ItemIndicator>
-          <CheckIcon className="size-4" />
+          <CheckCircle size={16} weight="BoldDuotone" />
         </SelectPrimitive.ItemIndicator>
       </span>
       <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
@@ -148,7 +152,7 @@ function SelectScrollUpButton({
       )}
       {...props}
     >
-      <ChevronUpIcon className="size-4" />
+      <AltArrowUp size={16} weight="BoldDuotone" />
     </SelectPrimitive.ScrollUpButton>
   );
 }
@@ -166,7 +170,7 @@ function SelectScrollDownButton({
       )}
       {...props}
     >
-      <ChevronDownIcon className="size-4" />
+      <AltArrowDown size={16} weight="BoldDuotone" />
     </SelectPrimitive.ScrollDownButton>
   );
 }

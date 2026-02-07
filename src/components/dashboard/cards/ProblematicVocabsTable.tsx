@@ -1,21 +1,46 @@
 'use client';
 
-import type { TopProblematicVocab } from '@/types/statistics';
-import React from 'react';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import type { TopProblematicVocab } from '@/types/statistics';
+import type { TTextTarget } from '@/types/vocab-list';
+import Link from 'next/link';
+import React from 'react';
 
-const getColor = (mastery: number): string => {
-  if (mastery >= 8) {
-    return '#10b981';
+function getErrorRateColor(pct: number): string {
+  if (pct >= 60) {
+    return '#EA4335';
   }
-  if (mastery >= 6) {
-    return '#3b82f6';
+  if (pct >= 30) {
+    return '#FBBC04';
   }
-  if (mastery >= 4) {
-    return '#f59e0b';
+  return '#34A853';
+}
+
+function getStatus(pct: number): { label: string; className: string } {
+  if (pct >= 60) {
+    return { label: 'CRITICAL', className: 'bg-destructive/10 text-destructive' };
   }
-  return '#ef4444';
-};
+  if (pct >= 30) {
+    return { label: 'STRUGGLING', className: 'bg-warning/10 text-warning' };
+  }
+  return { label: 'REVIEW NEEDED', className: 'bg-warning/10 text-warning' };
+}
+
+function getDefinition(target: TTextTarget | undefined): string {
+  if (!target) {
+    return '—';
+  }
+  const part = target.wordType?.name
+    ? `${target.wordType.name}. ${target.explanationTarget || target.explanationSource || ''}`.trim()
+    : (target.explanationTarget || target.explanationSource || target.textTarget || '—');
+  return part || target.textTarget || '—';
+}
+
+function getCategory(target: TTextTarget | undefined): string {
+  const subject = target?.textTargetSubjects?.[0]?.subject?.name;
+  return subject ?? '—';
+}
 
 type ProblematicVocabsTableProps = {
   data: TopProblematicVocab[];
@@ -24,10 +49,10 @@ type ProblematicVocabsTableProps = {
 export const ProblematicVocabsTable: React.FC<ProblematicVocabsTableProps> = ({ data }) => {
   if (!data || data.length === 0) {
     return (
-      <Card className="overflow-hidden border-0 bg-card shadow-lg">
-        <CardHeader className="border-b border-border pb-4">
+      <Card className="overflow-hidden border-0 bg-card shadow-sm">
+        <CardHeader className="pb-4">
           <CardTitle className="text-xl font-bold text-foreground">Problematic Vocabs</CardTitle>
-          <p className="text-sm text-muted-foreground">Vocabs with the most incorrect answers.</p>
+          <p className="text-sm text-muted-foreground">Words requiring immediate attention based on recent errors.</p>
         </CardHeader>
         <CardContent className="p-6">
           <div className="flex h-32 items-center justify-center text-muted-foreground">
@@ -39,14 +64,21 @@ export const ProblematicVocabsTable: React.FC<ProblematicVocabsTableProps> = ({ 
   }
 
   const sortedData = [...data].sort((a, b) => b.incorrectCount - a.incorrectCount);
-  const maxIncorrect = Math.max(...sortedData.map(item => item.incorrectCount));
 
   return (
-    <Card className="overflow-hidden border-0 bg-card shadow-lg">
-      <CardHeader className="border-b border-border pb-4">
-        <div>
-          <CardTitle className="text-xl font-bold text-foreground">Problematic Vocabs</CardTitle>
-          <p className="text-sm text-muted-foreground">Vocabs with the most incorrect answers.</p>
+    <Card className="overflow-hidden border-0 bg-card shadow-sm">
+      <CardHeader className="pb-4">
+        <div className="flex flex-wrap items-start justify-between gap-2">
+          <div>
+            <CardTitle className="text-xl font-bold text-foreground">Problematic Vocabs</CardTitle>
+            <p className="text-sm text-muted-foreground">Words requiring immediate attention based on recent errors.</p>
+          </div>
+          <Link
+            href="/vocab-trainer"
+            className="text-sm font-medium text-primary hover:underline"
+          >
+            View All
+          </Link>
         </div>
       </CardHeader>
       <CardContent className="p-0">
@@ -54,54 +86,58 @@ export const ProblematicVocabsTable: React.FC<ProblematicVocabsTableProps> = ({ 
           <table className="w-full">
             <thead>
               <tr className="border-b border-border bg-muted/50">
-                <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Vocab</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Incorrect</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Correct</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Mastery</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase">Vocabulary Word</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase">Category</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase">Error Rate</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase">Status</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase">Action</th>
               </tr>
             </thead>
             <tbody>
               {sortedData.map((item) => {
-                const percentage = maxIncorrect > 0 ? (item.incorrectCount / maxIncorrect) * 100 : 0;
-                const masteryColor = getColor(item.masteryScore);
+                const total = item.correctCount + item.incorrectCount;
+                const errorRatePct = total > 0 ? Math.round((item.incorrectCount / total) * 100) : 0;
+                const barColor = getErrorRateColor(errorRatePct);
+                const status = getStatus(errorRatePct);
+                const target = item.vocab.textTargets?.[0];
+                const definition = getDefinition(target);
+                const category = getCategory(target);
 
                 return (
                   <tr
                     key={item.vocabId}
-                    className="border-b border-border transition-colors duration-200 hover:bg-muted/50"
+                    className="border-b border-border transition-colors hover:bg-muted/30"
                   >
-                    <td className="px-6 py-4">
-                      <div className="font-medium text-foreground">{item.vocab.textSource}</div>
+                    <td className="px-4 py-3">
+                      <div className="flex flex-col">
+                        <span className="font-semibold text-foreground">{item.vocab.textSource}</span>
+                        <span className="mt-0.5 text-xs text-muted-foreground">{definition}</span>
+                      </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="font-medium text-foreground">{item.incorrectCount}</span>
-                        </div>
-                        <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+                    <td className="px-4 py-3 text-sm text-muted-foreground">{category}</td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <div className="h-2 w-24 min-w-[6rem] overflow-hidden rounded-full bg-muted">
                           <div
-                            className="h-full rounded-full transition-all duration-500"
-                            style={{
-                              width: `${percentage}%`,
-                              backgroundColor: '#ef4444',
-                            }}
+                            className="h-full rounded-full transition-all duration-300"
+                            style={{ width: `${errorRatePct}%`, backgroundColor: barColor }}
                           />
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="text-sm font-medium text-foreground">{item.correctCount}</span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center space-x-2">
-                        <div
-                          className="h-3 w-3 rounded-full"
-                          style={{ backgroundColor: masteryColor }}
-                        />
                         <span className="text-sm font-medium text-foreground">
-                          {item.masteryScore.toFixed(1)}
+                          {errorRatePct}
+                          %
                         </span>
                       </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className={`inline-flex rounded-md px-2 py-0.5 text-xs font-medium ${status.className}`}>
+                        {status.label}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <Button size="sm" className="rounded-lg bg-primary text-primary-foreground hover:bg-primary/90" asChild>
+                        <Link href="/vocab-trainer">Practice Now</Link>
+                      </Button>
                     </td>
                   </tr>
                 );

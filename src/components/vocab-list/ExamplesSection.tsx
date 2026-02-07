@@ -1,6 +1,6 @@
 'use client';
 
-import { Plus, X } from 'lucide-react';
+import { AddCircle, CloseCircle } from '@solar-icons/react/ssr';
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -41,7 +41,7 @@ const ExamplesSection: React.FC<ExamplesSectionProps> = ({
           size="sm"
           onClick={() => onAddExample(targetIndex)}
         >
-          <Plus className="mr-1 h-4 w-4" />
+          <AddCircle size={16} weight="BoldDuotone" className="mr-1" />
           Add Example
         </Button>
       </div>
@@ -78,7 +78,7 @@ const ExamplesSection: React.FC<ExamplesSectionProps> = ({
                 onClick={() => onRemoveExample(exampleIndex, targetIndex)}
                 className="shrink-0"
               >
-                <X className="h-4 w-4" />
+                <CloseCircle size={16} weight="BoldDuotone" />
               </Button>
             )}
           </div>

@@ -4,7 +4,7 @@ import type { EQuestionType } from '@/enum/vocab-trainer';
 import type { ResponseAPI, TLanguage } from '@/types';
 import type { TVocabSelectionFolderArray } from '@/types/vocab-selection';
 import type { TVocabTrainer } from '@/types/vocab-trainer';
-import { Loader2 } from 'lucide-react';
+import { RefreshCircle } from '@solar-icons/react/ssr';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -100,7 +100,7 @@ const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({
               {isSubmitting
                 ? (
                     <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      <RefreshCircle size={16} weight="BoldDuotone" className="mr-2 animate-spin" />
                       Creating...
                     </>
                   )

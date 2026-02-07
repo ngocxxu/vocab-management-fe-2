@@ -1,7 +1,14 @@
 'use client';
 
 import type { TExamResult, TExamSubmitResponse, TQuestion } from '@/types/vocab-trainer';
-import { ArrowLeft, CheckCircle, Clock, Target, Trophy, XCircle } from 'lucide-react';
+import {
+  AltArrowLeft,
+  CheckCircle,
+  ClockCircle,
+  CloseCircle,
+  MedalStar,
+  Target,
+} from '@solar-icons/react/ssr';
 import React from 'react';
 import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts';
 import { Badge } from '@/components/ui/badge';
@@ -80,7 +87,7 @@ const ExamResults: React.FC<ExamResultsProps> = ({
           <Card className="border-2 border-yellow-500/30 bg-white backdrop-blur-sm dark:border-yellow-400/30 dark:bg-slate-900">
             <CardHeader className="text-center">
               <div className="flex items-center justify-center space-x-2">
-                <Trophy className="h-8 w-8 text-yellow-600 dark:text-yellow-400" />
+                <MedalStar size={32} weight="BoldDuotone" className="text-yellow-600 dark:text-yellow-400" />
                 <CardTitle className="text-3xl font-bold text-slate-900 dark:text-white">
                   Exam Completed!
                 </CardTitle>
@@ -103,7 +110,7 @@ const ExamResults: React.FC<ExamResultsProps> = ({
               <div className="grid grid-cols-2 gap-4">
                 <div className="rounded-2xl border border-yellow-500/30 bg-white p-4 text-center dark:border-yellow-400/30 dark:bg-slate-900">
                   <div className="mb-2 flex items-center justify-center space-x-2 text-slate-600 dark:text-slate-300">
-                    <Target className="h-5 w-5" />
+                    <Target size={20} weight="BoldDuotone" />
                     <span className="text-sm font-medium">Accuracy</span>
                   </div>
                   <p className="text-2xl font-bold text-slate-900 dark:text-white">
@@ -117,7 +124,7 @@ const ExamResults: React.FC<ExamResultsProps> = ({
 
                 <div className="rounded-2xl border border-yellow-500/30 bg-white p-4 text-center dark:border-yellow-400/30 dark:bg-slate-900">
                   <div className="mb-2 flex items-center justify-center space-x-2 text-slate-600 dark:text-slate-300">
-                    <Clock className="h-5 w-5" />
+                    <ClockCircle size={20} weight="BoldDuotone" />
                     <span className="text-sm font-medium">Time Taken</span>
                   </div>
                   <p className="font-mono text-2xl font-bold text-slate-900 dark:text-white">
@@ -132,7 +139,7 @@ const ExamResults: React.FC<ExamResultsProps> = ({
                   onClick={handleBackToTrainers}
                   className="rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 px-8 py-3 text-lg font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:from-emerald-700 hover:to-teal-700 hover:shadow-emerald-500/25 dark:from-emerald-500 dark:to-teal-500 dark:hover:from-emerald-600 dark:hover:to-teal-600 dark:hover:shadow-emerald-400/25"
                 >
-                  <ArrowLeft className="mr-2 h-5 w-5" />
+                  <AltArrowLeft size={20} weight="BoldDuotone" className="mr-2" />
                   Back to Trainers
                 </Button>
               </div>
@@ -223,10 +230,10 @@ const ExamResults: React.FC<ExamResultsProps> = ({
                   <div className="flex-shrink-0">
                     {isCorrect
                       ? (
-                          <CheckCircle className="h-6 w-6 text-emerald-600 dark:text-lime-400" />
+                          <CheckCircle size={24} weight="BoldDuotone" className="text-emerald-600 dark:text-lime-400" />
                         )
                       : (
-                          <XCircle className="h-6 w-6 text-red-400" />
+                          <CloseCircle size={24} weight="BoldDuotone" className="text-red-400" />
                         )}
                   </div>
                   <div className="flex-1 space-y-3">

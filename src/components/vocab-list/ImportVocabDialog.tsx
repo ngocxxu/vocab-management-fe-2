@@ -2,7 +2,13 @@
 
 import type { TCsvImportResponse } from '@/types/vocab-list';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AlertCircle, CheckCircle, Loader2, Plus, Upload } from 'lucide-react';
+import {
+  AddCircle,
+  CheckCircle,
+  DangerCircle,
+  RefreshCircle,
+  Upload,
+} from '@solar-icons/react/ssr';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
@@ -248,13 +254,13 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
                   {isUploading
                     ? (
                         <>
-                          <Upload className="mr-2 h-4 w-4 animate-spin" />
+                          <RefreshCircle size={16} weight="BoldDuotone" className="mr-2 animate-spin" />
                           Uploading...
                         </>
                       )
                     : (
                         <>
-                          <Upload className="mr-2 h-4 w-4" />
+                          <Upload size={16} weight="BoldDuotone" className="mr-2" />
                           Import
                         </>
                       )}
@@ -270,7 +276,7 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
         <AlertDialogContent className="max-w-4xl">
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
-              <AlertCircle className="h-5 w-5 text-red-500" />
+              <DangerCircle size={20} weight="BoldDuotone" className="text-red-500" />
               Import Results
             </AlertDialogTitle>
             <AlertDialogDescription>
@@ -281,21 +287,21 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4 rounded-lg bg-slate-50 p-4 dark:bg-slate-800">
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-500" />
+                  <CheckCircle size={16} weight="BoldDuotone" className="text-green-500" />
                   <span className="text-sm font-medium">
                     Created:
                     {importResult.created}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-blue-500" />
+                  <CheckCircle size={16} weight="BoldDuotone" className="text-blue-500" />
                   <span className="text-sm font-medium">
                     Updated:
                     {importResult.updated}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <AlertCircle className="h-4 w-4 text-red-500" />
+                  <DangerCircle size={16} weight="BoldDuotone" className="text-red-500" />
                   <span className="text-sm font-medium">
                     Failed:
                     {importResult.failed}
@@ -357,20 +363,20 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
                                     {isCreating
                                       ? (
                                           <>
-                                            <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                                            <RefreshCircle size={12} weight="BoldDuotone" className="mr-1 animate-spin" />
                                             Creating...
                                           </>
                                         )
                                       : isCreated
                                         ? (
                                             <>
-                                              <CheckCircle className="mr-1 h-3 w-3 text-green-500" />
+                                              <CheckCircle size={12} weight="BoldDuotone" className="mr-1 text-green-500" />
                                               Created
                                             </>
                                           )
                                         : (
                                             <>
-                                              <Plus className="mr-1 h-3 w-3" />
+                                              <AddCircle size={12} weight="BoldDuotone" className="mr-1" />
                                               Create
                                               {' '}
                                               &apos;

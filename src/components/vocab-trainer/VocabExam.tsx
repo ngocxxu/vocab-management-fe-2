@@ -1,7 +1,11 @@
 'use client';
 
 import type { TFormTestVocabTrainer, TQuestionAPI, TWordTestSelect } from '@/types/vocab-trainer';
-import { CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  AltArrowLeft,
+  AltArrowRight,
+  CheckCircle,
+} from '@solar-icons/react/ssr';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
 import { submitExam } from '@/actions/vocab-trainers';
@@ -175,7 +179,7 @@ const VocabExam: React.FC<VocabExamProps> = ({ trainerId, examData }) => {
             disabled={isFirstQuestion}
             className="group rounded-2xl border-2 border-yellow-500/50 bg-white px-6 py-3 text-slate-900 transition-all duration-300 hover:scale-105 hover:border-yellow-500 dark:border-yellow-400/50 dark:bg-slate-900 dark:text-white dark:hover:border-yellow-400"
           >
-            <ChevronLeft className="mr-2 h-5 w-5 transition-transform duration-300 group-hover:-translate-x-1" />
+            <AltArrowLeft size={20} weight="BoldDuotone" className="mr-2 transition-transform duration-300 group-hover:-translate-x-1" />
             <span className="font-semibold">Previous</span>
           </Button>
 
@@ -203,7 +207,7 @@ const VocabExam: React.FC<VocabExamProps> = ({ trainerId, examData }) => {
                       : 'bg-slate-400 text-slate-700 dark:bg-slate-600 dark:text-slate-300'
                   }`}
                 >
-                  <CheckCircle className="mr-2 h-5 w-5" />
+                  <CheckCircle size={20} weight="BoldDuotone" className="mr-2" />
                   {examState === 'submitting' ? 'Submitting...' : 'Submit Exam'}
                 </Button>
               )
@@ -214,7 +218,7 @@ const VocabExam: React.FC<VocabExamProps> = ({ trainerId, examData }) => {
                   className="group rounded-2xl border-2 border-yellow-500/50 bg-white px-6 py-3 text-slate-900 transition-all duration-300 hover:scale-105 hover:border-yellow-500 dark:border-yellow-400/50 dark:bg-slate-900 dark:text-white dark:hover:border-yellow-400"
                 >
                   <span className="font-semibold">Next</span>
-                  <ChevronRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
+                  <AltArrowRight size={20} weight="BoldDuotone" className="ml-2 transition-transform duration-300 group-hover:translate-x-1" />
                 </Button>
               )}
         </div>

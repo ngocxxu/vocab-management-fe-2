@@ -2,7 +2,8 @@
 
 import type { TSettings, TSettingsTab } from '@/types/settings';
 import type { TSubjectResponse } from '@/types/subject';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ProfileSection } from './ProfileSection';
 import { SubjectSection } from './SubjectSection';
@@ -43,7 +44,23 @@ const defaultSettings: TSettings = {
 
 export const SettingsLayout: React.FC<SettingsLayoutProps> = ({ initialSubjectsData }) => {
   const [_settings, setSettings] = useState<TSettings>(defaultSettings);
-  const [activeTab, setActiveTab] = useState<TSettingsTab>('account');
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get('tab') as TSettingsTab | null;
+  const [activeTab, setActiveTab] = useState<TSettingsTab>(tabParam || 'account');
+
+  useEffect(() => {
+    const tab = searchParams.get('tab') as TSettingsTab | null;
+    if (tab && ['account', 'subjects', 'notifications'].includes(tab)) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
+
+  const handleTabChange = (value: string) => {
+    const tab = value as TSettingsTab;
+    setActiveTab(tab);
+    router.replace(`/settings?tab=${tab}`, { scroll: false });
+  };
 
   const handleProfileChangeAction = (profile: Partial<TSettings['profile']>) => {
     setSettings(prev => ({
@@ -70,7 +87,7 @@ export const SettingsLayout: React.FC<SettingsLayoutProps> = ({ initialSubjectsD
           </p>
         </div>
 
-        <Tabs value={activeTab} onValueChange={value => setActiveTab(value as TSettingsTab)}>
+        <Tabs value={activeTab} onValueChange={handleTabChange}>
           <TabsList className="mb-8 grid w-full" style={{ gridTemplateColumns: `repeat(${tabs.length}, 1fr)` }}>
             {tabs.map(tab => (
               <TabsTrigger

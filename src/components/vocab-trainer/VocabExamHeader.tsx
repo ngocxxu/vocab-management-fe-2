@@ -1,6 +1,6 @@
 'use client';
 
-import { Clock, Target } from 'lucide-react';
+import { ClockCircle, Target } from '@solar-icons/react/ssr';
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 
@@ -52,7 +52,7 @@ const VocabExamHeader: React.FC<VocabExamHeaderProps> = ({
                   variant="outline"
                   className="border-yellow-500/50 bg-yellow-500/10 px-3 py-1 text-yellow-600 dark:border-yellow-400/50 dark:bg-yellow-400/10 dark:text-yellow-400"
                 >
-                  <Target className="mr-1 h-3 w-3" />
+                  <Target size={12} weight="BoldDuotone" className="mr-1" />
                   Question
                   {' '}
                   {currentQuestion}
@@ -66,7 +66,7 @@ const VocabExamHeader: React.FC<VocabExamHeaderProps> = ({
 
             {/* Time Remaining Display */}
             <div className={`flex items-center space-x-2 rounded-2xl border-2 border-yellow-500/30 bg-yellow-500/10 px-4 py-2 sm:space-x-3 sm:px-6 sm:py-3 dark:border-yellow-400/30 dark:bg-yellow-400/10 ${getTimeColor(timeRemaining)}`}>
-              <Clock className="h-5 w-5 sm:h-6 sm:w-6" />
+              <ClockCircle size={24} weight="BoldDuotone" className="sm:!size-6" />
               <div className="flex flex-col">
                 <span className="text-xs font-medium opacity-80">Time Remaining</span>
                 <span className="font-mono text-lg font-bold sm:text-2xl">

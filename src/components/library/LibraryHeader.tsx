@@ -1,6 +1,6 @@
 'use client';
 
-import { Plus } from 'lucide-react';
+import { AddCircle } from '@solar-icons/react/ssr';
 import React, { memo, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 
@@ -33,7 +33,7 @@ const LibraryHeader: React.FC<LibraryHeaderProps> = memo(({
           onClick={handleCreateFolder}
           className="h-10 w-full bg-primary text-primary-foreground shadow-lg transition-all duration-300 hover:scale-105 hover:opacity-90 hover:shadow-xl sm:w-auto"
         >
-          <Plus className="mr-2 h-5 w-5" />
+          <AddCircle size={20} weight="BoldDuotone" className="mr-2" />
           <span className="hidden sm:inline">Create New Folder</span>
           <span className="sm:hidden">Create Folder</span>
         </Button>

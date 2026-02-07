@@ -1,7 +1,7 @@
 'use client';
 
 import type { TVocab } from '@/types/vocab-list';
-import { Volume2 } from 'lucide-react';
+import { VolumeLoud } from '@solar-icons/react/ssr';
 import React, { useCallback } from 'react';
 import { useSpeechSynthesis } from 'react-speech-kit';
 import { Button } from '@/components/ui/button';
@@ -80,7 +80,7 @@ const ExpandedRowContent: React.FC<ExpandedRowContentProps> = ({
                       aria-label="Play pronunciation"
                       title="Play pronunciation"
                     >
-                      <Volume2 className="h-4 w-4 text-slate-500" />
+                      <VolumeLoud size={16} weight="BoldDuotone" className="text-slate-500" />
                     </Button>
                     <p className="text-xs text-slate-500 dark:text-slate-400">
                       Target

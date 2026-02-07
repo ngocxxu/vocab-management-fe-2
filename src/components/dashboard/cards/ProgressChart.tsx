@@ -1,10 +1,11 @@
 'use client';
 
 import type { ProgressOverTime } from '@/types/statistics';
-import React, { useState } from 'react';
-import { Area, AreaChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import React from 'react';
+import { Area, CartesianGrid, ComposedChart, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useTheme } from '@/hooks/useTheme';
 
 type TooltipProps = {
   active?: boolean;
@@ -19,7 +20,7 @@ type TooltipProps = {
 };
 
 const CustomTooltip = ({ active, payload }: TooltipProps) => {
-  if (active && payload && payload.length && payload[0]) {
+  if (active && payload?.length && payload[0]) {
     const firstPayload = payload[0];
     const data = firstPayload.payload;
     const date = 'date' in data ? String(data.date) : 'N/A';
@@ -41,22 +42,40 @@ const CustomTooltip = ({ active, payload }: TooltipProps) => {
 
 const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const month = date.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
+  const day = date.getDate().toString().padStart(2, '0');
+  return `${month} ${day}`;
 };
 
 type ProgressChartProps = {
   data: ProgressOverTime[];
 };
 
+const LINE_COLOR_LIGHT = '#1A73E8';
+const LINE_COLOR_DARK = '#3B82F6';
+
 export const ProgressChart: React.FC<ProgressChartProps> = ({ data }) => {
-  const [chartType, setChartType] = useState<'line' | 'area'>('area');
+  const { theme, mounted } = useTheme();
+  const lineColor = mounted && theme === 'dark' ? LINE_COLOR_DARK : LINE_COLOR_LIGHT;
 
   if (!data || data.length === 0) {
     return (
-      <Card className="h-full overflow-hidden border-0 bg-card shadow-lg">
-        <CardHeader className="border-b border-border pb-4">
-          <CardTitle className="text-xl font-bold text-foreground">Mastery Progress</CardTitle>
-          <p className="text-sm text-muted-foreground">Average mastery score over time.</p>
+      <Card className="h-full overflow-hidden border-0 bg-card shadow-sm">
+        <CardHeader className="pb-4">
+          <div className="flex flex-wrap items-start justify-between gap-2">
+            <div>
+              <CardTitle className="text-xl font-bold text-foreground">Mastery Progress</CardTitle>
+              <p className="text-sm text-muted-foreground">Average mastery score trend over time.</p>
+            </div>
+            <Select value="weekly">
+              <SelectTrigger className="h-9 w-[130px] rounded-lg border-border bg-muted/50">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="weekly">Weekly View</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </CardHeader>
         <CardContent className="p-6">
           <div className="flex h-64 items-center justify-center text-muted-foreground">
@@ -73,81 +92,59 @@ export const ProgressChart: React.FC<ProgressChartProps> = ({ data }) => {
   }));
 
   return (
-    <Card className="h-full overflow-hidden border-0 bg-card shadow-lg">
-      <CardHeader className="border-b border-border pb-4">
-        <div className="flex items-center justify-between">
+    <Card className="h-full overflow-hidden border-0 bg-card shadow-sm">
+      <CardHeader className="pb-4">
+        <div className="flex flex-wrap items-start justify-between gap-2">
           <div>
             <CardTitle className="text-xl font-bold text-foreground">Mastery Progress</CardTitle>
-            <p className="text-sm text-muted-foreground">Average mastery score over time.</p>
+            <p className="text-sm text-muted-foreground">Average mastery score trend over time.</p>
           </div>
-          <Select value={chartType} onValueChange={(value: 'line' | 'area') => setChartType(value)}>
-            <SelectTrigger className="h-10 w-28 rounded-xl border-border focus:border-primary focus:ring-primary">
+          <Select value="weekly">
+            <SelectTrigger className="h-9 w-[130px] rounded-lg border-border bg-muted/50">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="area">Area</SelectItem>
-              <SelectItem value="line">Line</SelectItem>
+              <SelectItem value="weekly">Weekly View</SelectItem>
             </SelectContent>
           </Select>
         </div>
       </CardHeader>
       <CardContent className="p-6">
         <ResponsiveContainer width="100%" height={300}>
-          {chartType === 'area'
-            ? (
-                <AreaChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                  <defs>
-                    <linearGradient id="colorMastery" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#137fec" stopOpacity={0.8} />
-                      <stop offset="95%" stopColor="#137fec" stopOpacity={0.1} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                  <XAxis
-                    dataKey="formattedDate"
-                    className="text-xs text-muted-foreground"
-                    tick={{ fill: 'currentColor' }}
-                  />
-                  <YAxis
-                    domain={[0, 10]}
-                    className="text-xs text-muted-foreground"
-                    tick={{ fill: 'currentColor' }}
-                  />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Area
-                    type="monotone"
-                    dataKey="averageMastery"
-                    stroke="#137fec"
-                    fillOpacity={1}
-                    fill="url(#colorMastery)"
-                    strokeWidth={2}
-                  />
-                </AreaChart>
-              )
-            : (
-                <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                  <XAxis
-                    dataKey="formattedDate"
-                    className="text-xs text-muted-foreground"
-                    tick={{ fill: 'currentColor' }}
-                  />
-                  <YAxis
-                    domain={[0, 10]}
-                    className="text-xs text-muted-foreground"
-                    tick={{ fill: 'currentColor' }}
-                  />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Line
-                    type="monotone"
-                    dataKey="averageMastery"
-                    stroke="#137fec"
-                    strokeWidth={2}
-                    dot={{ fill: '#137fec', r: 4 }}
-                    activeDot={{ r: 6 }}
-                  />
-                </LineChart>
-              )}
+          <ComposedChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+            <defs>
+              <linearGradient id="progressAreaFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={lineColor} stopOpacity={0.3} />
+                <stop offset="100%" stopColor={lineColor} stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+            <XAxis
+              dataKey="formattedDate"
+              className="text-xs text-muted-foreground"
+              tick={{ fill: 'currentColor' }}
+            />
+            <YAxis
+              domain={[0, 10]}
+              className="text-xs text-muted-foreground"
+              tick={{ fill: 'currentColor' }}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Area
+              type="monotone"
+              dataKey="averageMastery"
+              fill="url(#progressAreaFill)"
+              stroke="none"
+            />
+            <Line
+              type="monotone"
+              dataKey="averageMastery"
+              stroke={lineColor}
+              strokeWidth={2}
+              dot={{ fill: lineColor, r: 4 }}
+              activeDot={{ r: 6 }}
+            />
+          </ComposedChart>
         </ResponsiveContainer>
       </CardContent>
     </Card>

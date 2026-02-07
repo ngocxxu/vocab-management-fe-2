@@ -7,7 +7,12 @@ import type { TVocab } from '@/types/vocab-list';
 import type { TWordTypeResponse } from '@/types/word-type';
 import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
-import { ChevronDown, ChevronLeft, Edit, Volume2 } from 'lucide-react';
+import {
+  AltArrowDown,
+  AltArrowLeft,
+  Pen,
+  VolumeLoud,
+} from '@solar-icons/react/ssr';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
@@ -430,7 +435,7 @@ const VocabList: React.FC<VocabListProps> = ({
               aria-label="Play pronunciation"
               title="Play pronunciation"
             >
-              <Volume2 className="h-4 w-4 text-slate-500" />
+              <VolumeLoud size={16} weight="BoldDuotone" className="text-slate-500" />
             </Button>
           </div>
         );
@@ -500,10 +505,10 @@ const VocabList: React.FC<VocabListProps> = ({
           >
             {isExpanded
               ? (
-                  <ChevronDown className="h-4 w-4" />
+                  <AltArrowDown size={16} weight="BoldDuotone" />
                 )
               : (
-                  <ChevronLeft className="h-4 w-4" />
+                  <AltArrowLeft size={16} weight="BoldDuotone" />
                 )}
           </Button>
         );
@@ -522,7 +527,7 @@ const VocabList: React.FC<VocabListProps> = ({
             className="h-8 w-8 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700"
             onClick={() => handleEdit(_row.original)}
           >
-            <Edit className="h-4 w-4 text-slate-500" />
+            <Pen size={16} weight="BoldDuotone" className="text-slate-500" />
           </Button>
           <DeleteActionButton
             itemId={_row.original.id}

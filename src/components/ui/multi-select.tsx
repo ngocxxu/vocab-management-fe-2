@@ -1,12 +1,11 @@
 import type { VariantProps } from 'class-variance-authority';
 import { cva } from 'class-variance-authority';
 import {
-  CheckIcon,
-  ChevronDown,
-  WandSparkles,
-  XCircle,
-  XIcon,
-} from 'lucide-react';
+  AltArrowDown,
+  CheckCircle,
+  CloseCircle,
+  MagicStick,
+} from '@solar-icons/react/ssr';
 import * as React from 'react';
 
 import { Badge } from '@/components/ui/badge';
@@ -906,7 +905,7 @@ export const MultiSelect = (
                                 aria-label={`Remove ${option.label} from selection`}
                                 className="-m-0.5 ml-2 h-4 w-4 cursor-pointer rounded-sm p-0.5 hover:bg-white/20 focus:ring-1 focus:ring-white/50 focus:outline-none"
                               >
-                                <XCircle
+                                <CloseCircle
                                   className={cn(
                                     'h-3 w-3',
                                     responsiveSettings.compactMode
@@ -939,7 +938,7 @@ export const MultiSelect = (
                           {`+ ${
                             selectedValues.length - responsiveSettings.maxCount
                           } more`}
-                          <XCircle
+                          <CloseCircle
                             className={cn(
                               'ml-2 h-4 w-4 cursor-pointer',
                               responsiveSettings.compactMode && 'ml-1 h-3 w-3',
@@ -970,13 +969,13 @@ export const MultiSelect = (
                         aria-label={`Clear all ${selectedValues.length} selected options`}
                         className="mx-2 flex h-4 w-4 cursor-pointer items-center justify-center rounded-sm text-muted-foreground hover:text-foreground focus:ring-2 focus:ring-ring focus:ring-offset-1 focus:outline-none"
                       >
-                        <XIcon className="h-4 w-4" />
+                        <CloseCircle size={16} weight="BoldDuotone" />
                       </div>
                       <Separator
                         orientation="vertical"
                         className="flex h-full min-h-6"
                       />
-                      <ChevronDown
+                      <AltArrowDown
                         className="mx-2 h-4 cursor-pointer text-muted-foreground"
                         aria-hidden="true"
                       />
@@ -988,7 +987,7 @@ export const MultiSelect = (
                     <span className="mx-3 text-sm text-muted-foreground">
                       {placeholder}
                     </span>
-                    <ChevronDown className="mx-2 h-4 cursor-pointer text-muted-foreground" />
+                    <AltArrowDown className="mx-2 h-4 cursor-pointer text-muted-foreground" />
                   </div>
                 )}
           </Button>
@@ -1068,7 +1067,7 @@ export const MultiSelect = (
                       )}
                       aria-hidden="true"
                     >
-                      <CheckIcon className="h-4 w-4" />
+                      <CheckCircle size={16} weight="BoldDuotone" />
                     </div>
                     <span>
                       (Select All
@@ -1113,7 +1112,7 @@ export const MultiSelect = (
                                 )}
                                 aria-hidden="true"
                               >
-                                <CheckIcon className="h-4 w-4" />
+                                <CheckCircle size={16} weight="BoldDuotone" />
                               </div>
                               {option.icon && (
                                 <option.icon
@@ -1157,7 +1156,7 @@ export const MultiSelect = (
                               )}
                               aria-hidden="true"
                             >
-                              <CheckIcon className="h-4 w-4" />
+                              <CheckCircle size={16} weight="BoldDuotone" />
                             </div>
                             {option.icon && (
                               <option.icon
@@ -1200,7 +1199,7 @@ export const MultiSelect = (
           </Command>
         </PopoverContent>
         {animation > 0 && selectedValues.length > 0 && (
-          <WandSparkles
+          <MagicStick
             className={cn(
               'cursor-pointer my-2 text-foreground bg-background w-3 h-3',
               isAnimating ? '' : 'text-muted-foreground',

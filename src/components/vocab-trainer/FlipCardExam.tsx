@@ -1,7 +1,11 @@
 'use client';
 
 import type { TFlipCardExamData, TFlipCardQuestion, TFlipCardResult, TQuestionAPI } from '@/types/vocab-trainer';
-import { ChevronLeft, ChevronRight, Clock } from 'lucide-react';
+import {
+  AltArrowLeft,
+  AltArrowRight,
+  ClockCircle,
+} from '@solar-icons/react/ssr';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSpeechSynthesis } from 'react-speech-kit';
@@ -238,7 +242,7 @@ const FlipCardExam: React.FC<FlipCardExamProps> = ({ trainerId, examData }) => {
               {isTQuestionAPI(examData) ? examData.name : examData.trainerName || 'FlipCard Exam'}
             </h1>
             <Badge variant="outline" className="border-yellow-500/50 bg-yellow-500/10 p-2 text-yellow-600 dark:border-yellow-400/50 dark:bg-yellow-400/10 dark:text-yellow-400">
-              <Clock className="h-4 w-4" />
+              <ClockCircle size={16} weight="BoldDuotone" />
               <span className="font-mono">
                 {Math.floor(timeElapsed / 60)}
                 :
@@ -269,7 +273,7 @@ const FlipCardExam: React.FC<FlipCardExamProps> = ({ trainerId, examData }) => {
             disabled={isFirstCard}
             className="group rounded-2xl border-2 border-yellow-500/50 bg-white px-6 py-3 text-slate-900 transition-all duration-300 hover:scale-105 hover:border-yellow-500 dark:border-yellow-400/50 dark:bg-slate-900 dark:text-white dark:hover:border-yellow-400"
           >
-            <ChevronLeft className="mr-2 h-5 w-5 transition-transform duration-300 group-hover:-translate-x-1" />
+            <AltArrowLeft size={20} weight="BoldDuotone" className="mr-2 transition-transform duration-300 group-hover:-translate-x-1" />
             <span className="font-semibold">Previous</span>
           </Button>
 
@@ -302,7 +306,7 @@ const FlipCardExam: React.FC<FlipCardExamProps> = ({ trainerId, examData }) => {
                   className="group rounded-2xl border-2 border-yellow-500/50 bg-white px-6 py-3 text-slate-900 transition-all duration-300 hover:scale-105 hover:border-yellow-500 hover:bg-slate-50 dark:border-yellow-400/50 dark:bg-slate-900 dark:text-white dark:hover:border-yellow-400 dark:hover:bg-slate-800"
                 >
                   <span className="font-semibold">Next</span>
-                  <ChevronRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
+                  <AltArrowRight size={20} weight="BoldDuotone" className="ml-2 transition-transform duration-300 group-hover:translate-x-1" />
                 </Button>
               )}
         </div>

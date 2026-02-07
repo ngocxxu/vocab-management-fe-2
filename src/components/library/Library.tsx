@@ -4,7 +4,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import type { TLanguageFolder as LanguageFolderType, TLanguageFolder } from './LanguageFolder';
 import type { ResponseAPI, TLanguage } from '@/types';
 import type { TCreateLanguageFolder } from '@/types/language-folder';
-import { Edit, Folder, Trash2 } from 'lucide-react';
+import { Folder, Pen, TrashBin2 } from '@solar-icons/react/ssr';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useMemo, useState, useTransition } from 'react';
 import { toast } from 'sonner';
@@ -134,7 +134,7 @@ const Library: React.FC<LibraryProps> = ({ initialData, initialLanguagesData }) 
             className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br shadow-sm"
             style={{ backgroundColor: row.original.folderColor }}
           >
-            <Folder className="h-5 w-5 text-white" />
+            <Folder size={20} weight="BoldDuotone" className="text-white" />
           </div>
         </div>
       ),
@@ -189,7 +189,7 @@ const Library: React.FC<LibraryProps> = ({ initialData, initialLanguagesData }) 
               handleEdit(row.original);
             }}
           >
-            <Edit className="h-4 w-4 text-muted-foreground" />
+            <Pen size={16} weight="BoldDuotone" className="text-muted-foreground" />
           </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
@@ -201,7 +201,7 @@ const Library: React.FC<LibraryProps> = ({ initialData, initialLanguagesData }) 
                   e.stopPropagation();
                 }}
               >
-                <Trash2 className="h-4 w-4 text-muted-foreground" />
+                <TrashBin2 size={16} weight="BoldDuotone" className="text-muted-foreground" />
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>

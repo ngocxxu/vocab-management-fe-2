@@ -1,6 +1,6 @@
 'use client';
 
-import { Download } from 'lucide-react';
+import { Download } from '@solar-icons/react/ssr';
 import React from 'react';
 import { Button } from '@/components/ui/button';
 
@@ -20,7 +20,7 @@ const DownloadTemplateButton: React.FC = () => {
       onClick={handleDownload}
       className="border-slate-200 bg-white/80 backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/80"
     >
-      <Download className="mr-2 h-4 w-4" />
+      <Download size={16} weight="BoldDuotone" className="mr-2" />
       Sample Template
     </Button>
   );

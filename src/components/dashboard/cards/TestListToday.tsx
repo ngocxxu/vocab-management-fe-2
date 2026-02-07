@@ -1,4 +1,10 @@
-import { CheckCircle, Clock, Filter, Search, User } from 'lucide-react';
+import {
+  CheckCircle,
+  ClockCircle,
+  Filter,
+  Magnifer,
+  User,
+} from '@solar-icons/react/ssr';
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -68,11 +74,11 @@ export const OngoingTasks: React.FC = () => {
           </div>
           <div className="flex items-center space-x-3">
             <div className="relative">
-              <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
+              <Magnifer size={16} weight="BoldDuotone" className="absolute top-1/2 left-3 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
               <Input placeholder="Search..." className="h-10 w-48 rounded-xl border-slate-200 pl-10 focus:border-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:placeholder:text-slate-500 dark:focus:border-blue-400 dark:focus:bg-slate-700 dark:focus:ring-blue-400" />
             </div>
             <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl border-slate-200 hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-700">
-              <Filter className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+              <Filter size={16} weight="BoldDuotone" className="text-slate-600 dark:text-slate-400" />
             </Button>
           </div>
         </div>
@@ -92,7 +98,7 @@ export const OngoingTasks: React.FC = () => {
                     {task.status && (
                       <div className="mt-3 flex items-center space-x-4 text-sm">
                         <div className="flex items-center space-x-2">
-                          <Clock className="h-4 w-4 text-slate-400 dark:text-slate-500" />
+                          <ClockCircle size={16} weight="BoldDuotone" className="text-slate-400 dark:text-slate-500" />
                           <span className="text-slate-600 dark:text-slate-400">
                             Status:
                             <span className="font-semibold text-slate-900 dark:text-white">{task.status}</span>
@@ -100,7 +106,7 @@ export const OngoingTasks: React.FC = () => {
                         </div>
                         {task.progress && (
                           <div className="flex items-center space-x-2">
-                            <CheckCircle className="h-4 w-4 text-emerald-500 dark:text-emerald-400" />
+                            <CheckCircle size={16} weight="BoldDuotone" className="text-emerald-500 dark:text-emerald-400" />
                             <span className="text-slate-600 dark:text-slate-400">
                               Progress:
                               <span className="font-semibold text-slate-900 dark:text-white">{task.progress}</span>
@@ -109,7 +115,7 @@ export const OngoingTasks: React.FC = () => {
                         )}
                         {task.dueDate && (
                           <div className="flex items-center space-x-2">
-                            <Clock className="h-4 w-4 text-slate-400 dark:text-slate-500" />
+                            <ClockCircle size={16} weight="BoldDuotone" className="text-slate-400 dark:text-slate-500" />
                             <span className="text-slate-600 dark:text-slate-400">
                               Due:
                               <span className="font-semibold text-slate-900 dark:text-white">{task.dueDate}</span>
@@ -131,7 +137,7 @@ export const OngoingTasks: React.FC = () => {
                   <div className="flex items-center space-x-1">
                     {Array.from({ length: task.teamMembers }, (_, index) => (
                       <div key={`team-member-${task.id}-${index}`} className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-slate-200 to-slate-300 shadow-sm">
-                        <User className="h-4 w-4 text-slate-600" />
+                        <User size={16} weight="BoldDuotone" className="text-slate-600" />
                       </div>
                     ))}
                   </div>

@@ -4,7 +4,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import type { ResponseAPI, TLanguage } from '@/types';
 import type { TVocabTrainer } from '@/types/vocab-trainer';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Edit } from 'lucide-react';
+import { Pen } from '@solar-icons/react/ssr';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
@@ -330,7 +330,7 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
             className="h-8 w-8 rounded-lg hover:bg-accent"
             onClick={() => handleEdit(_row.original)}
           >
-            <Edit className="h-4 w-4 text-muted-foreground" />
+            <Pen size={16} weight="BoldDuotone" className="text-muted-foreground" />
           </Button>
           <DeleteActionButton
             itemId={_row.original.id}

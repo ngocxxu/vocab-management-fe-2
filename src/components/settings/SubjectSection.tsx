@@ -5,7 +5,14 @@ import type { TCreateSubject, TSubject, TSubjectResponse } from '@/types/subject
 import { closestCenter, DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Edit2, GripVertical, Plus, Save, Trash2, X } from 'lucide-react';
+import {
+  AddCircle,
+  CheckCircle,
+  CloseCircle,
+  Pen,
+  Reorder,
+  TrashBin2,
+} from '@solar-icons/react/ssr';
 import { useRouter } from 'next/navigation';
 import React, { useState, useTransition } from 'react';
 import { toast } from 'sonner';
@@ -51,7 +58,7 @@ const SubjectItem: React.FC<SubjectItemProps> = ({ subject, onEdit, onDelete }) 
             {...listeners}
             className="cursor-grab rounded p-1 hover:bg-slate-100 active:cursor-grabbing dark:hover:bg-slate-700"
           >
-            <GripVertical className="h-4 w-4 text-slate-400" />
+            <Reorder size={16} weight="BoldDuotone" className="text-slate-400" />
           </div>
           <div className="flex-1">
             <h4 className="font-medium text-slate-900 dark:text-slate-100">{subject.name}</h4>
@@ -71,7 +78,7 @@ const SubjectItem: React.FC<SubjectItemProps> = ({ subject, onEdit, onDelete }) 
             onClick={() => onEdit(subject)}
             className="h-8 w-8 p-0"
           >
-            <Edit2 className="h-4 w-4" />
+            <Pen size={16} weight="BoldDuotone" />
           </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
@@ -80,7 +87,7 @@ const SubjectItem: React.FC<SubjectItemProps> = ({ subject, onEdit, onDelete }) 
                 size="sm"
                 className="h-8 w-8 p-0 text-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-950 dark:hover:text-red-300"
               >
-                <Trash2 className="h-4 w-4" />
+                <TrashBin2 size={16} weight="BoldDuotone" />
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
@@ -146,11 +153,11 @@ const SubjectForm: React.FC<SubjectFormProps> = ({ subject, onSubmit, onCancel, 
       </div>
       <div className="flex justify-end gap-2">
         <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
-          <X className="mr-2 h-4 w-4" />
+          <CloseCircle size={16} weight="BoldDuotone" className="mr-2" />
           Cancel
         </Button>
         <Button type="submit" disabled={isLoading}>
-          <Save className="mr-2 h-4 w-4" />
+          <CheckCircle size={16} weight="BoldDuotone" className="mr-2" />
           {isLoading ? 'Saving...' : subject ? 'Update' : 'Create'}
         </Button>
       </div>
@@ -311,7 +318,7 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
             <Button>
-              <Plus className="mr-2 h-4 w-4" />
+              <AddCircle size={16} weight="BoldDuotone" className="mr-2" />
               Add Subject
             </Button>
           </DialogTrigger>
@@ -339,7 +346,7 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
                   Create your first subject to get started
                 </p>
                 <Button onClick={() => setIsCreateDialogOpen(true)}>
-                  <Plus className="mr-2 h-4 w-4" />
+                  <AddCircle size={16} weight="BoldDuotone" className="mr-2" />
                   Add Subject
                 </Button>
               </CardContent>

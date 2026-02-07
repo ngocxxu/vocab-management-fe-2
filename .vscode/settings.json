@@ -11,8 +11,7 @@
   "typescript.preferences.autoImportSpecifierExcludeRegexes": [
     // useRouter should be imported from `next/navigation` instead of `next/router`
     "next/router",
-    // give priority for Link to next/link instead of lucide-react
-    "lucide-react",
+    // give priority for Link to next/link
     // Not used in the project and conflicts with `use()` from React
     "chai",
     // Use Zod v4 instead of v3
@@ -21,14 +20,35 @@
     "@sentry/nextjs"
   ],
 
-  // Disable the default formatter, use ESLint instead
   "prettier.enable": false,
   "editor.formatOnSave": false,
-
-  // Auto fix with ESLint on save
   "editor.codeActionsOnSave": {
-    "source.addMissingImports": "explicit",
-    "source.fixAll.eslint": "explicit"
+    "source.organizeImports": "explicit",
+    "source.addMissingImports": "off",
+    "source.fixAll": "off",
+    "source.fixAll.eslint": "off"
+  },
+  "[javascript]": {
+    "editor.formatOnSave": false,
+    "editor.defaultFormatter": null
+  },
+  "[javascriptreact]": {
+    "editor.formatOnSave": false,
+    "editor.defaultFormatter": null
+  },
+  "[typescript]": {
+    "editor.formatOnSave": false,
+    "editor.defaultFormatter": null
+  },
+  "[typescriptreact]": {
+    "editor.formatOnSave": false,
+    "editor.defaultFormatter": null
+  },
+  "[json]": {
+    "editor.formatOnSave": false
+  },
+  "[jsonc]": {
+    "editor.formatOnSave": false
   },
 
   // Enable eslint for all supported languages
