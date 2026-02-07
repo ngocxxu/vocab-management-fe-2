@@ -19,7 +19,7 @@ export default async function LibraryPage({ searchParams }: PageProps) {
 
   const queryParams = {
     page: !Number.isNaN(rawPage) && rawPage > 0 ? rawPage : 1,
-    pageSize: !Number.isNaN(rawPageSize) && rawPageSize > 0 ? rawPageSize : 10,
+    pageSize: !Number.isNaN(rawPageSize) && rawPageSize > 0 ? rawPageSize : 50,
     sortBy: typeof resolvedParams.sortBy === 'string' ? resolvedParams.sortBy : 'name',
     sortOrder: (resolvedParams.sortOrder === 'desc' ? 'desc' : 'asc') as 'asc' | 'desc',
   };

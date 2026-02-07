@@ -21,28 +21,28 @@
   ],
 
   "prettier.enable": false,
-  "editor.formatOnSave": false,
+  "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.organizeImports": "explicit",
+    "source.organizeImports": "off",
     "source.addMissingImports": "off",
     "source.fixAll": "off",
-    "source.fixAll.eslint": "off"
+    "source.fixAll.eslint": "on"
   },
   "[javascript]": {
-    "editor.formatOnSave": false,
-    "editor.defaultFormatter": null
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
   },
   "[javascriptreact]": {
-    "editor.formatOnSave": false,
-    "editor.defaultFormatter": null
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
   },
   "[typescript]": {
-    "editor.formatOnSave": false,
-    "editor.defaultFormatter": null
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
   },
   "[typescriptreact]": {
-    "editor.formatOnSave": false,
-    "editor.defaultFormatter": null
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
   },
   "[json]": {
     "editor.formatOnSave": false
@@ -50,6 +50,8 @@
   "[jsonc]": {
     "editor.formatOnSave": false
   },
+
+  "eslint.format.enable": true,
 
   // Enable eslint for all supported languages
   "eslint.validate": [

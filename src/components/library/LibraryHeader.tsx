@@ -19,10 +19,10 @@ const LibraryHeader: React.FC<LibraryHeaderProps> = memo(({
       <div className="flex items-center justify-center space-x-3">
         <div className="text-left">
           <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
-            Language Library
+            Your Library
           </h1>
           <p className="text-sm text-muted-foreground sm:text-base">
-            Organize and explore your vocabulary by language combinations
+            Manage your vocabulary collections across different languages. Track your progress and master new words.
           </p>
         </div>
       </div>

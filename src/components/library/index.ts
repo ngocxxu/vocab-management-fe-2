@@ -1,9 +1,11 @@
+export { default as CreateFolderCard } from './CreateFolderCard';
 export { default as CreateFolderModal } from './CreateFolderModal';
 export { default as EditFolderDialog } from './EditFolderDialog';
 export { default as LanguageFolder } from './LanguageFolder';
 export { default as LanguageFolderForm } from './LanguageFolderForm';
 export { default as Library } from './Library';
 export { default as LibraryEmptyState } from './LibraryEmptyState';
+export { default as LibraryFolderCard } from './LibraryFolderCard';
 export { default as LibraryHeader } from './LibraryHeader';
 export { default as LibraryLoadingState } from './LibraryLoadingState';
 export { default as LibrarySearch } from './LibrarySearch';

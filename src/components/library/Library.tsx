@@ -1,31 +1,16 @@
 'use client';
 
-import type { ColumnDef } from '@tanstack/react-table';
-import type { TLanguageFolder as LanguageFolderType, TLanguageFolder } from './LanguageFolder';
+import { createLanguageFolder, deleteLanguageFolder } from '@/actions/language-folders';
 import type { ResponseAPI, TLanguage } from '@/types';
-import type { TCreateLanguageFolder } from '@/types/language-folder';
-import { Folder, Pen, TrashBin2 } from '@solar-icons/react/ssr';
+import type { TCreateLanguageFolder, TLanguageFolder } from '@/types/language-folder';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useMemo, useState, useTransition } from 'react';
 import { toast } from 'sonner';
-import { createLanguageFolder, deleteLanguageFolder } from '@/actions/language-folders';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import { Button } from '@/components/ui/button';
-import { DataTable } from '@/components/ui/table';
-import { useApiPagination } from '@/hooks';
+import CreateFolderCard from './CreateFolderCard';
 import CreateFolderModal from './CreateFolderModal';
 import EditFolderDialog from './EditFolderDialog';
 import LibraryEmptyState from './LibraryEmptyState';
+import LibraryFolderCard from './LibraryFolderCard';
 import LibraryHeader from './LibraryHeader';
 import LibraryLoadingState from './LibraryLoadingState';
 import LibrarySearch from './LibrarySearch';
@@ -36,26 +21,18 @@ type LibraryProps = {
 };
 
 const Library: React.FC<LibraryProps> = ({ initialData, initialLanguagesData }) => {
-  const { pagination, handlers } = useApiPagination({
-    page: initialData?.currentPage || 1,
-    pageSize: 10,
-    sortBy: 'name',
-    sortOrder: 'asc',
-  });
-
   const router = useRouter();
   const [, startTransition] = useTransition();
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState<'updatedAt' | 'name'>('updatedAt');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [editingFolder, setEditingFolder] = useState<LanguageFolderType | null>(null);
+  const [editingFolder, setEditingFolder] = useState<TLanguageFolder | null>(null);
   const [showEditDialog, setShowEditDialog] = useState(false);
 
-  const totalItems = initialData?.totalItems || 0;
-  const totalPages = initialData?.totalPages || 0;
-  const currentPage = initialData?.currentPage || 1;
   const isLoading = false;
 
-  const handleFolderClick = useCallback((folder: LanguageFolderType) => {
+  const handleFolderClick = useCallback((folder: TLanguageFolder) => {
     router.push(`/vocab-list?sourceLanguageCode=${folder.sourceLanguageCode}&targetLanguageCode=${folder.targetLanguageCode}&languageFolderId=${folder.id}`);
   }, [router]);
 
@@ -71,7 +48,7 @@ const Library: React.FC<LibraryProps> = ({ initialData, initialLanguagesData }) 
       });
     } catch (error) {
       console.error('Error creating language folder:', error);
-      throw error; // Re-throw to let the modal handle the error display
+      throw error;
     }
   }, [router, startTransition]);
 
@@ -89,7 +66,12 @@ const Library: React.FC<LibraryProps> = ({ initialData, initialLanguagesData }) 
     setSearchQuery(query);
   }, []);
 
-  const handleEdit = useCallback((folder: LanguageFolderType) => {
+  const handleSortChange = useCallback((newSortBy: 'updatedAt' | 'name', newSortOrder: 'asc' | 'desc') => {
+    setSortBy(newSortBy);
+    setSortOrder(newSortOrder);
+  }, []);
+
+  const handleEdit = useCallback((folder: TLanguageFolder) => {
     setEditingFolder(folder);
     setShowEditDialog(true);
   }, []);
@@ -107,149 +89,45 @@ const Library: React.FC<LibraryProps> = ({ initialData, initialLanguagesData }) 
     }
   }, [router, startTransition]);
 
-  // Use handlers from the reusable pagination hook
-  const { handleSort, handlePageChange } = handlers;
-
-  // Client-side filtering (server-side pagination doesn't support search yet)
-  const data = useMemo<LanguageFolderType[]>(() => {
+  const data = useMemo<TLanguageFolder[]>(() => {
     const languageFolders = initialData?.items || [];
-    return languageFolders.filter((folder: LanguageFolderType) => {
-      const matchesSearch = folder.name?.toLowerCase().includes(searchQuery.toLowerCase())
-        || folder.sourceLanguageCode?.toLowerCase().includes(searchQuery.toLowerCase())
-        || folder.targetLanguageCode?.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesFilter = true;
-
-      return matchesSearch && matchesFilter;
+    const filtered = languageFolders.filter((folder: TLanguageFolder) => {
+      const q = searchQuery.toLowerCase();
+      return (
+        folder.name?.toLowerCase().includes(q)
+        || folder.sourceLanguageCode?.toLowerCase().includes(q)
+        || folder.targetLanguageCode?.toLowerCase().includes(q)
+      );
     });
-  }, [initialData, searchQuery]);
-
-  // Define table columns
-  const columns = useMemo<ColumnDef<LanguageFolderType>[]>(() => [
-    {
-      id: 'icon',
-      header: '',
-      cell: ({ row }) => (
-        <div className="flex w-12 items-center justify-center">
-          <div
-            className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br shadow-sm"
-            style={{ backgroundColor: row.original.folderColor }}
-          >
-            <Folder size={20} weight="BoldDuotone" className="text-white" />
-          </div>
-        </div>
-      ),
-      enableSorting: false,
-      enableHiding: false,
-      size: 80,
-    },
-    {
-      accessorKey: 'name',
-      header: 'Folder Name',
-      cell: ({ row }) => (
-        <div>
-          <div className="text-sm font-medium text-foreground">
-            {row.original.name}
-          </div>
-          <div className="mt-1 text-xs text-muted-foreground">
-            {row.original.sourceLanguageCode.toUpperCase()}
-            {' → '}
-            {row.original.targetLanguageCode.toUpperCase()}
-          </div>
-        </div>
-      ),
-      enableSorting: true,
-      enableHiding: false,
-    },
-    {
-      id: 'lastModified',
-      header: 'Last Modified',
-      cell: () => (
-        <div className="text-sm text-muted-foreground">
-          {new Date().toLocaleDateString('en-GB', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-          })}
-        </div>
-      ),
-      enableSorting: false,
-      enableHiding: true,
-    },
-    {
-      id: 'actions',
-      header: '',
-      cell: ({ row }) => (
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 rounded-lg hover:bg-accent"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleEdit(row.original);
-            }}
-          >
-            <Pen size={16} weight="BoldDuotone" className="text-muted-foreground" />
-          </Button>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 rounded-lg hover:bg-destructive/10"
-                onClick={(e) => {
-                  e.stopPropagation();
-                }}
-              >
-                <TrashBin2 size={16} weight="BoldDuotone" className="text-muted-foreground" />
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Delete Language Folder</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Are you sure you want to delete &quot;
-                  {row.original.name}
-                  &quot;? This action cannot be undone. All vocabulary items in this folder will be permanently removed.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction
-                  className="bg-red-600 hover:bg-red-700"
-                  onClick={() => handleDelete(row.original.id)}
-                >
-                  Delete Folder
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </div>
-      ),
-      enableSorting: false,
-      enableHiding: false,
-      size: 100,
-    },
-  ], [handleEdit, handleDelete]);
+    const sorted = [...filtered].sort((a, b) => {
+      if (sortBy === 'updatedAt') {
+        const aVal = a.updatedAt ? new Date(a.updatedAt).getTime() : 0;
+        const bVal = b.updatedAt ? new Date(b.updatedAt).getTime() : 0;
+        return sortOrder === 'desc' ? bVal - aVal : aVal - bVal;
+      }
+      const aName = (a.name || '').toLowerCase();
+      const bName = (b.name || '').toLowerCase();
+      const cmp = aName.localeCompare(bName);
+      return sortOrder === 'asc' ? cmp : -cmp;
+    });
+    return sorted;
+  }, [initialData, searchQuery, sortBy, sortOrder]);
 
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto flex flex-col gap-6 px-4 py-4 sm:gap-8 sm:py-6 md:gap-10 md:py-8">
-        {/* Header Section */}
-        <LibraryHeader
-          onCreateFolder={handleCreateFolder}
-        />
+        <LibraryHeader onCreateFolder={handleCreateFolder} />
 
-        {/* Search Bar */}
         <LibrarySearch
           searchQuery={searchQuery}
           onSearchChange={handleSearchChange}
+          sortBy={sortBy}
+          sortOrder={sortOrder}
+          onSortChange={handleSortChange}
         />
 
-        {/* Loading State */}
         {isLoading && <LibraryLoadingState />}
 
-        {/* Empty State */}
         {!isLoading && data.length === 0 && (
           <LibraryEmptyState
             searchQuery={searchQuery}
@@ -257,27 +135,21 @@ const Library: React.FC<LibraryProps> = ({ initialData, initialLanguagesData }) 
           />
         )}
 
-        {/* Folders Table */}
         {!isLoading && data.length > 0 && (
-          <DataTable
-            columns={columns}
-            data={data}
-            showSearch={false}
-            showPagination={true}
-            pageSize={pagination.pageSize}
-            onRowClick={handleFolderClick}
-            // Server-side pagination & sorting
-            manualPagination={true}
-            manualSorting={true}
-            pageCount={totalPages}
-            currentPage={currentPage}
-            totalItems={totalItems}
-            onPageChange={handlePageChange}
-            onSortingChange={handleSort}
-          />
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+            {data.map(folder => (
+              <LibraryFolderCard
+                key={folder.id}
+                folder={folder}
+                onClick={handleFolderClick}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+              />
+            ))}
+            <CreateFolderCard onCreateFolder={handleCreateFolder} />
+          </div>
         )}
 
-        {/* Create Folder Modal */}
         <CreateFolderModal
           isOpen={isCreateModalOpen}
           onClose={handleCloseModal}
@@ -285,7 +157,6 @@ const Library: React.FC<LibraryProps> = ({ initialData, initialLanguagesData }) 
           initialLanguagesData={initialLanguagesData}
         />
 
-        {/* Edit Folder Dialog */}
         {editingFolder && (
           <EditFolderDialog
             open={showEditDialog}
