@@ -214,7 +214,7 @@ const VocabList: React.FC<VocabListProps> = ({
   };
 
   const handleEdit = useCallback(
-    (item: TVocab) => {
+    (item: TVocab, textTargetIndex?: number) => {
       dialogState.handleEdit(item);
 
       form.reset({
@@ -236,6 +236,7 @@ const VocabList: React.FC<VocabListProps> = ({
           })),
         })),
       });
+      setActiveTab(textTargetIndex === undefined ? '0' : textTargetIndex.toString());
     },
     [form, dialogState],
   );
@@ -455,7 +456,7 @@ const VocabList: React.FC<VocabListProps> = ({
             {textTargets.map((textTarget, index) => (
               <span
                 key={`${textTarget.textTarget}-${index}`}
-                className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-800 dark:bg-slate-700 dark:text-slate-200"
+                className="inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground"
               >
                 {textTarget.textTarget}
               </span>
@@ -649,6 +650,8 @@ const VocabList: React.FC<VocabListProps> = ({
                 <ExpandedRowContent
                   vocab={row.original}
                   columnsCount={columns.length}
+                  onCollapse={() => setExpanded(prev => ({ ...prev, [row.original.id]: false }))}
+                  onEdit={handleEdit}
                 />
               )}
               // Server-side pagination & sorting
