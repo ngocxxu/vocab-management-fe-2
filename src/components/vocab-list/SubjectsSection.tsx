@@ -48,9 +48,7 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = React.memo(({
     return (
       <div className="space-y-4">
         <h4 className="text-sm font-medium">
-          Subjects for Vocab
-          {' '}
-          {targetIndex + 1}
+          Subjects
         </h4>
         <Skeleton className="h-10 w-full" />
       </div>
@@ -62,9 +60,7 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = React.memo(({
     return (
       <div className="space-y-4">
         <h4 className="text-sm font-medium">
-          Subjects for Vocab
-          {' '}
-          {targetIndex + 1}
+          Subjects
         </h4>
         <Skeleton className="h-10 w-full" />
       </div>
@@ -76,9 +72,7 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = React.memo(({
     return (
       <div className="space-y-4">
         <h4 className="text-sm font-medium">
-          Subjects for Vocab
-          {' '}
-          {targetIndex + 1}
+          Subjects
         </h4>
         <div className="h-10 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-600">
           Failed to load subjects. Please try again.
@@ -90,9 +84,7 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = React.memo(({
   return (
     <div className="space-y-4">
       <h4 className="text-sm font-medium">
-        Subjects for Vocab
-        {' '}
-        {targetIndex + 1}
+        Subjects
       </h4>
       <FormField
         control={form?.control}

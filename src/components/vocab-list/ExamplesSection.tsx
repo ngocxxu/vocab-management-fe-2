@@ -30,18 +30,18 @@ const ExamplesSection: React.FC<ExamplesSectionProps> = ({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h4 className="text-sm font-medium">
-          Vocabulary Examples for Vocab
-          {' '}
-          {targetIndex + 1}
-        </h4>
+        <div className="flex items-center gap-2">
+          <div className="h-5 w-2 shrink-0 rounded-full bg-primary" />
+          <h4 className="text-sm font-semibold">Usage Examples</h4>
+        </div>
         <Button
           type="button"
           variant="outline"
           size="sm"
           onClick={() => onAddExample(targetIndex)}
+          className="gap-1.5"
         >
-          <AddCircle size={16} weight="BoldDuotone" className="mr-1" />
+          <AddCircle size={14} weight="BoldDuotone" />
           Add Example
         </Button>
       </div>
@@ -50,7 +50,7 @@ const ExamplesSection: React.FC<ExamplesSectionProps> = ({
           <div key={example.id} className="flex items-center space-x-3 rounded-lg border p-3">
             <div className="grid flex-1 grid-cols-2 gap-3">
               <div>
-                <Label htmlFor={`example-source-${targetIndex}-${exampleIndex}`} className="text-sm">Source</Label>
+                <Label htmlFor={`example-source-${targetIndex}-${exampleIndex}`} className="text-xs tracking-wide uppercase">Source</Label>
                 <Textarea
                   id={`example-source-${targetIndex}-${exampleIndex}`}
                   placeholder="Source text example..."
@@ -60,7 +60,7 @@ const ExamplesSection: React.FC<ExamplesSectionProps> = ({
                 />
               </div>
               <div>
-                <Label htmlFor={`example-target-${targetIndex}-${exampleIndex}`} className="text-sm">Target</Label>
+                <Label htmlFor={`example-target-${targetIndex}-${exampleIndex}`} className="text-xs tracking-wide uppercase">Target</Label>
                 <Textarea
                   id={`example-target-${targetIndex}-${exampleIndex}`}
                   placeholder="Target text example..."

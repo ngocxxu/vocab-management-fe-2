@@ -1,6 +1,7 @@
 'use client';
 
 import type { ResponseAPI, TLanguage } from '@/types';
+import { QuestionCircle } from '@solar-icons/react/ssr';
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
 import {
@@ -34,14 +35,17 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ initialLanguagesData }) =
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold">Basic Information</h3>
+      <h3 className="flex items-center gap-1.5 text-xs font-medium tracking-wide text-muted-foreground uppercase">
+        <QuestionCircle size={14} weight="BoldDuotone" />
+        Basic Information
+      </h3>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <FormField
           control={form.control}
           name="sourceLanguageCode"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Source Language</FormLabel>
+              <FormLabel>Source</FormLabel>
               <Select
                 onValueChange={(value) => {
                   field.onChange(value);
@@ -90,7 +94,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ initialLanguagesData }) =
           name="targetLanguageCode"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Target Language</FormLabel>
+              <FormLabel>Target</FormLabel>
               <Select
                 onValueChange={(value) => {
                   field.onChange(value);

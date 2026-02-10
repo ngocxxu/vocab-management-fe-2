@@ -166,10 +166,13 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
   };
 
   return (
-    <div className="space-y-4">
-      <div>
-        <div className="flex items-center justify-between">
-          <Label htmlFor={`textTarget-${targetIndex}`}>Target Text</Label>
+    <div className="space-y-6">
+      <section className="pl-4">
+        <div className="mb-3 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="h-5 w-2 shrink-0 rounded-full bg-primary" />
+            <h4 className="text-sm font-semibold">Core Meaning</h4>
+          </div>
           <Button
             type="button"
             variant="outline"
@@ -203,101 +206,114 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
                   )}
           </Button>
         </div>
-        <Input
-          id={`textTarget-${targetIndex}`}
-          placeholder="Enter target text..."
-          value={target.textTarget}
-          onChange={e => onInputChange('textTarget', e.target.value, targetIndex)}
-          className="mt-1 w-full"
-        />
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <div>
-          <Label htmlFor={`wordType-${targetIndex}`}>Word Type</Label>
-          <Select
-            value={target.wordTypeId || ''}
-            onValueChange={(value: string) => onInputChange('wordTypeId', value, targetIndex)}
-          >
-            <SelectTrigger className="mt-1 w-full">
-              <SelectValue placeholder="Select word type" />
-            </SelectTrigger>
-            <SelectContent>
-              {isLoading
-                ? (
-                    <SelectItem value="loading" disabled>
-                      Loading word types...
-                    </SelectItem>
-                  )
-                : isError
-                  ? (
-                      <SelectItem value="error" disabled>
-                        Error loading word types
-                      </SelectItem>
-                    )
-                  : (
-                      wordTypes.map((wordType: WordType) => (
-                        <SelectItem key={wordType.id} value={wordType.id}>
-                          {wordType.name}
+        <div className="space-y-4">
+          <div>
+            <Label htmlFor={`textTarget-${targetIndex}`}>Target Text</Label>
+            <Input
+              id={`textTarget-${targetIndex}`}
+              placeholder="Enter target text..."
+              value={target.textTarget}
+              onChange={e => onInputChange('textTarget', e.target.value, targetIndex)}
+              className="mt-1 w-full"
+            />
+          </div>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <Label htmlFor={`wordType-${targetIndex}`}>Word Type</Label>
+              <Select
+                value={target.wordTypeId || ''}
+                onValueChange={(value: string) => onInputChange('wordTypeId', value, targetIndex)}
+              >
+                <SelectTrigger className="mt-1 w-full">
+                  <SelectValue placeholder="Select word type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {isLoading
+                    ? (
+                        <SelectItem value="loading" disabled>
+                          Loading word types...
                         </SelectItem>
-                      ))
-                    )}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div>
-          <Label htmlFor={`grammar-${targetIndex}`}>Grammar</Label>
-          <Input
-            id={`grammar-${targetIndex}`}
-            placeholder="e.g., Grammar..."
-            value={target.grammar}
-            onChange={e => onInputChange('grammar', e.target.value, targetIndex)}
-            className="mt-1"
+                      )
+                    : isError
+                      ? (
+                          <SelectItem value="error" disabled>
+                            Error loading word types
+                          </SelectItem>
+                        )
+                      : (
+                          wordTypes.map((wordType: WordType) => (
+                            <SelectItem key={wordType.id} value={wordType.id}>
+                              {wordType.name}
+                            </SelectItem>
+                          ))
+                        )}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor={`grammar-${targetIndex}`}>Grammar Notes</Label>
+              <Input
+                id={`grammar-${targetIndex}`}
+                placeholder="e.g. Used with prepositions"
+                value={target.grammar}
+                onChange={e => onInputChange('grammar', e.target.value, targetIndex)}
+                className="mt-1"
+              />
+            </div>
+          </div>
+          <SubjectsSection
+            targetIndex={targetIndex}
+            subjects={subjects}
+            subjectsLoading={subjectsLoading}
+            subjectsError={subjectsError}
           />
         </div>
-      </div>
+      </section>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <div>
-          <Label htmlFor={`explanationSource-${targetIndex}`}>Explanation (Source Language)</Label>
-          <Textarea
-            id={`explanationSource-${targetIndex}`}
-            placeholder="Explanation in source language..."
-            value={target.explanationSource}
-            onChange={e => onInputChange('explanationSource', e.target.value, targetIndex)}
-            className="mt-1"
-            rows={2}
-          />
+      <section className="pl-4">
+        <div className="mb-3 flex items-center gap-2">
+          <div className="h-5 w-2 shrink-0 rounded-full bg-primary" />
+          <h4 className="text-sm font-semibold">Explanations</h4>
         </div>
-
-        <div>
-          <Label htmlFor={`explanationTarget-${targetIndex}`}>Explanation (Target Language)</Label>
-          <Textarea
-            id={`explanationTarget-${targetIndex}`}
-            placeholder="Explanation in target language..."
-            value={target.explanationTarget}
-            onChange={e => onInputChange('explanationTarget', e.target.value, targetIndex)}
-            className="mt-1"
-            rows={2}
-          />
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div>
+            <Label htmlFor={`explanationSource-${targetIndex}`} className="text-xs tracking-wide uppercase">
+              Source
+            </Label>
+            <Textarea
+              id={`explanationSource-${targetIndex}`}
+              placeholder="Input source explanation..."
+              value={target.explanationSource}
+              onChange={e => onInputChange('explanationSource', e.target.value, targetIndex)}
+              className="mt-1"
+              rows={2}
+            />
+          </div>
+          <div>
+            <Label htmlFor={`explanationTarget-${targetIndex}`} className="text-xs tracking-wide uppercase">
+              Target
+            </Label>
+            <Textarea
+              id={`explanationTarget-${targetIndex}`}
+              placeholder="Input target explanation..."
+              value={target.explanationTarget}
+              onChange={e => onInputChange('explanationTarget', e.target.value, targetIndex)}
+              className="mt-1"
+              rows={2}
+            />
+          </div>
         </div>
-      </div>
+      </section>
 
-      <SubjectsSection
-        targetIndex={targetIndex}
-        subjects={subjects}
-        subjectsLoading={subjectsLoading}
-        subjectsError={subjectsError}
-      />
-
-      <ExamplesSection
-        targetIndex={targetIndex}
-        examples={target.vocabExamples}
-        onExampleChange={onExampleChange}
-        onAddExample={onAddExample}
-        onRemoveExample={onRemoveExample}
-      />
+      <section className="pl-4">
+        <ExamplesSection
+          targetIndex={targetIndex}
+          examples={target.vocabExamples}
+          onExampleChange={onExampleChange}
+          onAddExample={onAddExample}
+          onRemoveExample={onRemoveExample}
+        />
+      </section>
     </div>
   );
 };

@@ -63,6 +63,7 @@ const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
   open,
   setOpen,
   editMode = false,
+  editingItem: _editingItem,
   initialSubjectsData,
   initialLanguagesData,
   initialWordTypesData,
@@ -90,7 +91,7 @@ const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[1000px]">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[1100px]">
         <div className="mx-auto w-full">
           <DialogHeader>
             <DialogTitle>{editMode ? 'Edit Vocabulary' : 'Add New Vocabulary'}</DialogTitle>
@@ -100,26 +101,37 @@ const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
                 : 'Enter the details for your new vocabulary item'}
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-6 p-6 pb-0">
-            <BasicInfoForm initialLanguagesData={initialLanguagesData} />
-
-            <TextTargetTabs
-              initialLanguagesData={initialLanguagesData}
-              initialWordTypesData={initialWordTypesData}
-              textTargets={formData.textTargets}
-              activeTab={activeTab}
-              onActiveTabChange={onActiveTabChange}
-              onInputChange={onInputChange}
-              onExampleChange={onExampleChange}
-              onAddExample={onAddExample}
-              onRemoveExample={onRemoveExample}
-              onAddTextTarget={onAddTextTarget}
-              onRemoveTextTarget={onRemoveTextTarget}
-              textSource={formData.textSource}
-              sourceLanguageCode={formData.sourceLanguageCode}
-              targetLanguageCode={formData.targetLanguageCode}
-              initialSubjectsData={initialSubjectsData}
-            />
+          <div className="grid grid-cols-1 gap-6 p-6 pb-0 lg:grid-cols-[minmax(0,300px)_1fr]">
+            <div className="space-y-6">
+              <BasicInfoForm initialLanguagesData={initialLanguagesData} />
+              <TextTargetTabs
+                variant="sidebar"
+                initialWordTypesData={initialWordTypesData}
+                textTargets={formData.textTargets}
+                activeTab={activeTab}
+                onActiveTabChange={onActiveTabChange}
+                onAddTextTarget={onAddTextTarget}
+                onRemoveTextTarget={onRemoveTextTarget}
+              />
+            </div>
+            <div className="min-w-0">
+              <TextTargetTabs
+                variant="content"
+                initialLanguagesData={initialLanguagesData}
+                initialWordTypesData={initialWordTypesData}
+                textTargets={formData.textTargets}
+                activeTab={activeTab}
+                onActiveTabChange={onActiveTabChange}
+                onInputChange={onInputChange}
+                onExampleChange={onExampleChange}
+                onAddExample={onAddExample}
+                onRemoveExample={onRemoveExample}
+                textSource={formData.textSource}
+                sourceLanguageCode={formData.sourceLanguageCode}
+                targetLanguageCode={formData.targetLanguageCode}
+                initialSubjectsData={initialSubjectsData}
+              />
+            </div>
           </div>
           <DialogFooter className="pt-4">
             <DialogClose asChild>
@@ -130,7 +142,7 @@ const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
             <Button
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700"
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
             >
               {isSubmitting
                 ? (
