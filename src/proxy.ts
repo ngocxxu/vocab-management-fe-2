@@ -18,7 +18,7 @@ const aj = arcjet.withRule(
 );
 
 // Define protected routes that require authentication
-const protectedRoutes = ['/dashboard', '/library', '/vocab-list', '/vocab-trainer', '/settings'];
+const protectedRoutes = ['/dashboard', '/library', '/vocab-list', '/vocab-trainer', '/profile', '/subjects', '/notifications'];
 const authRoutes = ['/signin', '/signup', '/forgot-password'];
 const publicRoutes = ['/auth/callback'];
 

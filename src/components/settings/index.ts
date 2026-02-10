@@ -1,3 +1,4 @@
+export { ProfilePage } from './ProfilePage';
 export { ProfileSection } from './ProfileSection';
-export { SettingsLayout } from './SettingsLayout';
+export { SettingsPageShell } from './SettingsPageShell';
 export { SubjectSection } from './SubjectSection';

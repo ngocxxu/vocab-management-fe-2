@@ -11,7 +11,7 @@ import {
   User,
 } from '@solar-icons/react/ssr';
 import Image from 'next/image';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 
 type MenuItem = {
@@ -29,9 +29,9 @@ const mainMenuItems: MenuItem[] = [
 ];
 
 const settingsMenuItems: MenuItem[] = [
-  { id: 'profile', path: '/settings?tab=account', label: 'Profile', icon: <User size={20} weight="BoldDuotone" /> },
-  { id: 'subjects', path: '/settings?tab=subjects', label: 'Subjects', icon: <Bookmark size={20} weight="BoldDuotone" /> },
-  { id: 'notifications', path: '/settings?tab=notifications', label: 'Notifications', icon: <Bell size={20} weight="BoldDuotone" /> },
+  { id: 'profile', path: '/profile', label: 'Profile', icon: <User size={20} weight="BoldDuotone" /> },
+  { id: 'subjects', path: '/subjects', label: 'Subjects', icon: <Bookmark size={20} weight="BoldDuotone" /> },
+  { id: 'notifications', path: '/notifications', label: 'Notifications', icon: <Bell size={20} weight="BoldDuotone" /> },
 ];
 
 type SidebarProps = {
@@ -44,7 +44,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, isExpanded = 
   const collapsed = !isExpanded;
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const [user, setUser] = useState<TUser | null>(null);
 
   useEffect(() => {
@@ -58,22 +57,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, isExpanded = 
   const isActivePath = (path: string) => {
     if (path === '/dashboard') {
       return pathname === '/dashboard' || pathname === '/';
-    }
-    if (path.startsWith('/settings')) {
-      if (pathname !== '/settings') {
-        return false;
-      }
-      const tab = searchParams.get('tab');
-      if (path.includes('tab=account') && (!tab || tab === 'account')) {
-        return true;
-      }
-      if (path.includes('tab=subjects') && tab === 'subjects') {
-        return true;
-      }
-      if (path.includes('tab=notifications') && tab === 'notifications') {
-        return true;
-      }
-      return false;
     }
     return pathname === path || pathname.startsWith(`${path}/`);
   };

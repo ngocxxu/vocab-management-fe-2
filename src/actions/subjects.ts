@@ -6,7 +6,7 @@ import { subjectsApi } from '@/utils/server-api';
 export async function createSubject(subjectData: { name: string }) {
   try {
     const result = await subjectsApi.create({ ...subjectData, order: 0 });
-    revalidatePath('/settings');
+    revalidatePath('/subjects');
     revalidatePath('/vocab-list');
     return result;
   } catch (error) {
@@ -17,7 +17,7 @@ export async function createSubject(subjectData: { name: string }) {
 export async function updateSubject(id: string, subjectData: { name: string; order: number }) {
   try {
     const result = await subjectsApi.update(id, subjectData);
-    revalidatePath('/settings');
+    revalidatePath('/subjects');
     revalidatePath('/vocab-list');
     return result;
   } catch (error) {
@@ -28,7 +28,7 @@ export async function updateSubject(id: string, subjectData: { name: string; ord
 export async function deleteSubject(id: string) {
   try {
     const result = await subjectsApi.delete(id);
-    revalidatePath('/settings');
+    revalidatePath('/subjects');
     revalidatePath('/vocab-list');
     return result;
   } catch (error) {
@@ -39,7 +39,7 @@ export async function deleteSubject(id: string) {
 export async function reorderSubjects(subjects: { id: string; order: number }[]) {
   try {
     const result = await subjectsApi.reorder(subjects);
-    revalidatePath('/settings');
+    revalidatePath('/subjects');
     revalidatePath('/vocab-list');
     return result;
   } catch (error) {

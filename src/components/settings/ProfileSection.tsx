@@ -3,20 +3,23 @@
 import type { TUser } from '@/types/auth';
 import type { TUserProfile } from '@/types/settings';
 import {
-  Camera,
-  CheckCircle,
-  CloseCircle,
+  Letter,
+  LockPassword,
   Pen,
+  Phone,
+  Shield,
+  ShieldCheck,
   User,
 } from '@solar-icons/react/ssr';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { verifyUser } from '@/actions';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/libs/utils';
 
 type ProfileSectionProps = {
   onProfileChangeAction: (profile: Partial<TUserProfile>) => void;
@@ -29,6 +32,7 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [twoFaEnabled, setTwoFaEnabled] = useState(false);
   const [formData, setFormData] = useState<TUserProfile>({
     id: '',
     email: '',
@@ -58,7 +62,6 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
     loadUser();
   }, []);
 
-  // Convert TUser to TUserProfile format
   const profile: TUserProfile = React.useMemo(() => user
     ? {
         id: user.id,
@@ -68,7 +71,7 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
         lastName: user.lastName,
         avatar: user.avatar,
         role: user.role,
-        isActive: true, // Default value since it's not in TUser
+        isActive: true,
       }
     : {
         id: '',
@@ -81,7 +84,6 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
         isActive: false,
       }, [user]);
 
-  // Update form data when profile changes
   useEffect(() => {
     if (!isEditing) {
       setFormData(() => profile);
@@ -96,190 +98,292 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
     }
   };
 
-  const handleEditClick = () => {
-    setIsEditing(true);
-    setFormData(profile);
-  };
-
   const handleCancelClick = () => {
     setIsEditing(false);
     setFormData(profile);
   };
 
-  const handleApplyClick = () => {
+  const handleSaveClick = () => {
     onProfileChangeAction(formData);
     setIsEditing(false);
   };
 
-  // Loading state
+  const handleEditClick = () => {
+    setIsEditing(true);
+    setFormData(profile);
+  };
+
   if (isLoading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Profile</CardTitle>
-          <CardDescription>Set your account details</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-center space-x-2 py-8">
-            <Skeleton className="h-8 w-8 rounded-full" />
-            <Skeleton className="h-4 w-32" />
+      <Card className="shadow-sm">
+        <CardContent className="p-8">
+          <div className="flex items-center justify-center gap-4 py-12">
+            <Skeleton className="h-32 w-32 rounded-full" />
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-10 w-48" />
+            </div>
           </div>
         </CardContent>
       </Card>
     );
   }
 
-  // Error state
   if (isError) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Profile</CardTitle>
-          <CardDescription>Set your account details</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-center py-8">
-            <div className="text-center">
-              <p className="text-red-600 dark:text-red-400">Failed to load profile data</p>
-              <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-                Please try refreshing the page
-              </p>
-            </div>
+      <Card className="shadow-sm">
+        <CardContent className="p-8">
+          <div className="py-12 text-center">
+            <p className="text-destructive">Failed to load profile data</p>
+            <p className="mt-1 text-sm text-muted-foreground">Please try refreshing the page</p>
           </div>
         </CardContent>
       </Card>
     );
   }
 
+  const displayProfile = isEditing ? formData : profile;
+  const avatarUrl = displayProfile.avatar;
+
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle>Profile</CardTitle>
-            <CardDescription>Set your account details</CardDescription>
+    <div className="space-y-6">
+      <Card className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+        <CardContent className="p-0">
+          <div className="border-b border-border px-6 pt-6 pb-1">
+            <h2 className="text-lg font-bold text-foreground">General Information</h2>
+            <p className="mt-1 mb-3 text-sm text-muted-foreground">
+              Update your photo and personal details here.
+            </p>
           </div>
-          {!isEditing && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleEditClick}
-              className="flex items-center gap-2"
-            >
-              <Pen size={16} weight="BoldDuotone" />
-              Edit Profile
-            </Button>
-          )}
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={isEditing ? formData.email : profile.email}
-                onChange={e => handleInputChange('email', e.target.value)}
-                placeholder="Enter your email"
-                className="border-blue-500"
-                disabled
-              />
-              <div className="space-y-2">
-                <Label htmlFor="firstName">First Name</Label>
-                <Input
-                  id="firstName"
-                  value={isEditing ? formData.firstName : profile.firstName}
-                  onChange={e => handleInputChange('firstName', e.target.value)}
-                  placeholder="Enter your first name"
-                  disabled={!isEditing}
-                />
+          <div className="grid grid-cols-1 gap-0 md:grid-cols-[auto_1fr]">
+            <div className="flex flex-col items-center gap-3 border-r-0 border-b border-border p-6 md:min-w-[200px] ">
+              <div className="relative">
+                <div className="relative h-28 w-28 overflow-hidden rounded-xl border border-border bg-muted">
+                  {avatarUrl
+                    ? (
+                        <Image
+                          src={avatarUrl}
+                          alt="Profile"
+                          width={112}
+                          height={112}
+                          className="h-full w-full object-cover"
+                        />
+                      )
+                    : (
+                        <div className="flex h-full w-full items-center justify-center">
+                          <User size={48} weight="BoldDuotone" className="text-muted-foreground" />
+                        </div>
+                      )}
+                  <Button
+                    type="button"
+                    size="icon"
+                    className="absolute -right-0.5 -bottom-0.5 h-8 w-8 rounded-full border-2 border-card bg-primary text-primary-foreground shadow hover:bg-primary/90"
+                  >
+                    <Pen size={14} weight="BoldDuotone" />
+                  </Button>
+                </div>
+              </div>
+              <div className="text-center">
+                <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">Profile Picture</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">PNG, JPG up to 5MB</p>
               </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="phone">Phone</Label>
-              <Input
-                id="phone"
-                type="tel"
-                value={isEditing ? formData.phone : profile.phone}
-                onChange={e => handleInputChange('phone', e.target.value)}
-                placeholder="Enter your phone number"
-                disabled={!isEditing}
-              />
-            </div>
-          </div>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="role">Role</Label>
-              <Input
-                id="role"
-                value={isEditing ? formData.role : profile.role}
-                onChange={e => handleInputChange('role', e.target.value)}
-                placeholder="Enter your role"
-                disabled
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="lastName">Last Name</Label>
-              <Input
-                id="lastName"
-                value={isEditing ? formData.lastName : profile.lastName}
-                onChange={e => handleInputChange('lastName', e.target.value)}
-                placeholder="Enter your last name"
-                disabled={!isEditing}
-              />
-            </div>
 
-          </div>
-          <div className="flex flex-col items-center space-y-4">
-            <div className="relative">
-              {(isEditing ? formData.avatar : profile.avatar)
-                ? (
-                    <Image
-                      src={(isEditing ? formData.avatar : profile.avatar) || ''}
-                      alt="Profile"
-                      width={80}
-                      height={80}
-                      className="h-20 w-20 rounded-full object-cover"
+            <div className="flex flex-col p-6">
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="firstName" className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+                    First Name
+                  </Label>
+                  <Input
+                    id="firstName"
+                    value={displayProfile.firstName}
+                    onChange={e => handleInputChange('firstName', e.target.value)}
+                    placeholder="Bono"
+                    disabled={!isEditing}
+                    className="h-10 rounded-lg border border-input bg-background"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="lastName" className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+                    Last Name
+                  </Label>
+                  <Input
+                    id="lastName"
+                    value={displayProfile.lastName}
+                    onChange={e => handleInputChange('lastName', e.target.value)}
+                    placeholder="Bono"
+                    disabled={!isEditing}
+                    className="h-10 rounded-lg border border-input bg-background"
+                  />
+                </div>
+                <div className="space-y-2 sm:col-span-2">
+                  <Label htmlFor="email" className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+                    Email Address
+                  </Label>
+                  <div className="relative">
+                    <Letter size={18} weight="BoldDuotone" className="absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      id="email"
+                      type="email"
+                      value={displayProfile.email}
+                      readOnly
+                      className="h-10 rounded-lg border border-input bg-muted/50 pl-10 text-muted-foreground"
                     />
-                  )
-                : (
-                    <div className="flex h-20 w-20 items-center justify-center rounded-full bg-slate-200 dark:bg-slate-700">
-                      <User size={32} weight="BoldDuotone" className="text-slate-500" />
-                    </div>
-                  )}
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="role" className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+                    Role
+                  </Label>
+                  <div className="relative">
+                    <Shield size={18} weight="BoldDuotone" className="absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      id="role"
+                      value={displayProfile.role}
+                      readOnly
+                      className="h-10 rounded-lg border border-input bg-muted/50 pl-10 text-muted-foreground"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone" className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+                    Phone Number
+                  </Label>
+                  <div className="relative">
+                    <Phone size={18} weight="BoldDuotone" className="absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      id="phone"
+                      type="tel"
+                      value={displayProfile.phone}
+                      onChange={e => handleInputChange('phone', e.target.value)}
+                      placeholder="+1234567890"
+                      disabled={!isEditing}
+                      className="h-10 rounded-lg border border-input bg-background pl-10"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-6 flex justify-end gap-3">
+                {isEditing
+                  ? (
+                      <>
+                        <Button variant="ghost" onClick={handleCancelClick} className="text-muted-foreground hover:bg-transparent hover:text-muted-foreground">
+                          Cancel
+                        </Button>
+                        <Button onClick={handleSaveClick}>
+                          Save Changes
+                        </Button>
+                      </>
+                    )
+                  : (
+                      <Button variant="outline" onClick={handleEditClick}>
+                        Edit Profile
+                      </Button>
+                    )}
+              </div>
             </div>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm">
-                <Camera size={16} weight="BoldDuotone" className="mr-2" />
-                Edit photo
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <Card className="shadow-sm">
+          <CardContent className="p-6">
+            <h2 className="text-lg font-semibold text-foreground">Account Security</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Secure your account with 2FA and password management.
+            </p>
+            <div className="mt-6 space-y-4">
+              <div className="flex items-center justify-between rounded-lg border bg-card p-4">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
+                    <LockPassword size={20} weight="BoldDuotone" className="text-muted-foreground" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-foreground">Change Password</p>
+                    <p className="text-sm text-muted-foreground">Last changed 2 months ago</p>
+                  </div>
+                </div>
+                <Button variant="link" className="text-primary">
+                  Update
+                </Button>
+              </div>
+              <div className="flex items-center justify-between rounded-lg border bg-card p-4">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/15">
+                    <ShieldCheck size={20} weight="BoldDuotone" className="text-emerald-600 dark:text-emerald-400" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-foreground">Two-Factor Authentication</p>
+                    <p className="text-sm text-muted-foreground">Enable 2FA for extra security.</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={twoFaEnabled}
+                  onClick={() => setTwoFaEnabled(!twoFaEnabled)}
+                  className={cn(
+                    'relative h-6 w-11 shrink-0 rounded-full border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                    twoFaEnabled ? 'bg-primary' : 'bg-muted',
+                  )}
+                >
+                  <span
+                    className={cn(
+                      'absolute top-1 left-1 h-4 w-4 rounded-full bg-background shadow transition-transform',
+                      twoFaEnabled && 'translate-x-5',
+                    )}
+                  />
+                </button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-sm">
+          <CardContent className="p-6">
+            <h2 className="text-lg font-semibold text-foreground">Plan Details</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Manage your subscription and billing.
+            </p>
+            <div className="mt-6 rounded-lg border bg-card p-5">
+              <span className="inline-block rounded-md bg-primary px-2.5 py-0.5 text-xs font-medium text-primary-foreground">
+                PREMIUM PRO
+              </span>
+              <p className="mt-4 text-2xl font-bold text-foreground">$12.99/month</p>
+              <p className="mt-2 text-sm text-muted-foreground">
+                You have unlimited access to all features including offline mode and AI voice translation.
+              </p>
+              <Button variant="outline" className="mt-4 bg-background text-primary hover:bg-muted">
+                Manage Subscription
               </Button>
             </div>
-          </div>
-        </div>
+            <p className="mt-4 text-sm text-muted-foreground">
+              Next billing date
+              {' '}
+              <span className="font-semibold text-foreground">Dec 12, 2023</span>
+            </p>
+          </CardContent>
+        </Card>
+      </div>
 
-        {/* Apply/Cancel buttons - only show when editing */}
-        {isEditing && (
-          <div className="mt-6 flex justify-end gap-3 border-t pt-6">
-            <Button
-              variant="outline"
-              onClick={handleCancelClick}
-              className="flex items-center gap-2"
-            >
-              <CloseCircle size={16} weight="BoldDuotone" />
-              Cancel
-            </Button>
-            <Button
-              onClick={handleApplyClick}
-              className="flex items-center gap-2"
-            >
-              <CheckCircle size={16} weight="BoldDuotone" />
-              Apply Changes
+      <Card className="overflow-hidden border-destructive/50 bg-destructive/5 shadow-sm">
+        <CardContent className="p-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-lg font-semibold text-destructive">Delete Account</h2>
+              <p className="mt-1 text-sm text-destructive/90">
+                Permanently remove your account and all associated data. This action cannot be undone.
+              </p>
+            </div>
+            <Button variant="destructive" className="shrink-0">
+              Delete Permanently
             </Button>
           </div>
-        )}
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
