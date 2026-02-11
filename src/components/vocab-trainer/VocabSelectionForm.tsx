@@ -21,6 +21,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { DataTable } from '@/components/ui/table';
 import { useApiPagination, useLocalPagination, useVocabSelection } from '@/hooks';
 import { cn } from '@/libs/utils';
+import { getMasteryLevel } from '@/utils/vocab-mastery';
 
 type VocabSelectionFormProps = {
   selectedIds: string[];
@@ -32,19 +33,6 @@ type VocabSelectionFormProps = {
 };
 
 type QuickFilter = 'all' | 'recent' | 'difficult' | 'unlearned';
-
-function getVocabStatus(score?: number): 'New' | 'Learning' | 'Mastered' | 'Difficult' {
-  if (score == null || score === 0) {
-    return 'New';
-  }
-  if (score < 50) {
-    return 'Difficult';
-  }
-  if (score < 80) {
-    return 'Learning';
-  }
-  return 'Mastered';
-}
 
 const EMPTY_CACHED_FOLDERS: TVocabSelectionFolderArray = [];
 
@@ -181,7 +169,7 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
       id: 'status',
       header: 'STATUS',
       cell: ({ row }) => {
-        const status = getVocabStatus(row.original.masteryScore);
+        const status = getMasteryLevel(row.original.masteryScore);
         const statusClass = {
           New: 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300',
           Learning: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-200',
