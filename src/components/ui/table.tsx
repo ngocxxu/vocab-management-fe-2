@@ -403,7 +403,7 @@ export function DataTable<TData, TValue>({
                     size="sm"
                     className={`h-8 w-8 rounded-full p-0 text-sm font-medium transition-colors ${
                       isActive
-                        ? 'bg-purple-600 text-white hover:bg-purple-700'
+                        ? 'bg-primary text-primary-foreground hover:bg-primary/90'
                         : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200'
                     }`}
                   >

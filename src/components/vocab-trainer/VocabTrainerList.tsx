@@ -34,6 +34,14 @@ const FormSchema = z.object({
 
 type FormData = z.infer<typeof FormSchema>;
 
+const QUESTION_TYPE_BADGE_CLASSES: Record<string, string> = {
+  [EQuestionType.FILL_IN_THE_BLANK]: 'bg-violet-100 text-violet-800 dark:bg-violet-900/30 dark:text-violet-200',
+  [EQuestionType.MULTIPLE_CHOICE]: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200',
+  [EQuestionType.FLIP_CARD]: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-200',
+  [EQuestionType.TRANSLATION_AUDIO]: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-200',
+  default: 'bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-200',
+};
+
 type VocabTrainerListProps = {
   initialData?: ResponseAPI<TVocabTrainer[]>;
   initialLanguagesData?: ResponseAPI<TLanguage[]>;
@@ -287,8 +295,9 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
       header: 'Question Type',
       cell: ({ row }) => {
         const type = row.original.questionType;
+        const badgeClass = QUESTION_TYPE_BADGE_CLASSES[type] ?? QUESTION_TYPE_BADGE_CLASSES.default;
         return (
-          <Badge variant="outline">
+          <Badge className={badgeClass}>
             {type.replaceAll('_', ' ')}
           </Badge>
         );

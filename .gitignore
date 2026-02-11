@@ -55,5 +55,6 @@ storybook-static
 build-archive.log
 
 .cursor/
+.agents/
 
 *.env

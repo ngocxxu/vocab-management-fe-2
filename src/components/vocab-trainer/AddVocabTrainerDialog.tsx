@@ -32,6 +32,8 @@ type AddVocabTrainerDialogProps = {
   onLanguageFoldersLoaded?: (folders: TVocabSelectionFolderArray) => void;
 };
 
+const EST_MINUTES_PER_WORD = 0.5;
+
 const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({
   formData,
   onSubmit,
@@ -42,6 +44,7 @@ const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({
   initialLanguagesData,
   cachedLanguageFolders = [],
   onLanguageFoldersLoaded,
+  editingItem: _editingItem,
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -61,32 +64,65 @@ const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({
     setOpen(newOpen);
   };
 
+  const selectedCount = formData.vocabAssignmentIds.length;
+  const estDurationMins = Math.ceil(selectedCount * EST_MINUTES_PER_WORD) || 0;
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[900px]">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[960px] lg:max-w-[1100px]">
         <div className="mx-auto w-full">
           <DialogHeader>
             <DialogTitle>{editMode ? 'Edit Vocab Trainer' : 'Create New Vocab Trainer'}</DialogTitle>
             <DialogDescription>
               {editMode
                 ? 'Update the details for your vocabulary trainer'
-                : 'Set up a new vocabulary training session with your selected words'}
+                : 'Configure your session and select words to practice.'}
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-6 p-6 pb-0">
-            <BasicInfoForm />
-            {open && (
-              <VocabSelectionForm
-                selectedIds={formData.vocabAssignmentIds}
-                initialLanguagesData={initialLanguagesData}
-                open={open}
-                cachedLanguageFolders={cachedLanguageFolders}
-                onLanguageFoldersLoaded={onLanguageFoldersLoaded}
-                editMode={editMode}
-              />
-            )}
+          <div className="grid grid-cols-1 gap-6 p-6 pb-0 lg:grid-cols-[minmax(0,380px)_1fr]">
+            <div className="space-y-6">
+              <BasicInfoForm />
+              <div className="space-y-3">
+                <h4 className="text-xs font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
+                  Summary
+                </h4>
+                <div className="flex flex-col gap-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-slate-600 dark:text-slate-300">Selected Vocab</span>
+                    <span className="font-medium text-slate-900 dark:text-white">
+                      {selectedCount}
+                      {' '}
+                      word
+                      {selectedCount === 1 ? '' : 's'}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-600 dark:text-slate-300">Est. Duration</span>
+                    <span className="font-medium text-slate-900 dark:text-white">
+                      ~
+                      {estDurationMins}
+                      {' '}
+                      min
+                      {estDurationMins === 1 ? '' : 's'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="min-w-0">
+              {open && (
+                <VocabSelectionForm
+                  selectedIds={formData.vocabAssignmentIds}
+                  initialLanguagesData={initialLanguagesData}
+                  open={open}
+                  cachedLanguageFolders={cachedLanguageFolders}
+                  onLanguageFoldersLoaded={onLanguageFoldersLoaded}
+                  editMode={editMode}
+                />
+              )}
+            </div>
           </div>
-          <DialogFooter className="pt-4">
+          <DialogFooter className="mt-2 flex flex-row justify-end gap-2 border-t pt-4 sm:justify-end">
             <DialogClose asChild>
               <Button variant="outline" disabled={isSubmitting}>
                 Cancel
@@ -95,7 +131,7 @@ const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({
             <Button
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700"
+              className="bg-slate-900 text-white hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700"
             >
               {isSubmitting
                 ? (
@@ -104,9 +140,13 @@ const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({
                       Creating...
                     </>
                   )
-                : (
-                    editMode ? 'Update Trainer' : 'Create Trainer'
-                  )}
+                : editMode
+                  ? (
+                      'Update Trainer'
+                    )
+                  : (
+                      'Create Trainer'
+                    )}
             </Button>
           </DialogFooter>
         </div>
