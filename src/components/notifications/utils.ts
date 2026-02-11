@@ -184,3 +184,77 @@ export const getNotificationStatusIcon = (isRead: boolean, priority: string) => 
       return CircleFill;
   }
 };
+
+function startOfDay(d: Date): Date {
+  const out = new Date(d);
+  out.setHours(0, 0, 0, 0);
+  return out;
+}
+
+export type NotificationDateGroup = {
+  today: TNotification[];
+  yesterday: TNotification[];
+  lastWeek: TNotification[];
+};
+
+export function groupNotificationsByDate(notifications: TNotification[]): NotificationDateGroup {
+  const now = new Date();
+  const todayStart = startOfDay(now);
+  const yesterdayStart = new Date(todayStart);
+  yesterdayStart.setDate(yesterdayStart.getDate() - 1);
+  const weekAgo = new Date(todayStart);
+  weekAgo.setDate(weekAgo.getDate() - 7);
+
+  const today: TNotification[] = [];
+  const yesterday: TNotification[] = [];
+  const lastWeek: TNotification[] = [];
+
+  for (const n of notifications) {
+    const d = new Date(n.createdAt);
+    const dayStart = startOfDay(d);
+    if (dayStart.getTime() === todayStart.getTime()) {
+      today.push(n);
+    } else if (dayStart.getTime() === yesterdayStart.getTime()) {
+      yesterday.push(n);
+    } else if (d.getTime() >= weekAgo.getTime()) {
+      lastWeek.push(n);
+    } else {
+      lastWeek.push(n);
+    }
+  }
+
+  return { today, yesterday, lastWeek };
+}
+
+export function formatNotificationListDate(dateString: string): string {
+  const now = new Date();
+  const date = new Date(dateString);
+  const todayStart = startOfDay(now);
+  const yesterdayStart = new Date(todayStart);
+  yesterdayStart.setDate(yesterdayStart.getDate() - 1);
+  const dayStart = startOfDay(date);
+
+  if (dayStart.getTime() === todayStart.getTime()) {
+    return formatTimeAgo(dateString);
+  }
+  if (dayStart.getTime() === yesterdayStart.getTime()) {
+    const time = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    return `Yesterday, ${time}`;
+  }
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+export function getNotificationIconBg(type: NotificationType): string {
+  switch (type) {
+    case 'VOCAB':
+      return 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400';
+    case 'VOCAB_TRAINER':
+      return 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400';
+    case 'VOCAB_SUBJECT':
+      return 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400';
+    case 'SYSTEM':
+      return 'bg-violet-100 text-violet-600 dark:bg-violet-900/30 dark:text-violet-400';
+    default:
+      return 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300';
+  }
+}
