@@ -2,7 +2,8 @@
 
 import type { ResponseAPI } from '@/types';
 import type { TNotification, TUnreadCountResponse } from '@/types/notification';
-import { Bell, CheckRead } from '@solar-icons/react/ssr';
+import { Bell } from '@solar-icons/react/ssr';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useRef, useState, useTransition } from 'react';
 import { toast } from 'sonner';
@@ -15,8 +16,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/libs/utils';
 import { NotificationItem } from './NotificationItem';
 
@@ -36,7 +35,6 @@ type NotificationWithReadStatus = TNotification & {
 type NotificationListProps = {
   notifications: NotificationWithReadStatus[];
   isLoading: boolean;
-  emptyMessage: string;
   onMarkAsRead: () => void;
   onDelete: () => void;
 };
@@ -44,7 +42,6 @@ type NotificationListProps = {
 const NotificationList: React.FC<NotificationListProps> = ({
   notifications,
   isLoading,
-  emptyMessage,
   onMarkAsRead,
   onDelete,
 }) => {
@@ -60,30 +57,31 @@ const NotificationList: React.FC<NotificationListProps> = ({
 
   if (notifications.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-8 text-center">
-        <Bell size={32} weight="BoldDuotone" className="text-slate-300 dark:text-slate-600" />
-        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-          {emptyMessage}
+      <div className="flex flex-col items-center justify-center py-10 text-center">
+        <div className="relative flex h-28 w-28 items-center justify-center rounded-full bg-slate-100 shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_0_24px_rgba(99,102,241,0.12)] dark:bg-slate-800 dark:shadow-[0_0_0_1px_rgba(255,255,255,0.05),0_0_24px_rgba(99,102,241,0.2)]">
+          <span className="absolute top-4 right-4 h-1.5 w-1.5 rounded-full bg-indigo-400/80 dark:bg-indigo-400" />
+          <span className="absolute top-6 right-6 h-1 w-1 rounded-full bg-indigo-400/60 dark:bg-indigo-500" />
+          <Bell size={52} weight="BoldDuotone" className="text-indigo-600 dark:text-indigo-400" />
+        </div>
+        <h4 className="mt-4 font-semibold text-slate-900 dark:text-white">All caught up!</h4>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+          Check back later for progress updates and reminders.
         </p>
       </div>
     );
   }
 
   return (
-    <div className="p-2">
+    <div className="space-y-1 p-2">
       {notifications.map((notification, index) => (
-        <React.Fragment key={notification.id}>
-          <NotificationItem
-            itemIndex={index}
-            notification={notification}
-            isRead={notification.recipients?.[0]?.isRead || false}
-            onMarkAsRead={onMarkAsRead}
-            onDelete={onDelete}
-          />
-          {index < notifications.length - 1 && (
-            <Separator className="my-2" />
-          )}
-        </React.Fragment>
+        <NotificationItem
+          key={notification.id}
+          itemIndex={index}
+          notification={notification}
+          isRead={notification.isRead ?? notification.recipients?.[0]?.isRead ?? false}
+          onMarkAsRead={onMarkAsRead}
+          onDelete={onDelete}
+        />
       ))}
     </div>
   );
@@ -92,7 +90,6 @@ const NotificationList: React.FC<NotificationListProps> = ({
 type NotificationTabContentProps = {
   notifications: NotificationWithReadStatus[];
   isLoading: boolean;
-  emptyMessage: string;
   displayedCount: number;
   totalCount: number;
   scrollAreaRef: React.RefObject<HTMLDivElement | null>;
@@ -104,7 +101,6 @@ type NotificationTabContentProps = {
 const NotificationTabContent: React.FC<NotificationTabContentProps> = ({
   notifications,
   isLoading,
-  emptyMessage,
   displayedCount,
   totalCount,
   scrollAreaRef,
@@ -122,7 +118,6 @@ const NotificationTabContent: React.FC<NotificationTabContentProps> = ({
         <NotificationList
           notifications={notifications}
           isLoading={isLoading}
-          emptyMessage={emptyMessage}
           onMarkAsRead={onMarkAsRead}
           onDelete={onDelete}
         />
@@ -153,6 +148,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
   error = null,
 }) => {
   const [displayedCount, setDisplayedCount] = useState(5);
+  const [activeTab, setActiveTab] = useState<'all' | 'unread'>('all');
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const [, startTransition] = useTransition();
@@ -241,62 +237,83 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
       </DropdownMenuTrigger>
 
       <DropdownMenuContent className="w-96 p-0" align="end">
-        {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 dark:border-slate-700">
           <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
             Notifications
           </h3>
-          <div className="flex items-center space-x-2">
-            {count > 0 && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 px-2 text-xs text-blue-600 hover:bg-blue-50 hover:text-blue-700 dark:text-blue-400 dark:hover:bg-blue-950/50"
-                onClick={handleMarkAllAsRead}
-              >
-                <CheckRead size={12} weight="BoldDuotone" className="mr-1" />
-                Mark all as read
-              </Button>
-            )}
-          </div>
+          <button
+            type="button"
+            className="text-sm text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300"
+            onClick={handleMarkAllAsRead}
+          >
+            Mark all as read
+          </button>
         </div>
 
-        {/* Error Message */}
         {error && (
           <div className="px-4 py-2 text-sm text-red-600 dark:text-red-400">
             {error}
           </div>
         )}
 
-        {/* Tabs */}
-        <Tabs defaultValue="unread" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 rounded-none border-b border-slate-200 dark:border-slate-700">
-            <TabsTrigger
-              value="unread"
-            >
-              Unread
-              {count > 0 && (
-                <Badge variant="secondary" className="ml-2 h-4 px-1 text-xs">
-                  {count}
-                </Badge>
+        <div className="border-b border-slate-200 px-4 dark:border-slate-700">
+          <div className="flex items-end gap-0" role="tablist" aria-label="Notification filters">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeTab === 'all'}
+              tabIndex={activeTab === 'all' ? 0 : -1}
+              onClick={() => setActiveTab('all')}
+              className={cn(
+                'relative pb-2.5 pr-3 pt-3 text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2',
+                activeTab === 'all'
+                  ? 'text-indigo-600 dark:text-indigo-400'
+                  : 'text-slate-400 dark:text-slate-500',
               )}
-            </TabsTrigger>
-            <TabsTrigger
-              value="all"
             >
               All
-              <Badge variant="outline" className="ml-2 h-4 px-1 text-xs">
-                {notifications.length}
-              </Badge>
-            </TabsTrigger>
-          </TabsList>
+              {activeTab === 'all' && (
+                <span
+                  className="absolute bottom-0 left-0 h-0.5 w-5 rounded-full bg-indigo-600 dark:bg-indigo-400"
+                  aria-hidden
+                />
+              )}
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeTab === 'unread'}
+              tabIndex={activeTab === 'unread' ? 0 : -1}
+              onClick={() => setActiveTab('unread')}
+              className={cn(
+                'relative flex items-center gap-1.5 pb-2.5 pl-0 pr-0 pt-3 text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2',
+                activeTab === 'unread'
+                  ? 'text-indigo-600 dark:text-indigo-400'
+                  : 'text-slate-400 dark:text-slate-500',
+              )}
+            >
+              Unread
+              {' '}
+              <span className="rounded-full bg-slate-200 px-1.5 py-0.5 text-xs font-medium text-slate-600 dark:bg-slate-600 dark:text-slate-300">
+                (
+                {count}
+                )
+              </span>
+              {activeTab === 'unread' && (
+                <span
+                  className="absolute bottom-0 left-0 h-0.5 w-12 rounded-full bg-indigo-600 dark:bg-indigo-400"
+                  aria-hidden
+                />
+              )}
+            </button>
+          </div>
+        </div>
 
-          {/* Unread Tab */}
-          <TabsContent value="unread" className="m-0">
+        {activeTab === 'unread' && (
+          <div className="m-0">
             <NotificationTabContent
               notifications={displayedUnreadNotifications}
               isLoading={isLoading}
-              emptyMessage="No unread notifications"
               displayedCount={displayedUnreadNotifications.length}
               totalCount={unreadNotificationsWithRecipients.length}
               scrollAreaRef={scrollAreaRef}
@@ -304,14 +321,13 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
               onMarkAsRead={handleNotificationRead}
               onDelete={handleNotificationDelete}
             />
-          </TabsContent>
-
-          {/* All Tab */}
-          <TabsContent value="all" className="m-0">
+          </div>
+        )}
+        {activeTab === 'all' && (
+          <div className="m-0">
             <NotificationTabContent
               notifications={displayedAllNotifications}
               isLoading={isLoading}
-              emptyMessage="No notifications yet"
               displayedCount={displayedAllNotifications.length}
               totalCount={allNotificationsWithRecipients?.length || 0}
               scrollAreaRef={scrollAreaRef}
@@ -319,8 +335,17 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
               onMarkAsRead={handleNotificationRead}
               onDelete={handleNotificationDelete}
             />
-          </TabsContent>
-        </Tabs>
+          </div>
+        )}
+
+        <div className="border-t border-slate-200 py-2 text-center dark:border-slate-700">
+          <Link
+            href="/notifications"
+            className="text-sm text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300"
+          >
+            {notifications.length === 0 ? 'View notification history' : 'View all notifications'}
+          </Link>
+        </div>
       </DropdownMenuContent>
     </DropdownMenu>
   );

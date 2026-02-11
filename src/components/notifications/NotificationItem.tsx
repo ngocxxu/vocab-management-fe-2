@@ -18,8 +18,6 @@ import {
   formatTimeAgo,
   getNotificationIcon,
   getNotificationIconBg,
-  getNotificationIconColor,
-  getNotificationStatusIcon,
 } from './utils';
 
 type NotificationItemProps = {
@@ -43,8 +41,6 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
   const [, startTransition] = useTransition();
   const [isLoadingExam, setIsLoadingExam] = useState(false);
   const IconComponent = getNotificationIcon(notification.type);
-  const StatusIcon = getNotificationStatusIcon(isRead, notification.priority);
-  const iconColor = getNotificationIconColor(notification.priority);
   const iconBg = getNotificationIconBg(notification.type);
   const message = formatNotificationMessage(notification);
   const timeAgo = formatTimeAgo(notification.createdAt);
@@ -151,7 +147,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
   return (
     <div
       className={cn(
-        'group relative flex items-start space-x-3 rounded-lg p-2 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer',
+        'group relative flex items-start gap-3 rounded-lg p-2 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer',
         itemIndex === 0 && 'mt-0',
       )}
       role="button"
@@ -164,44 +160,46 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
         }
       }}
     >
-      <div className="flex-shrink-0">
-        <div className={cn('flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700', iconColor, isRead && 'opacity-60')}>
-          <IconComponent className="h-4 w-4" />
-        </div>
+      <div className={cn('flex h-10 w-10 shrink-0 items-center justify-center rounded-full', iconBg, isRead && 'opacity-70')}>
+        <IconComponent className="h-5 w-5" />
       </div>
 
       <div className="min-w-0 flex-1">
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <p className={cn(
-              'text-sm font-medium',
-              isRead ? 'text-slate-600 dark:text-slate-300' : 'text-slate-900 dark:text-slate-100',
-              !isRead && 'font-semibold',
-            )}
-            >
-              {message}
-            </p>
-            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-              {timeAgo}
-            </p>
-          </div>
+        <div className="flex items-start justify-between gap-2">
+          <p className={cn(
+            'line-clamp-1 text-sm font-semibold',
+            isRead ? 'text-slate-600 dark:text-slate-300' : 'text-slate-900 dark:text-slate-100',
+          )}
+          >
+            {message}
+          </p>
+          <span className="shrink-0 text-xs text-slate-500 dark:text-slate-400">{timeAgo}</span>
         </div>
-
-        {notification.priority === 'HIGH' && (
-          <div className="mt-2">
-            <span className="inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800 dark:bg-red-900/20 dark:text-red-200">
-              High Priority
-            </span>
-          </div>
+        {description
+          ? (
+              <p className="mt-0.5 line-clamp-2 text-xs text-slate-500 dark:text-slate-400">{description}</p>
+            )
+          : null}
+        {isVocabTrainerRemind && (
+          <button
+            type="button"
+            className="mt-2 rounded-md border border-slate-300 px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleClick();
+            }}
+          >
+            Review Now
+          </button>
         )}
       </div>
 
-      <div className="flex flex-shrink-0 flex-col items-end justify-end gap-1">
+      <div className="flex shrink-0 items-start pt-0.5">
         {isLoadingExam && (
-          <RefreshCircle size={12} weight="BoldDuotone" className="animate-spin text-blue-500" />
+          <RefreshCircle size={14} weight="BoldDuotone" className="animate-spin text-blue-500" />
         )}
         {!isRead && !isLoadingExam && (
-          <StatusIcon className="size-3 text-blue-500" />
+          <span className="h-2 w-2 rounded-full bg-blue-500" aria-hidden />
         )}
       </div>
     </div>
