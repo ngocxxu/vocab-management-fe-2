@@ -12,6 +12,7 @@ import LandingFooter from '@/components/landing/LandingFooter';
 import LandingHeader from '@/components/landing/LandingHeader';
 import LandingHero from '@/components/landing/LandingHero';
 import MethodologySection from '@/components/landing/MethodologySection';
+import LandingPricing from '@/components/landing/LandingPricing';
 
 export default function HomePage() {
   const router = useRouter();
@@ -68,6 +69,7 @@ export default function HomePage() {
         <LandingHero />
         <LandingFeatures />
         <MethodologySection />
+        <LandingPricing />
         <LandingCta />
         <LandingFooter logoSrc={logoSrc} />
       </main>
