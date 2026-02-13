@@ -39,7 +39,7 @@ const tasks: Task[] = [
     logoColor: 'bg-gradient-to-r from-blue-500 to-blue-600',
     status: 'On Going',
     progress: '51%',
-    dueDate: 'Aug, 17 2024',
+    dueDate: 'Aug, 17 2026',
     teamMembers: 2,
   },
   {
@@ -50,7 +50,7 @@ const tasks: Task[] = [
     logoColor: 'bg-gradient-to-r from-emerald-500 to-emerald-600',
     status: 'On Going',
     progress: '89%',
-    dueDate: 'Aug, 15 2024',
+    dueDate: 'Aug, 15 2026',
     teamMembers: 3,
   },
   {
