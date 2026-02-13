@@ -10,6 +10,14 @@ const lexend = Lexend({
   display: 'swap',
 });
 
+export const metadata = { title: {
+  default: 'Vocab - Precision Learning',
+  template: '%s | Vocab - Precision Learning',
+}, icons: {
+  icon: '/assets/logo/logo-light-mode.png',
+  apple: '/assets/logo/logo-light-mode.png',
+} };
+
 export default async function RootLayout(props: {
   children: React.ReactNode;
 }) {
