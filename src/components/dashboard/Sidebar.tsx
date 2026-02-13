@@ -1,6 +1,7 @@
 import { signout, verifyUser } from '@/actions';
 import { Button } from '@/components/ui/button';
 import type { TUser } from '@/types/auth';
+import { useTheme } from '@/hooks/useTheme';
 import {
   Bell,
   Bookmark,
@@ -44,7 +45,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, isExpanded = 
   const collapsed = !isExpanded;
   const router = useRouter();
   const pathname = usePathname();
+  const { theme, mounted } = useTheme();
   const [user, setUser] = useState<TUser | null>(null);
+  const logoSrc
+    = !mounted || theme !== 'dark'
+      ? '/assets/logo/logo-light-mode.png'
+      : '/assets/logo/logo-dark-mode.png';
 
   useEffect(() => {
     const loadUser = async () => {
@@ -87,11 +93,22 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, isExpanded = 
     >
       <div className="flex-shrink-0 p-4">
         <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'}`}>
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary shadow-lg">
-            <SquareAcademicCap size={20} weight="BoldDuotone" className="text-primary-foreground" />
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl">
+            <Image
+              src={logoSrc}
+              alt="Vocab"
+              width={40}
+              height={40}
+              className="h-9 w-9 object-contain"
+            />
           </div>
           {!collapsed && (
-            <h1 className="text-xl font-bold text-foreground">VocabMaster</h1>
+            <div className="flex flex-col">
+              <span className="font-bold text-foreground">Vocab</span>
+              <span className="text-xs font-medium tracking-wider text-primary uppercase">
+                Precision Learning
+              </span>
+            </div>
           )}
         </div>
       </div>
