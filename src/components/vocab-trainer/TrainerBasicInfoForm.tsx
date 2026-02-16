@@ -16,7 +16,7 @@ import { Slider } from '@/components/ui/slider';
 import { QUESTION_TYPE_OPTIONS } from '@/constants/vocab-trainer';
 import { cn } from '@/libs/utils';
 
-const BasicInfoForm: React.FC = () => {
+const TrainerBasicInfoForm: React.FC = () => {
   const form = useFormContext();
 
   return (
@@ -169,4 +169,4 @@ const BasicInfoForm: React.FC = () => {
   );
 };
 
-export default BasicInfoForm;
+export default TrainerBasicInfoForm;

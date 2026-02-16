@@ -19,17 +19,16 @@ type Language = {
   name: string;
 };
 
-type BasicInfoFormProps = {
+type VocabLanguageFormProps = {
   initialLanguagesData?: ResponseAPI<TLanguage[]>;
 };
 
-const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ initialLanguagesData }) => {
+const VocabLanguageForm: React.FC<VocabLanguageFormProps> = ({ initialLanguagesData }) => {
   const form = useFormContext();
   const languages = initialLanguagesData?.items || [];
   const isLoading = false;
   const isError = false;
 
-  // Get current form values to filter options
   const sourceLanguageCode = form.watch('sourceLanguageCode');
   const targetLanguageCode = form.watch('targetLanguageCode');
 
@@ -50,7 +49,6 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ initialLanguagesData }) =
                 onValueChange={(value) => {
                   field.onChange(value);
                   form.clearErrors('sourceLanguageCode');
-                  // Clear target language if it's the same as source
                   if (value === targetLanguageCode) {
                     form.setValue('targetLanguageCode', '');
                   }
@@ -99,7 +97,6 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ initialLanguagesData }) =
                 onValueChange={(value) => {
                   field.onChange(value);
                   form.clearErrors('targetLanguageCode');
-                  // Clear source language if it's the same as target
                   if (value === sourceLanguageCode) {
                     form.setValue('sourceLanguageCode', '');
                   }
@@ -165,4 +162,4 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ initialLanguagesData }) =
   );
 };
 
-export default BasicInfoForm;
+export default VocabLanguageForm;

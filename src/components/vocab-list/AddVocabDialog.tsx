@@ -8,7 +8,7 @@ import { RefreshCircle } from '@solar-icons/react/ssr';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import BasicInfoForm from './BasicInfoForm';
+import VocabLanguageForm from './VocabLanguageForm';
 import TextTargetTabs from './TextTargetTabs';
 
 type VocabFormData = {
@@ -103,7 +103,7 @@ const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
           </DialogHeader>
           <div className="grid grid-cols-1 gap-6 p-6 pb-0 lg:grid-cols-[minmax(0,300px)_1fr]">
             <div className="space-y-6">
-              <BasicInfoForm initialLanguagesData={initialLanguagesData} />
+              <VocabLanguageForm initialLanguagesData={initialLanguagesData} />
               <TextTargetTabs
                 variant="sidebar"
                 initialWordTypesData={initialWordTypesData}

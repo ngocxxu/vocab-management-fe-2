@@ -8,7 +8,7 @@ import { RefreshCircle } from '@solar-icons/react/ssr';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import BasicInfoForm from './BasicInfoForm';
+import TrainerBasicInfoForm from './TrainerBasicInfoForm';
 import VocabSelectionForm from './VocabSelectionForm';
 
 type VocabTrainerFormData = {
@@ -81,7 +81,7 @@ const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({
           </DialogHeader>
           <div className="grid grid-cols-1 gap-6 p-6 pb-0 lg:grid-cols-[minmax(0,380px)_1fr]">
             <div className="space-y-6">
-              <BasicInfoForm />
+              <TrainerBasicInfoForm />
               <div className="space-y-3">
                 <h4 className="text-xs font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
                   Summary

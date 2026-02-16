@@ -1,9 +1,11 @@
 'use server';
 
+import { cache } from 'react';
 import type { TAuthResponse, TRefreshData, TResetPasswordData, TSigninData, TSignupData, TUser } from '@/types/auth';
 import { cookies } from 'next/headers';
 import { logger } from '@/libs/Logger';
 import { authApi } from '@/utils/server-api';
+import { toActionError } from './utils';
 
 export async function signin(signinData: TSigninData): Promise<TAuthResponse> {
   try {
@@ -22,7 +24,7 @@ export async function signin(signinData: TSigninData): Promise<TAuthResponse> {
 
     return result;
   } catch (error) {
-    throw new Error(error instanceof Error ? error.message : 'Failed to sign in');
+    throw toActionError(error, 'Failed to sign in');
   }
 }
 
@@ -43,7 +45,7 @@ export async function signup(signupData: TSignupData): Promise<TAuthResponse> {
 
     return result;
   } catch (error) {
-    throw new Error(error instanceof Error ? error.message : 'Failed to sign up');
+    throw toActionError(error, 'Failed to sign up');
   }
 }
 
@@ -52,7 +54,7 @@ export async function signout(): Promise<{ message: string }> {
     const result = await authApi.signout();
     return result;
   } catch (error) {
-    throw new Error(error instanceof Error ? error.message : 'Failed to sign out');
+    throw toActionError(error, 'Failed to sign out');
   } finally {
     const cookieStore = await cookies();
     cookieStore.delete('accessToken');
@@ -65,7 +67,7 @@ export async function refresh(refreshData: TRefreshData): Promise<{ message: str
     const result = await authApi.refresh(refreshData);
     return result;
   } catch (error) {
-    throw new Error(error instanceof Error ? error.message : 'Failed to refresh token');
+    throw toActionError(error, 'Failed to refresh token');
   }
 }
 
@@ -74,11 +76,11 @@ export async function resetPassword(resetData: TResetPasswordData): Promise<{ me
     const result = await authApi.resetPassword(resetData);
     return result;
   } catch (error) {
-    throw new Error(error instanceof Error ? error.message : 'Failed to reset password');
+    throw toActionError(error, 'Failed to reset password');
   }
 }
 
-export async function verifyUser(): Promise<TUser | null> {
+async function verifyUserImpl(): Promise<TUser | null> {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get('accessToken')?.value;
@@ -99,4 +101,14 @@ export async function verifyUser(): Promise<TUser | null> {
     logger.error('Failed to verify user:', { error });
     return null;
   }
+}
+
+export const verifyUser = cache(verifyUserImpl);
+
+export async function requireAuth(): Promise<TUser> {
+  const user = await verifyUser();
+  if (!user) {
+    throw new Error('Unauthorized');
+  }
+  return user;
 }

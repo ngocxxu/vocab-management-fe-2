@@ -4,9 +4,12 @@ import type { ResponseAPI } from '@/types';
 import type { TCreateVocab, TVocab } from '@/types/vocab-list';
 import type { VocabQueryParams } from '@/utils/api-config';
 import { revalidatePath } from 'next/cache';
-import { authApi, vocabApi } from '@/utils/server-api';
+import { vocabApi } from '@/utils/server-api';
+import { requireAuth } from './auth';
+import { toActionError } from './utils';
 
 export async function createVocab(vocabData: TCreateVocab) {
+  await requireAuth();
   if (!vocabData || typeof vocabData !== 'object') {
     throw new Error('Vocab data is required');
   }
@@ -19,11 +22,12 @@ export async function createVocab(vocabData: TCreateVocab) {
     revalidatePath('/vocab-list');
     return result;
   } catch (error) {
-    throw new Error(error instanceof Error ? error.message : 'Failed to create vocabulary');
+    throw toActionError(error, 'Failed to create vocabulary');
   }
 }
 
 export async function updateVocab(id: string, vocabData: Partial<TCreateVocab>) {
+  await requireAuth();
   if (!id || typeof id !== 'string') {
     throw new Error('Vocab ID is required');
   }
@@ -36,11 +40,12 @@ export async function updateVocab(id: string, vocabData: Partial<TCreateVocab>) 
     revalidatePath('/vocab-list');
     return result;
   } catch (error) {
-    throw new Error(error instanceof Error ? error.message : 'Failed to update vocabulary');
+    throw toActionError(error, 'Failed to update vocabulary');
   }
 }
 
 export async function deleteVocab(id: string): Promise<void> {
+  await requireAuth();
   if (!id || typeof id !== 'string') {
     throw new Error('Vocab ID is required');
   }
@@ -49,11 +54,12 @@ export async function deleteVocab(id: string): Promise<void> {
     await vocabApi.delete(id);
     revalidatePath('/vocab-list');
   } catch (error) {
-    throw new Error(error instanceof Error ? error.message : 'Failed to delete vocabulary');
+    throw toActionError(error, 'Failed to delete vocabulary');
   }
 }
 
 export async function createVocabsBulk(vocabData: TCreateVocab[]) {
+  await requireAuth();
   if (!Array.isArray(vocabData) || vocabData.length === 0) {
     throw new Error('Vocab data array is required and must not be empty');
   }
@@ -63,11 +69,12 @@ export async function createVocabsBulk(vocabData: TCreateVocab[]) {
     revalidatePath('/vocab-list');
     return result;
   } catch (error) {
-    throw new Error(error instanceof Error ? error.message : 'Failed to create vocabularies');
+    throw toActionError(error, 'Failed to create vocabularies');
   }
 }
 
 export async function deleteVocabsBulk(ids: string[]): Promise<{ success: boolean }> {
+  await requireAuth();
   if (!Array.isArray(ids) || ids.length === 0) {
     throw new Error('IDs array is required and must not be empty');
   }
@@ -77,7 +84,7 @@ export async function deleteVocabsBulk(ids: string[]): Promise<{ success: boolea
     revalidatePath('/vocab-list');
     return { success: true };
   } catch (error) {
-    throw new Error(error instanceof Error ? error.message : 'Failed to delete vocabularies');
+    throw toActionError(error, 'Failed to delete vocabularies');
   }
 }
 
@@ -89,6 +96,7 @@ export async function importVocabsCsv(
     targetLanguageCode: string;
   },
 ) {
+  await requireAuth();
   if (!file || !(file instanceof File)) {
     throw new Error('File is required');
   }
@@ -101,24 +109,16 @@ export async function importVocabsCsv(
     revalidatePath('/vocab-list');
     return result;
   } catch (error) {
-    throw new Error(error instanceof Error ? error.message : 'Failed to import vocabularies');
+    throw toActionError(error, 'Failed to import vocabularies');
   }
 }
 
 export async function exportVocabsCsv(params: Omit<VocabQueryParams, 'userId'>): Promise<Blob | { error: string }> {
   try {
-    const verifyResponse = await authApi.verify();
-    const userId = verifyResponse?.id;
-
-    if (!userId) {
-      return {
-        error: 'User not authenticated',
-      };
-    }
-
+    const user = await requireAuth();
     const response = await vocabApi.exportCsv({
       ...params,
-      userId,
+      userId: user.id,
     });
     const blob = await response.blob();
     return blob;
@@ -131,18 +131,10 @@ export async function exportVocabsCsv(params: Omit<VocabQueryParams, 'userId'>):
 
 export async function getVocabsForSelection(params: Omit<VocabQueryParams, 'userId'>): Promise<ResponseAPI<TVocab[]> | { error: string }> {
   try {
-    const verifyResponse = await authApi.verify();
-    const userId = verifyResponse?.id;
-
-    if (!userId) {
-      return {
-        error: 'User not authenticated',
-      };
-    }
-
+    const user = await requireAuth();
     const result = await vocabApi.getAll({
       ...params,
-      userId,
+      userId: user.id,
     });
     return result;
   } catch (error) {
@@ -164,6 +156,7 @@ export async function generateTextTargetContent(data: {
   subjectIds: string[];
   vocabExamples: Array<{ source: string; target: string }>;
 }> {
+  await requireAuth();
   if (!data.textSource || !data.sourceLanguageCode || !data.targetLanguageCode) {
     throw new Error('textSource, sourceLanguageCode, and targetLanguageCode are required');
   }
@@ -172,6 +165,6 @@ export async function generateTextTargetContent(data: {
     const result = await vocabApi.generateTextTarget(data);
     return result;
   } catch (error) {
-    throw new Error(error instanceof Error ? error.message : 'Failed to generate text target content');
+    throw toActionError(error, 'Failed to generate text target content');
   }
 }

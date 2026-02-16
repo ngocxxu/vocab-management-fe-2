@@ -33,7 +33,7 @@ import { Skeleton } from './skeleton';
 
 const DEFAULT_EXPANDED_STATE = {};
 
-type DataTableProps<TData, TValue> = {
+type DataTableProps<TData extends { id: string }, TValue> = {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   searchPlaceholder?: string;
@@ -65,7 +65,7 @@ type DataTableProps<TData, TValue> = {
   skeletonRowCount?: number;
 };
 
-export function DataTable<TData, TValue>({
+export function DataTable<TData extends { id: string }, TValue>({
   columns,
   data,
   searchPlaceholder = 'Search...',
@@ -98,13 +98,11 @@ export function DataTable<TData, TValue>({
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = useState({});
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [globalFilter, setGlobalFilter] = useState(searchValue);
 
-  // Memoize columns to prevent unnecessary re-renders
   const memoizedColumns = useMemo(() => columns, [columns]);
 
-  // Handle sorting change for server-side sorting
   const handleSortingChange = React.useCallback((updaterOrValue: Updater<SortingState>) => {
     if (manualSorting && onSortingChange) {
       const newSorting = typeof updaterOrValue === 'function' ? updaterOrValue(sorting) : updaterOrValue;
@@ -123,13 +121,7 @@ export function DataTable<TData, TValue>({
   const table = useReactTable({
     data,
     columns: memoizedColumns,
-    getRowId: (row): string => {
-      const rowWithId = row as { id: string };
-      if (!rowWithId.id || typeof rowWithId.id !== 'string') {
-        throw new Error('Row must have an id property of type string');
-      }
-      return rowWithId.id;
-    },
+    getRowId: (row): string => row.id,
     state: {
       sorting,
       columnFilters,
@@ -301,7 +293,7 @@ export function DataTable<TData, TValue>({
                         )
                       : (
                           table.getRowModel().rows.map((row) => {
-                            const rowId = (row.original as any).id;
+                            const rowId = row.original.id;
                             const isExpanded = expandedState[rowId];
                             return (
                               <React.Fragment key={`${rowId}-${isExpanded ? 'expanded' : 'collapsed'}`}>
@@ -310,21 +302,17 @@ export function DataTable<TData, TValue>({
                                     isExpanded ? 'bg-slate-200/50 dark:bg-slate-700/50' : ''
                                   } ${rowClassName}`}
                                   onClick={(e) => {
-                                    // Don't expand if clicking on interactive elements
                                     const target = e.target as HTMLElement;
                                     if (target.closest('input[type="checkbox"], button, [role="button"], [data-no-expand]')) {
                                       return;
                                     }
 
-                                    // Handle row click for navigation
                                     if (onRowClick) {
                                       onRowClick(row.original);
                                       return;
                                     }
 
-                                    // Handle expand/collapse if no row click handler
                                     if (renderExpandedRow && onExpandedChange) {
-                                      const rowId = (row.original as any).id;
                                       onExpandedChange({
                                         ...expandedState,
                                         [rowId]: !expandedState[rowId],
@@ -338,7 +326,7 @@ export function DataTable<TData, TValue>({
                                     </td>
                                   ))}
                                 </tr>
-                                {renderExpandedRow && expandedState[(row.original as any).id] && (
+                                {renderExpandedRow && expandedState[row.original.id] && (
                                   renderExpandedRow(row)
                                 )}
                               </React.Fragment>

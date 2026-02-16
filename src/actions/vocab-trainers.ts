@@ -3,8 +3,11 @@
 import type { TCreateVocabTrainer, TFormTestVocabTrainerUnion, TQuestionAPI } from '@/types/vocab-trainer';
 import { revalidatePath } from 'next/cache';
 import { vocabTrainerApi } from '@/utils/server-api';
+import { requireAuth } from './auth';
+import { toActionError } from './utils';
 
 export async function createVocabTrainer(trainerData: TCreateVocabTrainer) {
+  await requireAuth();
   if (!trainerData || typeof trainerData !== 'object') {
     throw new Error('Trainer data is required');
   }
@@ -17,11 +20,12 @@ export async function createVocabTrainer(trainerData: TCreateVocabTrainer) {
     revalidatePath('/vocab-trainer');
     return result;
   } catch (error) {
-    throw new Error(error instanceof Error ? error.message : 'Failed to create vocab trainer');
+    throw toActionError(error, 'Failed to create vocab trainer');
   }
 }
 
 export async function updateVocabTrainer(id: string, trainerData: Partial<TCreateVocabTrainer>) {
+  await requireAuth();
   if (!id || typeof id !== 'string') {
     throw new Error('Trainer ID is required');
   }
@@ -34,11 +38,12 @@ export async function updateVocabTrainer(id: string, trainerData: Partial<TCreat
     revalidatePath('/vocab-trainer');
     return result;
   } catch (error) {
-    throw new Error(error instanceof Error ? error.message : 'Failed to update vocab trainer');
+    throw toActionError(error, 'Failed to update vocab trainer');
   }
 }
 
 export async function deleteVocabTrainer(id: string): Promise<void> {
+  await requireAuth();
   if (!id || typeof id !== 'string') {
     throw new Error('Trainer ID is required');
   }
@@ -47,11 +52,12 @@ export async function deleteVocabTrainer(id: string): Promise<void> {
     await vocabTrainerApi.delete(id);
     revalidatePath('/vocab-trainer');
   } catch (error) {
-    throw new Error(error instanceof Error ? error.message : 'Failed to delete vocab trainer');
+    throw toActionError(error, 'Failed to delete vocab trainer');
   }
 }
 
 export async function deleteVocabTrainersBulk(ids: string[]): Promise<{ success: boolean }> {
+  await requireAuth();
   if (!Array.isArray(ids) || ids.length === 0) {
     throw new Error('IDs array is required and must not be empty');
   }
@@ -61,11 +67,12 @@ export async function deleteVocabTrainersBulk(ids: string[]): Promise<{ success:
     revalidatePath('/vocab-trainer');
     return { success: true };
   } catch (error) {
-    throw new Error(error instanceof Error ? error.message : 'Failed to delete vocab trainers');
+    throw toActionError(error, 'Failed to delete vocab trainers');
   }
 }
 
 export async function getExam(id: string): Promise<TQuestionAPI> {
+  await requireAuth();
   if (!id || typeof id !== 'string') {
     throw new Error('Trainer ID is required');
   }
@@ -74,11 +81,12 @@ export async function getExam(id: string): Promise<TQuestionAPI> {
     const result = await vocabTrainerApi.getExam(id);
     return result as TQuestionAPI;
   } catch (error) {
-    throw new Error(error instanceof Error ? error.message : 'Failed to fetch exam');
+    throw toActionError(error, 'Failed to fetch exam');
   }
 }
 
 export async function submitExam(id: string, examData: TFormTestVocabTrainerUnion) {
+  await requireAuth();
   if (!id || typeof id !== 'string') {
     throw new Error('Trainer ID is required');
   }
@@ -91,6 +99,6 @@ export async function submitExam(id: string, examData: TFormTestVocabTrainerUnio
     revalidatePath('/vocab-trainer');
     return result;
   } catch (error) {
-    throw new Error(error instanceof Error ? error.message : 'Failed to submit exam');
+    throw toActionError(error, 'Failed to submit exam');
   }
 }

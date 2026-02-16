@@ -1,5 +1,5 @@
 import type { EQuestionType } from '@/enum/vocab-trainer';
-import { VocabTrainerLayout } from '@/components/vocab-trainer';
+import VocabTrainerLayout from '@/components/vocab-trainer/VocabTrainerLayout';
 import { languagesApi, vocabTrainerApi } from '@/utils/server-api';
 
 export const dynamic = 'force-dynamic';

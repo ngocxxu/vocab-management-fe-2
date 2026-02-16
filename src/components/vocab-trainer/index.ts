@@ -1,5 +1,4 @@
 export { default as AddVocabTrainerDialog } from './AddVocabTrainerDialog';
-export { default as BasicInfoForm } from './BasicInfoForm';
 export { default as ExamLauncher } from './ExamLauncher';
 export { default as ExamResults } from './ExamResults';
 export { default as FillInBlankCard } from './FillInBlankCard';
@@ -8,6 +7,7 @@ export { default as FlipCard } from './FlipCard';
 export { default as FlipCardExam } from './FlipCardExam';
 export { default as FlipCardResults } from './FlipCardResults';
 export { default as QuestionCard } from './QuestionCard';
+export { default as TrainerBasicInfoForm } from './TrainerBasicInfoForm';
 export { default as VocabExam } from './VocabExam';
 export { default as VocabExamHeader } from './VocabExamHeader';
 export { default as VocabSelectionForm } from './VocabSelectionForm';

@@ -3,7 +3,7 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import type { ResponseAPI, TLanguage, TLanguageFolder } from '@/types';
 import type { TSubjectResponse } from '@/types/subject';
-import type { TVocab } from '@/types/vocab-list';
+import type { TCreateVocab, TVocab } from '@/types/vocab-list';
 import type { TWordTypeResponse } from '@/types/word-type';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -400,21 +400,20 @@ const VocabList: React.FC<VocabListProps> = ({
       // Get the validated form data
       const formData = form.getValues();
 
-      // Strip out the client-side IDs before sending to API
       const apiData = {
         ...formData,
         languageFolderId: languageFolderId || '',
         textTargets: formData.textTargets.map(({ id, ...target }) => ({
           ...target,
-          vocabExamples: target.vocabExamples.map(({ id: exampleId, ...example }) => example),
+          vocabExamples: target.vocabExamples.map(({ id: _exampleId, ...example }) => example),
         })),
-      };
+      } as TCreateVocab;
 
       if (dialogState.editMode && dialogState.editingItem) {
-        await updateVocab(dialogState.editingItem.id, apiData as any);
+        await updateVocab(dialogState.editingItem.id, apiData);
         toast.success('Vocabulary updated successfully');
       } else {
-        await createVocab(apiData as any);
+        await createVocab(apiData);
         toast.success('Vocabulary created successfully');
       }
 

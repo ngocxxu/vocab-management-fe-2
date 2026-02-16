@@ -1,4 +1,4 @@
-import { VocabListLayout } from '@/components/vocab-list';
+import VocabListLayout from '@/components/vocab-list/VocabListLayout';
 import { languageFoldersApi, languagesApi, subjectsApi, vocabApi, wordTypesApi } from '@/utils/server-api';
 
 export const dynamic = 'force-dynamic';

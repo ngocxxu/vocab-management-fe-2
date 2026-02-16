@@ -93,7 +93,7 @@ const FillInBlankExam: React.FC<FillInBlankExamProps> = ({ trainerId, examData }
         wordTestInputs,
       };
 
-      const result = await submitExam(trainerId, examSubmissionData as any);
+      const result = await submitExam(trainerId, examSubmissionData);
 
       if (result && typeof result === 'object' && 'error' in result) {
         const errorMessage = result.error as string;

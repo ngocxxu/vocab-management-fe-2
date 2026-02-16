@@ -162,25 +162,23 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
         toast.error(`Import failed. ${result.failed} rows failed to import.`);
         setShowErrorDialog(true);
       }
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Import error:', error);
 
-      // Handle API error response
-      if (error && typeof error === 'object' && 'response' in error) {
-        const apiError = error as any;
-        if (apiError.response?.data) {
-          // Try to parse error response as import result
-          try {
-            const errorResult = apiError.response.data;
-            if (errorResult.errors && Array.isArray(errorResult.errors)) {
-              setImportResult(errorResult);
-              toast.error(`Import failed. ${errorResult.failed || 0} rows failed to import.`);
-              setShowErrorDialog(true);
-              return;
-            }
-          } catch (parseError) {
-            console.error('Failed to parse error response:', parseError);
+      const withResponse = error && typeof error === 'object' && 'response' in error
+        ? (error as { response?: { data?: unknown } })
+        : null;
+      if (withResponse?.response?.data) {
+        try {
+          const errorResult = withResponse.response.data as TCsvImportResponse;
+          if (errorResult.errors && Array.isArray(errorResult.errors)) {
+            setImportResult(errorResult);
+            toast.error(`Import failed. ${errorResult.failed || 0} rows failed to import.`);
+            setShowErrorDialog(true);
+            return;
           }
+        } catch (parseError) {
+          console.error('Failed to parse error response', parseError);
         }
       }
 
