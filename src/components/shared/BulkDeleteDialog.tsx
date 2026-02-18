@@ -1,5 +1,6 @@
 'use client';
 
+import type { BulkDeleteDialogProps } from '@/types';
 import React from 'react';
 import {
   AlertDialog,
@@ -11,16 +12,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-
-type BulkDeleteDialogProps = {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  itemCount: number;
-  itemName: string;
-  itemNamePlural?: string;
-  onConfirm: () => void;
-  onCancel?: () => void;
-};
 
 const BulkDeleteDialog: React.FC<BulkDeleteDialogProps> = ({
   open,

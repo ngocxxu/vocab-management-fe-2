@@ -1,6 +1,6 @@
 'use client';
 
-import type { TSubject } from '@/types/subject';
+import type { TextTargetFormProps, WordTypeItem } from '@/types/vocab-list';
 import { MagicStick, RefreshCircle } from '@solar-icons/react/ssr';
 import React, { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
@@ -15,41 +15,6 @@ import SubjectsSection from './SubjectsSection';
 
 const COOLDOWN_DURATION_MS = 60000;
 const GLOBAL_STORAGE_KEY = 'play_button_last_click_global';
-
-type WordType = {
-  id: string;
-  name: string;
-  description: string;
-};
-
-type TextTarget = {
-  id: string;
-  wordTypeId?: string;
-  textTarget: string;
-  grammar: string;
-  explanationSource: string;
-  explanationTarget: string;
-  subjectIds: string[];
-  vocabExamples: Array<{ id: string; source: string; target: string }>;
-};
-
-type TextTargetFormProps = {
-  targetIndex: number;
-  target: TextTarget;
-  wordTypes: WordType[];
-  isLoading: boolean;
-  isError: boolean;
-  subjects: TSubject[];
-  subjectsLoading: boolean;
-  subjectsError: boolean;
-  textSource: string;
-  sourceLanguageCode: string;
-  targetLanguageCode: string;
-  onInputChange: (field: string, value: string, targetIndex: number) => void;
-  onExampleChange: (exampleIndex: number, field: 'source' | 'target', value: string, targetIndex: number) => void;
-  onAddExample: (targetIndex: number) => void;
-  onRemoveExample: (exampleIndex: number, targetIndex: number) => void;
-};
 
 const TextTargetForm: React.FC<TextTargetFormProps> = ({
   targetIndex,
@@ -241,7 +206,7 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
                           </SelectItem>
                         )
                       : (
-                          wordTypes.map((wordType: WordType) => (
+                          wordTypes.map((wordType: WordTypeItem) => (
                             <SelectItem key={wordType.id} value={wordType.id}>
                               {wordType.name}
                             </SelectItem>

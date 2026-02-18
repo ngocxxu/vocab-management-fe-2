@@ -1,8 +1,7 @@
 'use client';
 
 import { createLanguageFolder, deleteLanguageFolder } from '@/actions/language-folders';
-import type { ResponseAPI, TLanguage } from '@/types';
-import type { TCreateLanguageFolder, TLanguageFolder } from '@/types/language-folder';
+import type { LibraryProps, TCreateLanguageFolder, TLanguageFolder } from '@/types/language-folder';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useMemo, useState, useTransition } from 'react';
 import { toast } from 'sonner';
@@ -14,11 +13,6 @@ import LibraryFolderCard from './LibraryFolderCard';
 import LibraryHeader from './LibraryHeader';
 import LibraryLoadingState from './LibraryLoadingState';
 import LibrarySearch from './LibrarySearch';
-
-type LibraryProps = {
-  initialData?: ResponseAPI<TLanguageFolder[]>;
-  initialLanguagesData?: ResponseAPI<TLanguage[]>;
-};
 
 const Library: React.FC<LibraryProps> = ({ initialData, initialLanguagesData }) => {
   const router = useRouter();

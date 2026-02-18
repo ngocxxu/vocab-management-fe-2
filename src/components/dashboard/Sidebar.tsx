@@ -1,6 +1,6 @@
 import { signout, verifyUser } from '@/actions';
 import { Button } from '@/components/ui/button';
-import type { TUser } from '@/types/auth';
+import type { MenuItem, SidebarProps, TUser } from '@/types';
 import { useTheme } from '@/hooks/useTheme';
 import {
   Bell,
@@ -15,14 +15,6 @@ import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 
-type MenuItem = {
-  id: string;
-  path: string;
-  label: string;
-  icon: React.ReactNode;
-  category?: string;
-};
-
 const mainMenuItems: MenuItem[] = [
   { id: 'dashboard', path: '/dashboard', label: 'Dashboard', icon: <HomeSmile size={20} weight="BoldDuotone" /> },
   { id: 'library', path: '/library', label: 'Library', icon: <Library size={20} weight="BoldDuotone" /> },
@@ -34,12 +26,6 @@ const settingsMenuItems: MenuItem[] = [
   { id: 'subjects', path: '/subjects', label: 'Subjects', icon: <Bookmark size={20} weight="BoldDuotone" /> },
   { id: 'notifications', path: '/notifications', label: 'Notifications', icon: <Bell size={20} weight="BoldDuotone" /> },
 ];
-
-type SidebarProps = {
-  isOpen: boolean;
-  onClose?: () => void;
-  isExpanded?: boolean;
-};
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, isExpanded = true }) => {
   const collapsed = !isExpanded;

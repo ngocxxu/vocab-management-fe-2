@@ -1,22 +1,12 @@
 'use client';
 
-import type { TLanguageFolder } from './LanguageFolder';
-import type { LanguageFolderFormData } from './LanguageFolderForm';
-import type { ResponseAPI, TLanguage } from '@/types';
+import type { EditFolderDialogProps, LanguageFolderFormData } from '@/types/language-folder';
 import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { updateLanguageFolder } from '@/actions/language-folders';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
 import LanguageFolderForm from './LanguageFolderForm';
-
-type EditFolderDialogProps = {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  folder: TLanguageFolder;
-  onFolderUpdated?: () => void;
-  initialLanguagesData?: ResponseAPI<TLanguage[]>;
-};
 
 const EditFolderDialog = ({ open, onOpenChange, folder, onFolderUpdated, initialLanguagesData }: EditFolderDialogProps) => {
   const [isUpdating, setIsUpdating] = useState(false);

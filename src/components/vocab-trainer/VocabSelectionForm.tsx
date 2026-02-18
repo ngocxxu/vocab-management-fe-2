@@ -2,8 +2,8 @@
 
 import type { ColumnDef } from '@tanstack/react-table';
 import type { VocabFilters } from '@/hooks';
-import type { ResponseAPI, TLanguage } from '@/types';
 import type { TVocabSelectionFolderArray } from '@/types/vocab-selection';
+import type { QuickFilter, VocabSelectionFormProps } from '@/types/vocab-trainer';
 import type { TVocab } from '@/types/vocab-list';
 import { Folder, Magnifer } from '@solar-icons/react/ssr';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -22,17 +22,6 @@ import { DataTable } from '@/components/ui/table';
 import { useApiPagination, useLocalPagination, useVocabSelection } from '@/hooks';
 import { cn } from '@/libs/utils';
 import { getMasteryLevel } from '@/utils/vocab-mastery';
-
-type VocabSelectionFormProps = {
-  selectedIds: string[];
-  initialLanguagesData?: ResponseAPI<TLanguage[]>;
-  open?: boolean;
-  cachedLanguageFolders?: TVocabSelectionFolderArray;
-  onLanguageFoldersLoaded?: (folders: TVocabSelectionFolderArray) => void;
-  editMode?: boolean;
-};
-
-type QuickFilter = 'all' | 'recent' | 'difficult' | 'unlearned';
 
 const EMPTY_CACHED_FOLDERS: TVocabSelectionFolderArray = [];
 

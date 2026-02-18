@@ -1,6 +1,6 @@
 'use client';
 
-import type { ResponseAPI, TLanguage } from '@/types';
+import type { VocabLanguageFormProps } from '@/types/vocab-list';
 import { QuestionCircle } from '@solar-icons/react/ssr';
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
@@ -13,15 +13,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-
-type Language = {
-  code: string;
-  name: string;
-};
-
-type VocabLanguageFormProps = {
-  initialLanguagesData?: ResponseAPI<TLanguage[]>;
-};
+import type { TLanguage } from '@/types';
 
 const VocabLanguageForm: React.FC<VocabLanguageFormProps> = ({ initialLanguagesData }) => {
   const form = useFormContext();
@@ -74,7 +66,7 @@ const VocabLanguageForm: React.FC<VocabLanguageFormProps> = ({ initialLanguagesD
                           </SelectItem>
                         )
                       : (
-                          languages?.filter(language => language.code !== targetLanguageCode).map((language: Language) => (
+                          languages?.filter(language => language.code !== targetLanguageCode).map((language: TLanguage) => (
                             <SelectItem key={language.code} value={language.code}>
                               {language.name}
                             </SelectItem>
@@ -122,7 +114,7 @@ const VocabLanguageForm: React.FC<VocabLanguageFormProps> = ({ initialLanguagesD
                           </SelectItem>
                         )
                       : (
-                          languages?.filter(language => language.code !== sourceLanguageCode).map((language: Language) => (
+                          languages?.filter(language => language.code !== sourceLanguageCode).map((language: TLanguage) => (
                             <SelectItem key={language.code} value={language.code}>
                               {language.name}
                             </SelectItem>

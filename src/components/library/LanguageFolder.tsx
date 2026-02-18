@@ -19,20 +19,7 @@ import { Button } from '../ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
 import EditFolderDialog from './EditFolderDialog';
 
-export type TLanguageFolder = {
-  id: string;
-  name: string;
-  sourceLanguageCode: string;
-  targetLanguageCode: string;
-  folderColor: string;
-};
-
-type LanguageFolderProps = {
-  folder: TLanguageFolder;
-  onFolderClick: (folder: TLanguageFolder) => void;
-  onFolderUpdated?: () => void;
-  onFolderDeleted?: () => void;
-};
+import type { LanguageFolderProps } from '@/types/language-folder';
 
 const LanguageFolder = ({ folder, onFolderClick, onFolderUpdated, onFolderDeleted }: LanguageFolderProps) => {
   const [isDeleting, setIsDeleting] = useState(false);

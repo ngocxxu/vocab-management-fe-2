@@ -4,12 +4,7 @@ import React from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 
-type ExamErrorStateProps = {
-  error: string | null;
-  onBackToTrainers: () => void;
-  variant?: 'fullscreen' | 'inline';
-  fallbackMessage?: string;
-};
+import type { ExamErrorStateProps } from '@/types';
 
 const ExamErrorState: React.FC<ExamErrorStateProps> = ({
   error,

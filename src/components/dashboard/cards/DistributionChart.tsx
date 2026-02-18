@@ -1,5 +1,6 @@
 'use client';
 
+import type { DistributionChartProps, DistributionChartTooltipProps } from '@/types';
 import type { MasteryDistribution } from '@/types/statistics';
 import React from 'react';
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
@@ -23,12 +24,7 @@ function aggregateToBars(data: MasteryDistribution[]): { name: string; count: nu
   });
 }
 
-type TooltipProps = {
-  active?: boolean;
-  payload?: Array<{ payload: { name: string; count: number } }>;
-};
-
-const CustomTooltip = ({ active, payload }: TooltipProps) => {
+const CustomTooltip = ({ active, payload }: DistributionChartTooltipProps) => {
   if (active && payload?.length && payload[0]) {
     const { name, count } = payload[0].payload;
     return (
@@ -42,10 +38,6 @@ const CustomTooltip = ({ active, payload }: TooltipProps) => {
     );
   }
   return null;
-};
-
-type DistributionChartProps = {
-  data: MasteryDistribution[];
 };
 
 export const DistributionChart: React.FC<DistributionChartProps> = ({ data }) => {

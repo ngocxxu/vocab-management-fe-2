@@ -1,52 +1,12 @@
 'use client';
 
-import type { ResponseAPI, TLanguage } from '@/types';
-import type { TSubjectResponse } from '@/types/subject';
-import type { TVocab } from '@/types/vocab-list';
-import type { TWordTypeResponse } from '@/types/word-type';
+import type { AddVocabDialogProps } from '@/types/vocab-list';
 import { RefreshCircle } from '@solar-icons/react/ssr';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import VocabLanguageForm from './VocabLanguageForm';
 import TextTargetTabs from './TextTargetTabs';
-
-type VocabFormData = {
-  textSource: string;
-  sourceLanguageCode: string;
-  targetLanguageCode: string;
-  textTargets: Array<{
-    id: string;
-    wordTypeId?: string;
-    textTarget: string;
-    grammar: string;
-    explanationSource: string;
-    explanationTarget: string;
-    subjectIds: string[];
-    vocabExamples: Array<{ id: string; source: string; target: string }>;
-  }>;
-};
-
-type AddVocabDialogProps = {
-  formData: VocabFormData;
-  activeTab: string;
-  onInputChange: (field: string, value: string, targetIndex?: number) => void;
-  onExampleChange: (exampleIndex: number, field: 'source' | 'target', value: string, targetIndex: number) => void;
-  onAddExample: (targetIndex: number) => void;
-  onRemoveExample: (exampleIndex: number, targetIndex: number) => void;
-  onAddTextTarget: () => void;
-  onRemoveTextTarget: (index: number) => void;
-  onActiveTabChange: (value: string) => void;
-  onSubmit: () => Promise<void>;
-  onReset: () => void; // Add reset function prop
-  open: boolean;
-  setOpen: (open: boolean) => void;
-  editMode?: boolean;
-  editingItem?: TVocab | null;
-  initialSubjectsData?: TSubjectResponse;
-  initialLanguagesData?: ResponseAPI<TLanguage[]>;
-  initialWordTypesData?: TWordTypeResponse;
-};
 
 const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
   formData,

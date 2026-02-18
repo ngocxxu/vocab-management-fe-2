@@ -7,11 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { getExamUrl } from '@/constants/vocab-trainer';
 import { EQuestionType } from '@/enum/vocab-trainer';
-
-type ExamLauncherProps = {
-  trainerId: string;
-  questionType: EQuestionType;
-};
+import type { ExamLauncherProps } from '@/types/vocab-trainer';
 
 const COOLDOWN_DURATION_MS = 60000;
 const GLOBAL_STORAGE_KEY = 'play_button_last_click_global';

@@ -1,24 +1,11 @@
 'use client';
 
+import type { VocabTrainerHeaderProps } from '@/types/vocab-trainer';
 import { AddCircle, Filter } from '@solar-icons/react/ssr';
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { MultiSelect } from '@/components/ui/multi-select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-
-type VocabTrainerHeaderProps = {
-  totalCount: number;
-  onAddTrainer: () => void;
-  // Filter related props
-  statusOptions: Array<{ value: string; label: string }>;
-  selectedStatuses: string[];
-  onStatusFilterChange: (statuses: string[]) => void;
-  questionTypeOptions: Array<{ value: string; label: string }>;
-  selectedQuestionTypes: string[];
-  onQuestionTypeFilterChange: (questionTypes: string[]) => void;
-  onClearFilters: () => void;
-  hasActiveFilters: boolean;
-};
 
 const VocabTrainerHeader: React.FC<VocabTrainerHeaderProps> = ({
   totalCount,

@@ -12,16 +12,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-export type LibrarySortOption = 'recent' | 'name';
+import type { LibrarySearchProps, LibrarySortOption } from '@/types/language-folder';
 
-type LibrarySearchProps = {
-  searchQuery: string;
-  onSearchChange: (query: string) => void;
-  sortBy: 'updatedAt' | 'name';
-  sortOrder: 'asc' | 'desc';
-  onSortChange: (sortBy: 'updatedAt' | 'name', sortOrder: 'asc' | 'desc') => void;
-  placeholder?: string;
-};
+export type { LibrarySortOption };
 
 const SORT_VALUE_RECENT = 'updatedAt-desc';
 const SORT_VALUE_NAME = 'name-asc';

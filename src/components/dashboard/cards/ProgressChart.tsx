@@ -1,25 +1,13 @@
 'use client';
 
-import type { ProgressOverTime } from '@/types/statistics';
+import type { ProgressChartProps, ProgressChartTooltipProps } from '@/types';
 import React from 'react';
 import { Area, CartesianGrid, ComposedChart, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useTheme } from '@/hooks/useTheme';
 
-type TooltipProps = {
-  active?: boolean;
-  payload?: Array<{
-    payload: {
-      date: string;
-      averageMastery: number;
-      [key: string]: unknown;
-    };
-    [key: string]: unknown;
-  }>;
-};
-
-const CustomTooltip = ({ active, payload }: TooltipProps) => {
+const CustomTooltip = ({ active, payload }: ProgressChartTooltipProps) => {
   if (active && payload?.length && payload[0]) {
     const firstPayload = payload[0];
     const data = firstPayload.payload;
@@ -45,10 +33,6 @@ const formatDate = (dateString: string): string => {
   const month = date.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
   const day = date.getDate().toString().padStart(2, '0');
   return `${month} ${day}`;
-};
-
-type ProgressChartProps = {
-  data: ProgressOverTime[];
 };
 
 const LINE_COLOR_LIGHT = '#1A73E8';

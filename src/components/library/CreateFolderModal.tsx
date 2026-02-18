@@ -1,19 +1,13 @@
 'use client';
 
-import type { LanguageFolderFormData } from './LanguageFolderForm';
-import type { ResponseAPI, TLanguage } from '@/types';
-import type { TCreateLanguageFolder } from '@/types/language-folder';
+import type {
+  CreateFolderModalProps,
+  LanguageFolderFormData,
+} from '@/types/language-folder';
 import React, { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import LanguageFolderForm from './LanguageFolderForm';
-
-type CreateFolderModalProps = {
-  isOpen: boolean;
-  onClose: () => void;
-  onCreateFolder: (folderData: TCreateLanguageFolder) => Promise<void>;
-  initialLanguagesData?: ResponseAPI<TLanguage[]>;
-};
 
 const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
   isOpen,

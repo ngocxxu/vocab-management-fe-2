@@ -1,6 +1,5 @@
 'use client';
 
-import type { ResponseAPI, TLanguage } from '@/types';
 import React, { useCallback, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ColorPicker } from '@/components/ui/color-picker';
@@ -9,26 +8,13 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/libs/utils';
 
-export type LanguageFolderFormData = {
-  name: string;
-  folderColor: string;
-  sourceLanguageCode: string;
-  targetLanguageCode: string;
-};
+import type {
+  LanguageFolderFormData,
+  LanguageFolderFormErrors,
+  LanguageFolderFormProps,
+} from '@/types/language-folder';
 
-export type LanguageFolderFormErrors = Partial<LanguageFolderFormData>;
-
-type LanguageFolderFormProps = {
-  initialData?: Partial<LanguageFolderFormData>;
-  onSubmit: (data: LanguageFolderFormData) => Promise<void>;
-  onCancel: () => void;
-  submitButtonText?: string;
-  cancelButtonText?: string;
-  isSubmitting?: boolean;
-  showAutoGenerate?: boolean;
-  className?: string;
-  initialLanguagesData?: ResponseAPI<TLanguage[]>;
-};
+export type { LanguageFolderFormData, LanguageFolderFormErrors };
 
 const LanguageFolderForm: React.FC<LanguageFolderFormProps> = ({
   initialData = {},

@@ -1,18 +1,11 @@
 'use client';
 
+import type { TranslationAudioResultsProps } from '@/types/vocab-trainer';
 import { AltArrowLeft, CheckCircle, ClockCircle } from '@solar-icons/react/ssr';
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import MarkdownReport from './MarkdownReport';
-
-type TranslationAudioResultsProps = {
-  trainerId: string;
-  transcript?: string;
-  markdownReport?: string;
-  timeElapsed: number;
-  onBackToTrainers: () => void;
-};
 
 const TranslationAudioResults: React.FC<TranslationAudioResultsProps> = ({
   trainerId,

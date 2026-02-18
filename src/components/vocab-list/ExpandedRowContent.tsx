@@ -1,6 +1,6 @@
 'use client';
 
-import type { TExamples, TVocab } from '@/types/vocab-list';
+import type { ExpandedRowContentProps, TExamples, TVocab } from '@/types/vocab-list';
 import {
   AltArrowUp,
   Pen,
@@ -10,18 +10,6 @@ import React, { useCallback } from 'react';
 import { useSpeechSynthesis } from 'react-speech-kit';
 import { Button } from '@/components/ui/button';
 import { selectVoiceByCode } from '@/utils/textToSpeech';
-
-type ExpandedRowContentProps = {
-  vocab: TVocab;
-  columnsCount: number;
-  className?: string;
-  showGrammar?: boolean;
-  showExplanations?: boolean;
-  showSubjects?: boolean;
-  showExamples?: boolean;
-  onCollapse?: () => void;
-  onEdit?: (vocab: TVocab, textTargetIndex?: number) => void;
-};
 
 function boldVocabInSentence(sentence: string, word: string): React.ReactNode {
   if (!word.trim()) {

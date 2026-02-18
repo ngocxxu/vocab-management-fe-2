@@ -1,36 +1,14 @@
 'use client';
 
-import type { EQuestionType } from '@/enum/vocab-trainer';
-import type { ResponseAPI, TLanguage } from '@/types';
-import type { TVocabSelectionFolderArray } from '@/types/vocab-selection';
-import type { TVocabTrainer } from '@/types/vocab-trainer';
 import { RefreshCircle } from '@solar-icons/react/ssr';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import type {
+  AddVocabTrainerDialogProps,
+} from '@/types/vocab-trainer';
 import TrainerBasicInfoForm from './TrainerBasicInfoForm';
 import VocabSelectionForm from './VocabSelectionForm';
-
-type VocabTrainerFormData = {
-  name: string;
-  questionType: EQuestionType;
-  setCountTime: number;
-  reminderDisabled: boolean;
-  vocabAssignmentIds: string[];
-};
-
-type AddVocabTrainerDialogProps = {
-  formData: VocabTrainerFormData;
-  onSubmit: () => Promise<void>;
-  onReset: () => void;
-  open: boolean;
-  setOpen: (open: boolean) => void;
-  editMode?: boolean;
-  editingItem?: TVocabTrainer | null;
-  initialLanguagesData?: ResponseAPI<TLanguage[]>;
-  cachedLanguageFolders?: TVocabSelectionFolderArray;
-  onLanguageFoldersLoaded?: (folders: TVocabSelectionFolderArray) => void;
-};
 
 const EST_MINUTES_PER_WORD = 0.5;
 

@@ -1,26 +1,17 @@
 'use client';
 
 import type { Socket } from 'socket.io-client';
-import type { TUser } from '@/types/auth';
+import type { SocketContextType, SocketProviderProps, TUser } from '@/types';
 import React, { createContext, useEffect, useMemo, useState } from 'react';
 import { io } from 'socket.io-client';
 import { verifyUser } from '@/actions';
 import { Env } from '@/libs/Env';
 import { logger } from '@/libs/Logger';
 
-type SocketContextType = {
-  socket: Socket | null;
-  isConnected: boolean;
-};
-
 const SocketContext = createContext<SocketContextType>({
   socket: null,
   isConnected: false,
 });
-
-type SocketProviderProps = {
-  children: React.ReactNode;
-};
 
 export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   const [socket, setSocket] = useState<Socket | null>(null);

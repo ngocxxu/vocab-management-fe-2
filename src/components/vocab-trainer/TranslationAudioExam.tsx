@@ -1,6 +1,11 @@
 'use client';
 
-import type { TFormTestVocabTrainerTranslationAudio, TQuestionAPI, TTranslationAudioDialogue } from '@/types/vocab-trainer';
+import type {
+  TFormTestVocabTrainerTranslationAudio,
+  TranslationAudioExamProps,
+  TranslationAudioExamState,
+  TTranslationAudioDialogue,
+} from '@/types/vocab-trainer';
 import { CheckCircle, RefreshCircle } from '@solar-icons/react/ssr';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -15,18 +20,11 @@ import AudioRecorder from './AudioRecorder';
 import DialogueDisplay from './DialogueDisplay';
 import VocabExamHeader from './VocabExamHeader';
 
-type TranslationAudioExamProps = {
-  trainerId: string;
-  examData: TQuestionAPI;
-};
-
-type ExamState = 'taking' | 'recording' | 'uploading' | 'submitting' | 'evaluating' | 'completed' | 'error';
-
 const TranslationAudioExam: React.FC<TranslationAudioExamProps> = ({ trainerId, examData }) => {
   const router = useRouter();
   const [timeRemaining, setTimeRemaining] = useState(() => examData.setCountTime || 900);
   const [timeElapsed, setTimeElapsed] = useState(0);
-  const [examState, setExamState] = useState<ExamState>('taking');
+  const [examState, setExamState] = useState<TranslationAudioExamState>('taking');
   const [error, setError] = useState<string | null>(null);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const [fileId, setFileId] = useState<string | null>(null);

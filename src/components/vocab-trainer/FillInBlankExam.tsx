@@ -1,6 +1,11 @@
 'use client';
 
-import type { TFormTestVocabTrainerFillInBlank, TQuestionAPI, TWordTestInput } from '@/types/vocab-trainer';
+import type {
+  ExamState,
+  FillInBlankExamProps,
+  TFormTestVocabTrainerFillInBlank,
+  TWordTestInput,
+} from '@/types/vocab-trainer';
 import {
   AltArrowLeft,
   AltArrowRight,
@@ -18,13 +23,6 @@ import { logger } from '@/libs/Logger';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 import FillInBlankCard from './FillInBlankCard';
 import VocabExamHeader from './VocabExamHeader';
-
-type FillInBlankExamProps = {
-  trainerId: string;
-  examData: TQuestionAPI;
-};
-
-type ExamState = 'taking' | 'submitting' | 'completed' | 'error';
 
 const FillInBlankExam: React.FC<FillInBlankExamProps> = ({ trainerId, examData }) => {
   const router = useRouter();

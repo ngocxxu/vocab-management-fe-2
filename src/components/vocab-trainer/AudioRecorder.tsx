@@ -1,5 +1,6 @@
 'use client';
 
+import type { AudioRecorderProps } from '@/types/vocab-trainer';
 import {
   Microphone,
   Pause,
@@ -11,11 +12,6 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-
-type AudioRecorderProps = {
-  onRecordingComplete: (audioBlob: Blob) => void;
-  onReset: () => void;
-};
 
 const AudioRecorder: React.FC<AudioRecorderProps> = ({ onRecordingComplete, onReset }) => {
   const [isRecording, setIsRecording] = useState(false);

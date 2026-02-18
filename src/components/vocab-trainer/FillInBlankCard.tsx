@@ -1,6 +1,6 @@
 'use client';
 
-import type { TQuestion } from '@/types/vocab-trainer';
+import type { FillInBlankCardProps } from '@/types/vocab-trainer';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Input } from '@/components/ui/input';
 
@@ -22,14 +22,6 @@ function parseContentWithQuotedHighlight(content: string): React.ReactNode {
     return segment;
   });
 }
-
-type FillInBlankCardProps = {
-  question: TQuestion;
-  questionNumber: number;
-  selectedAnswer: string | null;
-  onAnswerSelect: (answer: string) => void;
-  handleKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => void;
-};
 
 const FillInBlankCard: React.FC<FillInBlankCardProps> = ({
   question,

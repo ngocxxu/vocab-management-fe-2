@@ -1,6 +1,6 @@
 'use client';
 
-import type { TNotification } from '@/types/notification';
+import type { NotificationsPageContentProps, NotificationWithRead } from '@/types/notification';
 import { Bell, VolumeLoud } from '@solar-icons/react/ssr';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -9,15 +9,6 @@ import { Button } from '@/components/ui/button';
 import { NotificationItem } from './NotificationItem';
 import { NotificationsSidebar } from './NotificationsSidebar';
 import { groupNotificationsByDate } from './utils';
-
-type NotificationWithRead = {
-  notification: TNotification;
-  isRead: boolean;
-};
-
-type NotificationsPageContentProps = Readonly<{
-  notificationsWithRead: NotificationWithRead[];
-}>;
 
 const SECTION_LABELS = {
   today: 'TODAY',

@@ -2,10 +2,11 @@
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import type { TopProblematicVocab } from '@/types/statistics';
 import type { TTextTarget } from '@/types/vocab-list';
 import Link from 'next/link';
 import React from 'react';
+
+import type { ProblematicVocabsTableProps } from '@/types';
 
 function getErrorRateColor(pct: number): string {
   if (pct >= 60) {
@@ -41,10 +42,6 @@ function getCategory(target: TTextTarget | undefined): string {
   const subject = target?.textTargetSubjects?.[0]?.subject?.name;
   return subject ?? '—';
 }
-
-type ProblematicVocabsTableProps = {
-  data: TopProblematicVocab[];
-};
 
 export const ProblematicVocabsTable: React.FC<ProblematicVocabsTableProps> = ({ data }) => {
   if (!data || data.length === 0) {

@@ -1,16 +1,9 @@
 'use client';
 
-import type { TFlipCardQuestion } from '@/types/vocab-trainer';
+import type { FlipCardProps } from '@/types/vocab-trainer';
 import { VolumeLoud } from '@solar-icons/react/ssr';
 import React from 'react';
 import { Button } from '@/components/ui/button';
-
-type FlipCardProps = {
-  question: TFlipCardQuestion;
-  isFlipped: boolean;
-  onFlip: () => void;
-  onPlayAudio?: () => void;
-};
 
 const FlipCard: React.FC<FlipCardProps> = ({
   question,

@@ -1,14 +1,11 @@
 'use client';
 
+import type { MarkdownReportProps } from '@/types/vocab-trainer';
 import { CheckCircle, Copy } from '@solar-icons/react/ssr';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-
-type MarkdownReportProps = {
-  markdown: string;
-};
 
 const MarkdownReport: React.FC<MarkdownReportProps> = ({ markdown }) => {
   const [copied, setCopied] = useState(false);

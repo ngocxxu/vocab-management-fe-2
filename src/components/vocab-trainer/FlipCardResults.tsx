@@ -1,18 +1,12 @@
 'use client';
 
-import type { TFlipCardExamData } from '@/types/vocab-trainer';
+import type { FlipCardResultsProps } from '@/types/vocab-trainer';
 import { AltArrowLeft, CheckCircle, ClockCircle, CloseCircle, MedalStar, Target } from '@solar-icons/react/ssr';
 import React from 'react';
 import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-
-type FlipCardResultsProps = {
-  trainerId: string;
-  examData: TFlipCardExamData;
-  onBackToTrainers: () => void;
-};
 
 const FlipCardResults: React.FC<FlipCardResultsProps> = ({
   examData,

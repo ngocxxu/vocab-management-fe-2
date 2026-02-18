@@ -1,17 +1,12 @@
 'use client';
 
-import type { VocabQueryParams } from '@/utils/api-config';
+import type { ExportExcelButtonProps } from '@/types/vocab-list';
 import { Download } from '@solar-icons/react/ssr';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import * as XLSX from 'xlsx';
 import { exportVocabsCsv } from '@/actions/vocabs';
 import { Button } from '@/components/ui/button';
-
-type ExportExcelButtonProps = {
-  queryParams: VocabQueryParams;
-  disabled?: boolean;
-};
 
 const ExportExcelButton: React.FC<ExportExcelButtonProps> = ({ queryParams, disabled }) => {
   const [isLoading, setIsLoading] = useState(false);

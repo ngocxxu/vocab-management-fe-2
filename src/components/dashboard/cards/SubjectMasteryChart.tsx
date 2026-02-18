@@ -1,14 +1,10 @@
 'use client';
 
-import type { MasteryBySubject } from '@/types/statistics';
+import type { SubjectMasteryChartProps } from '@/types';
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const BAR_COLOR = '#1A73E8';
-
-type SubjectMasteryChartProps = {
-  data: MasteryBySubject[];
-};
 
 export const SubjectMasteryChart: React.FC<SubjectMasteryChartProps> = ({ data }) => {
   if (!data || data.length === 0) {

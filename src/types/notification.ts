@@ -1,3 +1,4 @@
+import type React from 'react';
 import type { TNotificationData } from './notification-data';
 
 // Notification types based on backend Prisma schema
@@ -86,3 +87,59 @@ export type TUpdateNotificationStatusInput = {
   isRead?: boolean;
   isDeleted?: boolean;
 };
+
+export type NotificationDropdownData = {
+  items: TNotification[];
+  currentPage: number;
+  totalItems: number;
+  totalPages: number;
+};
+
+export type NotificationDropdownProps = {
+  className?: string;
+  allNotifications?: NotificationDropdownData | null;
+  unreadNotifications?: NotificationDropdownData | null;
+  unreadCount?: TUnreadCountResponse | null;
+  isLoading?: boolean;
+  error?: string | null;
+};
+
+export type NotificationWithReadStatus = TNotification & {
+  isRead: boolean;
+};
+
+export type NotificationWithRead = {
+  notification: TNotification;
+  isRead: boolean;
+};
+
+export type NotificationItemProps = {
+  itemIndex: number;
+  notification: TNotification;
+  isRead: boolean;
+  onMarkAsRead?: () => void;
+  onDelete?: () => void;
+  variant?: 'dropdown' | 'page';
+};
+
+export type NotificationListProps = {
+  notifications: NotificationWithReadStatus[];
+  isLoading: boolean;
+  onMarkAsRead: () => void;
+  onDelete: () => void;
+};
+
+export type NotificationTabContentProps = {
+  notifications: NotificationWithReadStatus[];
+  isLoading: boolean;
+  displayedCount: number;
+  totalCount: number;
+  scrollAreaRef: React.RefObject<HTMLDivElement | null>;
+  onScroll: (e: React.UIEvent<HTMLDivElement>) => void;
+  onMarkAsRead: () => void;
+  onDelete: () => void;
+};
+
+export type NotificationsPageContentProps = Readonly<{
+  notificationsWithRead: NotificationWithRead[];
+}>;

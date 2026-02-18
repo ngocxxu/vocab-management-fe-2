@@ -12,9 +12,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { useTheme } from '@/hooks/useTheme';
-import type { ResponseAPI } from '@/types';
-import type { TUser } from '@/types/auth';
-import type { TNotification, TUnreadCountResponse } from '@/types/notification';
+import type { HeaderProps, TUser } from '@/types';
 import {
   HamburgerMenu,
   Logout,
@@ -27,16 +25,6 @@ import {
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
-
-type HeaderProps = {
-  onSidebarToggle: () => void;
-  isSidebarExpanded?: boolean;
-  allNotifications?: ResponseAPI<TNotification[]> | null;
-  unreadNotifications?: ResponseAPI<TNotification[]> | null;
-  unreadCount?: TUnreadCountResponse | null;
-  isLoading?: boolean;
-  error?: string | null;
-};
 
 export const Header: React.FC<HeaderProps> = ({
   onSidebarToggle,

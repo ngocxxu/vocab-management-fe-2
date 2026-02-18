@@ -4,9 +4,7 @@ import { AddCircle } from '@solar-icons/react/ssr';
 import React, { useCallback } from 'react';
 import { cn } from '@/libs/utils';
 
-type CreateFolderCardProps = {
-  onCreateFolder: () => void;
-};
+import type { CreateFolderCardProps } from '@/types/language-folder';
 
 const CreateFolderCard: React.FC<CreateFolderCardProps> = ({ onCreateFolder }) => {
   const handleClick = useCallback(() => {

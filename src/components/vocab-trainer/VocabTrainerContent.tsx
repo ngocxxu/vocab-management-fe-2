@@ -1,5 +1,4 @@
-import type { ResponseAPI, TLanguage } from '@/types';
-import type { TVocabTrainer } from '@/types/vocab-trainer';
+import type { VocabTrainerContentProps } from '@/types/vocab-trainer';
 import Link from 'next/link';
 import React from 'react';
 import {
@@ -11,11 +10,6 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { VocabTrainerList } from './index';
-
-type VocabTrainerContentProps = {
-  initialData?: ResponseAPI<TVocabTrainer[]>;
-  initialLanguagesData?: ResponseAPI<TLanguage[]>;
-};
 
 const VocabTrainerContent: React.FC<VocabTrainerContentProps> = ({ initialData, initialLanguagesData }) => {
   return (

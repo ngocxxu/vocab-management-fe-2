@@ -2,10 +2,7 @@
 
 import React from 'react';
 
-type ErrorStateProps = {
-  message: string;
-  className?: string;
-};
+import type { ErrorStateProps } from '@/types';
 
 const ErrorState: React.FC<ErrorStateProps> = ({ message, className = '' }) => {
   return (

@@ -1,7 +1,4 @@
-import type { ResponseAPI, TLanguage, TLanguageFolder } from '@/types';
-import type { TSubjectResponse } from '@/types/subject';
-import type { TVocab } from '@/types/vocab-list';
-import type { TWordTypeResponse } from '@/types/word-type';
+import type { VocabListContentProps } from '@/types/vocab-list';
 import Link from 'next/link';
 import React from 'react';
 import {
@@ -13,14 +10,6 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { VocabList } from './index';
-
-type VocabListContentProps = {
-  initialVocabsData?: ResponseAPI<TVocab[]>;
-  initialLanguageFolderData?: TLanguageFolder;
-  initialSubjectsData?: TSubjectResponse;
-  initialLanguagesData?: ResponseAPI<TLanguage[]>;
-  initialWordTypesData?: TWordTypeResponse;
-};
 
 const VocabListContent: React.FC<VocabListContentProps> = ({
   initialVocabsData,

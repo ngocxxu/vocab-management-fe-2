@@ -1,13 +1,7 @@
-import type { ResponseAPI, TLanguage } from '@/types';
-import type { TVocabTrainer } from '@/types/vocab-trainer';
+import type { VocabTrainerLayoutProps } from '@/types/vocab-trainer';
 import React, { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import VocabTrainerContent from './VocabTrainerContent';
-
-type VocabTrainerLayoutProps = {
-  initialData?: ResponseAPI<TVocabTrainer[]>;
-  initialLanguagesData?: ResponseAPI<TLanguage[]>;
-};
 
 const VocabTrainerLayout: React.FC<VocabTrainerLayoutProps> = ({ initialData, initialLanguagesData }) => {
   return (

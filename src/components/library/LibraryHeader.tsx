@@ -4,9 +4,7 @@ import { AddCircle } from '@solar-icons/react/ssr';
 import React, { memo, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 
-type LibraryHeaderProps = {
-  onCreateFolder: () => void;
-};
+import type { LibraryHeaderProps } from '@/types/language-folder';
 
 const LibraryHeader: React.FC<LibraryHeaderProps> = memo(({
   onCreateFolder,

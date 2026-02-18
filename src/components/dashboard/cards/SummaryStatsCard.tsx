@@ -1,7 +1,7 @@
 'use client';
 
 import { Card, CardContent } from '@/components/ui/card';
-import type { MasterySummary } from '@/types/statistics';
+import type { SummaryStatsCardProps, SummaryStatsMetricCardProps, TrendConfig } from '@/types';
 import {
   AltArrowDown,
   AltArrowUp,
@@ -12,20 +12,6 @@ import {
   Star,
 } from '@solar-icons/react/ssr';
 import React from 'react';
-
-type TrendConfig = {
-  text: string;
-  icon: 'arrowUp' | 'arrowDown' | 'clock';
-  color: 'success' | 'muted' | 'destructive';
-};
-
-type MetricCardProps = {
-  title: string;
-  value: React.ReactNode;
-  icon: React.ReactNode;
-  iconBgClass: string;
-  trend?: TrendConfig;
-};
 
 const trendIconMap = {
   arrowUp: AltArrowUp,
@@ -39,7 +25,7 @@ const trendPillClass: Record<TrendConfig['color'], string> = {
   destructive: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
 };
 
-const MetricCard: React.FC<MetricCardProps> = ({
+const MetricCard: React.FC<SummaryStatsMetricCardProps> = ({
   title,
   value,
   icon,
@@ -72,10 +58,6 @@ const MetricCard: React.FC<MetricCardProps> = ({
       </CardContent>
     </Card>
   );
-};
-
-type SummaryStatsCardProps = {
-  data: MasterySummary;
 };
 
 export const SummaryStatsCard: React.FC<SummaryStatsCardProps> = ({ data }) => {

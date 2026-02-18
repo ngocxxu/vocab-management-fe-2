@@ -1,18 +1,7 @@
-import type { ResponseAPI, TLanguage, TLanguageFolder } from '@/types';
-import type { TSubjectResponse } from '@/types/subject';
-import type { TVocab } from '@/types/vocab-list';
-import type { TWordTypeResponse } from '@/types/word-type';
+import type { VocabListLayoutProps } from '@/types/vocab-list';
 import React, { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import VocabListContent from './VocabListContent';
-
-type VocabListLayoutProps = {
-  initialVocabsData?: ResponseAPI<TVocab[]>;
-  initialLanguageFolderData?: TLanguageFolder;
-  initialSubjectsData?: TSubjectResponse;
-  initialLanguagesData?: ResponseAPI<TLanguage[]>;
-  initialWordTypesData?: TWordTypeResponse;
-};
 
 const VocabListLayout: React.FC<VocabListLayoutProps> = ({
   initialVocabsData,

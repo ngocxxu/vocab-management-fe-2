@@ -3,10 +3,7 @@ import { AddCircle, Folder } from '@solar-icons/react/ssr';
 import React from 'react';
 import { Button } from '@/components/ui/button';
 
-type LibraryEmptyStateProps = {
-  searchQuery: string;
-  onCreateFolder: () => void;
-};
+import type { LibraryEmptyStateProps } from '@/types/language-folder';
 
 const LibraryEmptyState: React.FC<LibraryEmptyStateProps> = ({ searchQuery, onCreateFolder }) => {
   return (

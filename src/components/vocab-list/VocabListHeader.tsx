@@ -1,7 +1,6 @@
 'use client';
 
-import type { TLanguageFolder } from '@/types/language-folder';
-import type { VocabQueryParams } from '@/utils/api-config';
+import type { VocabListHeaderProps } from '@/types/vocab-list';
 import { AddCircle, Filter, Folder, Upload } from '@solar-icons/react/ssr';
 import React from 'react';
 import { Button } from '@/components/ui/button';
@@ -11,24 +10,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { getLanguageName } from '../library/utils';
 import DownloadTemplateButton from './DownloadTemplateButton';
 import ExportExcelButton from './ExportExcelButton';
-
-type VocabListHeaderProps = {
-  totalCount: number;
-  onAddVocab: () => void;
-  onImportExcel: () => void;
-  sourceLanguageCode: string;
-  targetLanguageCode: string;
-  languageFolder?: TLanguageFolder;
-  isFolderLoading?: boolean;
-  // Filter related props
-  subjects: Array<{ id: string; name: string }>;
-  isSubjectsLoading: boolean;
-  selectedSubjectIds: string[];
-  onSubjectFilterChange: (subjectIds: string[]) => void;
-  onClearFilters: () => void;
-  hasActiveFilters: boolean;
-  queryParams: VocabQueryParams;
-};
 
 const VocabListHeader: React.FC<VocabListHeaderProps> = ({
   totalCount,

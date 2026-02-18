@@ -1,6 +1,6 @@
 'use client';
 
-import type { TCsvImportResponse } from '@/types/vocab-list';
+import type { ImportVocabDialogProps, TCsvImportResponse } from '@/types/vocab-list';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   AddCircle,
@@ -44,15 +44,6 @@ const FormSchema = z.object({
 });
 
 type FormData = z.infer<typeof FormSchema>;
-
-type ImportVocabDialogProps = {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  languageFolderId: string;
-  sourceLanguageCode: string;
-  targetLanguageCode: string;
-  onImportSuccess: () => void;
-};
 
 const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
   open,

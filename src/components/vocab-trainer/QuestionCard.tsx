@@ -1,15 +1,8 @@
 'use client';
 
-import type { TQuestion } from '@/types/vocab-trainer';
+import type { QuestionCardProps } from '@/types/vocab-trainer';
 import React from 'react';
 import { Button } from '@/components/ui/button';
-
-type QuestionCardProps = {
-  question: TQuestion;
-  questionNumber: number;
-  selectedAnswer: string | null;
-  onAnswerSelect: (answer: string) => void;
-};
 
 const QuestionCard: React.FC<QuestionCardProps> = ({
   question,

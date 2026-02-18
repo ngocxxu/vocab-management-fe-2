@@ -1,44 +1,12 @@
 'use client';
 
-import type { ResponseAPI, TLanguage } from '@/types';
-import type { TSubjectResponse } from '@/types/subject';
-import type { TWordTypeResponse } from '@/types/word-type';
+import type { TextTargetTabsProps } from '@/types/vocab-list';
 import { AddCircle, AltArrowRight, CheckCircle, CloseCircle, Target, TrashBin2 } from '@solar-icons/react/ssr';
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/libs/utils';
 import TextTargetForm from './TextTargetForm';
-
-type TextTarget = {
-  id: string;
-  wordTypeId?: string;
-  textTarget: string;
-  grammar: string;
-  explanationSource: string;
-  explanationTarget: string;
-  subjectIds: string[];
-  vocabExamples: Array<{ id: string; source: string; target: string }>;
-};
-
-type TextTargetTabsProps = {
-  variant?: 'default' | 'sidebar' | 'content';
-  textTargets: TextTarget[];
-  activeTab: string;
-  onActiveTabChange: (value: string) => void;
-  onInputChange?: (field: string, value: string, targetIndex?: number) => void;
-  onExampleChange?: (exampleIndex: number, field: 'source' | 'target', value: string, targetIndex: number) => void;
-  onAddExample?: (targetIndex: number) => void;
-  onRemoveExample?: (exampleIndex: number, targetIndex: number) => void;
-  onAddTextTarget?: () => void;
-  onRemoveTextTarget?: (index: number) => void;
-  textSource?: string;
-  sourceLanguageCode?: string;
-  targetLanguageCode?: string;
-  initialSubjectsData?: TSubjectResponse;
-  initialLanguagesData?: ResponseAPI<TLanguage[]>;
-  initialWordTypesData?: TWordTypeResponse;
-};
 
 const TextTargetTabs: React.FC<TextTargetTabsProps> = ({
   variant = 'default',

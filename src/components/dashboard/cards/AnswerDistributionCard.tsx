@@ -1,16 +1,13 @@
 'use client';
 
-import type { MasterySummary } from '@/types/statistics';
 import React from 'react';
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
+import type { AnswerDistributionCardProps } from '@/types';
+
 const CORRECT_COLOR = '#34A853';
 const INCORRECT_COLOR = '#EA4335';
-
-type AnswerDistributionCardProps = {
-  data: MasterySummary;
-};
 
 export const AnswerDistributionCard: React.FC<AnswerDistributionCardProps> = ({ data }) => {
   const total = data.totalCorrect + data.totalIncorrect;

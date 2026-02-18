@@ -1,8 +1,7 @@
 'use client';
 
-import type { EQuestionType } from '@/enum/vocab-trainer';
 import { getQuestionTypeLabel } from '@/constants/vocab-trainer';
-import type { TExamResult, TExamSubmitResponse, TQuestion } from '@/types/vocab-trainer';
+import type { ExamResultsProps, TExamResult } from '@/types/vocab-trainer';
 import {
   AltArrowLeft,
   Calendar,
@@ -19,70 +18,14 @@ import {
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-
-function parseContentWithQuotedHighlight(content: string): React.ReactNode {
-  const parts = content.split('"');
-  if (parts.length === 1) {
-    return content;
-  }
-  return parts.map((segment, i) => {
-    if (i % 2 === 1) {
-      return (
-        <span key={`quote-${segment.slice(0, 20)}-${segment.length}`} className="text-primary">
-          &quot;
-          {segment}
-          &quot;
-        </span>
-      );
-    }
-    return segment;
-  });
-}
+import {
+  formatAvgPerQuestion,
+  formatCompletedAt,
+  formatDurationColon,
+  parseContentWithQuotedHighlight,
+} from '@/utils/exam-results';
 
 const PASS_TARGET_PERCENT = 70;
-
-function formatDurationColon(seconds: number): string {
-  const m = Math.floor(seconds / 60);
-  const s = Math.floor(seconds % 60);
-  return `${m}:${s.toString().padStart(2, '0')}`;
-}
-
-function formatAvgPerQuestion(totalSeconds: number, count: number): string {
-  if (count <= 0) {
-    return 'AVG. — PER QUESTION';
-  }
-  const avg = Math.round(totalSeconds / count);
-  if (avg < 60) {
-    return `AVG. ${avg}S PER QUESTION`;
-  }
-  const mm = Math.floor(avg / 60);
-  const ss = avg % 60;
-  return `AVG. ${mm}M ${ss}S PER QUESTION`;
-}
-
-function formatCompletedAt(value: string | Date | undefined): string {
-  if (!value) {
-    return new Date().toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
-  }
-  const d = typeof value === 'string' ? new Date(value) : value;
-  return d.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
-}
-
-type ExamResultsProps = {
-  trainerId: string;
-  results: TExamSubmitResponse;
-  questions: TQuestion[];
-  selectedAnswers: Map<number, string>;
-  timeElapsed: number;
-  onBackToTrainers: () => void;
-  jobId?: string;
-  completedAt?: string | Date;
-  onRetryExam?: () => void;
-  onExportPdf?: () => void;
-  scoreDelta?: string;
-  durationFasterText?: string;
-  questionType?: EQuestionType;
-};
 
 const CIRCLE_SIZE = 112;
 const CIRCLE_R = 38;

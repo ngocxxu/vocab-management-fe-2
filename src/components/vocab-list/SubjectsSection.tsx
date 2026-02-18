@@ -1,6 +1,6 @@
 'use client';
 
-import type { TSubject } from '@/types/subject';
+import type { SubjectsSectionProps } from '@/types/vocab-list';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import {
@@ -12,13 +12,6 @@ import {
 } from '@/components/ui/form';
 import { MultiSelect } from '@/components/ui/multi-select';
 import { Skeleton } from '@/components/ui/skeleton';
-
-type SubjectsSectionProps = {
-  targetIndex: number;
-  subjects: TSubject[];
-  subjectsLoading: boolean;
-  subjectsError: boolean;
-};
 
 const SubjectsSection: React.FC<SubjectsSectionProps> = React.memo(({
   targetIndex,

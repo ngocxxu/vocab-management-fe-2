@@ -1,15 +1,8 @@
 'use client';
 
+import type { VocabExamHeaderProps } from '@/types/vocab-trainer';
 import { ClockCircle, Target } from '@solar-icons/react/ssr';
 import React from 'react';
-
-type VocabExamHeaderProps = {
-  trainerName: string;
-  currentQuestion: number;
-  totalQuestions: number;
-  timeRemaining: number;
-  level?: string;
-};
 
 const VocabExamHeader: React.FC<VocabExamHeaderProps> = ({
   trainerName,

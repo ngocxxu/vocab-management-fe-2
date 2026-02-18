@@ -1,24 +1,11 @@
 'use client';
 
+import type { ExamplesSectionProps } from '@/types/vocab-list';
 import { AddCircle, CloseCircle } from '@solar-icons/react/ssr';
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '../ui/textarea';
-
-type VocabExample = {
-  id: string;
-  source: string;
-  target: string;
-};
-
-type ExamplesSectionProps = {
-  targetIndex: number;
-  examples: VocabExample[];
-  onExampleChange: (exampleIndex: number, field: 'source' | 'target', value: string, targetIndex: number) => void;
-  onAddExample: (targetIndex: number) => void;
-  onRemoveExample: (exampleIndex: number, targetIndex: number) => void;
-};
 
 const ExamplesSection: React.FC<ExamplesSectionProps> = ({
   targetIndex,

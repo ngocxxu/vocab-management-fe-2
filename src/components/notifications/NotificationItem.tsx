@@ -1,7 +1,7 @@
 'use client';
 
 import type { EQuestionType } from '@/enum/vocab-trainer';
-import type { TNotification } from '@/types/notification';
+import type { NotificationItemProps } from '@/types/notification';
 import { RefreshCircle } from '@solar-icons/react/ssr';
 import { useRouter } from 'next/navigation';
 import React, { useState, useTransition } from 'react';
@@ -19,15 +19,6 @@ import {
   getNotificationIcon,
   getNotificationIconBg,
 } from './utils';
-
-type NotificationItemProps = {
-  itemIndex: number;
-  notification: TNotification;
-  isRead: boolean;
-  onMarkAsRead?: () => void;
-  onDelete?: () => void;
-  variant?: 'dropdown' | 'page';
-};
 
 export const NotificationItem: React.FC<NotificationItemProps> = ({
   itemIndex,

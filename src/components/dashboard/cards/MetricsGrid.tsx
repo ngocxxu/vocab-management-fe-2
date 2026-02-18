@@ -9,16 +9,9 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
-type MetricCardProps = {
-  title: string;
-  value: string;
-  icon: React.ReactNode;
-  iconColor: string;
-  trend?: string;
-  trendColor?: string;
-};
+import type { MetricsGridMetricCardProps } from '@/types';
 
-const MetricCard: React.FC<MetricCardProps> = ({ title, value, icon, iconColor, trend, trendColor }) => (
+const MetricCard: React.FC<MetricsGridMetricCardProps> = ({ title, value, icon, iconColor, trend, trendColor }) => (
   <Card className="group overflow-hidden border-0 bg-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.08)] backdrop-blur-sm transition-all duration-500 hover:scale-[1.02] hover:bg-white/90 hover:shadow-[0_20px_40px_rgb(0,0,0,0.12)] dark:bg-slate-800/80 dark:hover:bg-slate-800/90">
     <CardContent className="p-4 sm:p-6">
       <div className="flex items-center justify-between">

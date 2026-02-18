@@ -3,10 +3,7 @@
 import { RefreshCircle } from '@solar-icons/react/ssr';
 import React from 'react';
 
-type LoadingComponentProps = {
-  title: string;
-  description?: string;
-};
+import type { LoadingComponentProps } from '@/types';
 
 const LoadingComponent: React.FC<LoadingComponentProps> = ({ title, description }) => {
   return (

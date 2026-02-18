@@ -1,12 +1,8 @@
 'use client';
 
-import type { TTranslationAudioDialogue } from '@/types/vocab-trainer';
+import type { DialogueDisplayProps } from '@/types/vocab-trainer';
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-
-type DialogueDisplayProps = {
-  dialogue: TTranslationAudioDialogue[];
-};
 
 const DialogueDisplay: React.FC<DialogueDisplayProps> = ({ dialogue }) => {
   if (!dialogue || dialogue.length === 0) {

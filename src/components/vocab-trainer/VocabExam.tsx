@@ -1,7 +1,12 @@
 'use client';
 
 import { EQuestionType } from '@/enum/vocab-trainer';
-import type { TFormTestVocabTrainer, TQuestionAPI, TWordTestSelect } from '@/types/vocab-trainer';
+import type {
+  ExamState,
+  TFormTestVocabTrainer,
+  TWordTestSelect,
+  VocabExamProps,
+} from '@/types/vocab-trainer';
 import {
   AltArrowLeft,
   AltArrowRight,
@@ -16,13 +21,6 @@ import { Button } from '@/components/ui/button';
 import ExamResults from './ExamResults';
 import QuestionCard from './QuestionCard';
 import VocabExamHeader from './VocabExamHeader';
-
-type VocabExamProps = {
-  trainerId: string;
-  examData: TQuestionAPI;
-};
-
-type ExamState = 'taking' | 'submitting' | 'completed' | 'error';
 
 const VocabExam: React.FC<VocabExamProps> = ({ trainerId, examData }) => {
   const router = useRouter();

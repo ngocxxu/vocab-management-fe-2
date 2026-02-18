@@ -1,7 +1,6 @@
 'use client';
 
-import type { ResponseAPI } from '@/types';
-import type { TNotification, TUnreadCountResponse } from '@/types/notification';
+import type { NotificationDropdownProps } from '@/types/notification';
 import { Bell } from '@solar-icons/react/ssr';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -14,129 +13,8 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/libs/utils';
-import { NotificationItem } from './NotificationItem';
-
-type NotificationDropdownProps = {
-  className?: string;
-  allNotifications?: ResponseAPI<TNotification[]> | null;
-  unreadNotifications?: ResponseAPI<TNotification[]> | null;
-  unreadCount?: TUnreadCountResponse | null;
-  isLoading?: boolean;
-  error?: string | null;
-};
-
-type NotificationWithReadStatus = TNotification & {
-  isRead: boolean;
-};
-
-type NotificationListProps = {
-  notifications: NotificationWithReadStatus[];
-  isLoading: boolean;
-  onMarkAsRead: () => void;
-  onDelete: () => void;
-};
-
-const NotificationList: React.FC<NotificationListProps> = ({
-  notifications,
-  isLoading,
-  onMarkAsRead,
-  onDelete,
-}) => {
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-8">
-        <div className="text-sm text-slate-500 dark:text-slate-400">
-          Loading notifications...
-        </div>
-      </div>
-    );
-  }
-
-  if (notifications.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center py-10 text-center">
-        <div className="relative flex h-28 w-28 items-center justify-center rounded-full bg-slate-100 shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_0_24px_rgba(99,102,241,0.12)] dark:bg-slate-800 dark:shadow-[0_0_0_1px_rgba(255,255,255,0.05),0_0_24px_rgba(99,102,241,0.2)]">
-          <span className="absolute top-4 right-4 h-1.5 w-1.5 rounded-full bg-indigo-400/80 dark:bg-indigo-400" />
-          <span className="absolute top-6 right-6 h-1 w-1 rounded-full bg-indigo-400/60 dark:bg-indigo-500" />
-          <Bell size={52} weight="BoldDuotone" className="text-indigo-600 dark:text-indigo-400" />
-        </div>
-        <h4 className="mt-4 font-semibold text-slate-900 dark:text-white">All caught up!</h4>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-          Check back later for progress updates and reminders.
-        </p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="divide-y">
-      {notifications.map((notification, index) => (
-        <NotificationItem
-          key={notification.id}
-          itemIndex={index}
-          notification={notification}
-          isRead={notification.isRead ?? notification.recipients?.[0]?.isRead ?? false}
-          onMarkAsRead={onMarkAsRead}
-          onDelete={onDelete}
-        />
-      ))}
-    </div>
-  );
-};
-
-type NotificationTabContentProps = {
-  notifications: NotificationWithReadStatus[];
-  isLoading: boolean;
-  displayedCount: number;
-  totalCount: number;
-  scrollAreaRef: React.RefObject<HTMLDivElement | null>;
-  onScroll: (event: React.UIEvent<HTMLDivElement>) => void;
-  onMarkAsRead: () => void;
-  onDelete: () => void;
-};
-
-const NotificationTabContent: React.FC<NotificationTabContentProps> = ({
-  notifications,
-  isLoading,
-  displayedCount,
-  totalCount,
-  scrollAreaRef,
-  onScroll,
-  onMarkAsRead,
-  onDelete,
-}) => {
-  return (
-    <React.Fragment>
-      <ScrollArea
-        className="h-90"
-        ref={scrollAreaRef}
-        onScrollCapture={onScroll}
-      >
-        <NotificationList
-          notifications={notifications}
-          isLoading={isLoading}
-          onMarkAsRead={onMarkAsRead}
-          onDelete={onDelete}
-        />
-      </ScrollArea>
-      {displayedCount < totalCount && (
-        <div className="py-2 text-center text-xs text-slate-500 dark:text-slate-400">
-          Showing
-          {' '}
-          {displayedCount}
-          {' '}
-          of
-          {' '}
-          {totalCount}
-          {' '}
-          notifications
-        </div>
-      )}
-    </React.Fragment>
-  );
-};
+import { NotificationTabContent } from './NotificationTabContent';
 
 export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
   className,

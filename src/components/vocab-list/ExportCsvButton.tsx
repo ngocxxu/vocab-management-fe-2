@@ -1,16 +1,11 @@
 'use client';
 
-import type { VocabQueryParams } from '@/utils/api-config';
+import type { ExportCsvButtonProps } from '@/types/vocab-list';
 import { Download } from '@solar-icons/react/ssr';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { exportVocabsCsv } from '@/actions/vocabs';
 import { Button } from '@/components/ui/button';
-
-type ExportCsvButtonProps = {
-  queryParams: VocabQueryParams;
-  disabled?: boolean;
-};
 
 const ExportCsvButton: React.FC<ExportCsvButtonProps> = ({ queryParams, disabled }) => {
   const [isLoading, setIsLoading] = useState(false);

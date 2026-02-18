@@ -18,7 +18,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/libs/utils';
-import type { TLanguageFolder } from '@/types/language-folder';
+import type { LibraryFolderCardProps } from '@/types/language-folder';
 import { Folder, MenuDots, NotebookMinimalistic, Pen, TrashBin2 } from '@solar-icons/react/ssr';
 import React, { useCallback, useState } from 'react';
 import { formatEditedAgo } from './utils';
@@ -44,13 +44,6 @@ function masteryFillClass(percent: number): string {
   }
   return 'bg-warning';
 }
-
-type LibraryFolderCardProps = {
-  folder: TLanguageFolder;
-  onClick: (folder: TLanguageFolder) => void;
-  onEdit: (folder: TLanguageFolder) => void;
-  onDelete: (folderId: string) => void | Promise<void>;
-};
 
 const LibraryFolderCard: React.FC<LibraryFolderCardProps> = ({
   folder,

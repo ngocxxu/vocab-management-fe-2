@@ -16,14 +16,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 
-type DeleteActionButtonProps = {
-  itemId: string;
-  itemName: string;
-  onDelete: (id: string) => Promise<void>;
-  onSuccess?: () => void | Promise<void>;
-  successMessage?: string;
-  errorMessage?: string;
-};
+import type { DeleteActionButtonProps } from '@/types';
 
 const DeleteActionButton: React.FC<DeleteActionButtonProps> = ({
   itemId,

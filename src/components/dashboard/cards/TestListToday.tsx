@@ -10,19 +10,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 
-type Task = {
-  id: string;
-  name: string;
-  description: string;
-  logo: string;
-  logoColor: string;
-  status?: string;
-  progress?: string;
-  dueDate?: string;
-  teamMembers: number;
-};
+import type { DashboardTask } from '@/types';
 
-const tasks: Task[] = [
+const tasks: DashboardTask[] = [
   {
     id: '1',
     name: 'Journey Scarves',

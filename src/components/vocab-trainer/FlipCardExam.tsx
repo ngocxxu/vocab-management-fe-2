@@ -1,6 +1,13 @@
 'use client';
 
-import type { TFlipCardExamData, TFlipCardQuestion, TFlipCardResult, TQuestionAPI } from '@/types/vocab-trainer';
+import type {
+  ExamState,
+  FlipCardExamProps,
+  TFlipCardExamData,
+  TFlipCardQuestion,
+  TFlipCardResult,
+  TQuestionAPI,
+} from '@/types/vocab-trainer';
 import { AltArrowLeft, AltArrowRight } from '@solar-icons/react/ssr';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -12,13 +19,6 @@ import { selectVoiceByCode } from '@/utils/textToSpeech';
 import FlipCard from './FlipCard';
 import FlipCardResults from './FlipCardResults';
 import VocabExamHeader from './VocabExamHeader';
-
-type FlipCardExamProps = {
-  trainerId: string;
-  examData: TQuestionAPI | TFlipCardExamData;
-};
-
-type ExamState = 'taking' | 'completed' | 'error';
 
 const isTQuestionAPI = (data: TQuestionAPI | TFlipCardExamData): data is TQuestionAPI => {
   return 'questionAnswers' in data;
