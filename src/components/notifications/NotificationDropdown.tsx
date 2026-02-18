@@ -8,7 +8,6 @@ import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useRef, useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { markAllNotificationsAsRead } from '@/actions/notifications';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -72,7 +71,7 @@ const NotificationList: React.FC<NotificationListProps> = ({
   }
 
   return (
-    <div className="space-y-1 p-2">
+    <div className="divide-y">
       {notifications.map((notification, index) => (
         <NotificationItem
           key={notification.id}
@@ -226,12 +225,10 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
         >
           <Bell size={20} weight="BoldDuotone" className="text-slate-600 dark:text-slate-400" />
           {count > 0 && (
-            <Badge
-              variant="destructive"
-              className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full p-0 text-xs"
-            >
-              {count > 99 ? '99+' : count}
-            </Badge>
+            <span
+              className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-red-500"
+              aria-label={`${count} unread notifications`}
+            />
           )}
         </Button>
       </DropdownMenuTrigger>

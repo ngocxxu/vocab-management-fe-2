@@ -147,7 +147,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
   return (
     <div
       className={cn(
-        'group relative flex items-start gap-3 rounded-lg p-2 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer',
+        'group relative flex items-start gap-3 p-4 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer',
         itemIndex === 0 && 'mt-0',
       )}
       role="button"
@@ -167,7 +167,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
       <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-2">
           <p className={cn(
-            'line-clamp-1 text-sm font-semibold',
+            'line-clamp-2 text-sm font-semibold',
             isRead ? 'text-slate-600 dark:text-slate-300' : 'text-slate-900 dark:text-slate-100',
           )}
           >
@@ -189,7 +189,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
               handleClick();
             }}
           >
-            Review Now
+            Start Exam
           </button>
         )}
       </div>
