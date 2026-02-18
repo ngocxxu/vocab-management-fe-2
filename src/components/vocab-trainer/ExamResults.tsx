@@ -3,17 +3,68 @@
 import type { TExamResult, TExamSubmitResponse, TQuestion } from '@/types/vocab-trainer';
 import {
   AltArrowLeft,
+  Calendar,
+  Chart,
+  ChartSquare,
   CheckCircle,
   ClockCircle,
   CloseCircle,
-  MedalStar,
+  Document,
+  MagicStick,
+  RefreshCircle,
   Target,
 } from '@solar-icons/react/ssr';
 import React from 'react';
-import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
+
+function parseContentWithQuotedHighlight(content: string): React.ReactNode {
+  const parts = content.split('"');
+  if (parts.length === 1) {
+    return content;
+  }
+  return parts.map((segment, i) => {
+    if (i % 2 === 1) {
+      return (
+        <span key={`quote-${segment.slice(0, 20)}-${segment.length}`} className="text-primary">
+          &quot;
+          {segment}
+          &quot;
+        </span>
+      );
+    }
+    return segment;
+  });
+}
+
+const PASS_TARGET_PERCENT = 70;
+
+function formatDurationColon(seconds: number): string {
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+function formatAvgPerQuestion(totalSeconds: number, count: number): string {
+  if (count <= 0) {
+    return 'AVG. — PER QUESTION';
+  }
+  const avg = Math.round(totalSeconds / count);
+  if (avg < 60) {
+    return `AVG. ${avg}S PER QUESTION`;
+  }
+  const mm = Math.floor(avg / 60);
+  const ss = avg % 60;
+  return `AVG. ${mm}M ${ss}S PER QUESTION`;
+}
+
+function formatCompletedAt(value: string | Date | undefined): string {
+  if (!value) {
+    return new Date().toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+  }
+  const d = typeof value === 'string' ? new Date(value) : value;
+  return d.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+}
 
 type ExamResultsProps = {
   trainerId: string;
@@ -22,7 +73,18 @@ type ExamResultsProps = {
   selectedAnswers: Map<number, string>;
   timeElapsed: number;
   onBackToTrainers: () => void;
+  jobId?: string;
+  completedAt?: string | Date;
+  onRetryExam?: () => void;
+  onExportPdf?: () => void;
+  scoreDelta?: string;
+  durationFasterText?: string;
 };
+
+const CIRCLE_SIZE = 112;
+const CIRCLE_R = 38;
+const CIRCLE_STROKE = 8;
+const CIRCLE_CIRCUMFERENCE = 2 * Math.PI * CIRCLE_R;
 
 const ExamResults: React.FC<ExamResultsProps> = ({
   trainerId,
@@ -31,6 +93,12 @@ const ExamResults: React.FC<ExamResultsProps> = ({
   selectedAnswers,
   timeElapsed,
   onBackToTrainers,
+  jobId,
+  completedAt,
+  onRetryExam,
+  onExportPdf,
+  scoreDelta,
+  durationFasterText,
 }) => {
   const handleBackToTrainers = () => {
     const storageKey = `exam_data_${trainerId}`;
@@ -38,261 +106,306 @@ const ExamResults: React.FC<ExamResultsProps> = ({
     onBackToTrainers();
   };
 
-  const examResults = results?.results || [];
-  const correctAnswers = examResults.filter((result: TExamResult) => result.status === 'PASSED').length;
-
+  const examResults = results?.results ?? [];
+  const correctAnswers = examResults.filter((r: TExamResult) => r.status === 'PASSED').length;
   const totalQuestions = questions.length;
-  const incorrectAnswers = totalQuestions - correctAnswers;
-  const scorePercentage = Math.round((correctAnswers / totalQuestions) * 100);
-  const isPassed = scorePercentage >= 70; // Assuming 70% is passing
-
-  // Data for pie chart
-  const chartData = [
-    { name: 'Correct', value: correctAnswers, color: '#84cc16' }, // lime-500
-    { name: 'Incorrect', value: incorrectAnswers, color: '#ef4444' }, // red-500
-  ];
-
-  const formatTime = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-  };
-
-  const getScoreColor = (percentage: number) => {
-    if (percentage >= 80) {
-      return 'text-emerald-600 dark:text-lime-400';
-    }
-    if (percentage >= 60) {
-      return 'text-yellow-600 dark:text-yellow-400';
-    }
-    return 'text-red-400';
-  };
-
-  const getScoreBadgeColor = (percentage: number) => {
-    if (percentage >= 80) {
-      return 'bg-emerald-500/20 text-emerald-700 border-emerald-500/50 dark:bg-lime-400/20 dark:text-lime-400 dark:border-lime-400/50';
-    }
-    if (percentage >= 60) {
-      return 'bg-yellow-500/20 text-yellow-600 border-yellow-500/50 dark:bg-yellow-400/20 dark:text-yellow-400 dark:border-yellow-400/50';
-    }
-    return 'bg-red-400/20 text-red-400 border-red-400/50';
-  };
+  const scorePercentage = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
+  const accuracyPercentage = scorePercentage;
+  const scoreStrokeDashoffset = CIRCLE_CIRCUMFERENCE * (1 - scorePercentage / 100);
+  const scorePassed = scorePercentage >= PASS_TARGET_PERCENT;
+  const avgPerQuestionText = formatAvgPerQuestion(timeElapsed, totalQuestions);
 
   return (
-    <div className="relative space-y-8 py-8">
-      {/* Results Summary */}
-      <div className="mx-auto max-w-6xl px-4">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-          {/* Left Column - Score Display */}
-          <Card className="border-2 border-yellow-500/30 bg-white backdrop-blur-sm dark:border-yellow-400/30 dark:bg-slate-900">
-            <CardHeader className="text-center">
-              <div className="flex items-center justify-center space-x-2">
-                <MedalStar size={32} weight="BoldDuotone" className="text-yellow-600 dark:text-yellow-400" />
-                <CardTitle className="text-3xl font-bold text-slate-900 dark:text-white">
-                  Exam Completed!
-                </CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Large Score Display */}
-              <div className="text-center">
-                <div className={`text-8xl font-bold ${getScoreColor(scorePercentage)} mb-4`}>
-                  {scorePercentage}
-                  <span className="text-4xl">%</span>
-                </div>
+    <div className="min-h-screen bg-background px-4 py-8 sm:px-6">
+      <div className="mx-auto max-w-6xl space-y-8">
+        <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
+              Exam Results
+            </h1>
+            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+              {jobId && (
+                <span className="flex items-center gap-1.5 text-muted-foreground">
+                  <Target size={14} weight="BoldDuotone" />
+                  Job ID:
+                  {' '}
+                  <span className="text-primary underline">
+                    {jobId}
+                  </span>
+                </span>
+              )}
+              <span className="flex items-center gap-1.5 text-muted-foreground">
+                <Calendar size={14} weight="BoldDuotone" />
+                Completed:
+                {' '}
+                {formatCompletedAt(completedAt)}
+              </span>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            {onExportPdf && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onExportPdf}
+                className="border-border text-foreground"
+              >
+                <Document size={18} weight="BoldDuotone" className="mr-2" />
+                Export PDF
+              </Button>
+            )}
+            {onRetryExam && (
+              <Button
+                type="button"
+                onClick={onRetryExam}
+                className="bg-primary text-primary-foreground hover:bg-primary/90"
+              >
+                <RefreshCircle size={18} weight="BoldDuotone" className="mr-2" />
+                Retry Exam
+              </Button>
+            )}
+          </div>
+        </header>
 
-                <Badge className={`px-6 py-3 text-xl ${getScoreBadgeColor(scorePercentage)}`}>
-                  {isPassed ? 'PASSED' : 'FAILED'}
-                </Badge>
-              </div>
-
-              {/* Stats Grid */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="rounded-2xl border border-yellow-500/30 bg-white p-4 text-center dark:border-yellow-400/30 dark:bg-slate-900">
-                  <div className="mb-2 flex items-center justify-center space-x-2 text-slate-600 dark:text-slate-300">
-                    <Target size={20} weight="BoldDuotone" />
-                    <span className="text-sm font-medium">Accuracy</span>
-                  </div>
-                  <p className="text-2xl font-bold text-slate-900 dark:text-white">
-                    {correctAnswers}
-                    <span className="text-lg text-slate-600 dark:text-slate-400">
-                      /
-                      {totalQuestions}
-                    </span>
-                  </p>
-                </div>
-
-                <div className="rounded-2xl border border-yellow-500/30 bg-white p-4 text-center dark:border-yellow-400/30 dark:bg-slate-900">
-                  <div className="mb-2 flex items-center justify-center space-x-2 text-slate-600 dark:text-slate-300">
-                    <ClockCircle size={20} weight="BoldDuotone" />
-                    <span className="text-sm font-medium">Time Taken</span>
-                  </div>
-                  <p className="font-mono text-2xl font-bold text-slate-900 dark:text-white">
-                    {formatTime(timeElapsed)}
-                  </p>
-                </div>
-              </div>
-
-              {/* Action Button */}
-              <div className="flex justify-center pt-4">
-                <Button
-                  onClick={handleBackToTrainers}
-                  className="rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 px-8 py-3 text-lg font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:from-emerald-700 hover:to-teal-700 hover:shadow-emerald-500/25 dark:from-emerald-500 dark:to-teal-500 dark:hover:from-emerald-600 dark:hover:to-teal-600 dark:hover:shadow-emerald-400/25"
+        <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <Card className="flex flex-col border border-border bg-card">
+            <CardContent className="flex flex-1 flex-col items-center justify-center gap-2 p-5">
+              <div className="relative inline-flex items-center justify-center">
+                <svg
+                  width={CIRCLE_SIZE}
+                  height={CIRCLE_SIZE}
+                  viewBox={`0 0 ${CIRCLE_SIZE} ${CIRCLE_SIZE}`}
+                  className="-rotate-90"
+                  aria-hidden
                 >
-                  <AltArrowLeft size={20} weight="BoldDuotone" className="mr-2" />
-                  Back to Trainers
-                </Button>
+                  <circle
+                    cx={CIRCLE_SIZE / 2}
+                    cy={CIRCLE_SIZE / 2}
+                    r={CIRCLE_R}
+                    fill="none"
+                    strokeWidth={CIRCLE_STROKE}
+                    className="stroke-muted"
+                  />
+                  <circle
+                    cx={CIRCLE_SIZE / 2}
+                    cy={CIRCLE_SIZE / 2}
+                    r={CIRCLE_R}
+                    fill="none"
+                    strokeWidth={CIRCLE_STROKE}
+                    strokeDasharray={CIRCLE_CIRCUMFERENCE}
+                    strokeDashoffset={scoreStrokeDashoffset}
+                    strokeLinecap="round"
+                    className="stroke-primary transition-[stroke-dashoffset] duration-700"
+                  />
+                </svg>
+                <span className="absolute flex flex-col items-center justify-center text-center">
+                  <span className="text-2xl font-bold text-primary">
+                    {scorePercentage}
+                    %
+                  </span>
+                  <span className="text-xs font-medium text-muted-foreground uppercase">
+                    SCORE
+                  </span>
+                </span>
               </div>
-            </CardContent>
-          </Card>
-
-          {/* Right Column - Chart */}
-          <Card className="border-2 border-yellow-500/30 bg-white backdrop-blur-sm dark:border-yellow-400/30 dark:bg-slate-900">
-            <CardHeader>
-              <CardTitle className="text-center text-2xl font-semibold text-slate-900 dark:text-white">
-                Performance Overview
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Pie Chart */}
-              <div className="h-64 w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={chartData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={60}
-                      outerRadius={100}
-                      paddingAngle={5}
-                      dataKey="value"
-                      animationBegin={0}
-                      animationDuration={1000}
-                    >
-                      {chartData.map((entry, _) => (
-                        <Cell key={`cell-${entry.name}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-
-              {/* Chart Legend */}
-              <div className="space-y-3">
-                {chartData.map(item => (
-                  <div key={item.name} className="flex items-center justify-between rounded-lg border border-yellow-500/20 bg-white p-3 dark:border-yellow-400/20 dark:bg-slate-900">
-                    <div className="flex items-center space-x-3">
-                      <div
-                        className="h-4 w-4 rounded-full"
-                        style={{ backgroundColor: item.color }}
-                      />
-                      <span className="font-medium text-slate-900 dark:text-white">{item.name}</span>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-lg font-bold text-slate-900 dark:text-white">{item.value}</div>
-                      <div className="text-sm text-slate-600 dark:text-slate-300">
-                        {Math.round((item.value / totalQuestions) * 100)}
-                        %
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-
-      {/* Detailed Results */}
-      <Card className="mx-auto w-full max-w-6xl border-2 border-yellow-400/30 bg-white backdrop-blur-sm dark:bg-slate-900">
-        <CardHeader>
-          <CardTitle className="text-center text-2xl font-semibold text-white">
-            Question Review
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {questions.map((question, index) => {
-            const result = examResults[index] as TExamResult | undefined;
-            const userAnswer = result?.userSelected || selectedAnswers.get(index) || 'Not answered';
-            const isCorrect = result?.status === 'PASSED' || (!result && selectedAnswers.get(index) === question.correctAnswer);
-            const explanation = result?.data?.explanation;
-
-            return (
-              <div
-                key={`question-${question.content}-${index}`}
-                className={`rounded-2xl border-2 p-6 ${
-                  isCorrect
-                    ? 'border-emerald-500/50 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 dark:border-lime-400/50 dark:from-lime-400/10 dark:to-green-500/10'
-                    : 'border-red-400/50 bg-gradient-to-br from-red-400/10 to-red-500/10'
+              <span
+                className={`rounded-md border px-2.5 py-0.5 text-xs font-semibold ${
+                  scorePassed
+                    ? 'border-success/50 bg-success/10 text-success'
+                    : 'border-destructive/50 bg-destructive/10 text-destructive'
                 }`}
               >
-                <div className="flex items-start space-x-4">
-                  <div className="flex-shrink-0">
-                    {isCorrect
-                      ? (
-                          <CheckCircle size={24} weight="BoldDuotone" className="text-emerald-600 dark:text-lime-400" />
-                        )
-                      : (
-                          <CloseCircle size={24} weight="BoldDuotone" className="text-red-400" />
-                        )}
-                  </div>
-                  <div className="flex-1 space-y-3">
-                    <div className="flex items-center space-x-3">
-                      <Badge variant="outline" className="border-yellow-500/50 bg-yellow-500/10 text-yellow-600 dark:border-yellow-400/50 dark:bg-yellow-400/10 dark:text-yellow-400">
-                        Question
-                        {' '}
-                        {index + 1}
-                      </Badge>
-                      {isCorrect
-                        ? (
-                            <Badge className="bg-emerald-500/20 text-emerald-700 dark:bg-lime-400/20 dark:text-lime-400">
-                              Correct
-                            </Badge>
-                          )
-                        : (
-                            <Badge className="bg-red-400/20 text-red-400">
-                              Incorrect
-                            </Badge>
-                          )}
-                    </div>
+                {scorePassed ? 'PASSED' : 'FAILED'}
+              </span>
+              <p className="text-center text-xs text-muted-foreground">
+                {scorePassed
+                  ? `Great job! You exceeded the ${PASS_TARGET_PERCENT}% target.`
+                  : `Keep practicing to reach the ${PASS_TARGET_PERCENT}% target.`}
+              </p>
+              {scoreDelta && (
+                <p className="flex items-center justify-center gap-1.5 text-xs text-success">
+                  <Chart size={14} weight="BoldDuotone" />
+                  {scoreDelta}
+                </p>
+              )}
+            </CardContent>
+          </Card>
 
-                    <p className="text-lg font-medium text-slate-900 dark:text-white">
-                      {question.content}
-                    </p>
-
-                    <div className="space-y-2 text-sm">
-                      <div className="flex items-center space-x-2">
-                        <span className="font-medium text-slate-600 dark:text-slate-300">Your answer:</span>
-                        <span className={`font-medium ${isCorrect ? 'text-emerald-600 dark:text-lime-400' : 'text-red-400'}`}>
-                          {userAnswer}
-                        </span>
-                      </div>
-                      {!isCorrect && (
-                        <div className="flex items-center space-x-2">
-                          <span className="font-medium text-slate-600 dark:text-slate-300">Correct answer:</span>
-                          <span className="font-medium text-emerald-600 dark:text-lime-400">
-                            {result?.systemSelected || question.correctAnswer}
-                          </span>
-                        </div>
-                      )}
-                      {explanation && (
-                        <div className="mt-3 rounded-lg border border-blue-500/30 bg-blue-50/50 p-3 dark:border-blue-400/30 dark:bg-blue-900/20">
-                          <div className="mb-1 text-xs font-semibold tracking-wide text-blue-700 uppercase dark:text-blue-300">
-                            Explanation
-                          </div>
-                          <p className="text-sm text-blue-900 dark:text-blue-100">
-                            {explanation}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
+          <Card className="flex flex-col border border-border bg-card">
+            <CardContent className="flex flex-1 flex-col p-5">
+              <div className="mb-3 flex items-center justify-between">
+                <span className="text-sm font-bold tracking-wide text-foreground uppercase">
+                  Accuracy
+                </span>
+                <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10">
+                  <Target size={20} weight="BoldDuotone" className="text-primary" />
                 </div>
               </div>
-            );
-          })}
-        </CardContent>
-      </Card>
+              <div className="flex items-baseline gap-2">
+                <p className="text-4xl font-bold text-foreground">
+                  {accuracyPercentage}
+                  %
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  {correctAnswers}
+                  /
+                  {totalQuestions}
+                  {' '}
+                  items
+                </p>
+              </div>
+              <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
+                <div
+                  className="h-full rounded-full bg-primary transition-[width] duration-700"
+                  style={{ width: `${accuracyPercentage}%` }}
+                />
+              </div>
+              <div className="mt-1 flex items-center justify-between text-xs text-muted-foreground uppercase">
+                <span>Performance</span>
+                <span>Target: 90%</span>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="flex flex-col border border-border bg-card">
+            <CardContent className="flex flex-1 flex-col p-5">
+              <div className="mb-3 flex items-center justify-between">
+                <span className="text-sm font-bold tracking-wide text-foreground uppercase">
+                  Duration
+                </span>
+                <div className="flex size-9 items-center justify-center rounded-lg bg-warning/10">
+                  <ClockCircle size={20} weight="BoldDuotone" className="text-warning" />
+                </div>
+              </div>
+              <p className="text-4xl font-bold text-foreground">
+                {formatDurationColon(timeElapsed)}
+              </p>
+              <p className="mt-1 text-sm text-muted-foreground italic">
+                &quot;Efficiency is key&quot;
+              </p>
+              <p className="mt-2 text-xs text-muted-foreground uppercase">
+                {avgPerQuestionText}
+              </p>
+              {durationFasterText && (
+                <p className="mt-1 flex items-center gap-1.5 text-sm text-warning">
+                  <ClockCircle size={16} weight="BoldDuotone" />
+                  {durationFasterText}
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        </section>
+
+        <section className="space-y-4">
+          <h2 className="flex items-center gap-2 text-lg font-bold text-foreground">
+            <ChartSquare size={22} weight="BoldDuotone" className="text-primary" />
+            Detailed Performance Review
+          </h2>
+
+          <div className="space-y-4">
+            {questions.map((question, index) => {
+              const result = examResults[index] as TExamResult | undefined;
+              const userAnswer = result?.userSelected ?? selectedAnswers.get(index) ?? 'Not answered';
+              const isCorrect = result
+                ? result.status === 'PASSED'
+                : (selectedAnswers.get(index)?.trim() === question.correctAnswer);
+              const explanation = result?.data?.explanation;
+              const correctAnswer = result?.systemSelected ?? question.correctAnswer;
+              const questionContent = parseContentWithQuotedHighlight(question.content);
+
+              return (
+                <Card
+                  key={question.id ?? `q-${question.content.slice(0, 50)}`}
+                  className="border border-border bg-card"
+                >
+                  <CardContent className="space-y-4 p-5">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
+                          Question
+                          {' '}
+                          {index + 1}
+                        </span>
+                        <span className="flex items-center gap-1.5">
+                          {isCorrect
+                            ? (
+                                <>
+                                  <CheckCircle size={18} weight="BoldDuotone" className="text-success" />
+                                  <span className="text-sm font-semibold text-success">Correct</span>
+                                </>
+                              )
+                            : (
+                                <>
+                                  <CloseCircle size={18} weight="BoldDuotone" className="text-destructive" />
+                                  <span className="text-sm font-semibold text-destructive">Incorrect</span>
+                                </>
+                              )}
+                        </span>
+                      </div>
+                      <span className="text-xs text-muted-foreground">
+                        Vocabulary: Fill in the blank
+                      </span>
+                    </div>
+
+                    <p className="text-base leading-snug font-bold text-foreground">
+                      {questionContent}
+                    </p>
+
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div className="space-y-1.5">
+                        <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+                          Your answer
+                        </p>
+                        <div
+                          className={`min-h-[2.75rem] rounded-lg border px-3 py-2 font-semibold text-foreground ${
+                            isCorrect
+                              ? 'border-success/50 bg-success/10'
+                              : 'border-destructive/50 bg-destructive/10'
+                          }`}
+                        >
+                          {userAnswer}
+                        </div>
+                      </div>
+                      <div className="space-y-1.5">
+                        <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+                          Correct answer
+                        </p>
+                        <div className="min-h-[2.75rem] rounded-lg border border-success/50 bg-success/10 px-3 py-2 font-semibold text-foreground">
+                          {correctAnswer}
+                        </div>
+                      </div>
+                    </div>
+
+                    {explanation && (
+                      <div className="rounded-lg border-l-4 border-primary bg-primary/5 p-4">
+                        <p className="mb-2 flex items-center gap-2 text-sm font-bold text-primary">
+                          <MagicStick size={18} weight="BoldDuotone" />
+                          AI Explanation
+                        </p>
+                        <p className="text-sm text-foreground">
+                          {explanation}
+                        </p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </section>
+
+        <div className="flex justify-center pt-4">
+          <Button
+            type="button"
+            onClick={handleBackToTrainers}
+            variant="outline"
+            className="border-border bg-secondary text-foreground hover:bg-secondary/80"
+          >
+            <AltArrowLeft size={20} weight="BoldDuotone" className="mr-2" />
+            Back to Trainers
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };

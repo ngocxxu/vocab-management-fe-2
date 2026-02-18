@@ -19,6 +19,7 @@ const FillInBlankResultPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [evaluationResults, setEvaluationResults] = useState<TExamSubmitResponse | null>(null);
+  const [completedAt, setCompletedAt] = useState<string | undefined>();
   const [questions, setQuestions] = useState<any[]>([]);
   const [selectedAnswers, setSelectedAnswers] = useState<Map<number, string>>(() => new Map());
 
@@ -80,6 +81,7 @@ const FillInBlankResultPage: React.FC = () => {
             results: data.data.results,
           };
           setEvaluationResults(results);
+          setCompletedAt(new Date().toISOString());
         }
         setIsLoading(false);
       } else if (data.status === 'failed') {
@@ -139,6 +141,9 @@ const FillInBlankResultPage: React.FC = () => {
           selectedAnswers={selectedAnswers}
           timeElapsed={timeElapsed}
           onBackToTrainers={handleBackToTrainers}
+          jobId={jobId ?? undefined}
+          completedAt={completedAt}
+          onRetryExam={() => router.push(`/vocab-trainer/${trainerId}/exam/fill-in-blank`)}
         />
       </div>
     );

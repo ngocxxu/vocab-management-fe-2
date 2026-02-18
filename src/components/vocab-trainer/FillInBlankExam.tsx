@@ -219,7 +219,7 @@ const FillInBlankExam: React.FC<FillInBlankExamProps> = ({ trainerId, examData }
 
   return (
     <div className="min-h-screen bg-background px-4 py-8 sm:px-6">
-      <div className="mx-auto max-w-4xl space-y-8">
+      <div className="mx-auto max-w-6xl space-y-8">
         <VocabExamHeader
           trainerName={examData.name || 'Vocabulary Exam'}
           currentQuestion={currentQuestionIndex + 1}

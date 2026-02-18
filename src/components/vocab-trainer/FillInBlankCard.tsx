@@ -55,7 +55,7 @@ const FillInBlankCard: React.FC<FillInBlankCardProps> = ({
   );
 
   return (
-    <div className="mx-auto max-w-4xl space-y-8">
+    <div className="mx-auto max-w-6xl space-y-8">
       <div className="space-y-6 text-center">
         <div className="inline-flex rounded-full bg-accent px-4 py-1.5 text-sm font-bold text-primary">
           • QUESTION
