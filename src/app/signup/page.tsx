@@ -155,7 +155,7 @@ function SignUpContent() {
             <div className="mt-16 inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 min-[1600px]:mt-32 min-[1600px]:px-6 min-[1600px]:py-3 min-[1600px]:text-xl 2xl:mt-24 2xl:px-5 2xl:py-2.5 2xl:text-lg">
               <StarFall size={18} weight="BoldDuotone" className="text-primary-foreground min-[1600px]:size-6 2xl:size-5" />
               <span className="font-sans text-sm font-medium text-primary-foreground uppercase min-[1600px]:text-xl 2xl:text-lg">
-                AI-Powered Precision Learning
+                AI-Powered Intelligence
               </span>
             </div>
             <h1 className="mt-8 font-sans text-2xl leading-tight font-bold text-foreground min-[1600px]:text-6xl min-[1600px]:tracking-tight sm:text-3xl 2xl:mt-10 2xl:text-5xl 2xl:leading-tight">

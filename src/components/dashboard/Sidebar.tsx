@@ -106,7 +106,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, isExpanded = 
             <div className="flex flex-col">
               <span className="font-bold text-foreground">Vocab</span>
               <span className="text-xs font-medium tracking-wider text-primary uppercase">
-                Precision Learning
+                Intelligence
               </span>
             </div>
           )}

@@ -11,8 +11,8 @@ const lexend = Lexend({
 });
 
 export const metadata = { title: {
-  default: 'Vocab - Precision Learning',
-  template: '%s | Vocab - Precision Learning',
+  default: 'Vocab - Intelligence',
+  template: '%s | Vocab - Intelligence',
 }, icons: {
   icon: '/assets/logo/logo-light-mode.png',
   apple: '/assets/logo/logo-light-mode.png',
