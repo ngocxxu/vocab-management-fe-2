@@ -549,11 +549,11 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
 
                 <Alert className="border-blue-200 bg-blue-50 dark:border-blue-900 dark:bg-blue-950/50">
                   <InfoCircle className="size-5 text-blue-600 dark:text-blue-400" />
-                  <AlertDescription className="flex flex-wrap items-center gap-1.5 pl-7">
+                  <AlertDescription>
                     You can drag the
                     {' '}
                     <span className="inline-flex rounded p-0.5 text-slate-500 dark:text-slate-400" aria-hidden>
-                      <Reorder size={16} weight="BoldDuotone" />
+                      <Reorder className="translate-y-1" size={16} weight="BoldDuotone" />
                     </span>
                     {' '}
                     handle to reorder how subjects appear in your dashboard.

@@ -4,7 +4,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import type { ResponseAPI, TLanguage } from '@/types';
 import type { TVocabTrainer } from '@/types/vocab-trainer';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Pen } from '@solar-icons/react/ssr';
+import { DangerTriangle, Pen } from '@solar-icons/react/ssr';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
@@ -15,6 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Form } from '@/components/ui/form';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { DataTable } from '@/components/ui/table';
 import { QUESTION_TYPE_OPTIONS } from '@/constants/vocab-trainer';
 import { EQuestionType } from '@/enum/vocab-trainer';
@@ -22,6 +23,9 @@ import { useApiPagination, useBulkDelete, useDialogState } from '@/hooks';
 import AddVocabTrainerDialog from './AddVocabTrainerDialog';
 import ExamLauncher from './ExamLauncher';
 import VocabTrainerHeader from './VocabTrainerHeader';
+
+const COOLDOWN_DURATION_MS = 60000;
+const GLOBAL_STORAGE_KEY = 'play_button_last_click_global';
 
 // Define the form schema
 const FormSchema = z.object({
@@ -37,7 +41,7 @@ type FormData = z.infer<typeof FormSchema>;
 const QUESTION_TYPE_BADGE_CLASSES: Record<string, string> = {
   [EQuestionType.FILL_IN_THE_BLANK]: 'bg-violet-100 text-violet-800 dark:bg-violet-900/30 dark:text-violet-200',
   [EQuestionType.MULTIPLE_CHOICE]: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200',
-  [EQuestionType.FLIP_CARD]: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-200',
+  [EQuestionType.FLIP_CARD]: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-200',
   [EQuestionType.TRANSLATION_AUDIO]: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-200',
   default: 'bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-200',
 };
@@ -50,6 +54,7 @@ type VocabTrainerListProps = {
 const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initialLanguagesData }) => {
   const [isMounted, setIsMounted] = useState(false);
   const [cachedLanguageFolders, setCachedLanguageFolders] = useState<any[]>([]);
+  const [cooldownRemaining, setCooldownRemaining] = useState(0);
 
   const { pagination, handlers } = useApiPagination({
     page: 1,
@@ -74,6 +79,31 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
   const isLoading = false;
   const isError = false;
 
+  const checkCooldown = useCallback(() => {
+    try {
+      const lastClickTimeStr = localStorage.getItem(GLOBAL_STORAGE_KEY);
+      if (!lastClickTimeStr) {
+        setCooldownRemaining(0);
+        return;
+      }
+
+      const lastClickTime = Number.parseInt(lastClickTimeStr, 10);
+      if (Number.isNaN(lastClickTime)) {
+        localStorage.removeItem(GLOBAL_STORAGE_KEY);
+        setCooldownRemaining(0);
+        return;
+      }
+
+      const now = Date.now();
+      const timeSinceLastClick = now - lastClickTime;
+      const remaining = Math.max(0, Math.ceil((COOLDOWN_DURATION_MS - timeSinceLastClick) / 1000));
+      setCooldownRemaining(remaining);
+    } catch (error) {
+      console.error('Error checking cooldown:', error);
+      setCooldownRemaining(0);
+    }
+  }, []);
+
   const form = useForm<FormData>({
     resolver: zodResolver(FormSchema),
     mode: 'onChange',
@@ -90,6 +120,14 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
     // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
     setIsMounted(true);
   }, []);
+
+  useEffect(() => {
+    checkCooldown();
+    const interval = setInterval(() => {
+      checkCooldown();
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [checkCooldown]);
 
   const { handleSort, handlePageChange } = handlers;
 
@@ -434,6 +472,30 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
               onSortingChange={handleSort}
               onBulkDelete={bulkDelete.handleBulkDelete}
             />
+
+            {cooldownRemaining > 0 && (
+              <Alert className="border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950/50">
+                <DangerTriangle className="size-5 text-amber-600 dark:text-amber-400" />
+                <AlertTitle>Take a quick 60s break</AlertTitle>
+                <AlertDescription>
+                  AI is preparing your next exam
+                  {' '}
+                  (
+                  <strong>
+                    {cooldownRemaining}
+                    s
+                  </strong>
+                  {' '}
+                  left).
+                  {' '}
+                  Feel free to jump into
+                  {' '}
+                  <strong>Flip Cards</strong>
+                  {' '}
+                  right now—they’re always ready for you!
+                </AlertDescription>
+              </Alert>
+            )}
           </>
         )}
       </div>

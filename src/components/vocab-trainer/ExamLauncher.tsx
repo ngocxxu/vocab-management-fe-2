@@ -4,6 +4,7 @@ import { PlayCircle } from '@solar-icons/react/ssr';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { getExamUrl } from '@/constants/vocab-trainer';
 import { EQuestionType } from '@/enum/vocab-trainer';
 
@@ -83,16 +84,24 @@ const ExamLauncher: React.FC<ExamLauncherProps> = ({ trainerId, questionType }) 
   };
 
   return (
-    <Button
-      variant="ghost"
-      size="icon"
-      className="h-8 w-8 rounded-lg hover:bg-green-100 dark:hover:bg-green-700"
-      onClick={handlePlayClick}
-      disabled={isDisabled}
-      title={isDisabled ? 'Please wait before starting another exam' : 'Start exam'}
-    >
-      <PlayCircle size={16} weight="BoldDuotone" className="text-green-600 dark:text-green-400" />
-    </Button>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span className="inline-flex">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 rounded-lg hover:bg-green-100 dark:hover:bg-green-700"
+            onClick={handlePlayClick}
+            disabled={isDisabled}
+          >
+            <PlayCircle size={16} weight="BoldDuotone" className="text-green-600 dark:text-green-400" />
+          </Button>
+        </span>
+      </TooltipTrigger>
+      <TooltipContent side="bottom" align="center">
+        {isDisabled ? 'Please wait before starting another exam' : 'Start exam'}
+      </TooltipContent>
+    </Tooltip>
   );
 };
 
