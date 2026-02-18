@@ -231,7 +231,7 @@ const MarkdownReport: React.FC<MarkdownReportProps> = ({ markdown }) => {
   };
 
   return (
-    <Card className="border-2 border-yellow-500/30 bg-white dark:border-yellow-400/30 dark:bg-slate-900">
+    <Card className="border border-border bg-white dark:bg-slate-900">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
         <CardTitle className="text-2xl font-semibold text-slate-900 dark:text-white">
           Evaluation Report
@@ -240,7 +240,7 @@ const MarkdownReport: React.FC<MarkdownReportProps> = ({ markdown }) => {
           onClick={handleCopy}
           variant="outline"
           size="sm"
-          className="rounded-xl border-yellow-500/50 bg-white px-4 py-2 text-slate-900 transition-all duration-300 hover:scale-105 hover:border-yellow-500 dark:border-yellow-400/50 dark:bg-slate-900 dark:text-white dark:hover:border-yellow-400"
+          className="rounded-xl border-border bg-white px-4 py-2 text-slate-900 transition-all duration-300 hover:scale-105 dark:bg-slate-900 dark:text-white"
         >
           {copied
             ? (

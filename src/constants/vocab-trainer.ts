@@ -10,6 +10,11 @@ export const QUESTION_TYPE_OPTIONS = [
   { value: EQuestionType.FLIP_CARD, label: 'Flip Card' },
 ];
 
+export function getQuestionTypeLabel(questionType: EQuestionType): string {
+  const option = QUESTION_TYPE_OPTIONS.find(o => o.value === questionType);
+  return option?.label ?? 'Vocabulary';
+}
+
 export const getExamUrl = (trainerId: string, questionType: EQuestionType): string => {
   if (questionType === EQuestionType.FLIP_CARD) {
     return `/vocab-trainer/${trainerId}/exam/flip-card`;

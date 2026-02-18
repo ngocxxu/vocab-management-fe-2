@@ -161,18 +161,18 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onRecordingComplete, onRe
   }, [audioUrl]);
 
   return (
-    <Card className="border-2 border-yellow-500/30 bg-white dark:border-yellow-400/30 dark:bg-slate-900">
+    <Card className="border border-border bg-card">
       <CardContent className="p-6">
         <div className="space-y-6">
           {!recordedBlob
             ? (
                 <div className="space-y-4">
                   <div className="text-center">
-                    <div className="mb-4 text-4xl font-bold text-slate-900 dark:text-white">
+                    <div className="mb-4 text-4xl font-bold text-foreground">
                       {formatTime(duration)}
                     </div>
                     {!isRecording && (
-                      <p className="text-sm text-slate-600 dark:text-slate-300">
+                      <p className="text-sm text-muted-foreground">
                         Click the button below to start recording
                       </p>
                     )}
@@ -183,7 +183,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onRecordingComplete, onRe
                       ? (
                           <Button
                             onClick={startRecording}
-                            className="rounded-2xl bg-gradient-to-r from-red-600 to-pink-600 px-8 py-3 text-lg font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:from-red-700 hover:to-pink-700 hover:shadow-red-500/25 dark:from-red-500 dark:to-pink-500 dark:hover:from-red-600 dark:hover:to-pink-600"
+                            className="bg-primary text-primary-foreground hover:bg-primary/90"
                           >
                             <Microphone size={20} weight="BoldDuotone" className="mr-2" />
                             Start Recording
@@ -195,7 +195,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onRecordingComplete, onRe
                               ? (
                                   <Button
                                     onClick={resumeRecording}
-                                    className="rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-3 font-semibold text-white transition-all duration-300 hover:scale-105"
+                                    className="bg-primary text-primary-foreground hover:bg-primary/90"
                                   >
                                     <Play size={20} weight="BoldDuotone" className="mr-2" />
                                     Resume
@@ -203,16 +203,17 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onRecordingComplete, onRe
                                 )
                               : (
                                   <Button
+                                    variant="outline"
                                     onClick={pauseRecording}
-                                    className="rounded-2xl bg-gradient-to-r from-yellow-600 to-orange-600 px-6 py-3 font-semibold text-white transition-all duration-300 hover:scale-105"
+                                    className="border-border bg-secondary text-foreground hover:bg-secondary/80"
                                   >
                                     <Pause size={20} weight="BoldDuotone" className="mr-2" />
                                     Pause
                                   </Button>
                                 )}
                             <Button
+                              variant="destructive"
                               onClick={stopRecording}
-                              className="rounded-2xl bg-gradient-to-r from-red-600 to-pink-600 px-6 py-3 font-semibold text-white transition-all duration-300 hover:scale-105"
                             >
                               <Stop size={20} weight="BoldDuotone" className="mr-2" />
                               Stop
@@ -225,10 +226,10 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onRecordingComplete, onRe
             : (
                 <div className="space-y-4">
                   <div className="text-center">
-                    <p className="mb-2 text-lg font-semibold text-slate-900 dark:text-white">
+                    <p className="mb-2 text-lg font-semibold text-foreground">
                       Recording Complete
                     </p>
-                    <p className="text-sm text-slate-600 dark:text-slate-300">
+                    <p className="text-sm text-muted-foreground">
                       Duration:
                       {' '}
                       {formatTime(duration)}
@@ -248,7 +249,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onRecordingComplete, onRe
                     <Button
                       onClick={handlePlay}
                       variant="outline"
-                      className="rounded-2xl border-2 border-yellow-500/50 bg-white px-6 py-3 font-semibold text-slate-900 transition-all duration-300 hover:scale-105 hover:border-yellow-500 dark:border-yellow-400/50 dark:bg-slate-900 dark:text-white dark:hover:border-yellow-400"
+                      className="border-border bg-secondary text-foreground hover:bg-secondary/80"
                     >
                       {isPlaying
                         ? (
@@ -265,9 +266,9 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onRecordingComplete, onRe
                           )}
                     </Button>
                     <Button
-                      onClick={handleReset}
                       variant="outline"
-                      className="rounded-2xl border-2 border-red-500/50 bg-white px-6 py-3 font-semibold text-slate-900 transition-all duration-300 hover:scale-105 hover:border-red-500 dark:border-red-400/50 dark:bg-slate-900 dark:text-white dark:hover:border-red-400"
+                      onClick={handleReset}
+                      className="border-border bg-secondary text-foreground hover:bg-secondary/80"
                     >
                       <TrashBin2 size={20} weight="BoldDuotone" className="mr-2" />
                       Record Again

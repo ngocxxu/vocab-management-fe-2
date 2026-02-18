@@ -1,21 +1,17 @@
 'use client';
 
 import type { TFlipCardExamData, TFlipCardQuestion, TFlipCardResult, TQuestionAPI } from '@/types/vocab-trainer';
-import {
-  AltArrowLeft,
-  AltArrowRight,
-  ClockCircle,
-} from '@solar-icons/react/ssr';
+import { AltArrowLeft, AltArrowRight } from '@solar-icons/react/ssr';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSpeechSynthesis } from 'react-speech-kit';
 import { ExamErrorState } from '@/components/shared';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { selectVoiceByCode } from '@/utils/textToSpeech';
 import FlipCard from './FlipCard';
 import FlipCardResults from './FlipCardResults';
+import VocabExamHeader from './VocabExamHeader';
 
 type FlipCardExamProps = {
   trainerId: string;
@@ -55,6 +51,10 @@ const FlipCardExam: React.FC<FlipCardExamProps> = ({ trainerId, examData }) => {
   const [error] = useState<string | null>(null);
   const currentQuestion = questions[currentCardIndex];
   const totalCards = questions.length;
+  const timeRemaining = isTQuestionAPI(examData) && examData.setCountTime
+    ? Math.max(0, examData.setCountTime - timeElapsed)
+    : 0;
+  const trainerName = isTQuestionAPI(examData) ? examData.name : examData.trainerName;
   const isLastCard = currentCardIndex === totalCards - 1;
   const isFirstCard = currentCardIndex === 0;
 
@@ -156,7 +156,6 @@ const FlipCardExam: React.FC<FlipCardExamProps> = ({ trainerId, examData }) => {
       });
     }
 
-    const trainerName = isTQuestionAPI(examData) ? examData.name : examData.trainerName;
     const finalExamData: TFlipCardExamData = {
       trainerId,
       trainerName: trainerName || 'FlipCard Exam',
@@ -233,68 +232,53 @@ const FlipCardExam: React.FC<FlipCardExamProps> = ({ trainerId, examData }) => {
   }
 
   return (
-    <div className="relative space-y-8 py-8">
-      {/* Header */}
-      <div className="mx-auto max-w-6xl px-4">
-        <div className="flex items-center justify-between">
-          <div className="space-y-2">
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
-              {isTQuestionAPI(examData) ? examData.name : examData.trainerName || 'FlipCard Exam'}
-            </h1>
-            <Badge variant="outline" className="border-yellow-500/50 bg-yellow-500/10 p-2 text-yellow-600 dark:border-yellow-400/50 dark:bg-yellow-400/10 dark:text-yellow-400">
-              <ClockCircle size={16} weight="BoldDuotone" />
-              <span className="font-mono">
-                {Math.floor(timeElapsed / 60)}
-                :
-                {(timeElapsed % 60).toString().padStart(2, '0')}
-              </span>
-            </Badge>
-          </div>
-
-        </div>
-      </div>
-
-      {/* Flip Card */}
-      <div className="mx-auto max-w-4xl px-4">
-        <FlipCard
-          question={currentQuestion}
-          isFlipped={isFlipped}
-          onFlip={handleCardFlip}
-          onPlayAudio={handlePlayAudio}
+    <div className="min-h-screen bg-background px-4 py-8 sm:px-6">
+      <div className="mx-auto max-w-6xl space-y-8">
+        <VocabExamHeader
+          trainerName={trainerName || 'FlipCard Exam'}
+          currentQuestion={currentCardIndex + 1}
+          totalQuestions={totalCards}
+          timeRemaining={timeRemaining}
         />
-      </div>
 
-      {/* Navigation buttons */}
-      <div className="mx-auto max-w-4xl px-4">
-        <div className="flex items-center justify-center gap-4">
+        <div className="mx-auto max-w-4xl">
+          <FlipCard
+            question={currentQuestion}
+            isFlipped={isFlipped}
+            onFlip={handleCardFlip}
+            onPlayAudio={handlePlayAudio}
+          />
+        </div>
+
+        <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
           <Button
             variant="outline"
             onClick={handlePrevious}
             disabled={isFirstCard}
-            className="group rounded-2xl border-2 border-yellow-500/50 bg-white px-6 py-3 text-slate-900 transition-all duration-300 hover:scale-105 hover:border-yellow-500 dark:border-yellow-400/50 dark:bg-slate-900 dark:text-white dark:hover:border-yellow-400"
+            className="w-full border-border bg-secondary text-foreground hover:bg-secondary/80 sm:w-auto"
           >
-            <AltArrowLeft size={20} weight="BoldDuotone" className="mr-2 transition-transform duration-300 group-hover:-translate-x-1" />
-            <span className="font-semibold">Previous</span>
+            <AltArrowLeft size={20} weight="BoldDuotone" className="mr-2" />
+            Previous
           </Button>
 
-          <div className="rounded-2xl border border-yellow-500/30 bg-white px-8 py-3 backdrop-blur-sm dark:border-yellow-400/30 dark:bg-slate-900">
-            <div className="text-center">
-              <div className="text-sm text-slate-600 dark:text-slate-300">Card</div>
-              <div className="text-2xl font-bold text-slate-900 dark:text-white">
-                {currentCardIndex + 1}
-                <span className="text-lg text-slate-600 dark:text-slate-400">
-                  /
-                  {totalCards}
-                </span>
-              </div>
-            </div>
+          <div className="text-center">
+            <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+              Card
+            </p>
+            <p className="text-2xl font-bold text-foreground">
+              {currentCardIndex + 1}
+              {' '}
+              /
+              {' '}
+              {totalCards}
+            </p>
           </div>
 
           {isLastCard
             ? (
                 <Button
                   onClick={handleComplete}
-                  className="rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 px-8 py-3 text-lg font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:from-emerald-700 hover:to-teal-700 hover:shadow-emerald-500/25 dark:from-emerald-500 dark:to-teal-500 dark:hover:from-emerald-600 dark:hover:to-teal-600 dark:hover:shadow-emerald-400/25"
+                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90 sm:w-auto"
                 >
                   Complete Exam
                 </Button>
@@ -303,10 +287,10 @@ const FlipCardExam: React.FC<FlipCardExamProps> = ({ trainerId, examData }) => {
                 <Button
                   variant="outline"
                   onClick={handleNext}
-                  className="group rounded-2xl border-2 border-yellow-500/50 bg-white px-6 py-3 text-slate-900 transition-all duration-300 hover:scale-105 hover:border-yellow-500 hover:bg-slate-50 dark:border-yellow-400/50 dark:bg-slate-900 dark:text-white dark:hover:border-yellow-400 dark:hover:bg-slate-800"
+                  className="w-full border-border bg-secondary text-foreground hover:bg-secondary/80 sm:w-auto"
                 >
-                  <span className="font-semibold">Next</span>
-                  <AltArrowRight size={20} weight="BoldDuotone" className="ml-2 transition-transform duration-300 group-hover:translate-x-1" />
+                  Next
+                  <AltArrowRight size={20} weight="BoldDuotone" className="ml-2" />
                 </Button>
               )}
         </div>

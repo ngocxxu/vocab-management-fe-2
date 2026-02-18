@@ -1,5 +1,6 @@
 'use client';
 
+import { EQuestionType } from '@/enum/vocab-trainer';
 import type { TFormTestVocabTrainer, TQuestionAPI, TWordTestSelect } from '@/types/vocab-trainer';
 import {
   AltArrowLeft,
@@ -129,6 +130,7 @@ const VocabExam: React.FC<VocabExamProps> = ({ trainerId, examData }) => {
         selectedAnswers={selectedAnswers}
         timeElapsed={timeElapsed}
         onBackToTrainers={handleBackToTrainers}
+        questionType={examData.questionType ?? EQuestionType.MULTIPLE_CHOICE}
       />
     );
   }
@@ -155,45 +157,44 @@ const VocabExam: React.FC<VocabExamProps> = ({ trainerId, examData }) => {
   }
 
   return (
-    <div className="relative space-y-8 py-8">
-      <VocabExamHeader
-        trainerName={examData.name || 'Vocabulary Exam'}
-        currentQuestion={currentQuestionIndex + 1}
-        totalQuestions={totalQuestions}
-        timeRemaining={timeRemaining}
-      />
+    <div className="min-h-screen bg-background px-4 py-8 sm:px-6">
+      <div className="mx-auto max-w-6xl space-y-8">
+        <VocabExamHeader
+          trainerName={examData.name || 'Vocabulary Exam'}
+          currentQuestion={currentQuestionIndex + 1}
+          totalQuestions={totalQuestions}
+          timeRemaining={timeRemaining}
+        />
 
-      <QuestionCard
-        question={currentQuestion}
-        questionNumber={currentQuestionIndex + 1}
-        selectedAnswer={selectedAnswers.get(currentQuestionIndex) || null}
-        onAnswerSelect={handleAnswerSelect}
-      />
+        <QuestionCard
+          question={currentQuestion}
+          questionNumber={currentQuestionIndex + 1}
+          selectedAnswer={selectedAnswers.get(currentQuestionIndex) || null}
+          onAnswerSelect={handleAnswerSelect}
+        />
 
-      {/* Navigation buttons */}
-      <div className="mx-auto max-w-4xl">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
           <Button
             variant="outline"
             onClick={handlePrevious}
             disabled={isFirstQuestion}
-            className="group rounded-2xl border-2 border-yellow-500/50 bg-white px-6 py-3 text-slate-900 transition-all duration-300 hover:scale-105 hover:border-yellow-500 dark:border-yellow-400/50 dark:bg-slate-900 dark:text-white dark:hover:border-yellow-400"
+            className="w-full border-border bg-secondary text-foreground hover:bg-secondary/80 sm:w-auto"
           >
-            <AltArrowLeft size={20} weight="BoldDuotone" className="mr-2 transition-transform duration-300 group-hover:-translate-x-1" />
-            <span className="font-semibold">Previous</span>
+            <AltArrowLeft size={20} weight="BoldDuotone" className="mr-2" />
+            Previous
           </Button>
 
-          <div className="rounded-2xl border border-yellow-500/30 bg-white px-6 py-3 backdrop-blur-sm dark:border-yellow-400/30 dark:bg-slate-900">
-            <div className="text-center">
-              <div className="text-sm text-slate-600 dark:text-slate-300">Answered</div>
-              <div className="text-2xl font-bold text-slate-900 dark:text-white">
-                {selectedAnswers.size}
-                <span className="text-lg text-slate-600 dark:text-slate-400">
-                  /
-                  {totalQuestions}
-                </span>
-              </div>
-            </div>
+          <div className="text-center">
+            <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+              Answered
+            </p>
+            <p className="text-2xl font-bold text-foreground">
+              {selectedAnswers.size}
+              {' '}
+              /
+              {' '}
+              {totalQuestions}
+            </p>
           </div>
 
           {isLastQuestion
@@ -201,11 +202,7 @@ const VocabExam: React.FC<VocabExamProps> = ({ trainerId, examData }) => {
                 <Button
                   onClick={handleSubmit}
                   disabled={!canSubmit || examState === 'submitting'}
-                  className={`rounded-2xl px-8 py-3 text-lg font-semibold shadow-lg transition-all duration-300 ${
-                    canSubmit && examState !== 'submitting'
-                      ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:scale-105 hover:from-emerald-700 hover:to-teal-700 hover:shadow-emerald-500/25 dark:from-emerald-500 dark:to-teal-500 dark:hover:from-emerald-600 dark:hover:to-teal-600 dark:hover:shadow-emerald-400/25'
-                      : 'bg-slate-400 text-slate-700 dark:bg-slate-600 dark:text-slate-300'
-                  }`}
+                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 sm:w-auto"
                 >
                   <CheckCircle size={20} weight="BoldDuotone" className="mr-2" />
                   {examState === 'submitting' ? 'Submitting...' : 'Submit Exam'}
@@ -215,10 +212,10 @@ const VocabExam: React.FC<VocabExamProps> = ({ trainerId, examData }) => {
                 <Button
                   variant="outline"
                   onClick={handleNext}
-                  className="group rounded-2xl border-2 border-yellow-500/50 bg-white px-6 py-3 text-slate-900 transition-all duration-300 hover:scale-105 hover:border-yellow-500 dark:border-yellow-400/50 dark:bg-slate-900 dark:text-white dark:hover:border-yellow-400"
+                  className="w-full border-border bg-secondary text-foreground hover:bg-secondary/80 sm:w-auto"
                 >
-                  <span className="font-semibold">Next</span>
-                  <AltArrowRight size={20} weight="BoldDuotone" className="ml-2 transition-transform duration-300 group-hover:translate-x-1" />
+                  Next
+                  <AltArrowRight size={20} weight="BoldDuotone" className="ml-2" />
                 </Button>
               )}
         </div>

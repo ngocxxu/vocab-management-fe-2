@@ -1,5 +1,7 @@
 'use client';
 
+import type { EQuestionType } from '@/enum/vocab-trainer';
+import { getQuestionTypeLabel } from '@/constants/vocab-trainer';
 import type { TExamResult, TExamSubmitResponse, TQuestion } from '@/types/vocab-trainer';
 import {
   AltArrowLeft,
@@ -79,6 +81,7 @@ type ExamResultsProps = {
   onExportPdf?: () => void;
   scoreDelta?: string;
   durationFasterText?: string;
+  questionType?: EQuestionType;
 };
 
 const CIRCLE_SIZE = 112;
@@ -99,6 +102,7 @@ const ExamResults: React.FC<ExamResultsProps> = ({
   onExportPdf,
   scoreDelta,
   durationFasterText,
+  questionType,
 }) => {
   const handleBackToTrainers = () => {
     const storageKey = `exam_data_${trainerId}`;
@@ -310,7 +314,7 @@ const ExamResults: React.FC<ExamResultsProps> = ({
                 ? result.status === 'PASSED'
                 : (selectedAnswers.get(index)?.trim() === question.correctAnswer);
               const explanation = result?.data?.explanation;
-              const correctAnswer = result?.systemSelected ?? question.correctAnswer;
+              const correctAnswer = result?.systemSelected?.trim() || question?.correctAnswer?.trim() || '—';
               const questionContent = parseContentWithQuotedHighlight(question.content);
 
               return (
@@ -343,7 +347,9 @@ const ExamResults: React.FC<ExamResultsProps> = ({
                         </span>
                       </div>
                       <span className="text-xs text-muted-foreground">
-                        Vocabulary: Fill in the blank
+                        {questionType
+                          ? `Vocabulary: ${getQuestionTypeLabel(questionType)}`
+                          : 'Vocabulary'}
                       </span>
                     </div>
 

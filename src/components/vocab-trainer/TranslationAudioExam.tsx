@@ -196,14 +196,14 @@ const TranslationAudioExam: React.FC<TranslationAudioExamProps> = ({ trainerId, 
 
   if (examState === 'uploading') {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="space-y-6 text-center">
-          <RefreshCircle size={64} weight="BoldDuotone" className="mx-auto animate-spin text-yellow-600 dark:text-yellow-400" />
+          <RefreshCircle size={64} weight="BoldDuotone" className="mx-auto animate-spin text-primary" />
           <div className="space-y-2">
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+            <h2 className="text-2xl font-bold text-foreground">
               Uploading your recording...
             </h2>
-            <p className="text-slate-600 dark:text-slate-300">
+            <p className="text-muted-foreground">
               Please wait while we upload your audio file
             </p>
           </div>
@@ -214,14 +214,14 @@ const TranslationAudioExam: React.FC<TranslationAudioExamProps> = ({ trainerId, 
 
   if (examState === 'submitting') {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="space-y-6 text-center">
-          <RefreshCircle size={64} weight="BoldDuotone" className="mx-auto animate-spin text-yellow-600 dark:text-yellow-400" />
+          <RefreshCircle size={64} weight="BoldDuotone" className="mx-auto animate-spin text-primary" />
           <div className="space-y-2">
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+            <h2 className="text-2xl font-bold text-foreground">
               Submitting your exam...
             </h2>
-            <p className="text-slate-600 dark:text-slate-300">
+            <p className="text-muted-foreground">
               Please wait while we process your submission
             </p>
           </div>
@@ -240,45 +240,42 @@ const TranslationAudioExam: React.FC<TranslationAudioExamProps> = ({ trainerId, 
   }
 
   return (
-    <div className="relative space-y-8 py-8">
-      <VocabExamHeader
-        trainerName={examData.name || 'Translation Audio Exam'}
-        currentQuestion={1}
-        totalQuestions={1}
-        timeRemaining={timeRemaining}
-      />
+    <div className="min-h-screen bg-background px-4 py-8 sm:px-6">
+      <div className="mx-auto max-w-6xl space-y-8">
+        <VocabExamHeader
+          trainerName={examData.name || 'Translation Audio Exam'}
+          currentQuestion={1}
+          totalQuestions={1}
+          timeRemaining={timeRemaining}
+        />
 
-      <div className="mx-auto max-w-4xl space-y-6 px-4">
-        <DialogueDisplay dialogue={dialogue} />
+        <div className="space-y-6">
+          <DialogueDisplay dialogue={dialogue} />
 
-        <AudioRecorder onRecordingComplete={handleRecordingComplete} onReset={handleResetRecording} />
+          <AudioRecorder onRecordingComplete={handleRecordingComplete} onReset={handleResetRecording} />
 
-        {audioBlob && (
-          <Card className="border-2 border-yellow-500/30 bg-white dark:border-yellow-400/30 dark:bg-slate-900">
-            <CardContent className="p-6">
-              <div className="space-y-4">
-                <p className="text-center text-slate-700 dark:text-slate-300">
-                  Recording complete! Submit your exam to continue.
-                </p>
-                <div className="flex justify-center">
-                  <Button
-                    onClick={handleSubmit}
-                    disabled={!canSubmit}
-                    className={`rounded-2xl px-8 py-3 text-lg font-semibold shadow-lg transition-all duration-300 ${
-                      canSubmit
-                        ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:scale-105 hover:from-emerald-700 hover:to-teal-700 hover:shadow-emerald-500/25 dark:from-emerald-500 dark:to-teal-500 dark:hover:from-emerald-600 dark:hover:to-teal-600 dark:hover:shadow-emerald-400/25'
-                        : 'bg-slate-400 text-slate-700 dark:bg-slate-600 dark:text-slate-300'
-                    }`}
-                  >
-                    <CheckCircle size={20} weight="BoldDuotone" className="mr-2" />
-                    Submit Exam
-                  </Button>
+          {audioBlob && (
+            <Card className="border border-border bg-card">
+              <CardContent className="p-6">
+                <div className="space-y-4">
+                  <p className="text-center text-foreground">
+                    Recording complete! Submit your exam to continue.
+                  </p>
+                  <div className="flex justify-center">
+                    <Button
+                      onClick={handleSubmit}
+                      disabled={!canSubmit}
+                      className="bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+                    >
+                      <CheckCircle size={20} weight="BoldDuotone" className="mr-2" />
+                      Submit Exam
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
+              </CardContent>
+            </Card>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 'use client';
 
+import { EQuestionType } from '@/enum/vocab-trainer';
 import type { TExamSubmitResponse, TFillInBlankEvaluationProgress } from '@/types/vocab-trainer';
 import { RefreshCircle } from '@solar-icons/react/ssr';
 import { useParams, useRouter } from 'next/navigation';
@@ -144,6 +145,7 @@ const FillInBlankResultPage: React.FC = () => {
           jobId={jobId ?? undefined}
           completedAt={completedAt}
           onRetryExam={() => router.push(`/vocab-trainer/${trainerId}/exam/fill-in-blank`)}
+          questionType={EQuestionType.FILL_IN_THE_BLANK}
         />
       </div>
     );
