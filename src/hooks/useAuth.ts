@@ -1,7 +1,7 @@
 import type { TAuthResponse, TRefreshData, TResetPasswordData, TSigninData, TSignupData, TUser } from '@/types/auth';
 import { useEffect, useState } from 'react';
-import { refresh, resetPassword, signout, verifyUser } from '@/actions';
-import { hasAuthToken } from '@/utils/auth-utils';
+import { refresh, resetPassword, verifyUser } from '@/actions';
+import { hasAuthToken, signoutClient } from '@/utils/auth-utils';
 import { authApi } from '@/utils/client-api';
 
 type AuthData = TUser | { isAuthenticated: boolean } | null;
@@ -59,7 +59,8 @@ export const authMutations = {
     return await authApi.signup(signupData);
   },
   signout: async (): Promise<{ message: string }> => {
-    return await signout();
+    await signoutClient();
+    return { message: 'Successfully signed out' };
   },
   refresh: async (refreshData: TRefreshData): Promise<{ message: string }> => {
     return await refresh(refreshData);

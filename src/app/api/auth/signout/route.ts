@@ -9,10 +9,9 @@ export async function POST() {
     // Call NestJS backend for signout
     const signoutResponse = await serverApi.post<{ message: string }>(API_ENDPOINTS.auth.signout, {});
 
-    // Clear authentication cookie
     const response = NextResponse.json(signoutResponse || { message: 'Successfully signed out' });
-    response.cookies.delete('accessToken');
-    response.cookies.delete('refreshToken');
+    response.cookies.delete({ name: 'accessToken', path: '/' });
+    response.cookies.delete({ name: 'refreshToken', path: '/' });
 
     return response;
   } catch (error) {

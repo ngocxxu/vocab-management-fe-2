@@ -2,7 +2,8 @@
 
 import type { TUser } from '@/types/auth';
 import { createContext, use, useCallback, useEffect, useMemo, useState } from 'react';
-import { signin, signout, signup, verifyUser } from '@/actions';
+import { signin, signup, verifyUser } from '@/actions';
+import { signoutClient } from '@/utils/auth-utils';
 import { Skeleton } from '@/components/ui/skeleton';
 
 type AuthContextType = {
@@ -92,7 +93,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const handleSignout = useCallback(async () => {
     try {
-      await signout();
+      await signoutClient();
       setUser(undefined);
     } catch (error) {
       console.error('Signout failed:', error);

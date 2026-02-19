@@ -25,6 +25,17 @@ export const handleTokenExpiration = () => {
   }, 1000);
 };
 
+export const signoutClient = async (): Promise<void> => {
+  if (typeof window === 'undefined') {
+    return;
+  }
+  const res = await fetch('/api/auth/signout', { method: 'POST', credentials: 'include' });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(typeof data?.error === 'string' ? data.error : 'Sign out failed');
+  }
+};
+
 /**
  * Check if user has access token cookie (client-side only)
  * This is a lightweight check that doesn't make an API call

@@ -1,4 +1,5 @@
-import { signout, verifyUser } from '@/actions';
+import { verifyUser } from '@/actions';
+import { signoutClient } from '@/utils/auth-utils';
 import { Button } from '@/components/ui/button';
 import type { MenuItem, SidebarProps, TUser } from '@/types';
 import { useTheme } from '@/hooks/useTheme';
@@ -62,7 +63,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, isExpanded = 
 
   const handleSignOut = async () => {
     try {
-      await signout();
+      await signoutClient();
     } catch (error) {
       console.error('Sign out failed:', error);
     }

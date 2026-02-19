@@ -1,4 +1,5 @@
-import { signout, verifyUser } from '@/actions';
+import { verifyUser } from '@/actions';
+import { signoutClient } from '@/utils/auth-utils';
 import { getPlans } from '@/actions/plans';
 import { NotificationDropdown } from '@/components/notifications/NotificationDropdown';
 import { Button } from '@/components/ui/button';
@@ -75,7 +76,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   const handleLogout = async () => {
     try {
-      await signout();
+      await signoutClient();
     } catch (error) {
       console.error('Logout error:', error);
     }
