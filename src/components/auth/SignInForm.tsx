@@ -119,7 +119,7 @@ function SignInForm() {
               </div>
               <div>
                 <span className="font-sans text-xl font-bold text-foreground uppercase min-[1600px]:text-4xl 2xl:text-3xl">Vocab</span>
-                <p className="font-sans text-xs tracking-wide text-primary uppercase min-[1600px]:text-lg 2xl:text-base">PRECISION LEARNING</p>
+                <p className="font-sans text-xs tracking-wide text-primary uppercase min-[1600px]:text-lg 2xl:text-base">INTELLIGENCE</p>
               </div>
             </div>
             <div className="mt-16 inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 min-[1600px]:mt-32 min-[1600px]:px-6 min-[1600px]:py-3 min-[1600px]:text-xl 2xl:mt-24 2xl:px-5 2xl:py-2.5 2xl:text-lg">
