@@ -1,3 +1,5 @@
+'use server';
+
 import type { TPlan } from '@/types/plan';
 import { Env } from '@/libs/Env';
 import { API_ENDPOINTS } from '@/utils/api-config';
@@ -13,7 +15,7 @@ function isPlanLike(value: unknown): value is TPlan {
   return (
     typeof o.role === 'string'
     && typeof o.name === 'string'
-    && typeof o.price === 'number'
+    && (o.price === null || typeof o.price === 'number')
     && typeof o.priceLabel === 'string'
     && Array.isArray(o.features)
     && o.limits != null
@@ -21,9 +23,10 @@ function isPlanLike(value: unknown): value is TPlan {
   );
 }
 
-export async function getPlans(): Promise<TPlan[]> {
+export async function getPlans(role?: string): Promise<TPlan[]> {
   try {
-    const url = `${baseURL()}${API_ENDPOINTS.plans}`;
+    const search = role ? `?role=${encodeURIComponent(role)}` : '';
+    const url = `${baseURL()}${API_ENDPOINTS.plans}${search}`;
     const res = await fetch(url, {
       next: { revalidate: REVALIDATE_SECONDS },
       headers: { 'Content-Type': 'application/json' },

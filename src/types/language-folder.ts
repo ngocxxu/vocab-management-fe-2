@@ -30,6 +30,7 @@ export type LibrarySearchProps = {
 
 export type LibraryHeaderProps = {
   onCreateFolder: () => void;
+  userRole?: string;
 };
 
 export type LibraryFolderCardProps = {
@@ -58,6 +59,7 @@ export type LanguageFolderProps = {
 
 export type CreateFolderCardProps = {
   onCreateFolder: () => void;
+  userRole?: string;
 };
 
 export type LanguageFolderFormData = {

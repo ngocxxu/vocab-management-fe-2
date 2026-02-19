@@ -56,7 +56,7 @@ function SignUpForm() {
         lastName: data.lastName,
         phone: data.phone || '',
         avatar: '',
-        role: UserRole.STAFF,
+        role: UserRole.GUEST,
       };
       await authApi.signup(signupData);
       const redirectTo = searchParams.get('redirect') || '/dashboard';

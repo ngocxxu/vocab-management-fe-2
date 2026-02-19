@@ -1,4 +1,5 @@
 import { signout, verifyUser } from '@/actions';
+import { getPlans } from '@/actions/plans';
 import { NotificationDropdown } from '@/components/notifications/NotificationDropdown';
 import { Button } from '@/components/ui/button';
 import {
@@ -12,7 +13,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { useTheme } from '@/hooks/useTheme';
+import { cn } from '@/libs/utils';
+import type { TPlan } from '@/types/plan';
 import type { HeaderProps, TUser } from '@/types';
+import { getPlanBadgeClassName, getPlanDisplayName } from '@/constants/plan';
 import {
   HamburgerMenu,
   Logout,
@@ -38,6 +42,7 @@ export const Header: React.FC<HeaderProps> = ({
   const { theme, toggleTheme, mounted } = useTheme();
   const router = useRouter();
   const [user, setUser] = useState<TUser | null>(null);
+  const [currentPlan, setCurrentPlan] = useState<TPlan | null>(null);
   const [commandOpen, setCommandOpen] = useState(false);
 
   useEffect(() => {
@@ -47,6 +52,14 @@ export const Header: React.FC<HeaderProps> = ({
     };
     loadUser();
   }, []);
+
+  useEffect(() => {
+    if (!user?.role) {
+      setCurrentPlan(null);
+      return;
+    }
+    getPlans(user.role).then(plans => setCurrentPlan(plans[0] ?? null));
+  }, [user?.role]);
 
   const openCommand = useCallback(() => setCommandOpen(true), []);
   useEffect(() => {
@@ -70,6 +83,17 @@ export const Header: React.FC<HeaderProps> = ({
     router.refresh();
     router.push('/');
   };
+
+  const planBadgeLabel = (currentPlan ?? user?.role)
+    ? user?.role === 'ADMIN'
+      ? 'Admin'
+      : currentPlan
+        ? (() => {
+            const priceSuffix = Number(currentPlan.priceLabel) ? ` - ${currentPlan.priceLabel}` : '';
+            return `${currentPlan.name}${priceSuffix}`;
+          })()
+        : getPlanDisplayName(user?.role ?? '')
+    : '';
 
   return (
     <header className="border-b border-border bg-card px-4 py-3 shadow-sm md:px-6 md:py-4">
@@ -160,9 +184,9 @@ export const Header: React.FC<HeaderProps> = ({
                 {' '}
                 {user?.lastName}
               </div>
-              {user?.role && (
-                <span className="inline-flex items-center rounded-full bg-violet-100 px-2 py-0.5 text-xs font-semibold tracking-wide text-violet-700 uppercase dark:bg-violet-900/40 dark:text-violet-300">
-                  {user.role}
+              {(currentPlan ?? user?.role) && (
+                <span className={cn('inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold tracking-wide', getPlanBadgeClassName(user?.role ?? ''))}>
+                  {planBadgeLabel}
                 </span>
               )}
             </div>

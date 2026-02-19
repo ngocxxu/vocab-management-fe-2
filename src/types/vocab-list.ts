@@ -97,6 +97,7 @@ export type AddVocabDialogProps = {
   initialSubjectsData?: import('@/types/subject').TSubjectResponse;
   initialLanguagesData?: import('@/types').ResponseAPI<import('@/types').TLanguage[]>;
   initialWordTypesData?: import('@/types/word-type').TWordTypeResponse;
+  userRole?: string;
 };
 
 export type ImportVocabDialogProps = {
@@ -130,6 +131,7 @@ export type TextTargetTabsProps = {
   initialSubjectsData?: import('@/types/subject').TSubjectResponse;
   initialLanguagesData?: import('@/types').ResponseAPI<import('@/types').TLanguage[]>;
   initialWordTypesData?: import('@/types/word-type').TWordTypeResponse;
+  userRole?: string;
 };
 
 export type WordTypeItem = {
@@ -154,6 +156,7 @@ export type TextTargetFormProps = {
   onExampleChange: (exampleIndex: number, field: 'source' | 'target', value: string, targetIndex: number) => void;
   onAddExample: (targetIndex: number) => void;
   onRemoveExample: (exampleIndex: number, targetIndex: number) => void;
+  userRole?: string;
 };
 
 export type ExamplesSectionProps = {
@@ -210,6 +213,7 @@ export type VocabListHeaderProps = {
   onClearFilters: () => void;
   hasActiveFilters: boolean;
   queryParams: import('@/utils/api-config').VocabQueryParams;
+  userRole?: string;
 };
 
 export type ExportExcelButtonProps = {

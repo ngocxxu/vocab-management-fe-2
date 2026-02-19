@@ -15,7 +15,10 @@ import { useForm } from 'react-hook-form';
 import { useSpeechSynthesis } from 'react-speech-kit';
 import { toast } from 'sonner';
 import { z } from 'zod';
+import { verifyUser } from '@/actions';
+import type { TUser } from '@/types/auth';
 import { createVocab, deleteVocabsBulk, updateVocab } from '@/actions/vocabs';
+import { isQuotaError, QUOTA_ERROR_MESSAGE } from '@/utils/quota-error';
 import { BulkDeleteDialog, DeleteActionButton, ErrorState } from '@/components/shared';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -64,8 +67,13 @@ const VocabList: React.FC<VocabListProps> = ({
   initialLanguagesData,
   initialWordTypesData,
 }) => {
+  const [user, setUser] = useState<TUser | null>(null);
   const [importDialogOpen, setImportDialogOpen] = React.useState(false);
   const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    verifyUser().then(setUser);
+  }, []);
   const [expanded, setExpanded] = React.useState<Record<string, boolean>>({});
   const { speak, cancel, voices } = useSpeechSynthesis();
 
@@ -361,9 +369,16 @@ const VocabList: React.FC<VocabListProps> = ({
       });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to save vocabulary';
-      toast.error('Error', {
-        description: errorMessage,
-      });
+      if (isQuotaError(error)) {
+        toast.error(QUOTA_ERROR_MESSAGE, {
+          description: errorMessage,
+          action: { label: 'Upgrade', onClick: () => {
+            window.location.href = '/#pricing';
+          } },
+        });
+      } else {
+        toast.error('Error', { description: errorMessage });
+      }
       console.error('Failed to save vocabulary:', error);
     }
   };
@@ -525,6 +540,7 @@ const VocabList: React.FC<VocabListProps> = ({
           totalCount={totalItems}
           onAddVocab={() => dialogState.setOpen(true)}
           onImportExcel={() => setImportDialogOpen(true)}
+          userRole={user?.role}
           sourceLanguageCode={sourceLanguageCode || ''}
           targetLanguageCode={targetLanguageCode || ''}
           languageFolder={languageFolder}
@@ -573,6 +589,7 @@ const VocabList: React.FC<VocabListProps> = ({
               initialSubjectsData={initialSubjectsData}
               initialLanguagesData={initialLanguagesData}
               initialWordTypesData={initialWordTypesData}
+              userRole={user?.role}
             />
 
             <ImportVocabDialog

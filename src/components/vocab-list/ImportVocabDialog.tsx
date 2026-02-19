@@ -17,6 +17,7 @@ import * as XLSX from 'xlsx';
 import { z } from 'zod';
 import { createSubject } from '@/actions/subjects';
 import { importVocabsCsv } from '@/actions/vocabs';
+import { isQuotaError, QUOTA_ERROR_MESSAGE } from '@/utils/quota-error';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -173,9 +174,17 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
         }
       }
 
-      toast.error('error', {
-        description: error instanceof Error ? error.message : 'Failed to import file. Please check the file format and try again.',
-      });
+      const message = error instanceof Error ? error.message : 'Failed to import file. Please check the file format and try again.';
+      if (isQuotaError(error)) {
+        toast.error(QUOTA_ERROR_MESSAGE, {
+          description: message,
+          action: { label: 'Upgrade', onClick: () => {
+            window.location.href = '/#pricing';
+          } },
+        });
+      } else {
+        toast.error('Import failed', { description: message });
+      }
     } finally {
       setIsUploading(false);
     }

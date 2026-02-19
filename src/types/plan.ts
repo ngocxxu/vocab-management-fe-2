@@ -8,7 +8,7 @@ export type PlanLimits = {
 export type TPlan = {
   role: string;
   name: string;
-  price: number;
+  price: number | null;
   priceLabel: string;
   limits: PlanLimits;
   features: string[];

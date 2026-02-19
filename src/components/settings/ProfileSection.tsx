@@ -1,10 +1,15 @@
 'use client';
 
+import type { TPlan } from '@/types/plan';
 import type { TUser } from '@/types/auth';
 import type { TUserProfile } from '@/types/settings';
+import { getPlanBadgeClassName, getPlanDisplayName } from '@/constants/plan';
 import {
+  Book,
+  Folder,
   Letter,
   LockPassword,
+  NotebookMinimalistic,
   Pen,
   Phone,
   Shield,
@@ -14,6 +19,7 @@ import {
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { verifyUser } from '@/actions';
+import { getPlans } from '@/actions/plans';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -29,6 +35,7 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
   onProfileChangeAction,
 }) => {
   const [user, setUser] = useState<TUser | null>(null);
+  const [currentPlan, setCurrentPlan] = useState<TPlan | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -61,6 +68,14 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
     };
     loadUser();
   }, []);
+
+  useEffect(() => {
+    if (!user?.role) {
+      setCurrentPlan(null);
+      return;
+    }
+    getPlans(user.role).then(plans => setCurrentPlan(plans[0] ?? null));
+  }, [user?.role]);
 
   const profile: TUserProfile = React.useMemo(() => user
     ? {
@@ -144,6 +159,16 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
 
   const displayProfile = isEditing ? formData : profile;
   const avatarUrl = displayProfile.avatar;
+  const planLabelText = (currentPlan ?? user?.role)
+    ? displayProfile.role === 'ADMIN'
+      ? 'Admin'
+      : currentPlan
+        ? (() => {
+            const priceSuffix = Number(currentPlan.priceLabel) ? ` — ${currentPlan.priceLabel}` : '';
+            return `${currentPlan.name}${priceSuffix}`;
+          })()
+        : getPlanDisplayName(displayProfile.role)
+    : '';
 
   return (
     <div className="space-y-6">
@@ -246,6 +271,59 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
                     />
                   </div>
                 </div>
+                {(currentPlan ?? user?.role) && (
+                  <div className="space-y-4 rounded-xl border border-border bg-muted/20 p-4 sm:col-span-2">
+                    <div className="space-y-2">
+                      <Label className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+                        Current plan
+                      </Label>
+                      <span
+                        className={cn(
+                          'inline-flex items-center rounded-full px-3 py-1.5 text-sm font-semibold tracking-wide',
+                          getPlanBadgeClassName(displayProfile.role),
+                        )}
+                      >
+                        {planLabelText}
+                      </span>
+                    </div>
+                    {currentPlan && (
+                      <div className="space-y-3 border-t border-border pt-4">
+                        <Label className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+                          Plan limits
+                        </Label>
+                        <ul className="space-y-2">
+                          <li className="flex items-center gap-3">
+                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted">
+                              <Book size={18} weight="BoldDuotone" className="text-muted-foreground" />
+                            </div>
+                            <span className="text-sm text-muted-foreground">
+                              {currentPlan.limits.vocabPerDay === -1 ? 'Unlimited' : currentPlan.limits.vocabPerDay}
+                              {' vocabs/day'}
+                            </span>
+                          </li>
+                          <li className="flex items-center gap-3">
+                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted">
+                              <Folder size={18} weight="BoldDuotone" className="text-muted-foreground" />
+                            </div>
+                            <span className="text-sm text-muted-foreground">
+                              {currentPlan.limits.languageFolders === -1 ? 'Unlimited' : currentPlan.limits.languageFolders}
+                              {' language folders'}
+                            </span>
+                          </li>
+                          <li className="flex items-center gap-3">
+                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted">
+                              <NotebookMinimalistic size={18} weight="BoldDuotone" className="text-muted-foreground" />
+                            </div>
+                            <span className="text-sm text-muted-foreground">
+                              {currentPlan.limits.subjects === -1 ? 'Unlimited' : currentPlan.limits.subjects}
+                              {' subjects'}
+                            </span>
+                          </li>
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
                 <div className="space-y-2">
                   <Label htmlFor="phone" className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
                     Phone Number

@@ -3,6 +3,7 @@
 import type { VocabListHeaderProps } from '@/types/vocab-list';
 import { AddCircle, Filter, Folder, Upload } from '@solar-icons/react/ssr';
 import React from 'react';
+import { PremiumFeatureGate } from '@/components/premium';
 import { Button } from '@/components/ui/button';
 import { MultiSelect } from '@/components/ui/multi-select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -26,6 +27,7 @@ const VocabListHeader: React.FC<VocabListHeaderProps> = ({
   onClearFilters,
   hasActiveFilters,
   queryParams,
+  userRole,
 }) => {
   return (
     <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
@@ -131,14 +133,16 @@ const VocabListHeader: React.FC<VocabListHeaderProps> = ({
         </Popover>
         <DownloadTemplateButton />
         <ExportExcelButton queryParams={queryParams} />
-        <Button
+        <PremiumFeatureGate
+          userRole={userRole}
+          featureName="Import CSV / Bulk import"
           onClick={onImportExcel}
           variant="outline"
           className="h-10 border-border bg-card/80 backdrop-blur-sm"
         >
           <Upload size={16} weight="BoldDuotone" className="mr-2" />
           <span className="hidden sm:inline">Import Excel</span>
-        </Button>
+        </PremiumFeatureGate>
         <Button
           onClick={onAddVocab}
           className="h-10 bg-primary text-primary-foreground shadow-lg hover:opacity-90"

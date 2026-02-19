@@ -25,6 +25,7 @@ const TextTargetTabs: React.FC<TextTargetTabsProps> = ({
   initialSubjectsData,
   initialLanguagesData: _initialLanguagesData,
   initialWordTypesData,
+  userRole,
 }) => {
   const wordTypes = initialWordTypesData?.items || [];
   const isLoading = false;
@@ -141,6 +142,7 @@ const TextTargetTabs: React.FC<TextTargetTabsProps> = ({
           onExampleChange={onExampleChange}
           onAddExample={onAddExample}
           onRemoveExample={onRemoveExample}
+          userRole={userRole}
         />
       </div>
     );
@@ -230,6 +232,7 @@ const TextTargetTabs: React.FC<TextTargetTabsProps> = ({
               onExampleChange={onExampleChange!}
               onAddExample={onAddExample!}
               onRemoveExample={onRemoveExample!}
+              userRole={userRole}
             />
           </TabsContent>
         ))}

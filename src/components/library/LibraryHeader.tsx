@@ -2,12 +2,13 @@
 
 import { AddCircle } from '@solar-icons/react/ssr';
 import React, { memo, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
+import { PremiumFeatureGate } from '@/components/premium';
 
 import type { LibraryHeaderProps } from '@/types/language-folder';
 
 const LibraryHeader: React.FC<LibraryHeaderProps> = memo(({
   onCreateFolder,
+  userRole,
 }) => {
   const handleCreateFolder = useCallback(() => {
     onCreateFolder();
@@ -25,16 +26,18 @@ const LibraryHeader: React.FC<LibraryHeaderProps> = memo(({
         </div>
       </div>
 
-      {/* Action Buttons */}
       <div className="flex w-full items-center justify-end space-x-4 sm:w-auto">
-        <Button
+        <PremiumFeatureGate
+          userRole={userRole}
+          featureName="Create language folder"
+          description="Create more language folders on the Member plan. Upgrade to unlock unlimited folders."
           onClick={handleCreateFolder}
           className="h-10 w-full bg-primary text-primary-foreground shadow-lg transition-all duration-300 hover:scale-105 hover:opacity-90 hover:shadow-xl sm:w-auto"
         >
           <AddCircle size={20} weight="BoldDuotone" className="mr-2" />
           <span className="hidden sm:inline">Create New Folder</span>
           <span className="sm:hidden">Create Folder</span>
-        </Button>
+        </PremiumFeatureGate>
       </div>
     </div>
   );

@@ -9,7 +9,10 @@ const headingGradient = 'Full Potential';
 const subtitle
   = 'Choose the role that fits your journey. From casual explorers to dedicated polyglots, we have the tools you need to master any language.';
 
-export default function LandingPricing({ plans = [] }: Readonly<{ plans?: TPlan[] }>) {
+export default function LandingPricing({
+  plans = [],
+  currentUserRole,
+}: Readonly<{ plans?: TPlan[]; currentUserRole?: string }>) {
   const planList = Array.isArray(plans) ? plans : [];
 
   return (
@@ -32,7 +35,7 @@ export default function LandingPricing({ plans = [] }: Readonly<{ plans?: TPlan[
         </div>
 
         <div className="mx-auto mt-12 grid max-w-5xl gap-8 overflow-visible md:grid-cols-2 md:gap-10 2xl:max-w-6xl">
-          <PricingCardsFromApi plans={planList} />
+          <PricingCardsFromApi plans={planList} currentUserRole={currentUserRole} />
         </div>
       </div>
     </section>

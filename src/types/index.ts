@@ -39,8 +39,8 @@ export type TVocabTrainerQuery = {
 
 export enum EUserRole {
   ADMIN = 'ADMIN',
-  STAFF = 'STAFF',
-  CUSTOMER = 'CUSTOMER',
+  MEMBER = 'MEMBER',
+  GUEST = 'GUEST',
 }
 
 // Export language folder types

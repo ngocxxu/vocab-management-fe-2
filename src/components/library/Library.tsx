@@ -2,9 +2,12 @@
 
 import { createLanguageFolder, deleteLanguageFolder } from '@/actions/language-folders';
 import type { LibraryProps, TCreateLanguageFolder, TLanguageFolder } from '@/types/language-folder';
+import type { TUser } from '@/types/auth';
 import { useRouter } from 'next/navigation';
-import React, { useCallback, useMemo, useState, useTransition } from 'react';
+import React, { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
 import { toast } from 'sonner';
+import { verifyUser } from '@/actions';
+import { isQuotaError, QUOTA_ERROR_MESSAGE } from '@/utils/quota-error';
 import CreateFolderCard from './CreateFolderCard';
 import CreateFolderModal from './CreateFolderModal';
 import EditFolderDialog from './EditFolderDialog';
@@ -17,12 +20,17 @@ import LibrarySearch from './LibrarySearch';
 const Library: React.FC<LibraryProps> = ({ initialData, initialLanguagesData }) => {
   const router = useRouter();
   const [, startTransition] = useTransition();
+  const [user, setUser] = useState<TUser | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'updatedAt' | 'name'>('updatedAt');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingFolder, setEditingFolder] = useState<TLanguageFolder | null>(null);
   const [showEditDialog, setShowEditDialog] = useState(false);
+
+  useEffect(() => {
+    verifyUser().then(setUser);
+  }, []);
 
   const isLoading = false;
 
@@ -37,12 +45,24 @@ const Library: React.FC<LibraryProps> = ({ initialData, initialLanguagesData }) 
   const handleCreateFolderSubmit = useCallback(async (folderData: TCreateLanguageFolder) => {
     try {
       await createLanguageFolder(folderData);
+      setIsCreateModalOpen(false);
       startTransition(() => {
         router.refresh();
       });
     } catch (error) {
       console.error('Error creating language folder:', error);
-      throw error;
+      if (isQuotaError(error)) {
+        setIsCreateModalOpen(false);
+        toast.error(QUOTA_ERROR_MESSAGE, {
+          description: error instanceof Error ? error.message : 'Folder limit reached.',
+          action: { label: 'Upgrade', onClick: () => {
+            window.location.href = '/#pricing';
+          } },
+        });
+      } else {
+        toast.error(error instanceof Error ? error.message : 'Failed to create language folder');
+        throw error;
+      }
     }
   }, [router, startTransition]);
 
@@ -110,7 +130,7 @@ const Library: React.FC<LibraryProps> = ({ initialData, initialLanguagesData }) 
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto flex flex-col gap-6 px-4 py-4 sm:gap-8 sm:py-6 md:gap-10 md:py-8">
-        <LibraryHeader onCreateFolder={handleCreateFolder} />
+        <LibraryHeader onCreateFolder={handleCreateFolder} userRole={user?.role} />
 
         <LibrarySearch
           searchQuery={searchQuery}
@@ -140,7 +160,7 @@ const Library: React.FC<LibraryProps> = ({ initialData, initialLanguagesData }) 
                 onDelete={handleDelete}
               />
             ))}
-            <CreateFolderCard onCreateFolder={handleCreateFolder} />
+            <CreateFolderCard onCreateFolder={handleCreateFolder} userRole={user?.role} />
           </div>
         )}
 

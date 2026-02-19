@@ -27,6 +27,7 @@ const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
   initialSubjectsData,
   initialLanguagesData,
   initialWordTypesData,
+  userRole,
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -72,6 +73,7 @@ const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
                 onActiveTabChange={onActiveTabChange}
                 onAddTextTarget={onAddTextTarget}
                 onRemoveTextTarget={onRemoveTextTarget}
+                userRole={userRole}
               />
             </div>
             <div className="min-w-0">
@@ -90,6 +92,7 @@ const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
                 sourceLanguageCode={formData.sourceLanguageCode}
                 targetLanguageCode={formData.targetLanguageCode}
                 initialSubjectsData={initialSubjectsData}
+                userRole={userRole}
               />
             </div>
           </div>

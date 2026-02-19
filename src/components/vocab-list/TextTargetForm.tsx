@@ -5,6 +5,8 @@ import { MagicStick, RefreshCircle } from '@solar-icons/react/ssr';
 import React, { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { generateTextTargetContent } from '@/actions/vocabs';
+import { PremiumFeatureGate } from '@/components/premium';
+import { UserRole } from '@/constants/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -32,6 +34,7 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
   onExampleChange,
   onAddExample,
   onRemoveExample,
+  userRole,
 }) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isCooldownActive, setIsCooldownActive] = useState(false);
@@ -138,38 +141,55 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
             <div className="h-5 w-2 shrink-0 rounded-full bg-primary" />
             <h4 className="text-sm font-semibold">Core Meaning</h4>
           </div>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={handleGenerateAI}
-            disabled={isGenerating || isCooldownActive || !textSource || !sourceLanguageCode || !targetLanguageCode}
-            className="h-7 gap-1.5 text-xs"
-          >
-            {isGenerating
-              ? (
-                  <>
-                    <RefreshCircle size={12} weight="BoldDuotone" className="animate-spin" />
-                    Generating...
-                  </>
-                )
-              : isCooldownActive
-                ? (
-                    <>
-                      <RefreshCircle size={12} weight="BoldDuotone" />
-                      Wait
-                      {' '}
-                      {cooldownRemaining}
-                      s
-                    </>
-                  )
-                : (
-                    <>
-                      <MagicStick size={12} weight="BoldDuotone" />
-                      AI Generate
-                    </>
-                  )}
-          </Button>
+          {userRole === UserRole.GUEST
+            ? (
+                <PremiumFeatureGate
+                  userRole={userRole}
+                  featureName="AI Generate (text target)"
+                  description="Auto-generate target text and examples with AI. Upgrade to Member to unlock."
+                  onClick={handleGenerateAI}
+                  variant="outline"
+                  size="sm"
+                  className="h-7 gap-1.5 text-xs"
+                >
+                  <MagicStick size={12} weight="BoldDuotone" />
+                  AI Generate
+                </PremiumFeatureGate>
+              )
+            : (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleGenerateAI}
+                  disabled={isGenerating || isCooldownActive || !textSource || !sourceLanguageCode || !targetLanguageCode}
+                  className="h-7 gap-1.5 text-xs"
+                >
+                  {isGenerating
+                    ? (
+                        <>
+                          <RefreshCircle size={12} weight="BoldDuotone" className="animate-spin" />
+                          Generating...
+                        </>
+                      )
+                    : isCooldownActive
+                      ? (
+                          <>
+                            <RefreshCircle size={12} weight="BoldDuotone" />
+                            Wait
+                            {' '}
+                            {cooldownRemaining}
+                            s
+                          </>
+                        )
+                      : (
+                          <>
+                            <MagicStick size={12} weight="BoldDuotone" />
+                            AI Generate
+                          </>
+                        )}
+                </Button>
+              )}
         </div>
         <div className="space-y-4">
           <div>
