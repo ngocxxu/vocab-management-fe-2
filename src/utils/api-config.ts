@@ -79,6 +79,7 @@ export const API_ENDPOINTS = {
   languageFolders: '/language-folders',
   notifications: '/notifications',
   cloudinary: '/cloudinary',
+  plans: '/plans',
 } as const;
 
 // API method configurations

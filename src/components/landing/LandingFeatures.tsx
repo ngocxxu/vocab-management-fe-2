@@ -99,8 +99,8 @@ export default function LandingFeatures() {
                   AI LISTENING...
                 </span>
                 <div className="ml-auto flex items-end gap-0.5">
-                  {['h-3', 'h-5', 'h-7', 'h-5', 'h-3'].map(h => (
-                    <div key={h} className={`w-1 rounded bg-white/90 ${h}`} />
+                  {['h-3', 'h-5', 'h-7', 'h-5', 'h-3'].map((h, i) => (
+                    <div key={i} className={`w-1 rounded bg-white/90 ${h}`} />
                   ))}
                 </div>
               </div>

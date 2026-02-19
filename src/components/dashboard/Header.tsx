@@ -160,9 +160,11 @@ export const Header: React.FC<HeaderProps> = ({
                 {' '}
                 {user?.lastName}
               </div>
-              <span className="inline-flex items-center rounded-full bg-violet-100 px-2 py-0.5 text-xs font-semibold tracking-wide text-violet-700 uppercase dark:bg-violet-900/40 dark:text-violet-300">
-                PRO
-              </span>
+              {user?.role && (
+                <span className="inline-flex items-center rounded-full bg-violet-100 px-2 py-0.5 text-xs font-semibold tracking-wide text-violet-700 uppercase dark:bg-violet-900/40 dark:text-violet-300">
+                  {user.role}
+                </span>
+              )}
             </div>
             <Button
               variant="ghost"

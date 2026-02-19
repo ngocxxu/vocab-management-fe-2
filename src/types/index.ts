@@ -8,6 +8,9 @@ export type ResponseAPI<T> = { items: T } & TPagination;
 // Export auth types
 export * from './auth';
 
+// Export language types
+export * from './language';
+
 export type TPagination = {
   currentPage: number;
   totalItems: number;
@@ -40,14 +43,13 @@ export enum EUserRole {
   CUSTOMER = 'CUSTOMER',
 }
 
-// Export language types
-export * from './language';
-
 // Export language folder types
 export * from './language-folder';
 
 // Export notification types
 export * from './notification';
+
+export * from './plan';
 
 // Export statistics types
 export * from './statistics';
