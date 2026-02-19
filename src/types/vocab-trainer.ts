@@ -294,6 +294,7 @@ export type AddVocabTrainerDialogProps = {
   initialLanguagesData?: ResponseAPI<TLanguage[]>;
   cachedLanguageFolders?: TVocabSelectionFolderArray;
   onLanguageFoldersLoaded?: (folders: TVocabSelectionFolderArray) => void;
+  userRole?: string;
 };
 
 export type QuickFilter = 'all' | 'recent' | 'difficult' | 'unlearned';

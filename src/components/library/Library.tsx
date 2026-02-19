@@ -7,6 +7,8 @@ import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { verifyUser } from '@/actions';
+import { getPlans } from '@/actions/plans';
+import type { TPlan } from '@/types/plan';
 import { isQuotaError, QUOTA_ERROR_MESSAGE } from '@/utils/quota-error';
 import CreateFolderCard from './CreateFolderCard';
 import CreateFolderModal from './CreateFolderModal';
@@ -21,6 +23,7 @@ const Library: React.FC<LibraryProps> = ({ initialData, initialLanguagesData }) 
   const router = useRouter();
   const [, startTransition] = useTransition();
   const [user, setUser] = useState<TUser | null>(null);
+  const [currentPlan, setCurrentPlan] = useState<TPlan | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'updatedAt' | 'name'>('updatedAt');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
@@ -31,6 +34,17 @@ const Library: React.FC<LibraryProps> = ({ initialData, initialLanguagesData }) 
   useEffect(() => {
     verifyUser().then(setUser);
   }, []);
+
+  useEffect(() => {
+    if (!user?.role) {
+      return;
+    }
+    getPlans(user.role).then(plans => setCurrentPlan(plans[0] ?? null));
+  }, [user?.role]);
+
+  const folderCount = initialData?.items?.length ?? 0;
+  const folderLimit = currentPlan?.limits.languageFolders ?? null;
+  const canCreateFolder = folderLimit === null || folderLimit === -1 || folderCount < folderLimit;
 
   const isLoading = false;
 
@@ -130,7 +144,11 @@ const Library: React.FC<LibraryProps> = ({ initialData, initialLanguagesData }) 
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto flex flex-col gap-6 px-4 py-4 sm:gap-8 sm:py-6 md:gap-10 md:py-8">
-        <LibraryHeader onCreateFolder={handleCreateFolder} userRole={user?.role} />
+        <LibraryHeader
+          onCreateFolder={handleCreateFolder}
+          userRole={user?.role}
+          canCreateFolder={canCreateFolder}
+        />
 
         <LibrarySearch
           searchQuery={searchQuery}
@@ -160,7 +178,11 @@ const Library: React.FC<LibraryProps> = ({ initialData, initialLanguagesData }) 
                 onDelete={handleDelete}
               />
             ))}
-            <CreateFolderCard onCreateFolder={handleCreateFolder} userRole={user?.role} />
+            <CreateFolderCard
+              onCreateFolder={handleCreateFolder}
+              userRole={user?.role}
+              canCreateFolder={canCreateFolder}
+            />
           </div>
         )}
 

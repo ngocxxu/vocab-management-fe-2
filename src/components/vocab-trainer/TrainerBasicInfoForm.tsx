@@ -1,7 +1,7 @@
 'use client';
 
-import { Bell } from '@solar-icons/react/ssr';
-import React from 'react';
+import { Bell, Lock } from '@solar-icons/react/ssr';
+import React, { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import {
   FormControl,
@@ -13,11 +13,18 @@ import {
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
+import { UserRole } from '@/constants/auth';
 import { QUESTION_TYPE_OPTIONS } from '@/constants/vocab-trainer';
+import { EQuestionType } from '@/enum/vocab-trainer';
 import { cn } from '@/libs/utils';
+import { UpsellModal } from '@/components/premium/UpsellModal';
 
-const TrainerBasicInfoForm: React.FC = () => {
+type TrainerBasicInfoFormProps = Readonly<{ userRole?: string }>;
+
+const TrainerBasicInfoForm: React.FC<TrainerBasicInfoFormProps> = ({ userRole }) => {
   const form = useFormContext();
+  const [upsellOpen, setUpsellOpen] = useState(false);
+  const isGuest = userRole === UserRole.GUEST;
 
   return (
     <div className="space-y-4">
@@ -55,6 +62,10 @@ const TrainerBasicInfoForm: React.FC = () => {
               <FormLabel>Question Type</FormLabel>
               <Select
                 onValueChange={(value) => {
+                  if (value === EQuestionType.TRANSLATION_AUDIO && isGuest) {
+                    setUpsellOpen(true);
+                    return;
+                  }
                   field.onChange(value);
                   form.clearErrors('questionType');
                 }}
@@ -68,11 +79,27 @@ const TrainerBasicInfoForm: React.FC = () => {
                 <SelectContent>
                   {QUESTION_TYPE_OPTIONS.map(option => (
                     <SelectItem key={option.value} value={option.value}>
-                      {option.label}
+                      {option.value === EQuestionType.TRANSLATION_AUDIO
+                        ? (
+                            <span className="flex w-full items-center justify-between gap-3">
+                              <span>{option.label}</span>
+                              <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-muted px-2.5 py-0.5 font-sans text-xs font-medium text-muted-foreground">
+                                <Lock size={12} weight="BoldDuotone" />
+                                Upgrade
+                              </span>
+                            </span>
+                          )
+                        : option.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+              <UpsellModal
+                open={upsellOpen}
+                onOpenChange={setUpsellOpen}
+                featureName="Translation Audio"
+                description="Translation Audio exam is available on the Member plan. Upgrade to unlock it."
+              />
               <FormMessage />
             </FormItem>
           )}

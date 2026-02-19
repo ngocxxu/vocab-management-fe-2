@@ -1,6 +1,7 @@
 'use client';
 
 import type { ColumnDef } from '@tanstack/react-table';
+import type { TUser } from '@/types/auth';
 import type { TVocabTrainer, VocabTrainerListProps } from '@/types/vocab-trainer';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DangerTriangle, Pen } from '@solar-icons/react/ssr';
@@ -8,6 +9,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { verifyUser } from '@/actions';
 import { createVocabTrainer, deleteVocabTrainer, deleteVocabTrainersBulk, updateVocabTrainer } from '@/actions/vocab-trainers';
 import { BulkDeleteDialog, DeleteActionButton, ErrorState } from '@/components/shared';
 import { Badge } from '@/components/ui/badge';
@@ -46,9 +48,14 @@ const QUESTION_TYPE_BADGE_CLASSES: Record<string, string> = {
 };
 
 const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initialLanguagesData }) => {
+  const [user, setUser] = useState<TUser | null>(null);
   const [isMounted, setIsMounted] = useState(false);
   const [cachedLanguageFolders, setCachedLanguageFolders] = useState<any[]>([]);
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
+
+  useEffect(() => {
+    verifyUser().then(setUser);
+  }, []);
 
   const { pagination, handlers } = useApiPagination({
     page: 1,
@@ -429,6 +436,7 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
               initialLanguagesData={initialLanguagesData}
               cachedLanguageFolders={cachedLanguageFolders}
               onLanguageFoldersLoaded={setCachedLanguageFolders}
+              userRole={user?.role}
             />
 
             <BulkDeleteDialog

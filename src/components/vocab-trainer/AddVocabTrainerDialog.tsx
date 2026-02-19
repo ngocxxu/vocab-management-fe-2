@@ -23,6 +23,7 @@ const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({
   cachedLanguageFolders = [],
   onLanguageFoldersLoaded,
   editingItem: _editingItem,
+  userRole,
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -59,7 +60,7 @@ const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({
           </DialogHeader>
           <div className="grid grid-cols-1 gap-6 p-6 pb-0 lg:grid-cols-[minmax(0,380px)_1fr]">
             <div className="space-y-6">
-              <TrainerBasicInfoForm />
+              <TrainerBasicInfoForm userRole={userRole} />
               <div className="space-y-3">
                 <h4 className="text-xs font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
                   Summary

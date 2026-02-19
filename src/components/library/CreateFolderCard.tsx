@@ -3,22 +3,20 @@
 import { AddCircle, Lock } from '@solar-icons/react/ssr';
 import React, { useCallback, useState } from 'react';
 import { cn } from '@/libs/utils';
-import { UserRole } from '@/constants/auth';
 import { UpsellModal } from '@/components/premium';
 
 import type { CreateFolderCardProps } from '@/types/language-folder';
 
-const CreateFolderCard: React.FC<CreateFolderCardProps> = ({ onCreateFolder, userRole }) => {
+const CreateFolderCard: React.FC<CreateFolderCardProps> = ({ onCreateFolder, canCreateFolder = true }) => {
   const [upsellOpen, setUpsellOpen] = useState(false);
-  const isGuest = userRole === UserRole.GUEST;
 
   const handleClick = useCallback(() => {
-    if (isGuest) {
-      setUpsellOpen(true);
-    } else {
+    if (canCreateFolder) {
       onCreateFolder();
+    } else {
+      setUpsellOpen(true);
     }
-  }, [isGuest, onCreateFolder]);
+  }, [canCreateFolder, onCreateFolder]);
 
   return (
     <>
@@ -38,19 +36,19 @@ const CreateFolderCard: React.FC<CreateFolderCardProps> = ({ onCreateFolder, use
         }}
       >
         <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
-          {isGuest
+          {canCreateFolder
             ? (
-                <Lock size={28} weight="BoldDuotone" className="text-muted-foreground" />
+                <AddCircle size={28} weight="BoldDuotone" className="text-primary" />
               )
             : (
-                <AddCircle size={28} weight="BoldDuotone" className="text-primary" />
+                <Lock size={28} weight="BoldDuotone" className="text-muted-foreground" />
               )}
         </div>
         <h3 className="mt-4 text-base font-bold text-foreground">
           Create New Folder
         </h3>
         <p className="mt-1 text-sm text-muted-foreground">
-          {isGuest ? 'Upgrade to create more folders' : 'Start a new language journey'}
+          {canCreateFolder ? 'Start a new language journey' : 'Upgrade to create more folders'}
         </p>
       </div>
       <UpsellModal

@@ -15,6 +15,7 @@ type PremiumFeatureGateProps = Readonly<{
   variant?: 'default' | 'outline' | 'ghost' | 'link' | 'destructive' | 'secondary';
   className?: string;
   size?: 'default' | 'sm' | 'lg' | 'icon';
+  canAccess?: boolean;
 }>;
 
 export function PremiumFeatureGate({
@@ -26,12 +27,14 @@ export function PremiumFeatureGate({
   variant = 'outline',
   className,
   size,
+  canAccess,
 }: PremiumFeatureGateProps) {
   const [upsellOpen, setUpsellOpen] = useState(false);
-  const isGuest = userRole === UserRole.GUEST;
+  const hasAccess = canAccess !== undefined ? canAccess : userRole !== UserRole.GUEST;
+  const isGated = !hasAccess;
 
   const handleClick = () => {
-    if (isGuest) {
+    if (isGated) {
       setUpsellOpen(true);
     } else {
       onClick();
@@ -46,9 +49,9 @@ export function PremiumFeatureGate({
         size={size}
         className={className}
         onClick={handleClick}
-        title={isGuest ? `Pro feature: ${featureName}` : undefined}
+        title={isGated ? `Pro feature: ${featureName}` : undefined}
       >
-        {isGuest && <Lock size={16} weight="BoldDuotone" className="mr-2 shrink-0 opacity-80" />}
+        {isGated && <Lock size={16} weight="BoldDuotone" className="mr-2 shrink-0 opacity-80" />}
         {children}
       </Button>
       <UpsellModal

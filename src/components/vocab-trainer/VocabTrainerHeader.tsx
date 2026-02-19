@@ -100,7 +100,7 @@ const VocabTrainerHeader: React.FC<VocabTrainerHeaderProps> = ({
         </Popover>
         <Button
           onClick={onAddTrainer}
-          className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg hover:from-blue-700 hover:to-indigo-700 dark:from-blue-500 dark:to-indigo-500 dark:hover:from-blue-600 dark:hover:to-indigo-600"
+          className="bg-primary text-primary-foreground shadow-lg hover:bg-primary/90"
         >
           <AddCircle size={16} weight="BoldDuotone" className="mr-2" />
           Create Trainer

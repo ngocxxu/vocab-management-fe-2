@@ -2,13 +2,25 @@
 
 import { AddCircle } from '@solar-icons/react/ssr';
 import React, { memo, useCallback } from 'react';
+import { Button } from '@/components/ui/button';
 import { PremiumFeatureGate } from '@/components/premium';
 
 import type { LibraryHeaderProps } from '@/types/language-folder';
 
+const createFolderButtonContent = (
+  <>
+    <AddCircle size={20} weight="BoldDuotone" className="mr-2" />
+    <span className="hidden sm:inline">Create New Folder</span>
+    <span className="sm:hidden">Create Folder</span>
+  </>
+);
+
+const createFolderButtonClass = 'h-10 w-full bg-primary text-primary-foreground shadow-lg transition-all duration-300 hover:scale-105 hover:opacity-90 hover:shadow-xl sm:w-auto';
+
 const LibraryHeader: React.FC<LibraryHeaderProps> = memo(({
   onCreateFolder,
   userRole,
+  canCreateFolder = true,
 }) => {
   const handleCreateFolder = useCallback(() => {
     onCreateFolder();
@@ -27,17 +39,28 @@ const LibraryHeader: React.FC<LibraryHeaderProps> = memo(({
       </div>
 
       <div className="flex w-full items-center justify-end space-x-4 sm:w-auto">
-        <PremiumFeatureGate
-          userRole={userRole}
-          featureName="Create language folder"
-          description="Create more language folders on the Member plan. Upgrade to unlock unlimited folders."
-          onClick={handleCreateFolder}
-          className="h-10 w-full bg-primary text-primary-foreground shadow-lg transition-all duration-300 hover:scale-105 hover:opacity-90 hover:shadow-xl sm:w-auto"
-        >
-          <AddCircle size={20} weight="BoldDuotone" className="mr-2" />
-          <span className="hidden sm:inline">Create New Folder</span>
-          <span className="sm:hidden">Create Folder</span>
-        </PremiumFeatureGate>
+        {canCreateFolder
+          ? (
+              <Button
+                type="button"
+                onClick={handleCreateFolder}
+                className={createFolderButtonClass}
+              >
+                {createFolderButtonContent}
+              </Button>
+            )
+          : (
+              <PremiumFeatureGate
+                userRole={userRole}
+                canAccess={false}
+                featureName="Create language folder"
+                description="Create more language folders on the Member plan. Upgrade to unlock unlimited folders."
+                onClick={handleCreateFolder}
+                className={createFolderButtonClass}
+              >
+                {createFolderButtonContent}
+              </PremiumFeatureGate>
+            )}
       </div>
     </div>
   );
