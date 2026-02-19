@@ -95,6 +95,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       await signoutClient();
       setUser(undefined);
+      globalThis.location.href = '/';
     } catch (error) {
       console.error('Signout failed:', error);
       throw error;

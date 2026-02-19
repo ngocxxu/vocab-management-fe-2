@@ -10,8 +10,13 @@ export async function POST() {
     const signoutResponse = await serverApi.post<{ message: string }>(API_ENDPOINTS.auth.signout, {});
 
     const response = NextResponse.json(signoutResponse || { message: 'Successfully signed out' });
-    response.cookies.delete({ name: 'accessToken', path: '/' });
-    response.cookies.delete({ name: 'refreshToken', path: '/' });
+    const deleteOpts = {
+      path: '/',
+      sameSite: 'lax' as const,
+      ...(process.env.NODE_ENV === 'production' && { secure: true }),
+    };
+    response.cookies.delete({ name: 'accessToken', ...deleteOpts });
+    response.cookies.delete({ name: 'refreshToken', ...deleteOpts });
 
     return response;
   } catch (error) {

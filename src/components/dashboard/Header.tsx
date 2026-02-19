@@ -77,12 +77,10 @@ export const Header: React.FC<HeaderProps> = ({
   const handleLogout = async () => {
     try {
       await signoutClient();
+      globalThis.location.href = '/';
     } catch (error) {
       console.error('Logout error:', error);
     }
-    setUser(null);
-    router.refresh();
-    router.push('/');
   };
 
   const planBadgeLabel = (currentPlan ?? user?.role)
