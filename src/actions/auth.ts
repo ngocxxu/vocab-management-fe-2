@@ -57,13 +57,16 @@ export async function signout(): Promise<{ message: string }> {
     throw toActionError(error, 'Failed to sign out');
   } finally {
     const cookieStore = await cookies();
-    const cookieOptions = {
+    const clearOpts = {
       path: '/',
+      maxAge: 0,
       sameSite: 'lax' as const,
+      httpOnly: true,
       ...(process.env.NODE_ENV === 'production' && { secure: true }),
+      ...(process.env.COOKIE_DOMAIN && { domain: process.env.COOKIE_DOMAIN }),
     };
-    cookieStore.delete({ name: 'accessToken', ...cookieOptions });
-    cookieStore.delete({ name: 'refreshToken', ...cookieOptions });
+    cookieStore.set('accessToken', '', clearOpts);
+    cookieStore.set('refreshToken', '', clearOpts);
   }
 }
 
