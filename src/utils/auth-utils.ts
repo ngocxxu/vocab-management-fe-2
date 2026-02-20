@@ -25,7 +25,7 @@ export const handleTokenExpiration = () => {
   }, 1000);
 };
 
-export const signoutClient = async (): Promise<void> => {
+export const signoutClient = async (redirectTo = '/'): Promise<void> => {
   if (typeof window === 'undefined') {
     return;
   }
@@ -34,6 +34,7 @@ export const signoutClient = async (): Promise<void> => {
     const data = await res.json().catch(() => ({}));
     throw new Error(typeof data?.error === 'string' ? data.error : 'Sign out failed');
   }
+  globalThis.location.href = redirectTo;
 };
 
 /**

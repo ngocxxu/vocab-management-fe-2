@@ -74,13 +74,8 @@ export const Header: React.FC<HeaderProps> = ({
     return () => document.removeEventListener('keydown', down);
   }, []);
 
-  const handleLogout = async () => {
-    try {
-      await signoutClient();
-      globalThis.location.href = '/';
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
+  const handleLogout = () => {
+    signoutClient('/').catch(error => console.error('Logout error:', error));
   };
 
   const planBadgeLabel = (currentPlan ?? user?.role)

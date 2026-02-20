@@ -91,15 +91,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, []);
 
-  const handleSignout = useCallback(async () => {
-    try {
-      await signoutClient();
-      setUser(undefined);
-      globalThis.location.href = '/';
-    } catch (error) {
+  const handleSignout = useCallback(() => {
+    return signoutClient('/').catch((error) => {
       console.error('Signout failed:', error);
       throw error;
-    }
+    });
   }, []);
 
   const value: AuthContextType = useMemo(() => ({
