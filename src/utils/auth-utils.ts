@@ -25,16 +25,25 @@ export const handleTokenExpiration = () => {
   }, 1000);
 };
 
+let isSigningOut = false;
+
+export const getIsSigningOut = (): boolean => isSigningOut;
+
 export const signoutClient = async (redirectTo = '/'): Promise<void> => {
   if (typeof window === 'undefined') {
     return;
   }
-  const res = await fetch('/api/auth/signout', { method: 'POST', credentials: 'include' });
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}));
-    throw new Error(typeof data?.error === 'string' ? data.error : 'Sign out failed');
+  isSigningOut = true;
+  try {
+    const res = await fetch('/api/auth/signout', { method: 'POST', credentials: 'include' });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(typeof data?.error === 'string' ? data.error : 'Sign out failed');
+    }
+    globalThis.location.href = redirectTo;
+  } finally {
+    isSigningOut = false;
   }
-  globalThis.location.href = redirectTo;
 };
 
 /**

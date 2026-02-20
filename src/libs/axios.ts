@@ -1,7 +1,7 @@
 import type { AxiosInstance, AxiosResponse } from 'axios';
 import axios from 'axios';
 import { API_ENDPOINTS } from '@/utils/api-config';
-import { handleTokenExpiration } from '@/utils/auth-utils';
+import { getIsSigningOut, handleTokenExpiration } from '@/utils/auth-utils';
 import { Env } from './Env';
 import { logger } from './Logger';
 
@@ -63,18 +63,19 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Handle 403 Forbidden - redirect to login
+    if (getIsSigningOut()) {
+      throw error;
+    }
+
     if (error.response?.status === 403) {
       handleTokenExpiration();
       throw error;
     }
 
-    // Handle 401 Unauthorized - token expired
     if ((error.response?.status === 401) && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {
-        // Attempt to refresh the token via Next.js API route
         const refreshResponse = await fetch(`/api${API_ENDPOINTS.auth.refresh}`, {
           method: 'POST',
           credentials: 'include',
