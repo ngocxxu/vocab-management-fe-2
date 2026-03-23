@@ -21,12 +21,10 @@ import { DataTable } from '@/components/ui/table';
 import { QUESTION_TYPE_OPTIONS } from '@/constants/vocab-trainer';
 import { EQuestionType } from '@/enum/vocab-trainer';
 import { useApiPagination, useBulkDelete, useDialogState } from '@/hooks';
+import { getExamCooldownRemainingSeconds } from '@/utils/exam-cooldown';
 import AddVocabTrainerDialog from './AddVocabTrainerDialog';
 import ExamLauncher from './ExamLauncher';
 import VocabTrainerHeader from './VocabTrainerHeader';
-
-const COOLDOWN_DURATION_MS = 60000;
-const GLOBAL_STORAGE_KEY = 'play_button_last_click_global';
 
 // Define the form schema
 const FormSchema = z.object({
@@ -81,28 +79,7 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
   const isError = false;
 
   const checkCooldown = useCallback(() => {
-    try {
-      const lastClickTimeStr = localStorage.getItem(GLOBAL_STORAGE_KEY);
-      if (!lastClickTimeStr) {
-        setCooldownRemaining(0);
-        return;
-      }
-
-      const lastClickTime = Number.parseInt(lastClickTimeStr, 10);
-      if (Number.isNaN(lastClickTime)) {
-        localStorage.removeItem(GLOBAL_STORAGE_KEY);
-        setCooldownRemaining(0);
-        return;
-      }
-
-      const now = Date.now();
-      const timeSinceLastClick = now - lastClickTime;
-      const remaining = Math.max(0, Math.ceil((COOLDOWN_DURATION_MS - timeSinceLastClick) / 1000));
-      setCooldownRemaining(remaining);
-    } catch (error) {
-      console.error('Error checking cooldown:', error);
-      setCooldownRemaining(0);
-    }
+    setCooldownRemaining(getExamCooldownRemainingSeconds());
   }, []);
 
   const form = useForm<FormData>({

@@ -20,6 +20,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Kbd, KbdGroup } from '@/components/ui/kbd';
 import { logger } from '@/libs/Logger';
+import { markExamCooldownNow } from '@/utils/exam-cooldown';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 import FillInBlankCard from './FillInBlankCard';
 import VocabExamHeader from './VocabExamHeader';
@@ -54,17 +55,13 @@ const FillInBlankExam: React.FC<FillInBlankExamProps> = ({ trainerId, examData }
     });
   }, [currentQuestionIndex]);
 
-  const handleNext = () => {
-    if (!isLastQuestion) {
-      setCurrentQuestionIndex(prev => prev + 1);
-    }
-  };
+  const handleNext = useCallback(() => {
+    setCurrentQuestionIndex(prev => Math.min(prev + 1, totalQuestions - 1));
+  }, [totalQuestions]);
 
-  const handlePrevious = () => {
-    if (!isFirstQuestion) {
-      setCurrentQuestionIndex(prev => prev - 1);
-    }
-  };
+  const handlePrevious = useCallback(() => {
+    setCurrentQuestionIndex(prev => Math.max(prev - 1, 0));
+  }, []);
 
   const handleSubmit = useCallback(async () => {
     const currentAnswers = selectedAnswersRef.current;
@@ -116,6 +113,7 @@ const FillInBlankExam: React.FC<FillInBlankExamProps> = ({ trainerId, examData }
         const resultData = { jobId, timeElapsed, questions, answers: Array.from(currentAnswers.entries()) };
         const storageKey = `fill_in_blank_result_${trainerId}`;
         localStorage.setItem(storageKey, JSON.stringify(resultData));
+        markExamCooldownNow();
         router.push(`/vocab-trainer/${trainerId}/exam/fill-in-blank/result`);
       } else {
         logger.error('Response does not contain jobId:', { result, trainerId });
@@ -148,13 +146,25 @@ const FillInBlankExam: React.FC<FillInBlankExamProps> = ({ trainerId, examData }
     router.push('/vocab-trainer');
   };
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.ctrlKey && event.key === 'Enter') {
-      handlePrevious();
-    } else if (event.key === 'Enter') {
-      handleNext();
+  const handleKeyDown = useCallback((event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key !== 'Enter') {
+      return;
     }
-  };
+
+    if (event.nativeEvent.isComposing || event.repeat) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (event.ctrlKey || event.metaKey) {
+      handlePrevious();
+      return;
+    }
+
+    handleNext();
+  }, [handleNext, handlePrevious]);
 
   useEffect(() => {
     if (examState !== 'taking') {

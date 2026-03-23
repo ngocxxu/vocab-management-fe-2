@@ -18,6 +18,7 @@ import { submitExam } from '@/actions/vocab-trainers';
 import { ExamErrorState } from '@/components/shared';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import { markExamCooldownNow } from '@/utils/exam-cooldown';
 import ExamResults from './ExamResults';
 import QuestionCard from './QuestionCard';
 import VocabExamHeader from './VocabExamHeader';
@@ -84,6 +85,9 @@ const VocabExam: React.FC<VocabExamProps> = ({ trainerId, examData }) => {
       };
 
       const result = await submitExam(trainerId, examSubmissionData);
+      if ((examData.questionType ?? EQuestionType.MULTIPLE_CHOICE) !== EQuestionType.FLIP_CARD) {
+        markExamCooldownNow();
+      }
       setExamResults(result);
       setExamState('completed');
     } catch (err) {
@@ -128,6 +132,7 @@ const VocabExam: React.FC<VocabExamProps> = ({ trainerId, examData }) => {
         selectedAnswers={selectedAnswers}
         timeElapsed={timeElapsed}
         onBackToTrainers={handleBackToTrainers}
+        onRetryExam={() => router.push(`/vocab-trainer/${trainerId}/exam/multiple-choice`)}
         questionType={examData.questionType ?? EQuestionType.MULTIPLE_CHOICE}
       />
     );

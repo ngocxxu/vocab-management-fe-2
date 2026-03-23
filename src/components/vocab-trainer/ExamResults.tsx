@@ -1,6 +1,7 @@
 'use client';
 
 import { getQuestionTypeLabel } from '@/constants/vocab-trainer';
+import { EQuestionType } from '@/enum/vocab-trainer';
 import type { ExamResultsProps, TExamResult } from '@/types/vocab-trainer';
 import {
   AltArrowLeft,
@@ -15,7 +16,7 @@ import {
   RefreshCircle,
   Target,
 } from '@solar-icons/react/ssr';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -24,6 +25,7 @@ import {
   formatDurationColon,
   parseContentWithQuotedHighlight,
 } from '@/utils/exam-results';
+import { getExamCooldownRemainingSeconds } from '@/utils/exam-cooldown';
 
 const PASS_TARGET_PERCENT = 70;
 
@@ -31,7 +33,6 @@ const CIRCLE_SIZE = 112;
 const CIRCLE_R = 38;
 const CIRCLE_STROKE = 8;
 const CIRCLE_CIRCUMFERENCE = 2 * Math.PI * CIRCLE_R;
-
 const ExamResults: React.FC<ExamResultsProps> = ({
   trainerId,
   results,
@@ -47,6 +48,30 @@ const ExamResults: React.FC<ExamResultsProps> = ({
   durationFasterText,
   questionType,
 }) => {
+  const [cooldownRemaining, setCooldownRemaining] = useState(0);
+  const isFlipCard = questionType === EQuestionType.FLIP_CARD;
+
+  useEffect(() => {
+    if (isFlipCard || !onRetryExam) {
+      // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
+      setCooldownRemaining(0);
+      return;
+    }
+
+    const syncCooldown = () => {
+      setCooldownRemaining(getExamCooldownRemainingSeconds());
+    };
+
+    syncCooldown();
+    const interval = setInterval(() => {
+      syncCooldown();
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isFlipCard, onRetryExam]);
+
+  const canRetry = isFlipCard || cooldownRemaining === 0;
+
   const handleBackToTrainers = () => {
     const storageKey = `exam_data_${trainerId}`;
     localStorage.removeItem(storageKey);
@@ -105,10 +130,11 @@ const ExamResults: React.FC<ExamResultsProps> = ({
               <Button
                 type="button"
                 onClick={onRetryExam}
+                disabled={!canRetry}
                 className="bg-primary text-primary-foreground hover:bg-primary/90"
               >
                 <RefreshCircle size={18} weight="BoldDuotone" className="mr-2" />
-                Retry Exam
+                {canRetry ? 'Retry Exam' : `Retry in ${cooldownRemaining}s`}
               </Button>
             )}
           </div>
@@ -146,7 +172,7 @@ const ExamResults: React.FC<ExamResultsProps> = ({
                   />
                 </svg>
                 <span className="absolute flex flex-col items-center justify-center text-center">
-                  <span className="text-2xl font-bold text-primary">
+                  <span className="text-xl font-bold text-primary">
                     {scorePercentage}
                     %
                   </span>

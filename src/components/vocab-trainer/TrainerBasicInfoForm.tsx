@@ -79,7 +79,7 @@ const TrainerBasicInfoForm: React.FC<TrainerBasicInfoFormProps> = ({ userRole })
                 <SelectContent>
                   {QUESTION_TYPE_OPTIONS.map(option => (
                     <SelectItem key={option.value} value={option.value}>
-                      {option.value === EQuestionType.TRANSLATION_AUDIO
+                      {option.value === EQuestionType.TRANSLATION_AUDIO && isGuest
                         ? (
                             <span className="flex w-full items-center justify-between gap-3">
                               <span>{option.label}</span>

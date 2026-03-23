@@ -16,6 +16,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { EQuestionType } from '@/enum/vocab-trainer';
 import { logger } from '@/libs/Logger';
 import { uploadAudioToCloudinary } from '@/utils/cloudinary';
+import { markExamCooldownNow } from '@/utils/exam-cooldown';
 import AudioRecorder from './AudioRecorder';
 import DialogueDisplay from './DialogueDisplay';
 import VocabExamHeader from './VocabExamHeader';
@@ -142,6 +143,7 @@ const TranslationAudioExam: React.FC<TranslationAudioExamProps> = ({ trainerId, 
         const resultData = { jobId, timeElapsed };
         const storageKey = `translation_audio_result_${trainerId}`;
         localStorage.setItem(storageKey, JSON.stringify(resultData));
+        markExamCooldownNow();
         router.push(`/vocab-trainer/${trainerId}/exam/translation-audio/result`);
       } else {
         logger.error('Response does not contain jobId:', { result, trainerId });
