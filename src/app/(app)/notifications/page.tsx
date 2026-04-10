@@ -1,24 +1,10 @@
-import type { TNotification } from '@/types/notification';
-import { notificationsApi } from '@/utils/server-api';
 import { NotificationsPageContent } from '@/components/notifications/NotificationsPageContent';
+import { getNotificationsPageData } from '@/features/notifications/services/server/getNotificationsPageData';
 
 export const dynamic = 'force-dynamic';
 
 export default async function NotificationsPage() {
-  let notificationsWithRead: { notification: TNotification; isRead: boolean }[] = [];
-
-  try {
-    const res = await notificationsApi.getMy();
-    const items = res?.items ?? [];
-    notificationsWithRead = items.map((notification) => {
-      const isRead = notification.recipients?.[0]?.isRead ?? false;
-      return { notification, isRead };
-    });
-  } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
-      console.error('Notifications page fetch error:', error);
-    }
-  }
+  const { notificationsWithRead } = await getNotificationsPageData();
 
   return (
     <div className="min-h-screen bg-background">

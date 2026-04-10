@@ -15,13 +15,13 @@ import {
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { submitExam } from '@/actions/vocab-trainers';
-import { ExamErrorState } from '@/components/shared';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import { Kbd, KbdGroup } from '@/components/ui/kbd';
+import { ExamErrorState } from '@/shared/ui/shared';
+import { Alert, AlertDescription } from '@/shared/ui/alert';
+import { Button } from '@/shared/ui/button';
+import { Kbd, KbdGroup } from '@/shared/ui/kbd';
 import { logger } from '@/libs/Logger';
 import { markExamCooldownNow } from '@/utils/exam-cooldown';
-import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/shared/ui/tooltip';
 import FillInBlankCard from './FillInBlankCard';
 import VocabExamHeader from './VocabExamHeader';
 

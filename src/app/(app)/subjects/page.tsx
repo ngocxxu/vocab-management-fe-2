@@ -1,15 +1,10 @@
 import { SubjectSection } from '@/components/settings';
-import { subjectsApi } from '@/utils/server-api';
+import { getSubjectsPageData } from '@/features/subjects/services/server/getSubjectsPageData';
 
 export const dynamic = 'force-dynamic';
 
 export default async function SubjectsPage() {
-  let initialSubjectsData;
-  try {
-    initialSubjectsData = await subjectsApi.getAll();
-  } catch {
-    initialSubjectsData = undefined;
-  }
+  const { initialSubjectsData } = await getSubjectsPageData();
   return (
     <SubjectSection initialSubjectsData={initialSubjectsData} />
   );

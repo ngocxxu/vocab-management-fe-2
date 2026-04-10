@@ -4,9 +4,9 @@ import type { TQuestionAPI } from '@/types/vocab-trainer';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
 import { toast } from 'sonner';
-import { LoadingComponent } from '@/components/shared';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
+import { LoadingComponent } from '@/shared/ui/shared';
+import { Alert, AlertDescription } from '@/shared/ui/alert';
+import { Button } from '@/shared/ui/button';
 import FlipCardExam from '@/components/vocab-trainer/FlipCardExam';
 import { useExamData } from '@/hooks/useExamData';
 

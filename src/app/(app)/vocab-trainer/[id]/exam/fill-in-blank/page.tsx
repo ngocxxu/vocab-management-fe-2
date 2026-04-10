@@ -4,7 +4,7 @@ import type { TQuestionAPI } from '@/types/vocab-trainer';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
 import { toast } from 'sonner';
-import { LoadingComponent } from '@/components/shared';
+import { LoadingComponent } from '@/shared/ui/shared';
 import FillInBlankExam from '@/components/vocab-trainer/FillInBlankExam';
 import { useExamData } from '@/hooks/useExamData';
 

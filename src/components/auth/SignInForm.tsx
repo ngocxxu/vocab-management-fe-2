@@ -8,9 +8,9 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Alert, AlertDescription } from '@/shared/ui/alert';
+import { Button } from '@/shared/ui/button';
+import { Checkbox } from '@/shared/ui/checkbox';
 import {
   Form,
   FormControl,
@@ -18,21 +18,19 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Env } from '@/libs/Env';
-import { supabase } from '@/libs/supabase';
+} from '@/shared/ui/form';
+import { Input } from '@/shared/ui/input';
 import { signInSchema } from '@/libs/validations/auth';
-import { authApi } from '@/utils/client-api';
 import { EyeIcon } from '@/components/auth/EyeIcon';
+import { useAuthMutations } from '@/features/auth/hooks/useAuthMutations';
 
 function SignInForm() {
   const searchParams = useSearchParams();
-  const [errorMessage, setErrorMessage] = useState('');
-  const [isOAuthLoading, setIsOAuthLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [keepSignedIn, setKeepSignedIn] = useState(false);
   const logoSrc = '/assets/logo/logo-light-mode.png';
+
+  const { errorMessage, isOAuthLoading, signin, signInWithProvider } = useAuthMutations();
 
   const form = useForm<SignInFormData>({
     resolver: zodResolver(signInSchema),
@@ -43,42 +41,18 @@ function SignInForm() {
   });
 
   const onSubmit = async (data: SignInFormData) => {
-    setErrorMessage('');
     try {
-      await authApi.signin(data);
+      await signin(data);
       const redirectTo = searchParams.get('redirect') || '/dashboard';
       globalThis.location.href = redirectTo;
-    } catch (err) {
-      const msg = err && typeof err === 'object' && 'response' in err
-        ? (err as { response?: { data?: { error?: string } } }).response?.data?.error
-        : null;
-      setErrorMessage(msg || (err instanceof Error ? err.message : 'Failed to sign in. Please try again.'));
-    }
+    } catch {}
   };
 
   const handleProviderSignIn = async (provider: 'google' | 'apple' | 'facebook' | 'twitter') => {
-    setIsOAuthLoading(true);
-    setErrorMessage('');
     try {
       const redirectTo = searchParams.get('redirect') || '/dashboard';
-      const origin = (typeof globalThis !== 'undefined' && globalThis.location.origin)
-        ? globalThis.location.origin
-        : Env.NEXT_PUBLIC_APP_URL;
-      if (!origin) {
-        throw new Error('Origin URL could not be determined');
-      }
-      const callbackUrl = `${origin}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`;
-      const { error: oauthError } = await supabase.auth.signInWithOAuth({
-        provider,
-        options: { redirectTo: callbackUrl },
-      });
-      if (oauthError) {
-        throw oauthError;
-      }
-    } catch (err) {
-      setErrorMessage(err instanceof Error ? err.message : 'Failed to sign in with provider. Please try again.');
-      setIsOAuthLoading(false);
-    }
+      await signInWithProvider(provider, redirectTo);
+    } catch {}
   };
 
   const pageBg = '#F5F7FA';

@@ -77,4 +77,81 @@ export default antfu(
       ],
     },
   },
+  // --- Architecture Enforcement (feature-based modular) ---
+  {
+    files: [
+      'src/components/**/*.{ts,tsx}',
+      'src/features/**/ui/**/*.{ts,tsx}',
+      'src/shared/ui/**/*.{ts,tsx}',
+    ],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: '@/utils/server-api',
+              message: 'UI must not call APIs. Use feature services (server/client) and hooks.',
+            },
+            {
+              name: '@/utils/client-api',
+              message: 'UI must not call APIs. Use feature services (server/client) and hooks.',
+            },
+          ],
+        },
+      ],
+      'no-restricted-globals': [
+        'error',
+        {
+          name: 'fetch',
+          message: 'UI must not call APIs. Use feature services and hooks.',
+        },
+      ],
+    },
+  },
+  {
+    files: [
+      'src/app/(app)/**/*.{ts,tsx}',
+      'src/app/**/page.tsx',
+      'src/app/**/layout.tsx',
+    ],
+    ignores: [
+      'src/app/api/**/*',
+    ],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: '@/utils/server-api',
+              message: 'Routes should call feature server services (src/features/**/services/server/*) or server actions, not the raw API client.',
+            },
+            {
+              name: '@/utils/client-api',
+              message: 'Routes should call feature services/actions, not the raw API client.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    files: [
+      'src/features/**/*.{ts,tsx}',
+    ],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['@/features/*/*'],
+              message: 'Do not deep-import feature internals via alias. Use relative imports within a feature; use `@/features/<feature>` (feature root) for cross-feature access.',
+            },
+          ],
+        },
+      ],
+    },
+  },
 );

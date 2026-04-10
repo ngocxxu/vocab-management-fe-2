@@ -15,9 +15,9 @@ import {
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
 import { submitExam } from '@/actions/vocab-trainers';
-import { ExamErrorState } from '@/components/shared';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
+import { ExamErrorState } from '@/shared/ui/shared';
+import { Alert, AlertDescription } from '@/shared/ui/alert';
+import { Button } from '@/shared/ui/button';
 import { markExamCooldownNow } from '@/utils/exam-cooldown';
 import ExamResults from './ExamResults';
 import QuestionCard from './QuestionCard';

@@ -3,7 +3,7 @@
 import { RefreshCircle } from '@solar-icons/react/ssr';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
-import { ExamErrorState } from '@/components/shared';
+import { ExamErrorState } from '@/shared/ui/shared';
 import TranslationAudioResults from '@/components/vocab-trainer/TranslationAudioResults';
 import { useSocket } from '@/hooks/useSocket';
 import { SOCKET_EVENTS } from '@/utils/socket-config';

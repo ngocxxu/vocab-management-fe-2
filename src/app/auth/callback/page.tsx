@@ -2,8 +2,8 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
-import { LoadingComponent } from '@/components/shared';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { LoadingComponent } from '@/shared/ui/shared';
+import { Alert, AlertDescription } from '@/shared/ui/alert';
 import { supabase } from '@/libs/supabase';
 
 function AuthCallbackContent() {

@@ -1,6 +1,5 @@
-import { verifyUser } from '@/actions';
-import ErrorState from '@/components/shared/ErrorState';
-import { statisticsApi } from '@/utils/server-api';
+import ErrorState from '@/shared/ui/ErrorState';
+import { getDashboardData } from '@/features/dashboard/services/server/getDashboardData';
 import React from 'react';
 import { AnswerDistributionCard } from './cards/AnswerDistributionCard';
 import { DistributionChart } from './cards/DistributionChart';
@@ -11,14 +10,7 @@ import { SummaryStatsCard } from './cards/SummaryStatsCard';
 
 export const DashboardContent: React.FC = async () => {
   try {
-    const [user, summary, bySubject, progress, problematic, distribution] = await Promise.all([
-      verifyUser(),
-      statisticsApi.getSummary(),
-      statisticsApi.getBySubject(),
-      statisticsApi.getProgress(),
-      statisticsApi.getProblematic(),
-      statisticsApi.getDistribution(),
-    ]);
+    const { user, summary, bySubject, progress, problematic, distribution } = await getDashboardData();
 
     const firstName = user?.firstName ?? 'there';
 

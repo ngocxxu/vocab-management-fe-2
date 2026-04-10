@@ -19,11 +19,11 @@ import { verifyUser } from '@/actions';
 import type { TUser } from '@/types/auth';
 import { createVocab, deleteVocabsBulk, updateVocab } from '@/actions/vocabs';
 import { isQuotaError, QUOTA_ERROR_MESSAGE } from '@/utils/quota-error';
-import { BulkDeleteDialog, DeleteActionButton, ErrorState } from '@/components/shared';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Form } from '@/components/ui/form';
-import { DataTable } from '@/components/ui/table';
+import { BulkDeleteDialog, DeleteActionButton, ErrorState } from '@/shared/ui/shared';
+import { Button } from '@/shared/ui/button';
+import { Checkbox } from '@/shared/ui/checkbox';
+import { Form } from '@/shared/ui/form';
+import { DataTable } from '@/shared/ui/table';
 import { useApiPagination, useBulkDelete, useDialogState } from '@/hooks';
 
 import { selectVoiceByCode } from '@/utils/textToSpeech';
