@@ -3,9 +3,9 @@
 import type { ExamplesSectionProps } from '@/types/vocab-list';
 import { AddCircle, CloseCircle } from '@solar-icons/react/ssr';
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '../ui/textarea';
+import { Button } from '@/shared/ui/button';
+import { Label } from '@/shared/ui/label';
+import { Textarea } from '@/shared/ui/textarea';
 
 const ExamplesSection: React.FC<ExamplesSectionProps> = ({
   targetIndex,
@@ -37,7 +37,9 @@ const ExamplesSection: React.FC<ExamplesSectionProps> = ({
           <div key={example.id} className="flex items-center space-x-3 rounded-lg border p-3">
             <div className="grid flex-1 grid-cols-2 gap-3">
               <div>
-                <Label htmlFor={`example-source-${targetIndex}-${exampleIndex}`} className="text-xs tracking-wide uppercase">Source</Label>
+                <Label htmlFor={`example-source-${targetIndex}-${exampleIndex}`} className="text-xs tracking-wide uppercase">
+                  Source
+                </Label>
                 <Textarea
                   id={`example-source-${targetIndex}-${exampleIndex}`}
                   placeholder="Source text example..."
@@ -47,7 +49,9 @@ const ExamplesSection: React.FC<ExamplesSectionProps> = ({
                 />
               </div>
               <div>
-                <Label htmlFor={`example-target-${targetIndex}-${exampleIndex}`} className="text-xs tracking-wide uppercase">Target</Label>
+                <Label htmlFor={`example-target-${targetIndex}-${exampleIndex}`} className="text-xs tracking-wide uppercase">
+                  Target
+                </Label>
                 <Textarea
                   id={`example-target-${targetIndex}-${exampleIndex}`}
                   placeholder="Target text example..."

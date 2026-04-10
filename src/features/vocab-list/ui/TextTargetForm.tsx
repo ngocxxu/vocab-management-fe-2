@@ -7,15 +7,15 @@ import { toast } from 'sonner';
 import { generateTextTargetContent } from '@/actions/vocabs';
 import { PremiumFeatureGate } from '@/components/premium';
 import { UserRole } from '@/constants/auth';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/shared/ui/button';
+import { Input } from '@/shared/ui/input';
+import { Label } from '@/shared/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
+import { Textarea } from '@/shared/ui/textarea';
 import ExamplesSection from './ExamplesSection';
 import SubjectsSection from './SubjectsSection';
 
-const COOLDOWN_DURATION_MS = 60000;
+const COOLDOWN_DURATION_MS = 60_000;
 const GLOBAL_STORAGE_KEY = 'play_button_last_click_global';
 
 const TextTargetForm: React.FC<TextTargetFormProps> = ({
@@ -68,8 +68,7 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
         setIsCooldownActive(false);
         setCooldownRemaining(0);
       }
-    } catch (error) {
-      console.error('Error checking cooldown:', error);
+    } catch {
       setIsCooldownActive(false);
       setCooldownRemaining(0);
     }
@@ -123,9 +122,7 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
       try {
         localStorage.setItem(GLOBAL_STORAGE_KEY, Date.now().toString());
         checkCooldown();
-      } catch (error) {
-        console.error('Error saving cooldown timestamp:', error);
-      }
+      } catch {}
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Failed to generate content');
     } finally {
@@ -205,10 +202,7 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
               <Label htmlFor={`wordType-${targetIndex}`}>Word Type</Label>
-              <Select
-                value={target.wordTypeId || ''}
-                onValueChange={(value: string) => onInputChange('wordTypeId', value, targetIndex)}
-              >
+              <Select value={target.wordTypeId || ''} onValueChange={(value: string) => onInputChange('wordTypeId', value, targetIndex)}>
                 <SelectTrigger className="mt-1 w-full">
                   <SelectValue placeholder="Select word type" />
                 </SelectTrigger>
@@ -246,12 +240,7 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
               />
             </div>
           </div>
-          <SubjectsSection
-            targetIndex={targetIndex}
-            subjects={subjects}
-            subjectsLoading={subjectsLoading}
-            subjectsError={subjectsError}
-          />
+          <SubjectsSection targetIndex={targetIndex} subjects={subjects} subjectsLoading={subjectsLoading} subjectsError={subjectsError} />
         </div>
       </section>
 

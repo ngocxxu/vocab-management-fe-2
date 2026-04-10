@@ -380,7 +380,6 @@ const VocabList: React.FC<VocabListProps> = ({
       } else {
         toast.error('Error', { description: errorMessage });
       }
-      console.error('Failed to save vocabulary:', error);
     }
   };
 
@@ -485,13 +484,7 @@ const VocabList: React.FC<VocabListProps> = ({
               }));
             }}
           >
-            {isExpanded
-              ? (
-                  <AltArrowDown size={16} weight="BoldDuotone" />
-                )
-              : (
-                  <AltArrowLeft size={16} weight="BoldDuotone" />
-                )}
+            {isExpanded ? <AltArrowDown size={16} weight="BoldDuotone" /> : <AltArrowLeft size={16} weight="BoldDuotone" />}
           </Button>
         );
       },

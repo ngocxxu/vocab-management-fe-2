@@ -1,8 +1,8 @@
 'use client';
 
 import { Suspense } from 'react';
-import { Skeleton } from '@/components/ui/skeleton';
-import { ForgotPasswordForm } from '@/components/auth/ForgotPasswordForm';
+import { Skeleton } from '@/shared/ui/skeleton';
+import { ForgotPasswordForm } from '@/features/auth/ui/ForgotPasswordForm';
 
 export default function ForgotPasswordPage() {
   return (

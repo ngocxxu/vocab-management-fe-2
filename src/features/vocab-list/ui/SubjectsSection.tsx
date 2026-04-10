@@ -9,9 +9,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { MultiSelect } from '@/components/ui/multi-select';
-import { Skeleton } from '@/components/ui/skeleton';
+} from '@/shared/ui/form';
+import { MultiSelect } from '@/shared/ui/multi-select';
+import { Skeleton } from '@/shared/ui/skeleton';
 
 const SubjectsSection: React.FC<SubjectsSectionProps> = React.memo(({
   targetIndex,
@@ -22,51 +22,29 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = React.memo(({
   const form = useFormContext();
   const [isMounted, setIsMounted] = useState(false);
 
-  // Prevent hydration mismatch by only rendering on client
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsMounted(true);
-    }, 0);
+    const timer = setTimeout(() => setIsMounted(true), 0);
     return () => clearTimeout(timer);
   }, []);
 
-  // Convert subjects to the format expected by MultiSelect (memoized to prevent re-renders)
   const subjectOptions = useMemo(() => subjects.map(subject => ({
     value: subject.id,
     label: subject.name,
   })), [subjects]);
 
-  // Don't render until component is mounted on client
-  if (!isMounted) {
+  if (!isMounted || subjectsLoading) {
     return (
       <div className="space-y-4">
-        <h4 className="text-sm font-medium">
-          Subjects
-        </h4>
+        <h4 className="text-sm font-medium">Subjects</h4>
         <Skeleton className="h-10 w-full" />
       </div>
     );
   }
 
-  // Show loading state while fetching subjects
-  if (subjectsLoading) {
-    return (
-      <div className="space-y-4">
-        <h4 className="text-sm font-medium">
-          Subjects
-        </h4>
-        <Skeleton className="h-10 w-full" />
-      </div>
-    );
-  }
-
-  // Show error state if subjects failed to load
   if (subjectsError) {
     return (
       <div className="space-y-4">
-        <h4 className="text-sm font-medium">
-          Subjects
-        </h4>
+        <h4 className="text-sm font-medium">Subjects</h4>
         <div className="h-10 rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
           Failed to load subjects. Please try again.
         </div>
@@ -76,9 +54,7 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = React.memo(({
 
   return (
     <div className="space-y-4">
-      <h4 className="text-sm font-medium">
-        Subjects
-      </h4>
+      <h4 className="text-sm font-medium">Subjects</h4>
       <FormField
         control={form?.control}
         name={`textTargets.${targetIndex}.subjectIds`}
@@ -91,7 +67,6 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = React.memo(({
                 defaultValue={field.value || []}
                 onValueChange={(newValue) => {
                   field.onChange(newValue);
-                  // Clear validation error for this field when value changes
                   form.clearErrors(`textTargets.${targetIndex}.subjectIds`);
                 }}
                 placeholder="Choose subjects..."

@@ -2,7 +2,7 @@
 
 import { Download } from '@solar-icons/react/ssr';
 import React from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 
 const DownloadTemplateButton: React.FC = () => {
   const handleDownload = () => {
@@ -15,11 +15,7 @@ const DownloadTemplateButton: React.FC = () => {
   };
 
   return (
-    <Button
-      variant="outline"
-      onClick={handleDownload}
-      className="bg-card/80 backdrop-blur-sm"
-    >
+    <Button variant="outline" onClick={handleDownload} className="bg-card/80 backdrop-blur-sm">
       <Download size={16} weight="BoldDuotone" className="mr-2" />
       Sample Template
     </Button>

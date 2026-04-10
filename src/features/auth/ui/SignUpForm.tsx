@@ -1,16 +1,18 @@
 'use client';
 
-import type { SignInFormData } from '@/libs/validations/auth';
-import { AltArrowRight, Letter, LockPassword, StarFall } from '@solar-icons/react/ssr';
+import type { SignUpFormData } from '@/libs/validations/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { AltArrowRight, Letter, LockPassword, StarFall } from '@solar-icons/react/ssr';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { EyeIcon } from '@/components/auth/EyeIcon';
+import { UserRole } from '@/constants/auth';
+import { signUpSchema } from '@/libs/validations/auth';
 import { Alert, AlertDescription } from '@/shared/ui/alert';
 import { Button } from '@/shared/ui/button';
-import { Checkbox } from '@/shared/ui/checkbox';
 import {
   Form,
   FormControl,
@@ -20,43 +22,56 @@ import {
   FormMessage,
 } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
-import { signInSchema } from '@/libs/validations/auth';
-import { EyeIcon } from '@/components/auth/EyeIcon';
-import { useAuthMutations } from '@/features/auth/hooks/useAuthMutations';
+import { useAuthMutations } from '../hooks/useAuthMutations';
 
-function SignInForm() {
+const logoSrc = '/assets/logo/logo-light-mode.png';
+const pageBg = '#F5F7FA';
+const leftPanelBg = '#EFF4FC';
+
+function useRedirectTarget() {
   const searchParams = useSearchParams();
+  return useMemo(() => searchParams.get('redirect') || '/dashboard', [searchParams]);
+}
+
+function SignUpForm() {
+  const redirectTo = useRedirectTarget();
   const [showPassword, setShowPassword] = useState(false);
-  const [keepSignedIn, setKeepSignedIn] = useState(false);
-  const logoSrc = '/assets/logo/logo-light-mode.png';
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const { errorMessage, isOAuthLoading, signin, signInWithProvider } = useAuthMutations();
+  const { errorMessage, isOAuthLoading, signup, signInWithProvider } = useAuthMutations();
 
-  const form = useForm<SignInFormData>({
-    resolver: zodResolver(signInSchema),
+  const form = useForm<SignUpFormData>({
+    resolver: zodResolver(signUpSchema),
     defaultValues: {
+      firstName: '',
+      lastName: '',
       email: '',
+      phone: '',
       password: '',
+      confirmPassword: '',
     },
   });
 
-  const onSubmit = async (data: SignInFormData) => {
+  const onSubmit = async (data: SignUpFormData) => {
     try {
-      await signin(data);
-      const redirectTo = searchParams.get('redirect') || '/dashboard';
+      await signup({
+        email: data.email,
+        password: data.password,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        phone: data.phone || '',
+        avatar: '',
+        role: UserRole.GUEST,
+      });
       globalThis.location.href = redirectTo;
     } catch {}
   };
 
-  const handleProviderSignIn = async (provider: 'google' | 'apple' | 'facebook' | 'twitter') => {
+  const handleGoogleSignIn = async () => {
     try {
-      const redirectTo = searchParams.get('redirect') || '/dashboard';
-      await signInWithProvider(provider, redirectTo);
+      await signInWithProvider('google', redirectTo);
     } catch {}
   };
-
-  const pageBg = '#F5F7FA';
-  const leftPanelBg = '#EFF4FC';
 
   return (
     <div
@@ -110,19 +125,10 @@ function SignInForm() {
             <p className="mt-4 font-sans text-base leading-relaxed text-muted-foreground min-[1600px]:text-2xl 2xl:mt-6 2xl:text-xl">
               Our neural-spaced repetition system adapts to your pace, ensuring 98% retention through science-backed algorithms.
             </p>
-            <div className="mt-8 flex flex-wrap items-center gap-8 min-[1600px]:gap-12 2xl:mt-12 2xl:gap-10">
-              <div>
-                <p className="font-sans text-xl font-bold text-foreground min-[1600px]:text-4xl 2xl:text-3xl">98%</p>
-                <p className="font-sans text-sm text-muted-foreground uppercase min-[1600px]:text-xl 2xl:text-lg">Retention Rate</p>
-              </div>
-              <div>
-                <p className="font-sans text-xl font-bold text-foreground min-[1600px]:text-4xl 2xl:text-3xl">15+</p>
-                <p className="font-sans text-sm text-muted-foreground uppercase min-[1600px]:text-xl 2xl:text-lg">Global Languages</p>
-              </div>
-            </div>
           </div>
           <p className="relative mt-auto pt-8 font-sans text-xs text-muted-foreground uppercase min-[1600px]:text-lg 2xl:text-base">
             ©
+            {' '}
             {new Date().getFullYear()}
             {' '}
             Ngoc Quach. All rights reserved.
@@ -131,23 +137,19 @@ function SignInForm() {
 
         <div className="relative flex min-w-0 flex-1 flex-col items-center justify-center overflow-auto px-8 py-10">
           <div className="mx-auto w-full max-w-md rounded-2xl bg-card px-8 py-10 shadow-xl">
-            <h2 className="font-sans text-2xl font-bold text-foreground">Welcome Back</h2>
-            <p className="mt-1 font-sans text-sm text-muted-foreground">
-              Please enter your details to sign in.
-            </p>
+            <h2 className="font-sans text-2xl font-bold text-foreground">Create Account</h2>
+            <p className="mt-1 font-sans text-sm text-muted-foreground">Sign up to get started with your vocabulary management.</p>
 
             <div className="mt-6 flex gap-3">
               <Button
                 type="button"
                 variant="outline"
                 className="flex-1 border-border"
-                onClick={() => handleProviderSignIn('google')}
+                onClick={handleGoogleSignIn}
                 disabled={isOAuthLoading || form.formState.isSubmitting}
               >
                 {isOAuthLoading
-                  ? (
-                      <span className="text-sm">Connecting...</span>
-                    )
+                  ? <span className="text-sm">Connecting...</span>
                   : (
                       <>
                         <svg className="mr-2 size-4" viewBox="0 0 24 24">
@@ -167,9 +169,7 @@ function SignInForm() {
                 <span className="w-full border-t border-border" />
               </div>
               <div className="relative flex justify-center">
-                <span className="bg-card px-2 font-sans text-xs text-muted-foreground uppercase">
-                  OR CONTINUE WITH EMAIL
-                </span>
+                <span className="bg-card px-2 font-sans text-xs text-muted-foreground uppercase">OR CONTINUE WITH EMAIL</span>
               </div>
             </div>
 
@@ -181,6 +181,35 @@ function SignInForm() {
                   </Alert>
                 )}
 
+                <div className="grid grid-cols-2 gap-3">
+                  <FormField
+                    control={form.control}
+                    name="firstName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-foreground uppercase">First Name</FormLabel>
+                        <FormControl>
+                          <Input type="text" placeholder="John" className="h-11" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="lastName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-foreground uppercase">Last Name</FormLabel>
+                        <FormControl>
+                          <Input type="text" placeholder="Doe" className="h-11" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
                 <FormField
                   control={form.control}
                   name="email"
@@ -189,18 +218,23 @@ function SignInForm() {
                       <FormLabel className="text-foreground uppercase">Email Address</FormLabel>
                       <FormControl>
                         <div className="relative">
-                          <Letter
-                            size={18}
-                            weight="BoldDuotone"
-                            className="absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground"
-                          />
-                          <Input
-                            type="email"
-                            placeholder="name@company.com"
-                            className="h-11 pl-10"
-                            {...field}
-                          />
+                          <Letter size={18} weight="BoldDuotone" className="absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground" />
+                          <Input type="email" placeholder="name@company.com" className="h-11 pl-10" {...field} />
                         </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-foreground uppercase">Phone (Optional)</FormLabel>
+                      <FormControl>
+                        <Input type="tel" placeholder="+1 (555) 123-4567" className="h-11" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -212,28 +246,11 @@ function SignInForm() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <div className="flex items-center justify-between">
-                        <FormLabel className="text-foreground uppercase">Password</FormLabel>
-                        <Link
-                          href="/forgot-password"
-                          className="text-sm font-medium text-primary uppercase hover:underline"
-                        >
-                          Forgot password?
-                        </Link>
-                      </div>
+                      <FormLabel className="text-foreground uppercase">Password</FormLabel>
                       <FormControl>
                         <div className="relative">
-                          <LockPassword
-                            size={18}
-                            weight="BoldDuotone"
-                            className="absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground"
-                          />
-                          <Input
-                            type={showPassword ? 'text' : 'password'}
-                            placeholder="••••••••"
-                            className="h-11 pr-10 pl-10"
-                            {...field}
-                          />
+                          <LockPassword size={18} weight="BoldDuotone" className="absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground" />
+                          <Input type={showPassword ? 'text' : 'password'} placeholder="Create a strong password" className="h-11 pr-10 pl-10" {...field} />
                           <button
                             type="button"
                             className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
@@ -249,35 +266,41 @@ function SignInForm() {
                   )}
                 />
 
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id="keep-signed-in"
-                    checked={keepSignedIn}
-                    onCheckedChange={v => setKeepSignedIn(v === true)}
-                    className="h-4 w-4 rounded-full"
-                  />
-                  <label
-                    htmlFor="keep-signed-in"
-                    className="cursor-pointer font-sans text-sm text-muted-foreground"
-                  >
-                    Keep me signed in
-                  </label>
-                </div>
+                <FormField
+                  control={form.control}
+                  name="confirmPassword"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-foreground uppercase">Confirm Password</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <LockPassword size={18} weight="BoldDuotone" className="absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground" />
+                          <Input type={showConfirmPassword ? 'text' : 'password'} placeholder="Confirm your password" className="h-11 pr-10 pl-10" {...field} />
+                          <button
+                            type="button"
+                            className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                            onClick={() => setShowConfirmPassword(v => !v)}
+                            aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                          >
+                            <EyeIcon open={showConfirmPassword} />
+                          </button>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                <Button
-                  type="submit"
-                  className="h-11 w-full bg-primary text-primary-foreground hover:bg-primary/90"
-                  disabled={form.formState.isSubmitting}
-                >
-                  {form.formState.isSubmitting ? 'Signing in...' : 'Sign In to Dashboard'}
+                <Button type="submit" className="h-11 w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={form.formState.isSubmitting}>
+                  {form.formState.isSubmitting ? 'Creating Account...' : 'Create Account'}
                   <AltArrowRight size={18} weight="BoldDuotone" className="ml-2" />
                 </Button>
 
                 <p className="text-center font-sans text-sm text-muted-foreground">
-                  Don&apos;t have an account?
+                  Already have an account?
                   {' '}
-                  <Link href="/signup" className="font-semibold text-primary hover:underline">
-                    Create an account
+                  <Link href="/signin" className="font-semibold text-primary hover:underline">
+                    Sign in
                   </Link>
                 </p>
               </form>
@@ -289,5 +312,5 @@ function SignInForm() {
   );
 }
 
-export { SignInForm };
-export default SignInForm;
+export { SignUpForm };
+export default SignUpForm;

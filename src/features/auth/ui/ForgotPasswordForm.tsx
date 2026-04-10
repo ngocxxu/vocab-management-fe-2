@@ -1,15 +1,16 @@
 'use client';
 
 import type { ForgotPasswordFormData } from '@/libs/validations/auth';
-import { AltArrowRight, CheckCircle, Letter, StarFall } from '@solar-icons/react/ssr';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { AltArrowRight, CheckCircle, Letter, StarFall } from '@solar-icons/react/ssr';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { resetPassword } from '@/actions';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
+import { forgotPasswordSchema } from '@/libs/validations/auth';
+import { Alert, AlertDescription } from '@/shared/ui/alert';
+import { Button } from '@/shared/ui/button';
 import {
   Form,
   FormControl,
@@ -17,9 +18,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { forgotPasswordSchema } from '@/libs/validations/auth';
+} from '@/shared/ui/form';
+import { Input } from '@/shared/ui/input';
 
 const pageBg = '#F5F7FA';
 const leftPanelBg = '#EFF4FC';
@@ -82,6 +82,7 @@ function LeftPanel() {
       </div>
       <p className="relative mt-auto pt-8 font-sans text-xs text-muted-foreground uppercase min-[1600px]:text-lg 2xl:text-base">
         ©
+        {' '}
         {new Date().getFullYear()}
         {' '}
         Ngoc Quach. All rights reserved.
@@ -96,10 +97,13 @@ function ForgotPasswordForm() {
 
   const form = useForm<ForgotPasswordFormData>({
     resolver: zodResolver(forgotPasswordSchema),
-    defaultValues: {
-      email: '',
-    },
+    defaultValues: { email: '' },
   });
+
+  const reset = useCallback(() => {
+    setSuccess(false);
+    form.reset();
+  }, [form]);
 
   const onSubmit = async (data: ForgotPasswordFormData) => {
     setError('');
@@ -135,9 +139,7 @@ function ForgotPasswordForm() {
                         <CheckCircle size={24} weight="BoldDuotone" className="text-primary" />
                       </div>
                     </div>
-                    <h2 className="mt-4 text-center font-sans text-2xl font-bold text-foreground">
-                      Check your email
-                    </h2>
+                    <h2 className="mt-4 text-center font-sans text-2xl font-bold text-foreground">Check your email</h2>
                     <p className="mt-2 text-center font-sans text-sm text-muted-foreground">
                       We&apos;ve sent a password reset link to
                       {' '}
@@ -149,21 +151,11 @@ function ForgotPasswordForm() {
                       </AlertDescription>
                     </Alert>
                     <div className="mt-6 space-y-3">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="h-11 w-full"
-                        onClick={() => {
-                          setSuccess(false);
-                          form.reset();
-                        }}
-                      >
+                      <Button type="button" variant="outline" className="h-11 w-full" onClick={reset}>
                         Send another email
                       </Button>
                       <Link href="/signin" className="block">
-                        <Button variant="ghost" className="h-11 w-full">
-                          Back to sign in
-                        </Button>
+                        <Button variant="ghost" className="h-11 w-full">Back to sign in</Button>
                       </Link>
                     </div>
                   </>
@@ -189,37 +181,22 @@ function ForgotPasswordForm() {
                               <FormLabel className="text-foreground uppercase">Email Address</FormLabel>
                               <FormControl>
                                 <div className="relative">
-                                  <Letter
-                                    size={18}
-                                    weight="BoldDuotone"
-                                    className="absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground"
-                                  />
-                                  <Input
-                                    type="email"
-                                    placeholder="name@company.com"
-                                    className="h-11 pl-10"
-                                    {...field}
-                                  />
+                                  <Letter size={18} weight="BoldDuotone" className="absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground" />
+                                  <Input type="email" placeholder="name@company.com" className="h-11 pl-10" {...field} />
                                 </div>
                               </FormControl>
                               <FormMessage />
                             </FormItem>
                           )}
                         />
-                        <Button
-                          type="submit"
-                          className="h-11 w-full bg-primary text-primary-foreground hover:bg-primary/90"
-                          disabled={form.formState.isSubmitting}
-                        >
+                        <Button type="submit" className="h-11 w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={form.formState.isSubmitting}>
                           {form.formState.isSubmitting ? 'Sending...' : 'Send Reset Link'}
                           <AltArrowRight size={18} weight="BoldDuotone" className="ml-2" />
                         </Button>
                         <p className="text-center font-sans text-sm text-muted-foreground">
                           Remember your password?
                           {' '}
-                          <Link href="/signin" className="font-semibold text-primary hover:underline">
-                            Sign in
-                          </Link>
+                          <Link href="/signin" className="font-semibold text-primary hover:underline">Sign in</Link>
                         </p>
                       </form>
                     </Form>

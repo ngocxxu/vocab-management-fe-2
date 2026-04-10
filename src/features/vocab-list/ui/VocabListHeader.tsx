@@ -4,11 +4,11 @@ import type { VocabListHeaderProps } from '@/types/vocab-list';
 import { AddCircle, Filter, Folder, Upload } from '@solar-icons/react/ssr';
 import React, { useMemo } from 'react';
 import { PremiumFeatureGate } from '@/components/premium';
-import { Button } from '@/components/ui/button';
-import { MultiSelect } from '@/components/ui/multi-select';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Skeleton } from '@/components/ui/skeleton';
-import { getLanguageName } from '../library/utils';
+import { getLanguageName } from '@/shared/utils/language';
+import { Button } from '@/shared/ui/button';
+import { MultiSelect } from '@/shared/ui/multi-select';
+import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
+import { Skeleton } from '@/shared/ui/skeleton';
 import DownloadTemplateButton from './DownloadTemplateButton';
 import ExportExcelButton from './ExportExcelButton';
 
@@ -31,10 +31,8 @@ const VocabListHeader: React.FC<VocabListHeaderProps> = ({
 }) => {
   const subjectFilterOptions = useMemo(() => {
     const byId = new Map(subjects.map(s => [s.id, s]));
-    const options = subjects.map(subject => ({
-      value: subject.id,
-      label: subject.name,
-    }));
+    const options = subjects.map(subject => ({ value: subject.id, label: subject.name }));
+
     for (const id of [...new Set(selectedSubjectIds)]) {
       if (!byId.has(id)) {
         options.push({ value: id, label: 'Unknown subject' });
@@ -58,12 +56,10 @@ const VocabListHeader: React.FC<VocabListHeaderProps> = ({
             {getLanguageName(sourceLanguageCode)}
             {' '}
             →
-            {' '}
             {getLanguageName(targetLanguageCode)}
           </p>
         </div>
 
-        {/* Folder Name Display */}
         {isFolderLoading
           ? (
               <div className="flex items-center space-x-2">
@@ -80,17 +76,13 @@ const VocabListHeader: React.FC<VocabListHeaderProps> = ({
                   />
                   <div className="flex items-center space-x-2">
                     <Folder size={16} weight="BoldDuotone" className="text-muted-foreground" />
-                    <span className="text-sm font-medium text-foreground">
-                      {languageFolder.name}
-                    </span>
+                    <span className="text-sm font-medium text-foreground">{languageFolder.name}</span>
                   </div>
                 </div>
               )
             : null}
 
-        <p className="text-muted-foreground">
-          Track your vocabulary learning progress and review history.
-        </p>
+        <p className="text-muted-foreground">Track your vocabulary learning progress and review history.</p>
       </div>
 
       <div className="flex flex-wrap items-center gap-2 sm:gap-3">
@@ -107,9 +99,7 @@ const VocabListHeader: React.FC<VocabListHeaderProps> = ({
                 <h4 className="font-medium text-foreground">Filter by Subjects</h4>
                 <div className="space-y-2">
                   {isSubjectsLoading
-                    ? (
-                        <div className="h-10 w-full animate-pulse rounded-md bg-muted" />
-                      )
+                    ? <div className="h-10 w-full animate-pulse rounded-md bg-muted" />
                     : (
                         <MultiSelect
                           id="subject-filter"
@@ -124,18 +114,14 @@ const VocabListHeader: React.FC<VocabListHeaderProps> = ({
                 </div>
               </div>
               <div className="flex justify-end space-x-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={onClearFilters}
-                  disabled={!hasActiveFilters}
-                >
+                <Button variant="outline" size="sm" onClick={onClearFilters} disabled={!hasActiveFilters}>
                   Clear Filters
                 </Button>
               </div>
             </div>
           </PopoverContent>
         </Popover>
+
         <DownloadTemplateButton />
         <ExportExcelButton queryParams={queryParams} />
         <PremiumFeatureGate
@@ -148,10 +134,7 @@ const VocabListHeader: React.FC<VocabListHeaderProps> = ({
           <Upload size={16} weight="BoldDuotone" className="mr-2" />
           <span className="hidden sm:inline">Import Excel</span>
         </PremiumFeatureGate>
-        <Button
-          onClick={onAddVocab}
-          className="h-10 bg-primary text-primary-foreground shadow-lg hover:opacity-90"
-        >
+        <Button onClick={onAddVocab} className="h-10 bg-primary text-primary-foreground shadow-lg hover:opacity-90">
           <AddCircle size={16} weight="BoldDuotone" className="mr-2" />
           <span className="hidden sm:inline">Add Vocab</span>
         </Button>

@@ -10,9 +10,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+} from '@/shared/ui/form';
+import { Input } from '@/shared/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import type { TLanguage } from '@/types';
 
 const VocabLanguageForm: React.FC<VocabLanguageFormProps> = ({ initialLanguagesData }) => {
@@ -126,7 +126,6 @@ const VocabLanguageForm: React.FC<VocabLanguageFormProps> = ({ initialLanguagesD
             </FormItem>
           )}
         />
-
       </div>
 
       <FormField
@@ -134,17 +133,9 @@ const VocabLanguageForm: React.FC<VocabLanguageFormProps> = ({ initialLanguagesD
         name="textSource"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Source Text</FormLabel>
+            <FormLabel>Text Source</FormLabel>
             <FormControl>
-              <Input
-                placeholder="Enter source text..."
-                {...field}
-                onChange={(e) => {
-                  field.onChange(e);
-                  form.clearErrors('textSource');
-                }}
-                className="mt-1"
-              />
+              <Input type="text" placeholder="Enter source text" className="mt-1 w-full" {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>

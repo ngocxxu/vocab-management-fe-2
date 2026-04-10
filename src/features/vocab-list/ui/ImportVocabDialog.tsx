@@ -27,8 +27,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { Button } from '@/components/ui/button';
+} from '@/shared/ui/alert-dialog';
+import { Button } from '@/shared/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -36,9 +36,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+} from '@/shared/ui/dialog';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
+import { Input } from '@/shared/ui/input';
 
 const FormSchema = z.object({
   file: z.instanceof(File, { message: 'Please select a file' }),
@@ -90,9 +90,8 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
       startTransition(() => {
         router.refresh();
       });
-    } catch (error) {
+    } catch {
       toast.error(`Failed to create subject '${subjectName}'. Please try again.`);
-      console.error('Create subject error:', error);
     } finally {
       setCreatingSubjects((prev) => {
         const next = new Set(prev);
@@ -155,8 +154,6 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
         setShowErrorDialog(true);
       }
     } catch (error: unknown) {
-      console.error('Import error:', error);
-
       const withResponse = error && typeof error === 'object' && 'response' in error
         ? (error as { response?: { data?: unknown } })
         : null;
@@ -169,18 +166,19 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
             setShowErrorDialog(true);
             return;
           }
-        } catch (parseError) {
-          console.error('Failed to parse error response', parseError);
-        }
+        } catch {}
       }
 
       const message = error instanceof Error ? error.message : 'Failed to import file. Please check the file format and try again.';
       if (isQuotaError(error)) {
         toast.error(QUOTA_ERROR_MESSAGE, {
           description: message,
-          action: { label: 'Upgrade', onClick: () => {
-            window.location.href = '/#pricing';
-          } },
+          action: {
+            label: 'Upgrade',
+            onClick: () => {
+              window.location.href = '/#pricing';
+            },
+          },
         });
       } else {
         toast.error('Import failed', { description: message });
@@ -269,7 +267,6 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
         </DialogContent>
       </Dialog>
 
-      {/* Error Details Dialog */}
       <AlertDialog open={showErrorDialog} onOpenChange={setShowErrorDialog}>
         <AlertDialogContent className="max-w-4xl">
           <AlertDialogHeader>
@@ -375,9 +372,7 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
                                         : (
                                             <>
                                               <AddCircle size={12} weight="BoldDuotone" className="mr-1" />
-                                              Create
-                                              {' '}
-                                              &apos;
+                                              Create &apos;
                                               {subjectName}
                                               &apos;
                                             </>

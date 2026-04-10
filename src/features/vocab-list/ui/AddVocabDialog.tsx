@@ -3,8 +3,16 @@
 import type { AddVocabDialogProps } from '@/types/vocab-list';
 import { RefreshCircle } from '@solar-icons/react/ssr';
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/shared/ui/button';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/shared/ui/dialog';
 import VocabLanguageForm from './VocabLanguageForm';
 import TextTargetTabs from './TextTargetTabs';
 
@@ -42,9 +50,7 @@ const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
 
   const handleOpenChange = (newOpen: boolean) => {
     if (!newOpen) {
-      // Reset form when modal is closed
       onReset();
-      // Reset active tab to first tab
       onActiveTabChange('0');
     }
     setOpen(newOpen);
@@ -57,9 +63,7 @@ const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
           <DialogHeader>
             <DialogTitle>{editMode ? 'Edit Vocabulary' : 'Add New Vocabulary'}</DialogTitle>
             <DialogDescription>
-              {editMode
-                ? `Update the details for your vocabulary item`
-                : 'Enter the details for your new vocabulary item'}
+              {editMode ? 'Update the details for your vocabulary item' : 'Enter the details for your new vocabulary item'}
             </DialogDescription>
           </DialogHeader>
           <div className="grid grid-cols-1 gap-6 p-6 pb-0 lg:grid-cols-[minmax(0,300px)_1fr]">
@@ -114,9 +118,7 @@ const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
                       {editMode ? 'Updating...' : 'Validating...'}
                     </>
                   )
-                : (
-                    editMode ? 'Update Vocabulary' : 'Add Vocabulary'
-                  )}
+                : (editMode ? 'Update Vocabulary' : 'Add Vocabulary')}
             </Button>
           </DialogFooter>
         </div>

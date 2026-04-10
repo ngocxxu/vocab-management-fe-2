@@ -26,19 +26,7 @@ export function formatEditedAgo(updatedAt?: string | null): string {
   return date.toLocaleDateString();
 }
 
-export const getLanguageName = (code: string): string => {
-  const languageNames: Record<string, string> = {
-    ko: 'Korean',
-    en: 'English',
-    vi: 'Vietnamese',
-    ja: 'Japanese',
-    zh: 'Chinese',
-    fr: 'French',
-    de: 'German',
-    es: 'Spanish',
-  };
-  return languageNames[code] || code.toUpperCase();
-};
+export { getLanguageName } from '@/shared/utils/language';
 
 export const generateFolderColor = (seed?: string): string => {
   const colors = [

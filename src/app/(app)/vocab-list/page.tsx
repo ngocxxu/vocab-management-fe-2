@@ -1,4 +1,4 @@
-import VocabListLayout from '@/components/vocab-list/VocabListLayout';
+import VocabListLayout from '@/features/vocab-list/ui/VocabListLayout';
 import { getVocabListPageData } from '@/features/vocab-list/services/server/getVocabListPageData';
 
 export const dynamic = 'force-dynamic';

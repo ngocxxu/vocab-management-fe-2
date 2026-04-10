@@ -8,8 +8,8 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
-import { VocabList } from './index';
+} from '@/shared/ui/breadcrumb';
+import VocabList from './VocabList';
 
 const VocabListContent: React.FC<VocabListContentProps> = ({
   initialVocabsData,

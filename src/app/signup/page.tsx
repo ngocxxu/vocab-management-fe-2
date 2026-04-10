@@ -1,8 +1,8 @@
 'use client';
 
 import { Suspense } from 'react';
-import { Skeleton } from '@/components/ui/skeleton';
-import { SignUpForm } from '@/components/auth/SignUpForm';
+import { Skeleton } from '@/shared/ui/skeleton';
+import { SignUpForm } from '@/features/auth/ui/SignUpForm';
 
 export default function SignUpPage() {
   return (

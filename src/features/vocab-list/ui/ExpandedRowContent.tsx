@@ -1,14 +1,10 @@
 'use client';
 
 import type { ExpandedRowContentProps, TExamples, TVocab } from '@/types/vocab-list';
-import {
-  AltArrowUp,
-  Pen,
-  VolumeLoud,
-} from '@solar-icons/react/ssr';
+import { AltArrowUp, Pen, VolumeLoud } from '@solar-icons/react/ssr';
 import React, { useCallback } from 'react';
 import { useSpeechSynthesis } from 'react-speech-kit';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/button';
 import { selectVoiceByCode } from '@/utils/textToSpeech';
 
 function boldVocabInSentence(sentence: string, word: string): React.ReactNode {
@@ -50,26 +46,19 @@ const ExpandedRowContent: React.FC<ExpandedRowContentProps> = ({
       pitch: 1,
       volume: 1,
     });
-  }, [speak, cancel, voices, vocab.targetLanguageCode]);
+  }, [cancel, speak, voices, vocab.targetLanguageCode]);
 
   return (
     <tr className={`bg-muted/20 ${className}`}>
       <td colSpan={columnsCount} className="p-4">
         <div className="space-y-4 pr-4">
           <div className="rounded-lg bg-card p-4 shadow-sm">
-            <div
-              className={`grid gap-4 ${vocab.textTargets.length >= 2 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}
-            >
+            <div className={`grid gap-4 ${vocab.textTargets.length >= 2 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
               {vocab.textTargets.map((target: TVocab['textTargets'][number], index: number) => (
-                <div
-                  key={`${target.textTarget}-${index}`}
-                  className="rounded-lg border border-border bg-muted/20 p-4"
-                >
+                <div key={`${target.textTarget}-${index}`} className="rounded-lg border border-border bg-muted/20 p-4">
                   <div className="mb-3 flex items-start justify-between gap-2">
                     <div className="flex min-w-0 flex-1 items-center gap-2">
-                      <h4 className="text-lg font-bold text-foreground">
-                        {target.textTarget}
-                      </h4>
+                      <h4 className="text-lg font-bold text-foreground">{target.textTarget}</h4>
                       <Button
                         variant="ghost"
                         size="icon"
@@ -105,13 +94,9 @@ const ExpandedRowContent: React.FC<ExpandedRowContentProps> = ({
 
                   {showExplanations && (target.explanationSource || target.explanationTarget) && (
                     <div className="mb-4">
-                      <p className="mb-1.5 text-xs font-medium tracking-wide text-muted-foreground uppercase">
-                        Explanation
-                      </p>
+                      <p className="mb-1.5 text-xs font-medium tracking-wide text-muted-foreground uppercase">Explanation</p>
                       <div className="rounded-lg bg-muted p-4 dark:bg-muted">
-                        {target.explanationSource && (
-                          <p className="text-sm text-foreground italic">{target.explanationSource}</p>
-                        )}
+                        {target.explanationSource && <p className="text-sm text-foreground italic">{target.explanationSource}</p>}
                         {target.explanationTarget && (
                           <p className={`text-xs text-muted-foreground ${target.explanationSource ? 'mt-2' : ''}`}>
                             {target.explanationTarget}
@@ -123,22 +108,14 @@ const ExpandedRowContent: React.FC<ExpandedRowContentProps> = ({
 
                   {showExamples && target.vocabExamples?.filter((ex: TExamples) => ex.source || ex.target).length > 0 && (
                     <div>
-                      <p className="mb-1.5 text-xs font-medium tracking-wide text-muted-foreground uppercase">
-                        Usage Examples
-                      </p>
+                      <p className="mb-1.5 text-xs font-medium tracking-wide text-muted-foreground uppercase">Usage Examples</p>
                       <div className="space-y-3">
                         {target.vocabExamples
                           .filter((ex: TExamples) => ex.source || ex.target)
                           .map((example: TExamples, exIndex: number) => (
                             <div key={`${example.source}-${exIndex}`} className="space-y-0.5 rounded-none border-l-4 border-primary py-1.5 pl-3">
-                              {example.source && (
-                                <p className="text-sm text-foreground">
-                                  {boldVocabInSentence(example.source, vocab.textSource)}
-                                </p>
-                              )}
-                              {example.target && (
-                                <p className="pl-2 text-xs text-muted-foreground">{example.target}</p>
-                              )}
+                              {example.source && <p className="text-sm text-foreground">{boldVocabInSentence(example.source, vocab.textSource)}</p>}
+                              {example.target && <p className="pl-2 text-xs text-muted-foreground">{example.target}</p>}
                             </div>
                           ))}
                       </div>

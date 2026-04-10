@@ -3,8 +3,8 @@
 import type { TextTargetTabsProps } from '@/types/vocab-list';
 import { AddCircle, AltArrowRight, CheckCircle, CloseCircle, Target, TrashBin2 } from '@solar-icons/react/ssr';
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/shared/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import { cn } from '@/libs/utils';
 import TextTargetForm from './TextTargetForm';
 
@@ -88,13 +88,7 @@ const TextTargetTabs: React.FC<TextTargetTabsProps> = ({
                       isActive ? 'text-primary' : 'text-muted-foreground',
                     )}
                   >
-                    {isActive
-                      ? (
-                          <CheckCircle size={16} weight="BoldDuotone" />
-                        )
-                      : (
-                          <AltArrowRight size={16} weight="BoldDuotone" />
-                        )}
+                    {isActive ? <CheckCircle size={16} weight="BoldDuotone" /> : <AltArrowRight size={16} weight="BoldDuotone" />}
                   </span>
                   {textTargets.length > 1 && onRemoveTextTarget && (
                     <button
@@ -153,13 +147,7 @@ const TextTargetTabs: React.FC<TextTargetTabsProps> = ({
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold">Text Targets</h3>
         {onAddTextTarget && (
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={onAddTextTarget}
-            disabled={textTargets.length >= 5}
-          >
+          <Button type="button" variant="outline" size="sm" onClick={onAddTextTarget} disabled={textTargets.length >= 5}>
             <AddCircle size={16} weight="BoldDuotone" className="mr-1" />
             Add Target
           </Button>
@@ -180,7 +168,6 @@ const TextTargetTabs: React.FC<TextTargetTabsProps> = ({
             >
               <p className="text-sm">
                 Vocab
-                {'  '}
                 {idx + 1}
               </p>
               {textTargets.length > 1 && onRemoveTextTarget && (
@@ -211,10 +198,7 @@ const TextTargetTabs: React.FC<TextTargetTabsProps> = ({
           <TabsContent
             key={target.id}
             value={idx.toString()}
-            className={cn(
-              'space-y-4',
-              activeTab === idx.toString() ? 'block' : 'hidden',
-            )}
+            className={cn('space-y-4', activeTab === idx.toString() ? 'block' : 'hidden')}
           >
             <TextTargetForm
               targetIndex={idx}
@@ -228,10 +212,10 @@ const TextTargetTabs: React.FC<TextTargetTabsProps> = ({
               textSource={textSource}
               sourceLanguageCode={sourceLanguageCode}
               targetLanguageCode={targetLanguageCode}
-              onInputChange={onInputChange!}
-              onExampleChange={onExampleChange!}
-              onAddExample={onAddExample!}
-              onRemoveExample={onRemoveExample!}
+              onInputChange={onInputChange || (() => {})}
+              onExampleChange={onExampleChange || (() => {})}
+              onAddExample={onAddExample || (() => {})}
+              onRemoveExample={onRemoveExample || (() => {})}
               userRole={userRole}
             />
           </TabsContent>
