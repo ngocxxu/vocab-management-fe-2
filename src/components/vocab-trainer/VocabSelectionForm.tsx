@@ -115,7 +115,6 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
                     form.clearErrors('vocabAssignmentIds');
                   }}
                   aria-label="Select row"
-                  className="data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600"
                 />
               </FormControl>
             </FormItem>

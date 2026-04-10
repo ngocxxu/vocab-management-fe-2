@@ -1,6 +1,6 @@
 'use client';
 
-import { Bell, Lock } from '@solar-icons/react/ssr';
+import { Archive, Bell, CloseCircle, Lock } from '@solar-icons/react/ssr';
 import React, { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import {
@@ -19,12 +19,27 @@ import { EQuestionType } from '@/enum/vocab-trainer';
 import { cn } from '@/libs/utils';
 import { UpsellModal } from '@/components/premium/UpsellModal';
 
-type TrainerBasicInfoFormProps = Readonly<{ userRole?: string }>;
+type TrainerBasicInfoFormProps = Readonly<{
+  userRole?: string;
+  selectedWords?: Array<{ id: string; label?: string }>;
+}>;
 
-const TrainerBasicInfoForm: React.FC<TrainerBasicInfoFormProps> = ({ userRole }) => {
+const MAX_VISIBLE_SELECTED_WORDS = 20;
+const EMPTY_SELECTED_WORDS: TrainerBasicInfoFormProps['selectedWords'] = [];
+
+const TrainerBasicInfoForm: React.FC<TrainerBasicInfoFormProps> = ({ userRole, selectedWords = EMPTY_SELECTED_WORDS }) => {
   const form = useFormContext();
   const [upsellOpen, setUpsellOpen] = useState(false);
   const isGuest = userRole === UserRole.GUEST;
+
+  const removeSelectedWord = (id: string) => {
+    const current = (form.getValues('vocabAssignmentIds') as string[]) || [];
+    const next = current.filter(x => x !== id);
+    form.setValue('vocabAssignmentIds', next, { shouldDirty: true, shouldValidate: true });
+    if (next.length > 0) {
+      form.clearErrors('vocabAssignmentIds');
+    }
+  };
 
   return (
     <div className="space-y-4">
@@ -137,6 +152,63 @@ const TrainerBasicInfoForm: React.FC<TrainerBasicInfoFormProps> = ({ userRole })
             );
           }}
         />
+
+        <div className="space-y-2">
+          <div className="flex items-center justify-between gap-3">
+            <FormLabel className="tracking-wide dark:text-slate-400">
+              Selected Words
+            </FormLabel>
+            <span className={cn('inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/30 dark:text-blue-200', selectedWords.length === 0 && 'opacity-50')}>
+              {selectedWords.length}
+              {' '}
+              Selected
+            </span>
+          </div>
+          {selectedWords.length === 0
+            ? (
+                <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-border bg-card px-6 py-10 text-center">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+                    <Archive weight="BoldDuotone" size={32} className="text-muted-foreground" />
+                  </div>
+                  <div className="mt-4 space-y-1 text-sm text-muted-foreground">
+                    <p className="font-medium text-foreground">No words selected yet.</p>
+                    <p>Pick some from the list to start</p>
+                    <p>training.</p>
+                  </div>
+                </div>
+              )
+            : (
+                <div className="flex flex-wrap gap-2">
+                  {selectedWords.slice(0, MAX_VISIBLE_SELECTED_WORDS).map(({ id, label }) => (
+                    <span
+                      key={id}
+                      className={cn(
+                        'inline-flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-800 dark:bg-blue-900/30 dark:text-blue-200',
+                        !label && 'opacity-70',
+                      )}
+                    >
+                      <span className="max-w-[220px] truncate">{label ?? '…'}</span>
+                      <button
+                        type="button"
+                        className="inline-flex h-5 w-5 items-center justify-center rounded-full text-blue-700 transition-colors hover:bg-blue-200/70 dark:text-blue-200 dark:hover:bg-blue-900/40"
+                        onClick={() => removeSelectedWord(id)}
+                        aria-label={label ? `Remove ${label}` : 'Remove selected word'}
+                      >
+                        <CloseCircle size={14} weight="BoldDuotone" />
+                      </button>
+                    </span>
+                  ))}
+                  {selectedWords.length > MAX_VISIBLE_SELECTED_WORDS && (
+                    <span className="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+                      +
+                      {selectedWords.length - MAX_VISIBLE_SELECTED_WORDS}
+                      {' '}
+                      more
+                    </span>
+                  )}
+                </div>
+              )}
+        </div>
 
         <FormField
           control={form.control}

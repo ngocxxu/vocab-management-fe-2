@@ -1,16 +1,18 @@
 'use client';
 
 import { RefreshCircle } from '@solar-icons/react/ssr';
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import type { TVocab } from '@/types/vocab-list';
+import { getVocabsByIds } from '@/actions';
 import type {
   AddVocabTrainerDialogProps,
 } from '@/types/vocab-trainer';
 import TrainerBasicInfoForm from './TrainerBasicInfoForm';
 import VocabSelectionForm from './VocabSelectionForm';
 
-const EST_MINUTES_PER_WORD = 0.5;
+const EMPTY_CACHED_LANGUAGE_FOLDERS: AddVocabTrainerDialogProps['cachedLanguageFolders'] = [];
 
 const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({
   formData,
@@ -20,12 +22,13 @@ const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({
   setOpen,
   editMode = false,
   initialLanguagesData,
-  cachedLanguageFolders = [],
+  cachedLanguageFolders = EMPTY_CACHED_LANGUAGE_FOLDERS,
   onLanguageFoldersLoaded,
   editingItem: _editingItem,
   userRole,
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedVocabById, setSelectedVocabById] = useState<Record<string, TVocab>>({});
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
@@ -43,8 +46,44 @@ const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({
     setOpen(newOpen);
   };
 
-  const selectedCount = formData.vocabAssignmentIds.length;
-  const estDurationMins = Math.ceil(selectedCount * EST_MINUTES_PER_WORD) || 0;
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    const selectedIds = formData.vocabAssignmentIds || [];
+    const missingIds = selectedIds.filter(id => !selectedVocabById[id]);
+    if (missingIds.length === 0) {
+      return;
+    }
+
+    let cancelled = false;
+    (async () => {
+      const result = await getVocabsByIds(missingIds);
+      if (cancelled || !Array.isArray(result)) {
+        return;
+      }
+      setSelectedVocabById((prev) => {
+        const next = { ...prev };
+        result.forEach((v) => {
+          next[v.id] = v;
+        });
+        return next;
+      });
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [formData.vocabAssignmentIds, open, selectedVocabById]);
+
+  const selectedWordBadges = useMemo(() => {
+    const selectedIds = formData.vocabAssignmentIds || [];
+    return selectedIds.map((id) => {
+      const vocab = selectedVocabById[id];
+      return { id, label: vocab?.textSource };
+    });
+  }, [formData.vocabAssignmentIds, selectedVocabById]);
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -60,33 +99,8 @@ const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({
           </DialogHeader>
           <div className="grid grid-cols-1 gap-6 p-6 pb-0 lg:grid-cols-[minmax(0,380px)_1fr]">
             <div className="space-y-6">
-              <TrainerBasicInfoForm userRole={userRole} />
-              <div className="space-y-3">
-                <h4 className="text-xs font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
-                  Summary
-                </h4>
-                <div className="flex flex-col gap-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-slate-600 dark:text-slate-300">Selected Vocab</span>
-                    <span className="font-medium text-slate-900 dark:text-white">
-                      {selectedCount}
-                      {' '}
-                      word
-                      {selectedCount === 1 ? '' : 's'}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-600 dark:text-slate-300">Est. Duration</span>
-                    <span className="font-medium text-slate-900 dark:text-white">
-                      ~
-                      {estDurationMins}
-                      {' '}
-                      min
-                      {estDurationMins === 1 ? '' : 's'}
-                    </span>
-                  </div>
-                </div>
-              </div>
+              <TrainerBasicInfoForm userRole={userRole} selectedWords={selectedWordBadges} />
+
             </div>
             <div className="min-w-0">
               {open && (

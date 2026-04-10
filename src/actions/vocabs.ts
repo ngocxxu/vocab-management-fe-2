@@ -5,6 +5,7 @@ import type { TCreateVocab, TVocab } from '@/types/vocab-list';
 import type { VocabQueryParams } from '@/utils/api-config';
 import { revalidatePath } from 'next/cache';
 import { vocabApi } from '@/utils/server-api';
+import { logger } from '@/libs/Logger';
 import { requireAuth } from './auth';
 import { toActionError } from './utils';
 
@@ -140,6 +141,40 @@ export async function getVocabsForSelection(params: Omit<VocabQueryParams, 'user
   } catch (error) {
     return {
       error: error instanceof Error ? error.message : 'Failed to fetch vocabularies',
+    };
+  }
+}
+
+export async function getVocabsByIds(ids: string[]): Promise<TVocab[] | { error: string }> {
+  try {
+    await requireAuth();
+    if (!Array.isArray(ids)) {
+      throw new TypeError('IDs must be an array');
+    }
+
+    const uniqueIds = Array.from(new Set(ids)).filter(Boolean);
+    if (uniqueIds.length === 0) {
+      return [];
+    }
+
+    const results = await Promise.allSettled(uniqueIds.map(id => vocabApi.getById(id)));
+    const vocabs: TVocab[] = [];
+
+    results.forEach((res, idx) => {
+      if (res.status === 'fulfilled') {
+        vocabs.push(res.value);
+        return;
+      }
+      logger.error('Failed to fetch vocab by id', {
+        id: uniqueIds[idx],
+        error: res.reason instanceof Error ? res.reason.message : String(res.reason),
+      });
+    });
+
+    return vocabs;
+  } catch (error) {
+    return {
+      error: error instanceof Error ? error.message : 'Failed to fetch vocabularies by ids',
     };
   }
 }
