@@ -9,6 +9,7 @@ import {
   SquareAcademicCap,
 } from '@solar-icons/react/ssr';
 import { CircleFill } from '@/components/ui/circle-fill';
+import { startOfDay } from '@/utils/date';
 
 /**
  * Format notification message based on type, action, and data
@@ -184,12 +185,6 @@ export const getNotificationStatusIcon = (isRead: boolean, priority: string) => 
       return CircleFill;
   }
 };
-
-function startOfDay(d: Date): Date {
-  const out = new Date(d);
-  out.setHours(0, 0, 0, 0);
-  return out;
-}
 
 export type NotificationDateGroup = {
   today: TNotification[];

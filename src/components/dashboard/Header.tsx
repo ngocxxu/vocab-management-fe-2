@@ -203,7 +203,7 @@ export const Header: React.FC<HeaderProps> = ({
           <CommandGroup heading="Suggestions">
             <CommandItem onSelect={() => router.push('/dashboard')}>Dashboard</CommandItem>
             <CommandItem onSelect={() => router.push('/library')}>Library</CommandItem>
-            <CommandItem onSelect={() => router.push('/vocab-trainer')}>Flashcards</CommandItem>
+            <CommandItem onSelect={() => router.push('/vocab-trainer')}>Vocab Trainer</CommandItem>
           </CommandGroup>
         </CommandList>
       </CommandDialog>

@@ -22,6 +22,8 @@ export type TVocab = {
   textSource: string;
   textTargets: TTextTarget[];
   masteryScore?: number;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 export type TCreateVocab = {

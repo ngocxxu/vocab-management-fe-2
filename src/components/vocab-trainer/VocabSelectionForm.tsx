@@ -58,6 +58,7 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
     open,
     pagination,
     filters,
+    quickFilter,
     cachedLanguageFolders,
     onLanguageFoldersLoaded,
   });
@@ -126,7 +127,7 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
     },
     {
       accessorKey: 'textSource',
-      header: 'SOURCE TERM',
+      header: 'Text Source',
       cell: ({ row }) => (
         <div className="font-medium text-slate-900 dark:text-slate-100">{row.original.textSource}</div>
       ),
@@ -134,12 +135,12 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
     },
     {
       accessorKey: 'textTargets',
-      header: 'TRANSLATIONS',
+      header: 'Text Targets',
       cell: ({ row }) => (
         <div className="flex flex-wrap gap-1">
           {row.original.textTargets.map((t, i) => (
             <span
-              key={`${t.textTarget}-${row.original.id}-${i}`}
+              key={`${t.textTarget}-${row.original.id}`}
               className={cn(
                 'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
                 i === 0
