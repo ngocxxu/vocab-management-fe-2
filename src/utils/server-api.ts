@@ -1,4 +1,4 @@
-import type { LanguageFolderQueryParams, VocabQueryParams, VocabTrainerQueryParams } from './api-config';
+import type { LanguageFolderQueryParams, RandomVocabQueryParams, VocabQueryParams, VocabTrainerQueryParams } from './api-config';
 import type { ResponseAPI, TLanguage, TLanguageFolder, TUser } from '@/types';
 import type { TAuthResponse, TOAuthSyncResponse } from '@/types/auth';
 import type {
@@ -222,6 +222,11 @@ export const vocabApi = {
   getAll: (params?: VocabQueryParams) => {
     const config = API_METHODS.vocabs.getAll(params);
     return serverApi.get<ResponseAPI<TVocab[]>>(config.endpoint);
+  },
+  random: (params: RandomVocabQueryParams) => {
+    const config = API_METHODS.vocabs.random(params);
+    // Backend might return either a raw list or a paginated shape.
+    return serverApi.get<ResponseAPI<TVocab[]> | TVocab[]>(config.endpoint);
   },
   getById: (id: string) => {
     const config = API_METHODS.vocabs.getById(id);

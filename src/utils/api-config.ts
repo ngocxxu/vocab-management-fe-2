@@ -24,6 +24,11 @@ export type VocabQueryParams = {
   languageFolderId?: string;
 };
 
+export type RandomVocabQueryParams = {
+  count: number;
+  languageFolderId?: string;
+};
+
 export type QueryParamValue = string | number | boolean | string[] | undefined;
 
 export const buildQueryString = (params: Record<string, QueryParamValue>): string => {
@@ -130,6 +135,10 @@ export const API_METHODS = {
       return { endpoint: `${API_ENDPOINTS.vocabs}/statistics/problematic?${queryString}` };
     },
     getStatisticsDistribution: () => ({ endpoint: `${API_ENDPOINTS.vocabs}/statistics/distribution` }),
+    random: (params: RandomVocabQueryParams) => {
+      const queryString = buildQueryString(params);
+      return { endpoint: `${API_ENDPOINTS.vocabs}/random?${queryString}` };
+    },
   },
   vocabTrainers: {
     getAll: (params?: VocabTrainerQueryParams) => {

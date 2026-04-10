@@ -5,9 +5,10 @@ import type { VocabFilters } from '@/hooks';
 import type { TVocabSelectionFolderArray } from '@/types/vocab-selection';
 import type { QuickFilter, VocabSelectionFormProps } from '@/types/vocab-trainer';
 import type { TVocab } from '@/types/vocab-list';
-import { Folder, Magnifer } from '@solar-icons/react/ssr';
+import { Folder, Magnifer, Shuffle } from '@solar-icons/react/ssr';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
+import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   FormControl,
@@ -20,6 +21,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DataTable } from '@/components/ui/table';
 import { useApiPagination, useLocalPagination, useVocabSelection } from '@/hooks';
+import { getRandomVocabsForSelection } from '@/actions';
 import { cn } from '@/libs/utils';
 import { getMasteryLevel } from '@/utils/vocab-mastery';
 
@@ -41,6 +43,8 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
 }) => {
   const form = useFormContext();
   const [quickFilter, setQuickFilter] = useState<QuickFilter>('all');
+  const [randomCount, setRandomCount] = useState<number>(10);
+  const [isRandomizing, setIsRandomizing] = useState(false);
 
   const apiPagination = useApiPagination({ page: 1, pageSize: 5, sortBy: 'updatedAt', sortOrder: 'desc' });
   const localPagination = useLocalPagination({ page: 1, pageSize: 5, sortBy: 'updatedAt', sortOrder: 'desc' });
@@ -86,6 +90,27 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
     setQuickFilter(id);
     handlers.handlePageChange(1);
   }, [handlers]);
+
+  const handleRandomize = useCallback(async () => {
+    if (isLoading || isRandomizing) {
+      return;
+    }
+    setIsRandomizing(true);
+    try {
+      const result = await getRandomVocabsForSelection({
+        count: randomCount,
+        languageFolderId: filters.languageFolderId !== 'ALL' ? filters.languageFolderId : undefined,
+      });
+      if (!Array.isArray(result)) {
+        return;
+      }
+      form.setValue('vocabAssignmentIds', result.map(v => v.id));
+      form.clearErrors('vocabAssignmentIds');
+      handlers.handlePageChange(1);
+    } finally {
+      setIsRandomizing(false);
+    }
+  }, [filters.languageFolderId, form, handlers, isLoading, isRandomizing, randomCount]);
 
   const columns = useMemo<ColumnDef<TVocab>[]>(() => [
     {
@@ -156,7 +181,7 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
     },
     {
       id: 'status',
-      header: 'STATUS',
+      header: 'Status',
       cell: ({ row }) => {
         const status = getMasteryLevel(row.original.masteryScore);
         const statusClass = {
@@ -213,9 +238,42 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
       </div>
 
       <div className="space-y-2">
-        <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-          Quick filters
-        </p>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+            Quick filters
+          </p>
+
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 rounded-full bg-muted px-3 py-1.5">
+              <span className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Count</span>
+              <input
+                type="number"
+                inputMode="numeric"
+                min={1}
+                value={randomCount}
+                onChange={(e) => {
+                  const next = Number(e.target.value);
+                  setRandomCount(Number.isFinite(next) ? Math.max(1, next) : 1);
+                }}
+                className={cn(
+                  'h-7 w-[72px] rounded-md border border-input bg-background px-2 text-sm text-foreground shadow-xs outline-none',
+                  'focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50',
+                )}
+              />
+            </div>
+
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleRandomize}
+              disabled={isLoading || isRandomizing}
+            >
+              <Shuffle size={16} weight="BoldDuotone" />
+              Randomize
+            </Button>
+          </div>
+        </div>
         <div className="flex flex-wrap gap-2">
           {QUICK_FILTERS.map(({ id, label }) => (
             <button
@@ -226,7 +284,7 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
                 'rounded-full px-4 py-2 text-sm font-medium transition-colors',
                 quickFilter === id
                   ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground',
+                  : 'bg-accent text-accent-foreground hover:bg-accent hover:text-accent-foreground',
               )}
             >
               {label}

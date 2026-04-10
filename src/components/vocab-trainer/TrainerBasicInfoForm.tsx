@@ -1,6 +1,6 @@
 'use client';
 
-import { Archive, Bell, CloseCircle, Lock } from '@solar-icons/react/ssr';
+import { Archive, CloseCircle, Lock } from '@solar-icons/react/ssr';
 import React, { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import {
@@ -31,6 +31,7 @@ const TrainerBasicInfoForm: React.FC<TrainerBasicInfoFormProps> = ({ userRole, s
   const form = useFormContext();
   const [upsellOpen, setUpsellOpen] = useState(false);
   const isGuest = userRole === UserRole.GUEST;
+  const reminderLabelId = React.useId();
 
   const removeSelectedWord = (id: string) => {
     const current = (form.getValues('vocabAssignmentIds') as string[]) || [];
@@ -216,32 +217,18 @@ const TrainerBasicInfoForm: React.FC<TrainerBasicInfoFormProps> = ({ userRole, s
             const reminderEnabled = !field.value;
             return (
               <FormItem>
-                <FormLabel className="sr-only">Enable Reminder</FormLabel>
-                <FormControl>
-                  <button
-                    type="button"
-                    role="switch"
-                    aria-checked={reminderEnabled}
-                    onClick={() => {
-                      field.onChange(!field.value);
-                      form.clearErrors('reminderDisabled');
-                    }}
-                    className={cn(
-                      'flex w-full items-center justify-between rounded-lg border border-border bg-muted/30 p-4 text-left transition-colors hover:bg-muted/40',
-                    )}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-warning/20 text-warning">
-                        <Bell size={20} weight="BoldDuotone" />
-                      </div>
-                      <div>
-                        <p className="font-medium text-foreground">Enable Reminder</p>
-                        <p className="text-sm text-muted-foreground">
-                          Remind at 09:00 AM
-                        </p>
-                      </div>
-                    </div>
-                    <span
+                <div className="flex w-full items-center justify-between">
+                  <FormLabel id={reminderLabelId}>Reminders</FormLabel>
+                  <FormControl>
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-labelledby={reminderLabelId}
+                      aria-checked={reminderEnabled}
+                      onClick={() => {
+                        field.onChange(!field.value);
+                        form.clearErrors('reminderDisabled');
+                      }}
                       className={cn(
                         'relative inline-flex h-6 w-11 shrink-0 rounded-full border border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
                         reminderEnabled ? 'bg-primary' : 'bg-muted',
@@ -249,14 +236,13 @@ const TrainerBasicInfoForm: React.FC<TrainerBasicInfoFormProps> = ({ userRole, s
                     >
                       <span
                         className={cn(
-                          'pointer-events-none inline-block h-5 w-5 rounded-full bg-card shadow ring-0 transition-transform',
-                          reminderEnabled ? 'translate-x-5' : 'translate-x-0.5',
+                          'pointer-events-none absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-card shadow transition-transform',
+                          reminderEnabled ? 'translate-x-5' : 'translate-x-0',
                         )}
-                        style={{ marginTop: 2 }}
                       />
-                    </span>
-                  </button>
-                </FormControl>
+                    </button>
+                  </FormControl>
+                </div>
                 <FormMessage />
               </FormItem>
             );

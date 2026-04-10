@@ -2,7 +2,7 @@
 
 import type { ResponseAPI } from '@/types';
 import type { TCreateVocab, TVocab } from '@/types/vocab-list';
-import type { VocabQueryParams } from '@/utils/api-config';
+import type { RandomVocabQueryParams, VocabQueryParams } from '@/utils/api-config';
 import { revalidatePath } from 'next/cache';
 import { vocabApi } from '@/utils/server-api';
 import { logger } from '@/libs/Logger';
@@ -141,6 +141,39 @@ export async function getVocabsForSelection(params: Omit<VocabQueryParams, 'user
   } catch (error) {
     return {
       error: error instanceof Error ? error.message : 'Failed to fetch vocabularies',
+    };
+  }
+}
+
+export async function getRandomVocabsForSelection(
+  params: RandomVocabQueryParams,
+): Promise<TVocab[] | { error: string }> {
+  try {
+    await requireAuth();
+
+    if (!params || typeof params !== 'object') {
+      throw new Error('Params are required');
+    }
+    const count = Number(params.count);
+    if (!Number.isFinite(count) || count < 1) {
+      throw new Error('Count must be a number greater than or equal to 1');
+    }
+
+    const result = await vocabApi.random({
+      count,
+      languageFolderId: params.languageFolderId || undefined,
+    });
+
+    if (Array.isArray(result)) {
+      return result;
+    }
+    if (result && typeof result === 'object' && 'items' in result) {
+      return (result as ResponseAPI<TVocab[]>).items || [];
+    }
+    return [];
+  } catch (error) {
+    return {
+      error: error instanceof Error ? error.message : 'Failed to randomize vocabularies',
     };
   }
 }
