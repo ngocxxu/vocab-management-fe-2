@@ -42,12 +42,12 @@ export const getLanguageName = (code: string): string => {
 
 export const generateFolderColor = (seed?: string): string => {
   const colors = [
-    'from-blue-500 to-blue-600',
-    'from-purple-500 to-purple-600',
-    'from-green-500 to-green-600',
-    'from-yellow-500 to-yellow-600',
-    'from-red-500 to-red-600',
-    'from-indigo-500 to-indigo-600',
+    'bg-primary',
+    'bg-secondary',
+    'bg-accent',
+    'bg-success',
+    'bg-warning',
+    'bg-destructive',
   ];
 
   if (seed) {
@@ -58,9 +58,9 @@ export const generateFolderColor = (seed?: string): string => {
       hash = ((hash << 5) - hash) + (char || 0);
       hash = hash & hash; // Convert to 32-bit integer
     }
-    return colors[Math.abs(hash) % colors.length] || 'from-blue-500 to-blue-600';
+    return colors[Math.abs(hash) % colors.length] || 'bg-primary';
   }
 
   // Fallback to random color if no seed provided
-  return colors[Math.floor(Math.random() * colors.length)] || 'from-blue-500 to-blue-600';
+  return colors[Math.floor(Math.random() * colors.length)] || 'bg-primary';
 };

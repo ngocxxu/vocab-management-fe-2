@@ -38,11 +38,11 @@ const FormSchema = z.object({
 type FormData = z.infer<typeof FormSchema>;
 
 const QUESTION_TYPE_BADGE_CLASSES: Record<string, string> = {
-  [EQuestionType.FILL_IN_THE_BLANK]: 'bg-violet-100 text-violet-800 dark:bg-violet-900/30 dark:text-violet-200',
-  [EQuestionType.MULTIPLE_CHOICE]: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200',
-  [EQuestionType.FLIP_CARD]: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-200',
-  [EQuestionType.TRANSLATION_AUDIO]: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-200',
-  default: 'bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-200',
+  [EQuestionType.FILL_IN_THE_BLANK]: 'bg-accent text-accent-foreground',
+  [EQuestionType.MULTIPLE_CHOICE]: 'bg-primary/15 text-primary',
+  [EQuestionType.FLIP_CARD]: 'bg-warning/20 text-warning-foreground',
+  [EQuestionType.TRANSLATION_AUDIO]: 'bg-success/15 text-success',
+  default: 'bg-muted text-muted-foreground',
 };
 
 const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initialLanguagesData }) => {
@@ -292,9 +292,9 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
       cell: ({ row }) => {
         const status = row.original.status;
         const statusColors = {
-          PENDING: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-200',
-          PASSED: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-200',
-          FAILED: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-200',
+          PENDING: 'bg-warning/20 text-warning-foreground',
+          PASSED: 'bg-success/15 text-success',
+          FAILED: 'bg-destructive/15 text-destructive',
         };
         return (
           <Badge className={statusColors[status as keyof typeof statusColors] || 'bg-muted text-muted-foreground'}>
@@ -453,8 +453,8 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
             />
 
             {cooldownRemaining > 0 && (
-              <Alert className="border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950/50">
-                <DangerTriangle className="size-5 text-amber-600 dark:text-amber-400" />
+              <Alert className="border-border bg-warning/15">
+                <DangerTriangle className="size-5 text-warning" />
                 <AlertTitle>Take a quick 60s break</AlertTitle>
                 <AlertDescription>
                   AI is preparing your next exam

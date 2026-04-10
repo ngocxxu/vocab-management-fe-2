@@ -13,7 +13,7 @@ const DrawerContent = ({ ref, className, children, ...props }: React.ComponentPr
     ref={ref}
     className={cn(
       'fixed inset-y-0 right-0 h-full w-3/4 max-w-md',
-      'border-l border-slate-200 dark:border-slate-700',
+      'border-l border-border',
       'rounded-l-lg rounded-r-none',
       'p-0',
       'data-[state=open]:animate-in data-[state=closed]:animate-out',

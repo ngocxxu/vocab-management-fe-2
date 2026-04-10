@@ -97,14 +97,14 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
           variant="ghost"
           size="icon"
           className={cn(
-            'relative h-10 w-10 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800',
+            'relative h-10 w-10 rounded-xl hover:bg-accent',
             className,
           )}
         >
-          <Bell size={20} weight="BoldDuotone" className="text-slate-600 dark:text-slate-400" />
+          <Bell size={20} weight="BoldDuotone" className="text-muted-foreground" />
           {count > 0 && (
             <span
-              className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-red-500"
+              className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-primary"
               aria-label={`${count} unread notifications`}
             />
           )}
@@ -112,13 +112,13 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
       </DropdownMenuTrigger>
 
       <DropdownMenuContent className="w-96 p-0" align="end">
-        <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 dark:border-slate-700">
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+        <div className="flex items-center justify-between border-b border-border px-4 py-3">
+          <h3 className="text-lg font-semibold text-foreground">
             Notifications
           </h3>
           <button
             type="button"
-            className="text-sm text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300"
+            className="text-sm text-muted-foreground hover:text-foreground"
             onClick={handleMarkAllAsRead}
           >
             Mark all as read
@@ -126,12 +126,12 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
         </div>
 
         {error && (
-          <div className="px-4 py-2 text-sm text-red-600 dark:text-red-400">
+          <div className="px-4 py-2 text-sm text-destructive">
             {error}
           </div>
         )}
 
-        <div className="border-b border-slate-200 px-4 dark:border-slate-700">
+        <div className="border-b border-border px-4">
           <div className="flex items-end gap-0" role="tablist" aria-label="Notification filters">
             <button
               type="button"
@@ -140,16 +140,16 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
               tabIndex={activeTab === 'all' ? 0 : -1}
               onClick={() => setActiveTab('all')}
               className={cn(
-                'relative pb-2.5 pr-3 pt-3 text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2',
+                'relative pb-2.5 pr-3 pt-3 text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
                 activeTab === 'all'
-                  ? 'text-indigo-600 dark:text-indigo-400'
-                  : 'text-slate-400 dark:text-slate-500',
+                  ? 'text-primary'
+                  : 'text-muted-foreground',
               )}
             >
               All
               {activeTab === 'all' && (
                 <span
-                  className="absolute bottom-0 left-0 h-0.5 w-5 rounded-full bg-indigo-600 dark:bg-indigo-400"
+                  className="absolute bottom-0 left-0 h-0.5 w-5 rounded-full bg-primary"
                   aria-hidden
                 />
               )}
@@ -161,22 +161,22 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
               tabIndex={activeTab === 'unread' ? 0 : -1}
               onClick={() => setActiveTab('unread')}
               className={cn(
-                'relative flex items-center gap-1.5 pb-2.5 pl-0 pr-0 pt-3 text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2',
+                'relative flex items-center gap-1.5 pb-2.5 pl-0 pr-0 pt-3 text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
                 activeTab === 'unread'
-                  ? 'text-indigo-600 dark:text-indigo-400'
-                  : 'text-slate-400 dark:text-slate-500',
+                  ? 'text-primary'
+                  : 'text-muted-foreground',
               )}
             >
               Unread
               {' '}
-              <span className="rounded-full bg-slate-200 px-1.5 py-0.5 text-xs font-medium text-slate-600 dark:bg-slate-600 dark:text-slate-300">
+              <span className="rounded-full bg-muted px-1.5 py-0.5 text-xs font-medium text-muted-foreground">
                 (
                 {count}
                 )
               </span>
               {activeTab === 'unread' && (
                 <span
-                  className="absolute bottom-0 left-0 h-0.5 w-12 rounded-full bg-indigo-600 dark:bg-indigo-400"
+                  className="absolute bottom-0 left-0 h-0.5 w-12 rounded-full bg-primary"
                   aria-hidden
                 />
               )}
@@ -213,10 +213,10 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
           </div>
         )}
 
-        <div className="border-t border-slate-200 py-2 text-center dark:border-slate-700">
+        <div className="border-t border-border py-2 text-center">
           <Link
             href="/notifications"
-            className="text-sm text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300"
+            className="text-sm text-muted-foreground hover:text-foreground"
           >
             {notifications.length === 0 ? 'View notification history' : 'View all notifications'}
           </Link>

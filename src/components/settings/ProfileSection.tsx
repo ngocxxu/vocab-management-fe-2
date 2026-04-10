@@ -390,8 +390,8 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
               </div>
               <div className="flex items-center justify-between rounded-lg border bg-card p-4">
                 <div className="flex items-center gap-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/15">
-                    <ShieldCheck size={20} weight="BoldDuotone" className="text-emerald-600 dark:text-emerald-400" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-success/15">
+                    <ShieldCheck size={20} weight="BoldDuotone" className="text-success" />
                   </div>
                   <div>
                     <p className="font-medium text-foreground">Two-Factor Authentication</p>

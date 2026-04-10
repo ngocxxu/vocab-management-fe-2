@@ -12,7 +12,7 @@ export function SubjectsPagination({ currentPage, totalItems, pageSize, onPageCh
 
   return (
     <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
-      <div className="text-sm text-slate-600 dark:text-slate-400">
+      <div className="text-sm text-muted-foreground">
         Showing
         {' '}
         {showing}
@@ -29,7 +29,7 @@ export function SubjectsPagination({ currentPage, totalItems, pageSize, onPageCh
           size="sm"
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage <= 1}
-          className="h-8 gap-1 text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200"
+          className="h-8 gap-1 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
         >
           <AltArrowLeft size={16} weight="BoldDuotone" />
         </Button>
@@ -45,7 +45,7 @@ export function SubjectsPagination({ currentPage, totalItems, pageSize, onPageCh
               className={`h-8 w-8 rounded-full p-0 text-sm font-medium ${
                 isActive
                   ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-                  : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200'
+                  : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
               }`}
             >
               {pageNum}
@@ -57,7 +57,7 @@ export function SubjectsPagination({ currentPage, totalItems, pageSize, onPageCh
           size="sm"
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage >= totalPages}
-          className="h-8 gap-1 text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200"
+          className="h-8 gap-1 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
         >
           <AltArrowRight size={16} weight="BoldDuotone" />
         </Button>

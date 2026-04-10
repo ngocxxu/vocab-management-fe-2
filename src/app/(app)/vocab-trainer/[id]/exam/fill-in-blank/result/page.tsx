@@ -106,14 +106,14 @@ const FillInBlankResultPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="space-y-6 text-center">
-          <RefreshCircle size={64} weight="BoldDuotone" className="mx-auto animate-spin text-yellow-600 dark:text-yellow-400" />
+          <RefreshCircle size={64} weight="BoldDuotone" className="mx-auto animate-spin text-primary" />
           <div className="space-y-2">
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+            <h2 className="text-2xl font-bold text-foreground">
               Evaluating answers with AI...
             </h2>
-            <p className="text-slate-600 dark:text-slate-300">
+            <p className="text-muted-foreground">
               This may take a few moments. Please wait.
             </p>
           </div>
@@ -134,7 +134,7 @@ const FillInBlankResultPage: React.FC = () => {
 
   if (evaluationResults && questions.length > 0) {
     return (
-      <div className="min-h-full bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      <div className="min-h-full bg-background">
         <ExamResults
           trainerId={trainerId}
           results={evaluationResults}

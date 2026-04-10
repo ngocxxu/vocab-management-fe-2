@@ -18,7 +18,7 @@ const DownloadTemplateButton: React.FC = () => {
     <Button
       variant="outline"
       onClick={handleDownload}
-      className="border-slate-200 bg-white/80 backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/80"
+      className="bg-card/80 backdrop-blur-sm"
     >
       <Download size={16} weight="BoldDuotone" className="mr-2" />
       Sample Template

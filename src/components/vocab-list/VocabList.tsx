@@ -414,12 +414,12 @@ const VocabList: React.FC<VocabListProps> = ({
       cell: ({ row }) => {
         return (
           <div className="flex items-center space-x-3">
-            <div className="font-semibold text-slate-900 dark:text-white">{row.original.textSource}</div>
+            <div className="font-semibold text-foreground">{row.original.textSource}</div>
 
             <Button
               variant="ghost"
               size="icon"
-              className="h-6 w-6 p-0 hover:bg-slate-100 dark:hover:bg-slate-700"
+              className="h-6 w-6 p-0 hover:bg-accent"
               onClick={(e) => {
                 e.stopPropagation();
                 handleSpeakTextSource(row.original);
@@ -427,7 +427,7 @@ const VocabList: React.FC<VocabListProps> = ({
               aria-label="Play pronunciation"
               title="Play pronunciation"
             >
-              <VolumeLoud size={16} weight="BoldDuotone" className="text-slate-500" />
+              <VolumeLoud size={16} weight="BoldDuotone" className="text-muted-foreground" />
             </Button>
           </div>
         );
@@ -476,7 +476,7 @@ const VocabList: React.FC<VocabListProps> = ({
           <Button
             variant="ghost"
             size="icon"
-            className="h-6 w-6 p-0 hover:bg-slate-100 dark:hover:bg-slate-700"
+            className="h-6 w-6 p-0 hover:bg-accent"
             onClick={(e) => {
               e.stopPropagation();
               setExpanded(prev => ({
@@ -506,10 +506,10 @@ const VocabList: React.FC<VocabListProps> = ({
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700"
+            className="h-8 w-8 rounded-lg hover:bg-accent"
             onClick={() => handleEdit(_row.original)}
           >
-            <Pen size={16} weight="BoldDuotone" className="text-slate-500" />
+            <Pen size={16} weight="BoldDuotone" className="text-muted-foreground" />
           </Button>
           <DeleteActionButton
             itemId={_row.original.id}

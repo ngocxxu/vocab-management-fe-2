@@ -60,7 +60,7 @@ export function LayoutClient({
       <div className="flex h-screen bg-background">
         {isSidebarOpen && (
           <div
-            className="fixed inset-0 z-30 bg-black/50 md:hidden"
+            className="fixed inset-0 z-30 bg-foreground/50 md:hidden"
             onClick={closeSidebar}
             aria-hidden="true"
           />

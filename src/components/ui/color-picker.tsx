@@ -34,10 +34,10 @@ export function ColorPicker({ value, onChange, disabled, className }: ColorPicke
         >
           <div className="flex items-center gap-2">
             <div
-              className="h-6 w-6 rounded border border-gray-300 shadow-sm"
+              className="h-6 w-6 rounded border border-border shadow-sm"
               style={{ backgroundColor: value }}
             />
-            <span className="text-sm font-medium text-gray-700">
+            <span className="text-sm font-medium text-foreground">
               {value.toUpperCase()}
             </span>
           </div>
@@ -45,7 +45,7 @@ export function ColorPicker({ value, onChange, disabled, className }: ColorPicke
       </PopoverTrigger>
       <PopoverContent className="w-auto p-3" align="start">
         <div className="space-y-3">
-          <div className="text-sm font-medium text-gray-900">Choose a color</div>
+          <div className="text-sm font-medium text-foreground">Choose a color</div>
           <HexColorPicker
             color={value}
             onChange={handleColorChange}
@@ -53,10 +53,10 @@ export function ColorPicker({ value, onChange, disabled, className }: ColorPicke
           />
           <div className="flex items-center gap-2">
             <div
-              className="h-4 w-4 rounded border border-gray-300"
+              className="h-4 w-4 rounded border border-border"
               style={{ backgroundColor: value }}
             />
-            <span className="font-mono text-xs text-gray-600">{value.toUpperCase()}</span>
+            <span className="font-mono text-xs text-muted-foreground">{value.toUpperCase()}</span>
           </div>
         </div>
       </PopoverContent>

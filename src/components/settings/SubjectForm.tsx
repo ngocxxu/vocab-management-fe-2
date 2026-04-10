@@ -24,7 +24,7 @@ export const SubjectForm: React.FC<SubjectFormProps> = ({ subject, onSubmit, onC
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label htmlFor="name" className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
+        <label htmlFor="name" className="mb-2 block text-sm font-medium text-foreground">
           Subject Name
         </label>
         <Input

@@ -126,7 +126,7 @@ function ForgotPasswordForm() {
       <div className="relative flex h-[1024px] w-[1280px] shrink-0 overflow-hidden rounded-2xl shadow-xl">
         <LeftPanel />
         <div className="relative flex min-w-0 flex-1 flex-col items-center justify-center overflow-auto px-8 py-10">
-          <div className="mx-auto w-full max-w-md rounded-2xl bg-white px-8 py-10 shadow-xl">
+          <div className="mx-auto w-full max-w-md rounded-2xl bg-card px-8 py-10 shadow-xl">
             {success
               ? (
                   <>

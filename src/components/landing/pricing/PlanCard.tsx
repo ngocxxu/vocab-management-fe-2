@@ -125,11 +125,11 @@ export function PlanCard({
           : isMember && isOnList
             ? (
                 <div
-                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-300 bg-emerald-100 py-3 font-sans font-semibold text-emerald-800 dark:border-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-200"
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-success/30 bg-success/15 py-3 font-sans font-semibold text-success"
                   role="status"
                   aria-live="polite"
                 >
-                  <CheckCircle size={20} weight="BoldDuotone" className="shrink-0 text-emerald-600 dark:text-emerald-400" />
+                  <CheckCircle size={20} weight="BoldDuotone" className="shrink-0 text-success" />
                   You're on the list!
                 </div>
               )

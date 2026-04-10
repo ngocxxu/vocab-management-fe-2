@@ -56,7 +56,7 @@ const MultipleChoiceExamPage: React.FC = () => {
         : 'Failed to load exam. Please try again.';
 
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="mx-auto max-w-2xl space-y-6 px-4">
           <Alert variant="destructive">
             <AlertDescription>
@@ -87,7 +87,7 @@ const MultipleChoiceExamPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-full bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+    <div className="min-h-full bg-background">
       <VocabExam trainerId={trainerId} examData={examData as TQuestionAPI} />
     </div>
   );

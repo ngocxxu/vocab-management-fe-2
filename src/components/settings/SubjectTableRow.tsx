@@ -29,13 +29,13 @@ export const SubjectTableRow: React.FC<SubjectTableRowProps> = ({ subject, index
     <tr
       ref={setNodeRef}
       style={style}
-      className={`border-b border-slate-100 bg-white transition-colors hover:bg-slate-50/50 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:bg-slate-700/50 ${isDragging ? 'opacity-50' : ''}`}
+      className={`border-b border-border bg-card transition-colors hover:bg-muted/20 ${isDragging ? 'opacity-50' : ''}`}
     >
       <td className="px-3 py-3 sm:px-6 sm:py-4">
         <div
           {...attributes}
           {...listeners}
-          className="inline-flex cursor-grab touch-none rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 active:cursor-grabbing dark:hover:bg-slate-700 dark:hover:text-slate-300"
+          className="inline-flex cursor-grab touch-none rounded p-1 text-muted-foreground hover:bg-accent hover:text-foreground active:cursor-grabbing"
           aria-label="Drag to reorder"
         >
           <Reorder size={20} weight="BoldDuotone" />
@@ -49,10 +49,10 @@ export const SubjectTableRow: React.FC<SubjectTableRowProps> = ({ subject, index
             {getSubjectInitials(subject.name)}
           </div>
           <div>
-            <div className="font-semibold text-slate-900 dark:text-slate-100">
+            <div className="font-semibold text-foreground">
               {subject.name}
             </div>
-            <div className="text-sm text-slate-500 dark:text-slate-400">
+            <div className="text-sm text-muted-foreground">
               {null}
             </div>
           </div>
@@ -63,7 +63,7 @@ export const SubjectTableRow: React.FC<SubjectTableRowProps> = ({ subject, index
           —
         </Badge>
       </td>
-      <td className="px-3 py-3 text-sm text-slate-700 sm:px-6 sm:py-4 dark:text-slate-300">
+      <td className="px-3 py-3 text-sm text-muted-foreground sm:px-6 sm:py-4">
         {formatCreatedDate(subject.createdAt)}
       </td>
       <td className="px-3 py-3 text-right sm:px-6 sm:py-4">
@@ -82,7 +82,7 @@ export const SubjectTableRow: React.FC<SubjectTableRowProps> = ({ subject, index
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-8 w-8 p-0 text-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-950 dark:hover:text-red-300"
+                className="h-8 w-8 p-0 text-destructive hover:bg-destructive/10 hover:text-destructive"
                 aria-label="Delete subject"
               >
                 <TrashBin2 size={16} weight="BoldDuotone" />
@@ -101,7 +101,7 @@ export const SubjectTableRow: React.FC<SubjectTableRowProps> = ({ subject, index
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                 <AlertDialogAction
                   onClick={() => onDelete(subject.id)}
-                  className="bg-red-600 hover:bg-red-700"
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                 >
                   Delete
                 </AlertDialogAction>

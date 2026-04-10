@@ -23,15 +23,15 @@ const VocabTrainerHeader: React.FC<VocabTrainerHeaderProps> = ({
     <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
       <div className="space-y-3">
         <div className="flex items-center space-x-3">
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Vocab Trainers</h1>
-          <span className="inline-flex items-center rounded-full bg-purple-100 px-2.5 py-0.5 text-sm font-medium text-purple-800 dark:bg-purple-900/20 dark:text-purple-200">
+          <h1 className="text-3xl font-bold text-foreground">Vocab Trainers</h1>
+          <span className="inline-flex items-center rounded-full bg-accent px-2.5 py-0.5 text-sm font-medium text-accent-foreground">
             {totalCount}
             {' '}
             Total
           </span>
         </div>
 
-        <p className="text-slate-600 dark:text-slate-400">
+        <p className="text-muted-foreground">
           Create and manage your vocabulary training sessions to improve your language skills.
         </p>
       </div>
@@ -39,7 +39,7 @@ const VocabTrainerHeader: React.FC<VocabTrainerHeaderProps> = ({
       <div className="flex items-center space-x-3">
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="outline" className="border-slate-200 bg-white/80 backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/80">
+            <Button variant="outline" className="bg-card/80 backdrop-blur-sm">
               <Filter size={16} weight="BoldDuotone" className="mr-2" />
               Filter
             </Button>
@@ -47,12 +47,12 @@ const VocabTrainerHeader: React.FC<VocabTrainerHeaderProps> = ({
           <PopoverContent className="w-80" align="end">
             <div className="space-y-4">
               <div className="space-y-2">
-                <h4 className="font-medium text-slate-900 dark:text-white">Filter Trainers</h4>
+                <h4 className="font-medium text-foreground">Filter Trainers</h4>
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <label
                       htmlFor="status-filter"
-                      className="text-sm font-medium text-slate-700 dark:text-slate-300"
+                      className="text-sm font-medium text-foreground"
                     >
                       Filter by Status
                     </label>
@@ -69,7 +69,7 @@ const VocabTrainerHeader: React.FC<VocabTrainerHeaderProps> = ({
                   <div className="space-y-2">
                     <label
                       htmlFor="question-type-filter"
-                      className="text-sm font-medium text-slate-700 dark:text-slate-300"
+                      className="text-sm font-medium text-foreground"
                     >
                       Filter by Question Type
                     </label>

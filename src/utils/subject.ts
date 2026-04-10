@@ -1,10 +1,10 @@
 export const SUBJECT_COLORS = [
-  'bg-sky-200 text-sky-800 dark:bg-sky-600 dark:text-sky-100',
-  'bg-emerald-200 text-emerald-800 dark:bg-emerald-600 dark:text-emerald-100',
-  'bg-amber-200 text-amber-800 dark:bg-amber-600 dark:text-amber-100',
-  'bg-violet-200 text-violet-800 dark:bg-violet-600 dark:text-violet-100',
-  'bg-rose-200 text-rose-800 dark:bg-rose-600 dark:text-rose-100',
-  'bg-cyan-200 text-cyan-800 dark:bg-cyan-600 dark:text-cyan-100',
+  'bg-primary/15 text-primary',
+  'bg-success/15 text-success',
+  'bg-warning/20 text-warning-foreground',
+  'bg-accent text-accent-foreground',
+  'bg-destructive/15 text-destructive',
+  'bg-secondary text-secondary-foreground',
 ];
 
 export function getSubjectInitials(name: string): string {

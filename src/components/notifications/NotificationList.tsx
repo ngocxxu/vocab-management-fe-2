@@ -14,7 +14,7 @@ export const NotificationList: React.FC<NotificationListProps> = ({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-8">
-        <div className="text-sm text-slate-500 dark:text-slate-400">
+        <div className="text-sm text-muted-foreground">
           Loading notifications...
         </div>
       </div>
@@ -24,13 +24,13 @@ export const NotificationList: React.FC<NotificationListProps> = ({
   if (notifications.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-10 text-center">
-        <div className="relative flex h-28 w-28 items-center justify-center rounded-full bg-slate-100 shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_0_24px_rgba(99,102,241,0.12)] dark:bg-slate-800 dark:shadow-[0_0_0_1px_rgba(255,255,255,0.05),0_0_24px_rgba(99,102,241,0.2)]">
-          <span className="absolute top-4 right-4 h-1.5 w-1.5 rounded-full bg-indigo-400/80 dark:bg-indigo-400" />
-          <span className="absolute top-6 right-6 h-1 w-1 rounded-full bg-indigo-400/60 dark:bg-indigo-500" />
-          <Bell size={52} weight="BoldDuotone" className="text-indigo-600 dark:text-indigo-400" />
+        <div className="relative flex h-28 w-28 items-center justify-center rounded-full bg-muted shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_0_24px_rgba(0,0,0,0.06)]">
+          <span className="absolute top-4 right-4 h-1.5 w-1.5 rounded-full bg-primary/80" />
+          <span className="absolute top-6 right-6 h-1 w-1 rounded-full bg-primary/60" />
+          <Bell size={52} weight="BoldDuotone" className="text-primary" />
         </div>
-        <h4 className="mt-4 font-semibold text-slate-900 dark:text-white">All caught up!</h4>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+        <h4 className="mt-4 font-semibold text-foreground">All caught up!</h4>
+        <p className="mt-1 text-sm text-muted-foreground">
           Check back later for progress updates and reminders.
         </p>
       </div>

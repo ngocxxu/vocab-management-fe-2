@@ -20,9 +20,9 @@ const trendIconMap = {
 };
 
 const trendPillClass: Record<TrendConfig['color'], string> = {
-  success: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+  success: 'bg-success/15 text-success',
   muted: 'bg-muted text-muted-foreground',
-  destructive: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+  destructive: 'bg-destructive/15 text-destructive',
 };
 
 const MetricCard: React.FC<SummaryStatsMetricCardProps> = ({
@@ -74,8 +74,8 @@ export const SummaryStatsCard: React.FC<SummaryStatsCardProps> = ({ data }) => {
     {
       title: 'Total Vocabs',
       value: data.totalVocabs.toLocaleString(),
-      icon: <Book size={20} weight="BoldDuotone" className="text-violet-600 dark:text-violet-400" />,
-      iconBgClass: 'bg-violet-100 dark:bg-violet-900/30',
+      icon: <Book size={20} weight="BoldDuotone" className="text-primary" />,
+      iconBgClass: 'bg-primary/10',
       trend: { text: '+12 this week', icon: 'arrowUp', color: 'success' },
     },
     {
@@ -100,8 +100,8 @@ export const SummaryStatsCard: React.FC<SummaryStatsCardProps> = ({ data }) => {
           <span className="text-base font-normal text-muted-foreground min-[1600px]:text-xl">/10</span>
         </span>
       ),
-      icon: <Star size={20} weight="BoldDuotone" className="text-amber-600 dark:text-amber-400" />,
-      iconBgClass: 'bg-amber-100 dark:bg-amber-900/30',
+      icon: <Star size={20} weight="BoldDuotone" className="text-warning" />,
+      iconBgClass: 'bg-warning/20',
       trend: { text: '-0.2 from last month', icon: 'arrowDown', color: 'destructive' },
     },
   ];

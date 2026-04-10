@@ -53,7 +53,7 @@ const ExpandedRowContent: React.FC<ExpandedRowContentProps> = ({
   }, [speak, cancel, voices, vocab.targetLanguageCode]);
 
   return (
-    <tr className={`bg-slate-50 dark:bg-slate-800 ${className}`}>
+    <tr className={`bg-muted/20 ${className}`}>
       <td colSpan={columnsCount} className="p-4">
         <div className="space-y-4 pr-4">
           <div className="rounded-lg bg-card p-4 shadow-sm">
@@ -63,7 +63,7 @@ const ExpandedRowContent: React.FC<ExpandedRowContentProps> = ({
               {vocab.textTargets.map((target: TVocab['textTargets'][number], index: number) => (
                 <div
                   key={`${target.textTarget}-${index}`}
-                  className="rounded-lg border border-border bg-muted/20 p-4 dark:bg-muted/10"
+                  className="rounded-lg border border-border bg-muted/20 p-4"
                 >
                   <div className="mb-3 flex items-start justify-between gap-2">
                     <div className="flex min-w-0 flex-1 items-center gap-2">

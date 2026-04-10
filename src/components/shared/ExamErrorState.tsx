@@ -28,7 +28,7 @@ const ExamErrorState: React.FC<ExamErrorStateProps> = ({
 
   if (variant === 'fullscreen') {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="mx-auto max-w-2xl space-y-6 px-4">
           {content}
         </div>

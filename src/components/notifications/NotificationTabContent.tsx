@@ -30,7 +30,7 @@ export const NotificationTabContent: React.FC<NotificationTabContentProps> = ({
         />
       </ScrollArea>
       {displayedCount < totalCount && (
-        <div className="py-2 text-center text-xs text-slate-500 dark:text-slate-400">
+        <div className="py-2 text-center text-xs text-muted-foreground">
           Showing
           {' '}
           {displayedCount}

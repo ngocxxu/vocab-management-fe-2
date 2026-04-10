@@ -67,7 +67,7 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = React.memo(({
         <h4 className="text-sm font-medium">
           Subjects
         </h4>
-        <div className="h-10 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-600">
+        <div className="h-10 rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
           Failed to load subjects. Please try again.
         </div>
       </div>

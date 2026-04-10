@@ -45,7 +45,7 @@ const ExportExcelButton: React.FC<ExportExcelButtonProps> = ({ queryParams, disa
       onClick={handleExport}
       disabled={disabled || isLoading}
       variant="outline"
-      className="border-slate-200 bg-white/80 backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/80"
+      className="bg-card/80 backdrop-blur-sm"
     >
       <Download size={16} weight="BoldDuotone" className="mr-2" />
       {isLoading

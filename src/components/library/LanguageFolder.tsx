@@ -70,7 +70,7 @@ const LanguageFolder = ({ folder, onFolderClick, onFolderUpdated, onFolderDelete
           {/* Icon Column */}
           <div className="flex w-12 items-center justify-center">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br shadow-sm" style={{ backgroundColor: folder.folderColor }}>
-              <Folder size={20} weight="BoldDuotone" className="text-white" />
+              <Folder size={20} weight="BoldDuotone" className="text-primary-foreground" />
             </div>
           </div>
 
@@ -154,7 +154,7 @@ const LanguageFolder = ({ folder, onFolderClick, onFolderUpdated, onFolderDelete
             <AlertDialogAction
               onClick={handleConfirmDelete}
               disabled={isDeleting}
-              className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 focus:ring-destructive"
             >
               {isDeleting ? 'Deleting...' : 'Delete Folder'}
             </AlertDialogAction>

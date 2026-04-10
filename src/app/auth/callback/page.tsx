@@ -74,12 +74,12 @@ function AuthCallbackContent() {
 
   if (error) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 px-4 dark:from-slate-900 dark:to-slate-800">
+      <div className="flex min-h-screen items-center justify-center bg-background px-4">
         <div className="w-full max-w-md">
           <Alert variant="destructive">
             <AlertDescription>{error}</AlertDescription>
           </Alert>
-          <p className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
+          <p className="mt-4 text-center text-sm text-muted-foreground">
             Redirecting to sign in page...
           </p>
         </div>

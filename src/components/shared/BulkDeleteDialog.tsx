@@ -53,7 +53,7 @@ const BulkDeleteDialog: React.FC<BulkDeleteDialogProps> = ({
             Cancel
           </AlertDialogCancel>
           <AlertDialogAction
-            className="bg-red-500 hover:bg-red-600"
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             onClick={onConfirm}
           >
             Delete

@@ -59,7 +59,7 @@ const MarkdownReport: React.FC<MarkdownReportProps> = ({ markdown }) => {
 
         if (matchType === 'bold') {
           parts.push(
-            <strong key={key++} className="font-bold text-slate-900 dark:text-white">
+            <strong key={key++} className="font-bold text-foreground">
               {match[1]}
             </strong>,
           );
@@ -71,7 +71,7 @@ const MarkdownReport: React.FC<MarkdownReportProps> = ({ markdown }) => {
           );
         } else if (matchType === 'code') {
           parts.push(
-            <code key={key++} className="rounded bg-slate-200 px-1.5 py-0.5 font-mono text-sm dark:bg-slate-700">
+            <code key={key++} className="rounded bg-muted px-1.5 py-0.5 font-mono text-sm">
               {match[1]}
             </code>,
           );
@@ -99,7 +99,7 @@ const MarkdownReport: React.FC<MarkdownReportProps> = ({ markdown }) => {
         const paragraphText = currentParagraph.join(' ');
         if (paragraphText.trim()) {
           elements.push(
-            <p key={`p-${elements.length}`} className="mb-4 leading-relaxed text-slate-700 dark:text-slate-300">
+            <p key={`p-${elements.length}`} className="mb-4 leading-relaxed text-muted-foreground">
               {renderInlineMarkdown(paragraphText)}
             </p>,
           );
@@ -113,7 +113,7 @@ const MarkdownReport: React.FC<MarkdownReportProps> = ({ markdown }) => {
         elements.push(
           <pre
             key={`code-${elements.length}`}
-            className="mb-4 overflow-x-auto rounded-lg bg-slate-100 p-4 font-mono text-sm dark:bg-slate-800"
+            className="mb-4 overflow-x-auto rounded-lg bg-muted p-4 font-mono text-sm"
           >
             <code>{codeBlockContent.join('\n')}</code>
           </pre>,
@@ -147,7 +147,7 @@ const MarkdownReport: React.FC<MarkdownReportProps> = ({ markdown }) => {
       if (line.startsWith('# ')) {
         flushParagraph();
         elements.push(
-          <h1 key={`h1-${elements.length}`} className="mb-4 text-3xl font-bold text-slate-900 dark:text-white">
+          <h1 key={`h1-${elements.length}`} className="mb-4 text-3xl font-bold text-foreground">
             {line.slice(2)}
           </h1>,
         );
@@ -157,7 +157,7 @@ const MarkdownReport: React.FC<MarkdownReportProps> = ({ markdown }) => {
       if (line.startsWith('## ')) {
         flushParagraph();
         elements.push(
-          <h2 key={`h2-${elements.length}`} className="mt-6 mb-3 text-2xl font-semibold text-slate-900 dark:text-white">
+          <h2 key={`h2-${elements.length}`} className="mt-6 mb-3 text-2xl font-semibold text-foreground">
             {line.slice(3)}
           </h2>,
         );
@@ -167,7 +167,7 @@ const MarkdownReport: React.FC<MarkdownReportProps> = ({ markdown }) => {
       if (line.startsWith('### ')) {
         flushParagraph();
         elements.push(
-          <h3 key={`h3-${elements.length}`} className="mt-4 mb-2 text-xl font-semibold text-slate-900 dark:text-white">
+          <h3 key={`h3-${elements.length}`} className="mt-4 mb-2 text-xl font-semibold text-foreground">
             {line.slice(4)}
           </h3>,
         );
@@ -228,21 +228,21 @@ const MarkdownReport: React.FC<MarkdownReportProps> = ({ markdown }) => {
   };
 
   return (
-    <Card className="border border-border bg-white dark:bg-slate-900">
+    <Card className="border border-border bg-card">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-        <CardTitle className="text-2xl font-semibold text-slate-900 dark:text-white">
+        <CardTitle className="text-2xl font-semibold text-foreground">
           Evaluation Report
         </CardTitle>
         <Button
           onClick={handleCopy}
           variant="outline"
           size="sm"
-          className="rounded-xl border-border bg-white px-4 py-2 text-slate-900 transition-all duration-300 hover:scale-105 dark:bg-slate-900 dark:text-white"
+          className="rounded-xl border-border px-4 py-2 transition-all duration-300 hover:scale-105"
         >
           {copied
             ? (
                 <>
-                  <CheckCircle size={16} weight="BoldDuotone" className="mr-2 text-emerald-600 dark:text-emerald-400" />
+                  <CheckCircle size={16} weight="BoldDuotone" className="mr-2 text-success" />
                   Copied!
                 </>
               )
@@ -255,7 +255,7 @@ const MarkdownReport: React.FC<MarkdownReportProps> = ({ markdown }) => {
         </Button>
       </CardHeader>
       <CardContent>
-        <div className="prose prose-slate dark:prose-invert max-w-none">
+        <div className="prose dark:prose-invert max-w-none">
           {renderMarkdown(markdown)}
         </div>
       </CardContent>

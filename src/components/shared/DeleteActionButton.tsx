@@ -47,9 +47,9 @@ const DeleteActionButton: React.FC<DeleteActionButtonProps> = ({
         <Button
           variant="ghost"
           size="icon"
-          className="h-8 w-8 rounded-lg hover:bg-red-100 dark:hover:bg-red-700"
+          className="h-8 w-8 rounded-lg hover:bg-destructive/10"
         >
-          <TrashBin2 size={16} weight="BoldDuotone" className="text-slate-500" />
+          <TrashBin2 size={16} weight="BoldDuotone" className="text-destructive" />
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
@@ -66,7 +66,7 @@ const DeleteActionButton: React.FC<DeleteActionButtonProps> = ({
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
-            className="bg-red-500 hover:bg-red-600"
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             onClick={handleDelete}
           >
             Delete

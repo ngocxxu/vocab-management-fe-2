@@ -128,7 +128,7 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
       accessorKey: 'textSource',
       header: 'Text Source',
       cell: ({ row }) => (
-        <div className="font-medium text-slate-900 dark:text-slate-100">{row.original.textSource}</div>
+        <div className="font-medium text-foreground">{row.original.textSource}</div>
       ),
       enableSorting: true,
     },
@@ -143,8 +143,8 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
               className={cn(
                 'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
                 i === 0
-                  ? 'text-slate-800 dark:text-slate-200'
-                  : 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300',
+                  ? 'text-foreground'
+                  : 'bg-muted text-muted-foreground',
               )}
             >
               {t.textTarget}
@@ -160,10 +160,10 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
       cell: ({ row }) => {
         const status = getMasteryLevel(row.original.masteryScore);
         const statusClass = {
-          New: 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300',
-          Learning: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-200',
-          Mastered: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-200',
-          Difficult: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200',
+          New: 'bg-muted text-muted-foreground',
+          Learning: 'bg-warning/20 text-warning-foreground',
+          Mastered: 'bg-success/15 text-success',
+          Difficult: 'bg-destructive/15 text-destructive',
         }[status];
         return (
           <span className={cn('inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium', statusClass)}>
@@ -182,7 +182,7 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
           <Magnifer
             size={18}
             weight="BoldDuotone"
-            className="absolute top-1/2 left-3 -translate-y-1/2 text-slate-400"
+            className="absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground"
           />
           <Input
             placeholder="Search across all folders..."
@@ -213,7 +213,7 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
       </div>
 
       <div className="space-y-2">
-        <p className="text-xs font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
+        <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
           Quick filters
         </p>
         <div className="flex flex-wrap gap-2">
@@ -225,8 +225,8 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
               className={cn(
                 'rounded-full px-4 py-2 text-sm font-medium transition-colors',
                 quickFilter === id
-                  ? 'bg-slate-900 text-white dark:bg-slate-800 dark:text-white'
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600',
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground',
               )}
             >
               {label}

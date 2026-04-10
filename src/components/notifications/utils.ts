@@ -107,13 +107,13 @@ export const getNotificationIcon = (type: NotificationType) => {
 export const getNotificationIconColor = (priority: string) => {
   switch (priority) {
     case 'HIGH':
-      return 'text-red-500';
+      return 'text-destructive';
     case 'MEDIUM':
-      return 'text-yellow-500';
+      return 'text-warning';
     case 'LOW':
-      return 'text-blue-500';
+      return 'text-primary';
     default:
-      return 'text-slate-500';
+      return 'text-muted-foreground';
   }
 };
 
@@ -242,14 +242,14 @@ export function formatNotificationListDate(dateString: string): string {
 export function getNotificationIconBg(type: NotificationType): string {
   switch (type) {
     case 'VOCAB':
-      return 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400';
+      return 'bg-success/15 text-success';
     case 'VOCAB_TRAINER':
-      return 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400';
+      return 'bg-primary/15 text-primary';
     case 'VOCAB_SUBJECT':
-      return 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400';
+      return 'bg-warning/20 text-warning';
     case 'SYSTEM':
-      return 'bg-violet-100 text-violet-600 dark:bg-violet-900/30 dark:text-violet-400';
+      return 'bg-accent text-accent-foreground';
     default:
-      return 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300';
+      return 'bg-muted text-muted-foreground';
   }
 }

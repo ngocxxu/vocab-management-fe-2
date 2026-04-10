@@ -33,24 +33,24 @@ export function getMasteryColors(kind: MasteryDisplayKind): {
 } {
   const map: Record<MasteryDisplayKind, { pill: string; progress: string; track: string }> = {
     unstarted: {
-      pill: 'bg-red-500 text-white dark:bg-red-700 dark:text-white',
-      progress: 'stroke-red-500 dark:stroke-red-700',
-      track: 'stroke-slate-200 dark:stroke-slate-700',
+      pill: 'bg-muted text-muted-foreground',
+      progress: 'stroke-muted-foreground',
+      track: 'stroke-border',
     },
     beginner: {
-      pill: 'bg-orange-500 text-white dark:bg-orange-700 dark:text-white',
-      progress: 'stroke-orange-500 dark:stroke-orange-700',
-      track: 'stroke-slate-200 dark:stroke-slate-700',
+      pill: 'bg-warning text-warning-foreground',
+      progress: 'stroke-warning',
+      track: 'stroke-border',
     },
     learning: {
-      pill: 'bg-blue-500 text-white dark:bg-blue-700 dark:text-white',
-      progress: 'stroke-blue-500 dark:stroke-blue-700',
-      track: 'stroke-slate-200 dark:stroke-slate-700',
+      pill: 'bg-primary text-primary-foreground',
+      progress: 'stroke-primary',
+      track: 'stroke-border',
     },
     mastered: {
-      pill: 'bg-green-500 text-white dark:bg-green-700 dark:text-white',
-      progress: 'stroke-green-500 dark:stroke-green-700',
-      track: 'stroke-slate-200 dark:stroke-slate-700',
+      pill: 'bg-success text-success-foreground',
+      progress: 'stroke-success',
+      track: 'stroke-border',
     },
   };
   return map[kind];

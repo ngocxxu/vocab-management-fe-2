@@ -124,7 +124,6 @@ const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({
             <Button
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className="bg-slate-900 text-white hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700"
             >
               {isSubmitting
                 ? (

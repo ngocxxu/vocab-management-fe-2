@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 
 export default function LandingHeader({ logoSrc }: Readonly<{ logoSrc: string }>) {
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-white backdrop-blur">
+    <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-3">
           <Image

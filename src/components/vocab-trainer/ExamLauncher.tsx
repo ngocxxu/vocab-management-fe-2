@@ -48,11 +48,11 @@ const ExamLauncher: React.FC<ExamLauncherProps> = ({ trainerId, questionType }) 
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 rounded-lg hover:bg-green-100 dark:hover:bg-green-700"
+            className="h-8 w-8 rounded-lg hover:bg-success/15"
             onClick={handlePlayClick}
             disabled={isDisabled}
           >
-            <PlayCircle size={16} weight="BoldDuotone" className="text-green-600 dark:text-green-400" />
+            <PlayCircle size={16} weight="BoldDuotone" className="text-success" />
           </Button>
         </span>
       </TooltipTrigger>

@@ -30,7 +30,7 @@ export default function LandingHero() {
           <Link href="/signup">
             <Button
               size="lg"
-              className="h-12 rounded-full bg-blue-600 px-8 font-semibold text-white shadow-sm hover:bg-blue-700 xl:h-14 xl:px-10 xl:text-base 2xl:h-16 2xl:px-12 2xl:text-lg dark:bg-blue-600 dark:hover:bg-blue-700"
+              className="h-12 rounded-full px-8 font-semibold shadow-sm xl:h-14 xl:px-10 xl:text-base 2xl:h-16 2xl:px-12 2xl:text-lg"
             >
               Create Account
             </Button>
@@ -39,7 +39,7 @@ export default function LandingHero() {
             <Button
               size="lg"
               variant="outline"
-              className="h-12 rounded-full border-2 border-blue-600 bg-white px-8 font-semibold text-blue-600 hover:bg-blue-50 hover:text-blue-700 xl:h-14 xl:px-10 xl:text-base 2xl:h-16 2xl:px-12 2xl:text-lg dark:bg-card dark:hover:bg-blue-950/30"
+              className="h-12 rounded-full border-2 border-primary bg-background px-8 font-semibold text-primary hover:bg-accent hover:text-primary xl:h-14 xl:px-10 xl:text-base 2xl:h-16 2xl:px-12 2xl:text-lg"
             >
               Sign In
             </Button>
@@ -86,8 +86,8 @@ export default function LandingHero() {
             <div className="flex-1 space-y-6 p-6 2xl:p-8">
               <div className="grid gap-4 sm:grid-cols-3">
                 <div className="rounded-xl border border-border bg-card p-4">
-                  <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-green-500">
-                    <Chart size={20} weight="BoldDuotone" className="text-white" />
+                  <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-success">
+                    <Chart size={20} weight="BoldDuotone" className="text-success-foreground" />
                   </div>
                   <Skeleton className="mb-2 h-4 w-3/4 rounded" />
                   <Skeleton className="h-3 w-full rounded" />
@@ -100,8 +100,8 @@ export default function LandingHero() {
                   <Skeleton className="h-3 w-full rounded" />
                 </div>
                 <div className="rounded-xl border border-border bg-card p-4">
-                  <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-violet-500">
-                    <QuestionCircle size={20} weight="BoldDuotone" className="text-white" />
+                  <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-accent">
+                    <QuestionCircle size={20} weight="BoldDuotone" className="text-accent-foreground" />
                   </div>
                   <Skeleton className="mb-2 h-4 w-1/2 rounded" />
                   <Skeleton className="h-3 w-full rounded" />

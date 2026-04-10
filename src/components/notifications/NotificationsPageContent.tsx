@@ -31,7 +31,7 @@ function Section({
 
   return (
     <section className="mt-8 first:mt-0">
-      <h2 className="mb-3 text-xs font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
+      <h2 className="mb-3 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
         {label}
       </h2>
       <div className="space-y-3">
@@ -66,24 +66,24 @@ export const NotificationsPageContent: React.FC<NotificationsPageContentProps> =
         <div className="min-w-0 flex-1">
           <div className="flex flex-col items-center justify-center px-4 py-16 text-center sm:py-24">
             <div className="relative mb-10">
-              <div className="flex h-40 w-40 items-center justify-center rounded-full bg-blue-50 dark:bg-blue-950/30">
-                <Bell size={64} weight="BoldDuotone" className="text-blue-300 dark:text-blue-400" />
+              <div className="flex h-40 w-40 items-center justify-center rounded-full bg-accent/40">
+                <Bell size={64} weight="BoldDuotone" className="text-primary/60" />
               </div>
-              <div className="absolute -top-4 right-0 rounded-2xl bg-white px-6 py-3 text-xl font-semibold text-blue-700 shadow-lg dark:bg-slate-800 dark:text-blue-200">
+              <div className="absolute -top-4 right-0 rounded-2xl bg-card px-6 py-3 text-xl font-semibold text-primary shadow-lg">
                 Zzz...
               </div>
             </div>
 
-            <h2 className="text-2xl font-bold text-slate-900 sm:text-3xl dark:text-white">
+            <h2 className="text-2xl font-bold text-foreground sm:text-3xl">
               All clear! You're completely up to date.
             </h2>
-            <p className="mt-4 max-w-xl text-slate-500 dark:text-slate-400">
+            <p className="mt-4 max-w-xl text-muted-foreground">
               We'll let you know when you hit new milestones or need a reminder to keep your streak alive.
             </p>
 
             <Button
               asChild
-              className="mt-10 h-14 rounded-full bg-blue-600 px-10 text-base font-semibold text-white shadow-lg hover:bg-blue-700"
+              className="mt-10 h-14 rounded-full px-10 text-base font-semibold shadow-lg"
             >
               <Link href="/vocab-trainer">
                 <VolumeLoud size={18} weight="BoldDuotone" className="mr-2" />

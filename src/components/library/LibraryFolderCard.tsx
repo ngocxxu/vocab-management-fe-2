@@ -101,7 +101,7 @@ const LibraryFolderCard: React.FC<LibraryFolderCardProps> = ({
               className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full shadow-sm"
               style={{ backgroundColor: folder.folderColor }}
             >
-              <Folder size={24} weight="BoldDuotone" className="text-white" />
+              <Folder size={24} weight="BoldDuotone" className="text-primary-foreground" />
             </div>
             <div className="min-w-0 flex-1">
               <h3 className="truncate text-lg font-bold text-foreground">
@@ -185,7 +185,7 @@ const LibraryFolderCard: React.FC<LibraryFolderCardProps> = ({
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              className="bg-red-600 hover:bg-red-700"
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={handleConfirmDelete}
             >
               Delete Folder

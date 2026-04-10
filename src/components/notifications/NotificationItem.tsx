@@ -96,7 +96,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
     return (
       <div
         className={cn(
-          'group relative flex items-start gap-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:bg-slate-800/80',
+          'group relative flex items-start gap-4 rounded-xl border border-border bg-card p-4 shadow-sm transition-colors hover:bg-muted/20',
           itemIndex === 0 && 'mt-0',
         )}
         role="button"
@@ -113,22 +113,22 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
           <IconComponent className="h-6 w-6" />
         </div>
         <div className="min-w-0 flex-1">
-          <p className={cn('font-semibold', isRead ? 'text-slate-600 dark:text-slate-300' : 'text-slate-900 dark:text-white')}>
+          <p className={cn('font-semibold', isRead ? 'text-muted-foreground' : 'text-foreground')}>
             {message}
           </p>
           {description
             ? (
-                <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{description}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{description}</p>
               )
             : null}
-          <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">{listDate}</p>
+          <p className="mt-2 text-xs text-muted-foreground">{listDate}</p>
         </div>
         <div className="flex shrink-0 items-start">
           {isLoadingExam && (
-            <RefreshCircle size={16} weight="BoldDuotone" className="animate-spin text-blue-500" />
+            <RefreshCircle size={16} weight="BoldDuotone" className="animate-spin text-primary" />
           )}
           {!isRead && !isLoadingExam && (
-            <span className="h-2.5 w-2.5 rounded-full bg-blue-500" aria-hidden />
+            <span className="h-2.5 w-2.5 rounded-full bg-primary" aria-hidden />
           )}
         </div>
       </div>
@@ -138,7 +138,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
   return (
     <div
       className={cn(
-        'group relative flex items-start gap-3 p-4 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer',
+        'group relative flex cursor-pointer items-start gap-3 p-4 transition-colors hover:bg-muted/20',
         itemIndex === 0 && 'mt-0',
       )}
       role="button"
@@ -159,22 +159,22 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
         <div className="flex items-start justify-between gap-2">
           <p className={cn(
             'line-clamp-2 text-sm font-semibold',
-            isRead ? 'text-slate-600 dark:text-slate-300' : 'text-slate-900 dark:text-slate-100',
+            isRead ? 'text-muted-foreground' : 'text-foreground',
           )}
           >
             {message}
           </p>
-          <span className="shrink-0 text-xs text-slate-500 dark:text-slate-400">{timeAgo}</span>
+          <span className="shrink-0 text-xs text-muted-foreground">{timeAgo}</span>
         </div>
         {description
           ? (
-              <p className="mt-0.5 line-clamp-2 text-xs text-slate-500 dark:text-slate-400">{description}</p>
+              <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">{description}</p>
             )
           : null}
         {isVocabTrainerRemind && (
           <button
             type="button"
-            className="mt-2 rounded-md border border-slate-300 px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
+            className="mt-2 rounded-md border border-border px-2.5 py-1 text-xs font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground"
             onClick={(e) => {
               e.stopPropagation();
               handleClick();
@@ -187,10 +187,10 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
 
       <div className="flex shrink-0 items-start pt-0.5">
         {isLoadingExam && (
-          <RefreshCircle size={14} weight="BoldDuotone" className="animate-spin text-blue-500" />
+          <RefreshCircle size={14} weight="BoldDuotone" className="animate-spin text-primary" />
         )}
         {!isRead && !isLoadingExam && (
-          <span className="h-2 w-2 rounded-full bg-blue-500" aria-hidden />
+          <span className="h-2 w-2 rounded-full bg-primary" aria-hidden />
         )}
       </div>
     </div>

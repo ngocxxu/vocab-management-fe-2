@@ -13,11 +13,11 @@ export default function MethodologySection() {
               The Science of Learning
             </h2>
             <div className="flex gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary/15">
                 <RefreshCircle
                   size={24}
                   weight="BoldDuotone"
-                  className="text-blue-600 dark:text-blue-400"
+                  className="text-primary"
                 />
               </div>
               <div>
@@ -32,11 +32,11 @@ export default function MethodologySection() {
               </div>
             </div>
             <div className="flex gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary/15">
                 <VolumeLoud
                   size={24}
                   weight="BoldDuotone"
-                  className="text-blue-600 dark:text-blue-400"
+                  className="text-primary"
                 />
               </div>
               <div>
@@ -83,15 +83,15 @@ export default function MethodologySection() {
                     fill="none"
                     stroke="currentColor"
                     strokeWidth="2.5"
-                    className="text-blue-600 dark:text-blue-500"
+                    className="text-primary"
                   />
                 </svg>
                 <div
-                  className="absolute top-[16%] left-[52%] flex -translate-x-1/2 items-center gap-2 rounded-full bg-blue-600 px-3.5 py-2 shadow-sm dark:bg-blue-600"
+                  className="absolute top-[16%] left-[52%] flex -translate-x-1/2 items-center gap-2 rounded-full bg-primary px-3.5 py-2 shadow-sm"
                   aria-hidden
                 >
-                  <span className="h-1.5 w-1.5 rounded-full bg-white" />
-                  <span className="text-sm font-semibold text-white">
+                  <span className="h-1.5 w-1.5 rounded-full bg-primary-foreground" />
+                  <span className="text-sm font-semibold text-primary-foreground">
                     95% Retention
                   </span>
                 </div>
@@ -99,7 +99,7 @@ export default function MethodologySection() {
               <p className="mt-4 text-base text-muted-foreground">
                 Vocab maintains retention at
                 {' '}
-                <span className="font-bold text-blue-600 dark:text-blue-400">
+                <span className="font-bold text-primary">
                   95%
                 </span>
                 {' '}

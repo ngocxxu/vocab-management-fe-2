@@ -31,7 +31,7 @@ const LanguageFolderForm: React.FC<LanguageFolderFormProps> = ({
   const isLoadingLanguages = false;
   const [formData, setFormData] = useState<LanguageFolderFormData>({
     name: '',
-    folderColor: '#3b82f6',
+    folderColor: '#1a73e8',
     sourceLanguageCode: '',
     targetLanguageCode: '',
     ...initialData,
@@ -111,7 +111,7 @@ const LanguageFolderForm: React.FC<LanguageFolderFormProps> = ({
             value={formData.name}
             onChange={e => handleInputChange('name', e.target.value)}
             placeholder="Enter folder name"
-            className={errors.name ? 'border-red-500' : ''}
+            className={errors.name ? 'border-destructive' : ''}
             disabled={isSubmitting}
           />
           {showAutoGenerate && (
@@ -128,7 +128,7 @@ const LanguageFolderForm: React.FC<LanguageFolderFormProps> = ({
           )}
         </div>
         {errors.name && (
-          <p className="text-sm text-red-500">{errors.name}</p>
+          <p className="text-sm text-destructive">{errors.name}</p>
         )}
       </div>
 
@@ -142,7 +142,7 @@ const LanguageFolderForm: React.FC<LanguageFolderFormProps> = ({
             onValueChange={value => handleInputChange('sourceLanguageCode', value)}
             disabled={isSubmitting || isLoadingLanguages}
           >
-            <SelectTrigger className={cn('w-full', errors.sourceLanguageCode ? 'border-red-500' : '')}>
+            <SelectTrigger className={cn('w-full', errors.sourceLanguageCode ? 'border-destructive' : '')}>
               <SelectValue placeholder="Select source language" />
             </SelectTrigger>
             <SelectContent>
@@ -154,7 +154,7 @@ const LanguageFolderForm: React.FC<LanguageFolderFormProps> = ({
             </SelectContent>
           </Select>
           {errors.sourceLanguageCode && (
-            <p className="text-sm text-red-500">{errors.sourceLanguageCode}</p>
+            <p className="text-sm text-destructive">{errors.sourceLanguageCode}</p>
           )}
         </div>
 
@@ -166,7 +166,7 @@ const LanguageFolderForm: React.FC<LanguageFolderFormProps> = ({
             onValueChange={value => handleInputChange('targetLanguageCode', value)}
             disabled={isSubmitting || isLoadingLanguages}
           >
-            <SelectTrigger className={cn('w-full', errors.targetLanguageCode ? 'border-red-500' : '')}>
+            <SelectTrigger className={cn('w-full', errors.targetLanguageCode ? 'border-destructive' : '')}>
               <SelectValue placeholder="Select target language" />
             </SelectTrigger>
             <SelectContent>
@@ -178,7 +178,7 @@ const LanguageFolderForm: React.FC<LanguageFolderFormProps> = ({
             </SelectContent>
           </Select>
           {errors.targetLanguageCode && (
-            <p className="text-sm text-red-500">{errors.targetLanguageCode}</p>
+            <p className="text-sm text-destructive">{errors.targetLanguageCode}</p>
           )}
         </div>
       </div>
@@ -206,7 +206,6 @@ const LanguageFolderForm: React.FC<LanguageFolderFormProps> = ({
         <Button
           type="submit"
           disabled={isSubmitting || isLoadingLanguages}
-          className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700"
         >
           {isSubmitting ? 'Saving...' : submitButtonText}
         </Button>

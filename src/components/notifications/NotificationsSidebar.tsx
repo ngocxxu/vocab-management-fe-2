@@ -57,8 +57,8 @@ export const NotificationsSidebar: React.FC = () => {
     <aside className="w-full shrink-0 space-y-6 lg:w-80">
       <div className="space-y-4">
         <div className="flex items-center gap-2">
-          <Settings size={18} weight="BoldDuotone" className="text-slate-500 dark:text-slate-400" />
-          <h2 className="text-sm font-semibold tracking-wide text-slate-600 uppercase dark:text-slate-300">
+          <Settings size={18} weight="BoldDuotone" className="text-muted-foreground" />
+          <h2 className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">
             Settings
           </h2>
         </div>
@@ -68,11 +68,11 @@ export const NotificationsSidebar: React.FC = () => {
             return (
               <div
                 key={id}
-                className="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50/80 px-4 py-3 dark:border-slate-700 dark:bg-slate-800/50"
+                className="flex items-center justify-between rounded-lg border border-border bg-muted/30 px-4 py-3"
               >
                 <div>
-                  <p className="font-medium text-slate-900 dark:text-white">{label}</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">{description}</p>
+                  <p className="font-medium text-foreground">{label}</p>
+                  <p className="text-xs text-muted-foreground">{description}</p>
                 </div>
                 <button
                   type="button"
@@ -80,13 +80,13 @@ export const NotificationsSidebar: React.FC = () => {
                   aria-checked={on}
                   onClick={() => setPrefValue(id, !on)}
                   className={cn(
-                    'relative inline-flex h-6 w-11 shrink-0 rounded-full border border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
-                    on ? 'bg-blue-600' : 'bg-slate-200 dark:bg-slate-600',
+                    'relative inline-flex h-6 w-11 shrink-0 rounded-full border border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
+                    on ? 'bg-primary' : 'bg-muted',
                   )}
                 >
                   <span
                     className={cn(
-                      'pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow ring-0 transition-transform',
+                      'pointer-events-none inline-block h-5 w-5 rounded-full bg-card shadow ring-0 transition-transform',
                       on ? 'translate-x-5' : 'translate-x-0.5',
                     )}
                     style={{ marginTop: 2 }}
@@ -98,24 +98,24 @@ export const NotificationsSidebar: React.FC = () => {
         </div>
         <Button
           variant="outline"
-          className="w-full border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800"
+          className="w-full"
           onClick={handleClearAll}
         >
           Clear All Notifications
         </Button>
       </div>
 
-      <div className="relative overflow-hidden rounded-xl bg-slate-900 p-5 dark:bg-slate-800">
-        <div className="absolute top-0 right-0 opacity-20">
-          <Star size={64} weight="BoldDuotone" className="text-blue-300" />
+      <div className="relative overflow-hidden rounded-xl border border-border bg-card p-5">
+        <div className="absolute top-0 right-0 opacity-15">
+          <Star size={64} weight="BoldDuotone" className="text-primary" />
         </div>
-        <div className="absolute bottom-0 left-0 opacity-20">
-          <Star size={48} weight="BoldDuotone" className="text-blue-300" />
+        <div className="absolute bottom-0 left-0 opacity-15">
+          <Star size={48} weight="BoldDuotone" className="text-primary" />
         </div>
         <div className="relative space-y-3">
-          <h3 className="text-lg font-bold text-white">Level up your learning with Pro</h3>
-          <p className="text-sm text-slate-300">Unlock advanced analytics and offline mode.</p>
-          <Button asChild className="w-full bg-blue-600 text-white hover:bg-blue-700">
+          <h3 className="text-lg font-bold text-foreground">Level up your learning with Pro</h3>
+          <p className="text-sm text-muted-foreground">Unlock advanced analytics and offline mode.</p>
+          <Button asChild className="w-full">
             <Link href="#">Upgrade Now</Link>
           </Button>
         </div>

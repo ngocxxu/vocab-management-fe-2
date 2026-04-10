@@ -200,34 +200,34 @@ export function DataTable<TData extends { id: string }, TValue>({
               placeholder={searchPlaceholder}
               value={globalFilter ?? ''}
               onChange={event => table.setGlobalFilter(event.target.value)}
-              className="w-64 rounded-lg border border-slate-200 bg-white/80 px-4 py-2 backdrop-blur-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none dark:border-slate-700 dark:bg-slate-800/80 dark:text-white"
+              className="w-64 rounded-lg border border-input bg-background/80 px-4 py-2 text-foreground backdrop-blur-sm placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20 focus:outline-none"
             />
           </div>
         </div>
       )}
 
       {/* Table */}
-      <Card className="overflow-hidden border-0 bg-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.08)] backdrop-blur-sm dark:bg-slate-800/80">
+      <Card className="overflow-hidden border-0 bg-card/80 shadow-[0_8px_30px_rgb(0,0,0,0.08)] backdrop-blur-sm">
         <CardContent className="p-0">
           <div className="-mx-4 overflow-x-auto sm:mx-0">
             <div className="inline-block min-w-full align-middle sm:px-0">
               <table className="w-full">
                 <thead>
                   {table.getHeaderGroups().map(headerGroup => (
-                    <tr key={headerGroup.id} className={`border-b border-slate-200 dark:border-slate-700 ${headerClassName}`}>
+                    <tr key={headerGroup.id} className={`border-b border-border ${headerClassName}`}>
                       {headerGroup.headers.map(header => (
                         <th
                           key={`${header.id}-${header.column.id}`}
-                          className={`bg-slate-50/50 px-3 py-3 text-left text-xs font-semibold text-slate-700 sm:px-6 sm:py-4 sm:text-sm dark:bg-slate-800/50 dark:text-slate-300 ${headerClassName}`}
+                          className={`bg-muted/30 px-3 py-3 text-left text-xs font-semibold text-muted-foreground sm:px-6 sm:py-4 sm:text-sm ${headerClassName}`}
                           style={{ width: header.getSize() !== 150 ? header.getSize() : undefined }}
                         >
                           {header.isPlaceholder
                             ? null
                             : (
                                 <div
-                                  className={`w-full cursor-pointer p-0 text-left font-semibold text-slate-700 select-none dark:text-slate-300 ${
+                                  className={`w-full cursor-pointer p-0 text-left font-semibold text-muted-foreground select-none ${
                                     header.column.getCanSort()
-                                      ? 'hover:text-slate-900 dark:hover:text-slate-100'
+                                      ? 'hover:text-foreground'
                                       : 'cursor-default'
                                   }`}
                                   onClick={header.column.getCanSort() ? header.column.getToggleSortingHandler() : undefined}
@@ -272,7 +272,7 @@ export function DataTable<TData extends { id: string }, TValue>({
                   {isLoading
                     ? (
                         Array.from({ length: skeletonRowCount ?? pageSize }).map((_, idx) => (
-                          <tr key={`skeleton-row-${idx}`} className={`border-b border-slate-100 dark:border-slate-700 ${rowClassName}`}>
+                          <tr key={`skeleton-row-${idx}`} className={`border-b border-border ${rowClassName}`}>
                             <td className={`px-3 py-3 sm:px-6 sm:py-4 ${cellClassName}`} colSpan={memoizedColumns.length}>
                               <div className="flex items-center gap-4">
                                 <Skeleton className="h-5 w-5" />
@@ -285,8 +285,8 @@ export function DataTable<TData extends { id: string }, TValue>({
                       )
                     : table.getRowModel().rows.length === 0
                       ? (
-                          <tr className={`border-b border-slate-100 dark:border-slate-700 ${rowClassName}`}>
-                            <td className={`px-3 py-4 text-xs text-slate-500 sm:px-6 sm:py-6 sm:text-sm dark:text-slate-400 ${cellClassName}`} colSpan={memoizedColumns.length}>
+                          <tr className={`border-b border-border ${rowClassName}`}>
+                            <td className={`px-3 py-4 text-xs text-muted-foreground sm:px-6 sm:py-6 sm:text-sm ${cellClassName}`} colSpan={memoizedColumns.length}>
                               No results
                             </td>
                           </tr>
@@ -298,8 +298,8 @@ export function DataTable<TData extends { id: string }, TValue>({
                             return (
                               <React.Fragment key={`${rowId}-${isExpanded ? 'expanded' : 'collapsed'}`}>
                                 <tr
-                                  className={`cursor-pointer border-b border-slate-100 transition-colors duration-200 hover:bg-slate-200/50 dark:border-slate-700 dark:hover:bg-slate-700/50 ${
-                                    isExpanded ? 'bg-slate-200/50 dark:bg-slate-700/50' : ''
+                                  className={`cursor-pointer border-b border-border transition-colors duration-200 hover:bg-muted/30 ${
+                                    isExpanded ? 'bg-muted/30' : ''
                                   } ${rowClassName}`}
                                   onClick={(e) => {
                                     const target = e.target as HTMLElement;
@@ -343,7 +343,7 @@ export function DataTable<TData extends { id: string }, TValue>({
       {/* Pagination */}
       {showPagination && (
         <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
-          <div className="text-xs text-slate-600 sm:text-sm dark:text-slate-400">
+          <div className="text-xs text-muted-foreground sm:text-sm">
             Showing
             {' '}
             {manualPagination ? data.length : table.getFilteredRowModel().rows.length}
@@ -367,7 +367,7 @@ export function DataTable<TData extends { id: string }, TValue>({
               disabled={manualPagination ? currentPage <= 1 : !table.getCanPreviousPage()}
               variant="ghost"
               size="sm"
-              className="flex items-center space-x-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200"
+              className="flex items-center space-x-2 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
             >
               <AltArrowLeft size={16} weight="BoldDuotone" />
               <span>Previous</span>
@@ -392,7 +392,7 @@ export function DataTable<TData extends { id: string }, TValue>({
                     className={`h-8 w-8 rounded-full p-0 text-sm font-medium transition-colors ${
                       isActive
                         ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-                        : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200'
+                        : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
                     }`}
                   >
                     {pageNumber}
@@ -400,7 +400,7 @@ export function DataTable<TData extends { id: string }, TValue>({
                 );
               })}
               {(manualPagination ? pageCount : table.getPageCount()) > 5 && (
-                <span className="px-2 text-slate-500 dark:text-slate-400">...</span>
+                <span className="px-2 text-muted-foreground">...</span>
               )}
               {(manualPagination ? pageCount : table.getPageCount()) > 5 && (
                 <Button
@@ -414,7 +414,7 @@ export function DataTable<TData extends { id: string }, TValue>({
                   }}
                   variant="ghost"
                   size="sm"
-                  className="h-8 w-8 rounded-full p-0 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200"
+                  className="h-8 w-8 rounded-full p-0 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                 >
                   {manualPagination ? pageCount : table.getPageCount()}
                 </Button>
@@ -433,7 +433,7 @@ export function DataTable<TData extends { id: string }, TValue>({
               disabled={manualPagination ? currentPage >= pageCount : !table.getCanNextPage()}
               variant="ghost"
               size="sm"
-              className="flex items-center space-x-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200"
+              className="flex items-center space-x-2 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
             >
               <span>Next</span>
               <AltArrowRight size={16} weight="BoldDuotone" />

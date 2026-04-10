@@ -154,21 +154,21 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
         title="Subjects"
         description="Manage and reorder your learning categories to personalize your vocabulary study path."
       >
-        <Card className="overflow-hidden border-0 bg-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:bg-slate-800/80">
+        <Card className="overflow-hidden border-0 bg-card/80 shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
           <CardContent className="p-0">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-slate-200 dark:border-slate-700">
-                  <th className="bg-slate-50/50 px-3 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase sm:px-6 sm:py-4 dark:bg-slate-800/50 dark:text-slate-400" />
-                  <th className="bg-slate-50/50 px-3 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase sm:px-6 sm:py-4 dark:bg-slate-800/50 dark:text-slate-400" />
-                  <th className="bg-slate-50/50 px-3 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase sm:px-6 sm:py-4 dark:bg-slate-800/50 dark:text-slate-400" />
-                  <th className="bg-slate-50/50 px-3 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase sm:px-6 sm:py-4 dark:bg-slate-800/50 dark:text-slate-400" />
-                  <th className="bg-slate-50/50 px-3 py-3 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase sm:px-6 sm:py-4 dark:bg-slate-800/50 dark:text-slate-400" />
+                <tr className="border-b border-border">
+                  <th className="bg-muted/30 px-3 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:px-6 sm:py-4" />
+                  <th className="bg-muted/30 px-3 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:px-6 sm:py-4" />
+                  <th className="bg-muted/30 px-3 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:px-6 sm:py-4" />
+                  <th className="bg-muted/30 px-3 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:px-6 sm:py-4" />
+                  <th className="bg-muted/30 px-3 py-3 text-right text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:px-6 sm:py-4" />
                 </tr>
               </thead>
               <tbody>
                 {Array.from({ length: 4 }).map((_, i) => (
-                  <tr key={i} className="border-b border-slate-100 dark:border-slate-700">
+                  <tr key={i} className="border-b border-border">
                     <td className="px-3 py-3 sm:px-6 sm:py-4" colSpan={5}>
                       <div className="flex items-center gap-4">
                         <Skeleton className="h-5 w-5" />
@@ -197,10 +197,10 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
           ? (
               <Card>
                 <CardContent className="py-12 text-center">
-                  <h4 className="mb-2 text-lg font-medium text-slate-900 dark:text-slate-100">
+                  <h4 className="mb-2 text-lg font-medium text-foreground">
                     No subjects yet
                   </h4>
-                  <p className="mb-4 text-slate-600 dark:text-slate-400">
+                  <p className="mb-4 text-muted-foreground">
                     Create your first subject to get started
                   </p>
                   <Button onClick={() => setIsCreateDialogOpen(true)}>
@@ -212,25 +212,25 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
             )
           : (
               <>
-                <Card className="overflow-hidden border-0 bg-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:bg-slate-800/80">
+                <Card className="overflow-hidden border-0 bg-card/80 shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
                   <CardContent className="p-0">
                     <div className="-mx-4 overflow-x-auto sm:mx-0">
                       <table className="w-full">
                         <thead>
-                          <tr className="border-b border-slate-200 dark:border-slate-700">
-                            <th className="bg-slate-50/50 px-3 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase sm:px-6 sm:py-4 dark:bg-slate-800/50 dark:text-slate-400">
+                          <tr className="border-b border-border">
+                            <th className="bg-muted/30 px-3 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:px-6 sm:py-4">
                               Reorder
                             </th>
-                            <th className="bg-slate-50/50 px-3 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase sm:px-6 sm:py-4 dark:bg-slate-800/50 dark:text-slate-400">
+                            <th className="bg-muted/30 px-3 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:px-6 sm:py-4">
                               Subject Details
                             </th>
-                            <th className="bg-slate-50/50 px-3 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase sm:px-6 sm:py-4 dark:bg-slate-800/50 dark:text-slate-400">
+                            <th className="bg-muted/30 px-3 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:px-6 sm:py-4">
                               Word Count
                             </th>
-                            <th className="bg-slate-50/50 px-3 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase sm:px-6 sm:py-4 dark:bg-slate-800/50 dark:text-slate-400">
+                            <th className="bg-muted/30 px-3 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:px-6 sm:py-4">
                               Created Date
                             </th>
-                            <th className="bg-slate-50/50 px-3 py-3 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase sm:px-6 sm:py-4 dark:bg-slate-800/50 dark:text-slate-400">
+                            <th className="bg-muted/30 px-3 py-3 text-right text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:px-6 sm:py-4">
                               Actions
                             </th>
                           </tr>
@@ -269,12 +269,12 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
                   onPageChange={setPage}
                 />
 
-                <Alert className="border-blue-200 bg-blue-50 dark:border-blue-900 dark:bg-blue-950/50">
-                  <InfoCircle className="size-5 text-blue-600 dark:text-blue-400" />
+                <Alert className="border-border bg-accent/40">
+                  <InfoCircle className="size-5 text-primary" />
                   <AlertDescription>
                     You can drag the
                     {' '}
-                    <span className="inline-flex rounded p-0.5 text-slate-500 dark:text-slate-400" aria-hidden>
+                    <span className="inline-flex rounded p-0.5 text-muted-foreground" aria-hidden>
                       <Reorder className="translate-y-1" size={16} weight="BoldDuotone" />
                     </span>
                     {' '}

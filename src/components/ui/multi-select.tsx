@@ -849,7 +849,7 @@ export const MultiSelect = (
                                 getBadgeAnimationClass(),
                                 multiSelectVariants({ variant }),
                                 customStyle?.gradient
-                                && 'text-white border-transparent',
+                                && 'text-primary-foreground border-transparent',
                                 responsiveSettings.compactMode
                                 && 'text-xs px-1.5 py-0.5',
                                 screenSize === 'mobile'
@@ -903,7 +903,7 @@ export const MultiSelect = (
                                   }
                                 }}
                                 aria-label={`Remove ${option.label} from selection`}
-                                className="-m-0.5 ml-2 h-4 w-4 cursor-pointer rounded-sm p-0.5 hover:bg-white/20 focus:ring-1 focus:ring-white/50 focus:outline-none"
+                                className="-m-0.5 ml-2 h-4 w-4 cursor-pointer rounded-sm p-0.5 hover:bg-primary-foreground/20 focus:ring-1 focus:ring-ring/50 focus:outline-none"
                               >
                                 <CloseCircle
                                   className={cn(

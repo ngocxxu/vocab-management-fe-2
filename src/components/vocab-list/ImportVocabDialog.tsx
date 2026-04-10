@@ -274,7 +274,7 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
         <AlertDialogContent className="max-w-4xl">
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
-              <DangerCircle size={20} weight="BoldDuotone" className="text-red-500" />
+              <DangerCircle size={20} weight="BoldDuotone" className="text-destructive" />
               Import Results
             </AlertDialogTitle>
             <AlertDialogDescription>
@@ -283,23 +283,23 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
           </AlertDialogHeader>
           {importResult && (
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4 rounded-lg bg-slate-50 p-4 dark:bg-slate-800">
+              <div className="grid grid-cols-2 gap-4 rounded-lg bg-muted/30 p-4">
                 <div className="flex items-center gap-2">
-                  <CheckCircle size={16} weight="BoldDuotone" className="text-green-500" />
+                  <CheckCircle size={16} weight="BoldDuotone" className="text-success" />
                   <span className="text-sm font-medium">
                     Created:
                     {importResult.created}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle size={16} weight="BoldDuotone" className="text-blue-500" />
+                  <CheckCircle size={16} weight="BoldDuotone" className="text-primary" />
                   <span className="text-sm font-medium">
                     Updated:
                     {importResult.updated}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <DangerCircle size={16} weight="BoldDuotone" className="text-red-500" />
+                  <DangerCircle size={16} weight="BoldDuotone" className="text-destructive" />
                   <span className="text-sm font-medium">
                     Failed:
                     {importResult.failed}
@@ -319,11 +319,11 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
                   <div className="max-h-60 overflow-auto rounded-lg border">
                     <table className="w-full">
                       <thead>
-                        <tr className="border-b bg-slate-50 dark:bg-slate-800">
-                          <th className="px-4 py-2 text-left text-sm font-medium text-slate-700 dark:text-slate-300">Row</th>
-                          <th className="px-4 py-2 text-left text-sm font-medium text-slate-700 dark:text-slate-300">Error</th>
-                          <th className="px-4 py-2 text-left text-sm font-medium text-slate-700 dark:text-slate-300">Data</th>
-                          <th className="px-4 py-2 text-left text-sm font-medium text-slate-700 dark:text-slate-300">Action</th>
+                        <tr className="border-b bg-muted/30">
+                          <th className="px-4 py-2 text-left text-sm font-medium text-muted-foreground">Row</th>
+                          <th className="px-4 py-2 text-left text-sm font-medium text-muted-foreground">Error</th>
+                          <th className="px-4 py-2 text-left text-sm font-medium text-muted-foreground">Data</th>
+                          <th className="px-4 py-2 text-left text-sm font-medium text-muted-foreground">Action</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -334,9 +334,9 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
                           const isCreated = subjectName ? createdSubjects.has(subjectName) : false;
 
                           return (
-                            <tr key={`${error.row}-${index}`} className="border-b hover:bg-slate-50 dark:hover:bg-slate-800">
+                            <tr key={`${error.row}-${index}`} className="border-b hover:bg-muted/20">
                               <td className="px-4 py-2 font-medium">{error.row}</td>
-                              <td className="px-4 py-2 text-red-600">{error.error}</td>
+                              <td className="px-4 py-2 text-destructive">{error.error}</td>
                               <td className="max-w-xs px-4 py-2">
                                 {Object.entries(error.data).map(([key, value]) => (
                                   <div key={key} className="text-xs">
@@ -368,7 +368,7 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
                                       : isCreated
                                         ? (
                                             <>
-                                              <CheckCircle size={12} weight="BoldDuotone" className="mr-1 text-green-500" />
+                                              <CheckCircle size={12} weight="BoldDuotone" className="mr-1 text-success" />
                                               Created
                                             </>
                                           )

@@ -169,7 +169,7 @@ function SignUpForm() {
         </aside>
 
         <div className="relative flex min-w-0 flex-1 flex-col items-center justify-center overflow-auto px-8 py-10">
-          <div className="mx-auto w-full max-w-md rounded-2xl bg-white px-8 py-10 shadow-xl">
+          <div className="mx-auto w-full max-w-md rounded-2xl bg-card px-8 py-10 shadow-xl">
             <h2 className="font-sans text-2xl font-bold text-foreground">Create Account</h2>
             <p className="mt-1 font-sans text-sm text-muted-foreground">
               Sign up to get started with your vocabulary management.
@@ -206,7 +206,7 @@ function SignUpForm() {
                 <span className="w-full border-t border-border" />
               </div>
               <div className="relative flex justify-center">
-                <span className="bg-white px-2 font-sans text-xs text-muted-foreground uppercase">
+                <span className="bg-card px-2 font-sans text-xs text-muted-foreground uppercase">
                   OR CONTINUE WITH EMAIL
                 </span>
               </div>
