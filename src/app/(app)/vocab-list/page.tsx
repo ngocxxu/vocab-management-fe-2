@@ -33,28 +33,52 @@ export default async function VocabListPage({ searchParams }: PageProps) {
     subjectIds,
   };
 
-  try {
-    // Fetch all data concurrently at server-side
-    const [initialVocabsData, initialLanguageFolderData, initialSubjectsData, initialLanguagesData, initialWordTypesData] = await Promise.all([
-      vocabApi.getAll(queryParams),
-      languageFolderId ? languageFoldersApi.getById(languageFolderId) : Promise.resolve(null),
-      subjectsApi.getAll(),
-      languagesApi.getAll(),
-      wordTypesApi.getAll(),
-    ]);
+  const [
+    vocabsResult,
+    folderResult,
+    subjectsResult,
+    languagesResult,
+    wordTypesResult,
+  ] = await Promise.allSettled([
+    vocabApi.getAll(queryParams),
+    languageFolderId ? languageFoldersApi.getById(languageFolderId) : Promise.resolve(null),
+    subjectsApi.getAll(),
+    languagesApi.getAll(),
+    wordTypesApi.getAll(),
+  ]);
 
-    return (
-      <VocabListLayout
-        initialVocabsData={initialVocabsData}
-        initialLanguageFolderData={initialLanguageFolderData || undefined}
-        initialSubjectsData={initialSubjectsData}
-        initialLanguagesData={initialLanguagesData}
-        initialWordTypesData={initialWordTypesData}
-      />
-    );
-  } catch (error) {
-    console.error('Failed to fetch vocab list data:', error);
-    // Return layout without initial data if fetch fails
-    return <VocabListLayout />;
+  if (vocabsResult.status === 'rejected') {
+    console.error('Failed to fetch vocab list:', vocabsResult.reason);
   }
+  if (folderResult.status === 'rejected') {
+    console.error('Failed to fetch language folder:', folderResult.reason);
+  }
+  if (subjectsResult.status === 'rejected') {
+    console.error('Failed to fetch subjects:', subjectsResult.reason);
+  }
+  if (languagesResult.status === 'rejected') {
+    console.error('Failed to fetch languages:', languagesResult.reason);
+  }
+  if (wordTypesResult.status === 'rejected') {
+    console.error('Failed to fetch word types:', wordTypesResult.reason);
+  }
+
+  const initialVocabsData = vocabsResult.status === 'fulfilled' ? vocabsResult.value : undefined;
+  const vocabListLoadFailed = vocabsResult.status === 'rejected';
+  const initialLanguageFolderData
+    = folderResult.status === 'fulfilled' ? folderResult.value || undefined : undefined;
+  const initialSubjectsData = subjectsResult.status === 'fulfilled' ? subjectsResult.value : undefined;
+  const initialLanguagesData = languagesResult.status === 'fulfilled' ? languagesResult.value : undefined;
+  const initialWordTypesData = wordTypesResult.status === 'fulfilled' ? wordTypesResult.value : undefined;
+
+  return (
+    <VocabListLayout
+      initialVocabsData={initialVocabsData}
+      initialLanguageFolderData={initialLanguageFolderData}
+      initialSubjectsData={initialSubjectsData}
+      initialLanguagesData={initialLanguagesData}
+      initialWordTypesData={initialWordTypesData}
+      vocabListLoadFailed={vocabListLoadFailed}
+    />
+  );
 }

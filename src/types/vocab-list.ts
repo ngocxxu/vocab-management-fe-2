@@ -192,6 +192,7 @@ export type VocabListLayoutProps = {
   initialSubjectsData?: import('@/types/subject').TSubjectResponse;
   initialLanguagesData?: import('@/types').ResponseAPI<import('@/types').TLanguage[]>;
   initialWordTypesData?: import('@/types/word-type').TWordTypeResponse;
+  vocabListLoadFailed?: boolean;
 };
 
 export type VocabListContentProps = VocabListLayoutProps;

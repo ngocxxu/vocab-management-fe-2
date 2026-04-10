@@ -17,6 +17,7 @@ const VocabListContent: React.FC<VocabListContentProps> = ({
   initialSubjectsData,
   initialLanguagesData,
   initialWordTypesData,
+  vocabListLoadFailed,
 }) => {
   return (
     <div className="min-h-screen bg-background">
@@ -40,6 +41,7 @@ const VocabListContent: React.FC<VocabListContentProps> = ({
           initialSubjectsData={initialSubjectsData}
           initialLanguagesData={initialLanguagesData}
           initialWordTypesData={initialWordTypesData}
+          vocabListLoadFailed={vocabListLoadFailed}
         />
       </div>
     </div>

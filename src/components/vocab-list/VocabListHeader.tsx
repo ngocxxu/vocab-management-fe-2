@@ -2,7 +2,7 @@
 
 import type { VocabListHeaderProps } from '@/types/vocab-list';
 import { AddCircle, Filter, Folder, Upload } from '@solar-icons/react/ssr';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { PremiumFeatureGate } from '@/components/premium';
 import { Button } from '@/components/ui/button';
 import { MultiSelect } from '@/components/ui/multi-select';
@@ -29,6 +29,20 @@ const VocabListHeader: React.FC<VocabListHeaderProps> = ({
   queryParams,
   userRole,
 }) => {
+  const subjectFilterOptions = useMemo(() => {
+    const byId = new Map(subjects.map(s => [s.id, s]));
+    const options = subjects.map(subject => ({
+      value: subject.id,
+      label: subject.name,
+    }));
+    for (const id of [...new Set(selectedSubjectIds)]) {
+      if (!byId.has(id)) {
+        options.push({ value: id, label: 'Unknown subject' });
+      }
+    }
+    return options;
+  }, [subjects, selectedSubjectIds]);
+
   return (
     <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
       <div className="space-y-3">
@@ -90,14 +104,8 @@ const VocabListHeader: React.FC<VocabListHeaderProps> = ({
           <PopoverContent className="w-[calc(100vw-2rem)] sm:w-80" align="end">
             <div className="space-y-4">
               <div className="space-y-2">
-                <h4 className="font-medium text-foreground">Filter Vocabularies</h4>
+                <h4 className="font-medium text-foreground">Filter by Subjects</h4>
                 <div className="space-y-2">
-                  <label
-                    htmlFor="subject-filter"
-                    className="text-sm font-medium text-foreground"
-                  >
-                    Filter by Subjects
-                  </label>
                   {isSubjectsLoading
                     ? (
                         <div className="h-10 w-full animate-pulse rounded-md bg-muted" />
@@ -105,10 +113,7 @@ const VocabListHeader: React.FC<VocabListHeaderProps> = ({
                     : (
                         <MultiSelect
                           id="subject-filter"
-                          options={subjects.map(subject => ({
-                            value: subject.id,
-                            label: subject.name,
-                          }))}
+                          options={subjectFilterOptions}
                           defaultValue={selectedSubjectIds}
                           onValueChange={onSubjectFilterChange}
                           placeholder="Choose subjects to filter by..."

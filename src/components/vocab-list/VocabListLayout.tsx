@@ -9,6 +9,7 @@ const VocabListLayout: React.FC<VocabListLayoutProps> = ({
   initialSubjectsData,
   initialLanguagesData,
   initialWordTypesData,
+  vocabListLoadFailed,
 }) => {
   return (
     <Suspense fallback={(
@@ -27,6 +28,7 @@ const VocabListLayout: React.FC<VocabListLayoutProps> = ({
         initialSubjectsData={initialSubjectsData}
         initialLanguagesData={initialLanguagesData}
         initialWordTypesData={initialWordTypesData}
+        vocabListLoadFailed={vocabListLoadFailed}
       />
     </Suspense>
   );

@@ -66,6 +66,7 @@ const VocabList: React.FC<VocabListProps> = ({
   initialSubjectsData,
   initialLanguagesData,
   initialWordTypesData,
+  vocabListLoadFailed = false,
 }) => {
   const [user, setUser] = useState<TUser | null>(null);
   const [importDialogOpen, setImportDialogOpen] = React.useState(false);
@@ -109,7 +110,7 @@ const VocabList: React.FC<VocabListProps> = ({
   const totalPages = initialVocabsData?.totalPages || 0;
   const currentPage = initialVocabsData?.currentPage || 1;
   const isLoading = false;
-  const isError = false;
+  const isError = vocabListLoadFailed;
 
   const languageFolder = initialLanguageFolderData;
   const isFolderLoading = false;
@@ -565,7 +566,7 @@ const VocabList: React.FC<VocabListProps> = ({
         />
 
         {isError && (
-          <ErrorState message="Error loading vocabularies. Please try again." />
+          <ErrorState message="Could not load the vocabulary list. Try adjusting filters or refresh the page." />
         )}
 
         {isMounted && (
@@ -611,42 +612,43 @@ const VocabList: React.FC<VocabListProps> = ({
               onCancel={() => bulkDelete.reset()}
             />
 
-            <DataTable
-              columns={columns}
-              data={data}
-              searchPlaceholder="Search vocab..."
-              searchValue={textSource}
-              onSearchChangeAction={handleSearchChange}
-              showSearch={true}
-              showPagination={true}
-              pageSize={pagination.pageSize}
-              isLoading={isLoading}
-              skeletonRowCount={pagination.pageSize}
-              className=""
-              headerClassName=""
-              rowClassName=""
-              cellClassName=""
-              expandedState={expanded}
-              onExpandedChange={setExpanded}
-              renderExpandedRow={row => (
-                <ExpandedRowContent
-                  vocab={row.original}
-                  columnsCount={columns.length}
-                  onCollapse={() => setExpanded(prev => ({ ...prev, [row.original.id]: false }))}
-                  onEdit={handleEdit}
-                />
-              )}
-              // Server-side pagination & sorting
-              manualPagination={true}
-              manualSorting={true}
-              manualFiltering={true}
-              pageCount={totalPages}
-              currentPage={currentPage}
-              totalItems={totalItems}
-              onPageChange={handlePageChange}
-              onSortingChange={handleSort}
-              onBulkDelete={bulkDelete.handleBulkDelete}
-            />
+            {!vocabListLoadFailed && (
+              <DataTable
+                columns={columns}
+                data={data}
+                searchPlaceholder="Search vocab..."
+                searchValue={textSource}
+                onSearchChangeAction={handleSearchChange}
+                showSearch={true}
+                showPagination={true}
+                pageSize={pagination.pageSize}
+                isLoading={isLoading}
+                skeletonRowCount={pagination.pageSize}
+                className=""
+                headerClassName=""
+                rowClassName=""
+                cellClassName=""
+                expandedState={expanded}
+                onExpandedChange={setExpanded}
+                renderExpandedRow={row => (
+                  <ExpandedRowContent
+                    vocab={row.original}
+                    columnsCount={columns.length}
+                    onCollapse={() => setExpanded(prev => ({ ...prev, [row.original.id]: false }))}
+                    onEdit={handleEdit}
+                  />
+                )}
+                manualPagination={true}
+                manualSorting={true}
+                manualFiltering={true}
+                pageCount={totalPages}
+                currentPage={currentPage}
+                totalItems={totalItems}
+                onPageChange={handlePageChange}
+                onSortingChange={handleSort}
+                onBulkDelete={bulkDelete.handleBulkDelete}
+              />
+            )}
           </>
         )}
       </div>
