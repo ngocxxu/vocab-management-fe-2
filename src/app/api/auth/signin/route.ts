@@ -1,7 +1,8 @@
 import type { NextRequest } from 'next/server';
-import type { TAuthResponse } from '@/types/auth';
+import type { TSessionDto } from '@/types/auth';
 import { NextResponse } from 'next/server';
 import { logger } from '@/libs/Logger';
+import { AUTH_COOKIE_OPTIONS, REFRESH_COOKIE_OPTIONS } from '@/utils/auth-cookies';
 import { API_ENDPOINTS } from '@/utils/api-config';
 
 type SigninRequestBody = {
@@ -36,7 +37,7 @@ export async function POST(request: NextRequest) {
     });
 
     const responseText = await nestResponse.text();
-    let data: TAuthResponse | SigninErrorResponse;
+    let data: TSessionDto | SigninErrorResponse;
 
     try {
       data = responseText ? JSON.parse(responseText) : {};
@@ -55,12 +56,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const response = NextResponse.json(data, { status: nestResponse.status });
+    // Set HttpOnly cookies with tokens
+    const sessionData = data as TSessionDto;
+    const { access_token, refresh_token, expires_in, expires_at, token_type, ...responseData } = sessionData;
+    const response = NextResponse.json(responseData, { status: nestResponse.status });
 
-    // forward Set-Cookie from NestJS
-    const setCookie = nestResponse.headers.get('set-cookie');
-    if (setCookie) {
-      response.headers.append('Set-Cookie', setCookie);
+    // Set HttpOnly cookies on the response object
+    if (access_token && refresh_token) {
+      response.cookies.set('accessToken', access_token, AUTH_COOKIE_OPTIONS);
+      response.cookies.set('refreshToken', refresh_token, REFRESH_COOKIE_OPTIONS);
     }
 
     return response;

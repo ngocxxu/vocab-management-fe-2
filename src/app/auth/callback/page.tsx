@@ -51,7 +51,7 @@ function AuthCallbackContent() {
         await response.json();
 
         const redirectTo = searchParams.get('redirect') || '/dashboard';
-        globalThis.location.href = redirectTo;
+        router.push(redirectTo);
       } catch (err) {
         console.error('OAuth callback error:', err);
         setError(err instanceof Error ? err.message : 'Failed to complete OAuth sign in');

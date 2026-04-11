@@ -1,6 +1,6 @@
 import type { LanguageFolderQueryParams, RandomVocabQueryParams, VocabQueryParams, VocabTrainerQueryParams } from './api-config';
 import type { ResponseAPI, TLanguage, TLanguageFolder, TUser } from '@/types';
-import type { TAuthResponse, TOAuthSyncResponse } from '@/types/auth';
+import type { TSessionDto } from '@/types/auth';
 import type {
   TDeleteNotificationResponse,
   TMarkAllAsReadResponse,
@@ -15,9 +15,9 @@ import type { TCreateVocab, TVocab } from '@/types/vocab-list';
 import type { TCreateVocabTrainer, TFormTestVocabTrainerUnion, TVocabTrainer } from '@/types/vocab-trainer';
 import type { TWordTypeResponse } from '@/types/word-type';
 import { ApiError } from 'next/dist/server/api-utils';
-import { cookies } from 'next/headers';
 import { Env } from '@/libs/Env';
 import { logger } from '@/libs/Logger';
+import { getAccessToken, getRefreshToken } from '@/utils/auth-cookies';
 import { handleTokenExpiration } from '@/utils/auth-utils';
 import { API_ENDPOINTS, API_METHODS } from './api-config';
 
@@ -26,13 +26,13 @@ class ServerAPI {
   private isRefreshing: Promise<Response> | null = null; // avoid race condition
 
   private async doFetch(endpoint: string, options: RequestInit): Promise<Response> {
-    const cookieStore = await cookies();
+    const token = await getAccessToken();
 
     const response = await fetch(`${this.baseURL}${endpoint}`, {
       ...options,
       headers: {
         'Content-Type': 'application/json',
-        'Cookie': cookieStore.toString(),
+        ...(token && { Authorization: `Bearer ${token}` }),
         ...options.headers,
       },
     });
@@ -45,7 +45,8 @@ class ServerAPI {
       return response;
     }
 
-    if (!cookieStore.get('refreshToken')?.value) {
+    const refreshToken = await getRefreshToken();
+    if (!refreshToken) {
       return response;
     }
 
@@ -54,15 +55,15 @@ class ServerAPI {
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
-        'Cookie': cookieStore.toString(),
       },
+      body: JSON.stringify({ refreshToken }),
     }).finally(() => {
       this.isRefreshing = null;
     });
 
     const refreshRes = await this.isRefreshing;
     if (!refreshRes.ok) {
-      const errorText = await refreshRes.text();
+      const errorText = await refreshRes.clone().text();
       logger.error('Refresh failed:', {
         status: refreshRes.status,
         statusText: refreshRes.statusText,
@@ -74,15 +75,15 @@ class ServerAPI {
       throw new Error(`Refresh failed - needs login again (${refreshRes.status}: ${refreshRes.statusText})`);
     }
 
-    // Get updated cookies from refresh response
-    const updatedCookieStore = await cookies();
+    // Get updated token from refresh response (cookies were set by refresh route)
+    const newToken = await getAccessToken();
 
-    // Retry request after refresh successfully, with new cookie
+    // Retry request after refresh successfully, with new token
     return fetch(`${this.baseURL}${endpoint}`, {
       ...options,
       headers: {
         'Content-Type': 'application/json',
-        'Cookie': updatedCookieStore.toString(),
+        ...(newToken && { Authorization: `Bearer ${newToken}` }),
         ...options.headers,
       },
     });
@@ -189,11 +190,11 @@ export const serverApi = new ServerAPI();
 export const authApi = {
   signin: (data: { email: string; password: string }) => {
     const config = API_METHODS.auth.signin(data);
-    return serverApi.post<TAuthResponse>(config.endpoint, config.data);
+    return serverApi.post<TSessionDto>(config.endpoint, config.data);
   },
   signup: (data: { email: string; password: string; firstName: string; lastName: string; phone: string; avatar: string; role: string }) => {
     const config = API_METHODS.auth.signup(data);
-    return serverApi.post<TAuthResponse>(config.endpoint, config.data);
+    return serverApi.post<TSessionDto>(config.endpoint, config.data);
   },
   refresh: (data: { refreshToken: string }) => {
     const config = API_METHODS.auth.refresh(data);
@@ -213,7 +214,7 @@ export const authApi = {
   },
   oauthSync: (data: { accessToken: string; refreshToken: string }) => {
     const config = API_METHODS.auth.oauthSync(data);
-    return serverApi.post<TOAuthSyncResponse>(config.endpoint, config.data);
+    return serverApi.post<TSessionDto>(config.endpoint, config.data);
   },
 };
 
@@ -274,14 +275,14 @@ export const vocabApi = {
     const queryString = new URLSearchParams(params).toString();
     const endpoint = `${API_ENDPOINTS.vocabs}/import/csv?${queryString}`;
 
-    const cookieStore = await cookies();
+    const token = await getAccessToken();
     const backendUrl = `${Env.NESTJS_API_URL || 'http://localhost:3002/api/v1'}${endpoint}`;
 
     const response = await fetch(backendUrl, {
       method: 'POST',
       body: formData,
       headers: {
-        Cookie: cookieStore.toString(),
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
     });
 
@@ -296,13 +297,13 @@ export const vocabApi = {
     const queryString = buildQueryString(params);
     const endpoint = `${API_ENDPOINTS.vocabs}/export/csv?${queryString}`;
 
-    const cookieStore = await cookies();
+    const token = await getAccessToken();
     const backendUrl = `${Env.NESTJS_API_URL || 'http://localhost:3002/api/v1'}${endpoint}`;
 
     const response = await fetch(backendUrl, {
       method: 'GET',
       headers: {
-        Cookie: cookieStore.toString(),
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
     });
 

@@ -1,8 +1,6 @@
-import type { TAuthResponse, TRefreshData, TResetPasswordData, TSigninData, TSignupData, TUser } from '@/types/auth';
+import type { TUser } from '@/types/auth';
 import { useEffect, useState } from 'react';
-import { refresh, resetPassword, verifyUser } from '@/actions';
-import { hasAuthToken, signoutClient } from '@/utils/auth-utils';
-import { authApi } from '@/utils/client-api';
+import { verifyUser } from '@/actions';
 
 type AuthData = TUser | { isAuthenticated: boolean } | null;
 
@@ -12,13 +10,19 @@ export const useAuth = () => {
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    // Check cookie instead of calling API verify
-    // If token exists, assume authenticated
-    // If API calls fail with 401/403, axios interceptor will handle redirect
-    const checkAuth = () => {
-      const isAuthenticated = hasAuthToken();
-      setData(isAuthenticated ? { isAuthenticated: true } : null);
-      setIsLoading(false);
+    // Verify user on mount via server action
+    // HttpOnly cookies can't be read from client-side JS,
+    // so we call verifyUser() which reads cookies server-side
+    const checkAuth = async () => {
+      try {
+        const result = await verifyUser();
+        setData(result);
+      } catch (err) {
+        setError(err instanceof Error ? err : new Error(String(err)));
+        setData(null);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     checkAuth();
@@ -32,8 +36,7 @@ export const useAuth = () => {
       setData(result);
     } catch (err) {
       setError(err instanceof Error ? err : new Error(String(err)));
-      const isAuthenticated = hasAuthToken();
-      setData(isAuthenticated ? { isAuthenticated: true } : null);
+      setData(null);
     } finally {
       setIsLoading(false);
     }
@@ -49,23 +52,4 @@ export const useAuth = () => {
     error,
     mutate,
   };
-};
-
-export const authMutations = {
-  signin: async (signinData: TSigninData): Promise<TAuthResponse> => {
-    return await authApi.signin(signinData);
-  },
-  signup: async (signupData: TSignupData): Promise<TAuthResponse> => {
-    return await authApi.signup(signupData);
-  },
-  signout: async (): Promise<{ message: string }> => {
-    await signoutClient();
-    return { message: 'Successfully signed out' };
-  },
-  refresh: async (refreshData: TRefreshData): Promise<{ message: string }> => {
-    return await refresh(refreshData);
-  },
-  resetPassword: async (resetData: TResetPasswordData): Promise<{ message: string }> => {
-    return await resetPassword(resetData);
-  },
 };
