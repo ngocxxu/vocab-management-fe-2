@@ -1,7 +1,7 @@
 'use server';
 
 import type { ResponseAPI } from '@/types';
-import type { TCreateVocab, TVocab } from '@/types/vocab-list';
+import type { TBulkVocabUpdateItem, TCreateVocab, TVocab } from '@/types/vocab-list';
 import type { RandomVocabQueryParams, VocabQueryParams } from '@/utils/api-config';
 import { revalidatePath } from 'next/cache';
 import { vocabApi } from '@/utils/server-api';
@@ -89,6 +89,22 @@ export async function deleteVocabsBulk(ids: string[]): Promise<{ success: boolea
     return { success: true };
   } catch (error) {
     throw toActionError(error, 'Failed to delete vocabularies');
+  }
+}
+
+export async function bulkUpdateVocabs(updates: TBulkVocabUpdateItem[]): Promise<TVocab[]> {
+  await requireAuth();
+  if (!Array.isArray(updates) || updates.length === 0) {
+    throw new Error('Updates array is required and must not be empty');
+  }
+
+  try {
+    const result = await vocabApi.updateBulk(updates);
+    revalidatePath('/vocab-list');
+    revalidatePath('/subjects/conflict-vocabularies');
+    return result;
+  } catch (error) {
+    throw toActionError(error, 'Failed to update vocabularies');
   }
 }
 

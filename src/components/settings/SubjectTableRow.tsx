@@ -38,7 +38,7 @@ export const SubjectTableRow: React.FC<SubjectTableRowProps> = ({ subject, index
           className="inline-flex cursor-grab touch-none rounded p-1 text-muted-foreground hover:bg-accent hover:text-foreground active:cursor-grabbing"
           aria-label="Drag to reorder"
         >
-          <Reorder size={20} weight="BoldDuotone" />
+          <Reorder size={20} />
         </div>
       </td>
       <td className="px-3 py-3 sm:px-6 sm:py-4">

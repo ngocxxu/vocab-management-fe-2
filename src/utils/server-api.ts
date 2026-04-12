@@ -12,7 +12,7 @@ import type {
 } from '@/types/notification';
 import type { TSubjectResponse } from '@/types/subject';
 import type { TVocabConflictListResponse } from '@/types/vocab-conflict';
-import type { TCreateVocab, TVocab } from '@/types/vocab-list';
+import type { TBulkVocabUpdateItem, TCreateVocab, TVocab } from '@/types/vocab-list';
 import type { TCreateVocabTrainer, TFormTestVocabTrainerUnion, TVocabTrainer } from '@/types/vocab-trainer';
 import type { TWordTypeResponse } from '@/types/word-type';
 import { Env } from '@/libs/Env';
@@ -268,6 +268,13 @@ export const vocabApi = {
     }
     const config = API_METHODS.vocabs.createBulk(vocabData);
     return serverApi.post<{ created: number; failed: number }>(config.endpoint, config.data);
+  },
+  updateBulk: (updates: TBulkVocabUpdateItem[]) => {
+    if (!Array.isArray(updates) || updates.length === 0) {
+      throw new Error('Updates array is required and must not be empty');
+    }
+    const config = API_METHODS.vocabs.updateBulk(updates);
+    return serverApi.post<TVocab[]>(config.endpoint, config.data);
   },
   deleteBulk: (ids: string[]) => {
     const config = API_METHODS.vocabs.deleteBulk(ids);

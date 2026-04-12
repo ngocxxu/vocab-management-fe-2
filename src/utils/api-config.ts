@@ -4,7 +4,7 @@ import type {
   TNotificationInput,
   TUpdateNotificationStatusInput,
 } from '@/types/notification';
-import type { TCreateVocab } from '@/types/vocab-list';
+import type { TBulkVocabUpdateItem, TCreateVocab } from '@/types/vocab-list';
 import type {
   TCreateVocabTrainer,
   TFormTestVocabTrainerUnion,
@@ -122,6 +122,10 @@ export const API_METHODS = {
     delete: (id: string) => ({ endpoint: `${API_ENDPOINTS.vocabs}/${id}` }),
     generateTextTarget: (data: { textSource: string; sourceLanguageCode: string; targetLanguageCode: string }) => ({ endpoint: `${API_ENDPOINTS.vocabs}/generate/text-target`, data }),
     createBulk: (vocabData: TCreateVocab[]) => ({ endpoint: `${API_ENDPOINTS.vocabs}/bulk/create`, data: { vocabData } }),
+    updateBulk: (updates: TBulkVocabUpdateItem[]) => ({
+      endpoint: `${API_ENDPOINTS.vocabs}/bulk/update`,
+      data: { updates },
+    }),
     deleteBulk: (ids: string[]) => ({ endpoint: `${API_ENDPOINTS.vocabs}/bulk/delete`, data: { ids } }),
     importCsv: (params: { languageFolderId: string; sourceLanguageCode: string; targetLanguageCode: string }) => {
       const queryString = buildQueryString(params);

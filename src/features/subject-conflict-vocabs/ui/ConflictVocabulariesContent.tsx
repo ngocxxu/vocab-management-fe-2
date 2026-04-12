@@ -4,12 +4,13 @@ import type { ColumnDef, RowSelectionState } from '@tanstack/react-table';
 import type { TSubjectResponse } from '@/types/subject';
 import type { TVocab } from '@/types/vocab-list';
 import type { TVocabConflictListResponse } from '@/types/vocab-conflict';
-import { AltArrowLeft, DangerTriangle, Filter } from '@solar-icons/react/ssr';
+import { AltArrowLeft, CloseCircle, DangerTriangle, Filter, InfoCircle } from '@solar-icons/react/ssr';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useCallback, useMemo, useState, useTransition } from 'react';
 import { toast } from 'sonner';
-import { deleteVocab, deleteVocabsBulk, getVocabsByIds, updateVocab } from '@/actions/vocabs';
+import { bulkUpdateVocabs, deleteVocab, deleteVocabsBulk, getVocabsByIds, updateVocab } from '@/actions/vocabs';
+import { cn } from '@/libs/utils';
 import { buildVocabUpdateForSubjectReassign } from '@/utils/build-vocab-reassign-update';
 import {
   Breadcrumb,
@@ -30,6 +31,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -41,6 +43,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { MultiSelect } from '@/shared/ui/multi-select';
+import { RowReassignSubjectsPopover } from './RowReassignSubjectsPopover';
+
+const PREVIEW_PAGE_SIZE = 10;
 
 function formatConflictDate(iso?: string): string {
   if (!iso) {
@@ -77,7 +83,9 @@ export default function ConflictVocabulariesContent({
   const [, startTransition] = useTransition();
   const [reassignOpen, setReassignOpen] = useState(false);
   const [reassignIds, setReassignIds] = useState<string[]>([]);
-  const [bulkTargetSubjectId, setBulkTargetSubjectId] = useState('');
+  const [bulkTargetSubjectIds, setBulkTargetSubjectIds] = useState<string[]>([]);
+  const [previewVisibleCount, setPreviewVisibleCount] = useState(PREVIEW_PAGE_SIZE);
+  const [subjectMultiSelectKey, setSubjectMultiSelectKey] = useState(0);
   const [rowBusyId, setRowBusyId] = useState<string | null>(null);
   const reassignClearSelectionRef = React.useRef<React.Dispatch<React.SetStateAction<RowSelectionState>> | null>(null);
 
@@ -99,6 +107,19 @@ export default function ConflictVocabulariesContent({
   const data = useMemo(() => initialConflictData?.items ?? [], [initialConflictData]);
   const totalPages = Math.max(1, initialConflictData?.totalPages ?? 1);
   const totalItems = initialConflictData?.totalItems ?? 0;
+
+  const textSourceById = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const row of data) {
+      m.set(row.id, row.textSource);
+    }
+    return m;
+  }, [data]);
+
+  const subjectMultiSelectOptions = useMemo(
+    () => reassignOptions.map(s => ({ value: s.id, label: s.name })),
+    [reassignOptions],
+  );
 
   const updateQuery = useCallback(
     (updates: Record<string, string | undefined>) => {
@@ -148,15 +169,36 @@ export default function ConflictVocabulariesContent({
     (ids: string[], emptyRowSelection: React.Dispatch<React.SetStateAction<RowSelectionState>>) => {
       reassignClearSelectionRef.current = emptyRowSelection;
       setReassignIds(ids);
-      setBulkTargetSubjectId('');
+      setBulkTargetSubjectIds([]);
+      setPreviewVisibleCount(PREVIEW_PAGE_SIZE);
+      setSubjectMultiSelectKey(k => k + 1);
       setReassignOpen(true);
     },
     [],
   );
 
+  const removeReassignId = useCallback((id: string) => {
+    reassignClearSelectionRef.current?.((prev) => {
+      const next = { ...prev };
+      delete next[id];
+      return next;
+    });
+    setReassignIds((prev) => {
+      const next = prev.filter(x => x !== id);
+      setPreviewVisibleCount(v => (next.length === 0 ? PREVIEW_PAGE_SIZE : Math.min(v, next.length)));
+      if (next.length === 0) {
+        reassignClearSelectionRef.current?.({});
+        reassignClearSelectionRef.current = null;
+        setReassignOpen(false);
+        setBulkTargetSubjectIds([]);
+      }
+      return next;
+    });
+  }, []);
+
   const confirmBulkReassign = async () => {
-    if (!bulkTargetSubjectId) {
-      toast.error('Select a subject to reassign to.');
+    if (bulkTargetSubjectIds.length === 0) {
+      toast.error('Select at least one subject to reassign to.');
       return;
     }
     const fetched = await getVocabsByIds(reassignIds);
@@ -169,40 +211,43 @@ export default function ConflictVocabulariesContent({
       toast.error('Could not load selected vocabularies.');
       return;
     }
-    const results = await Promise.allSettled(
-      vocabs.map(v =>
-        updateVocab(v.id, buildVocabUpdateForSubjectReassign(v, subjectId, bulkTargetSubjectId)),
-      ),
-    );
-    const failed = results.filter(r => r.status === 'rejected').length;
-    if (failed > 0) {
-      toast.error(`${failed} of ${vocabs.length} failed to update.`);
-    } else {
+    try {
+      const updates = vocabs.map(v => ({
+        id: v.id,
+        data: buildVocabUpdateForSubjectReassign(v, subjectId, bulkTargetSubjectIds),
+      }));
+      await bulkUpdateVocabs(updates);
       toast.success('Vocabularies reassigned successfully.');
+      reassignClearSelectionRef.current?.({});
+      reassignClearSelectionRef.current = null;
+      setReassignOpen(false);
+      setReassignIds([]);
+      setBulkTargetSubjectIds([]);
+      startTransition(() => router.refresh());
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Failed to reassign vocabularies.');
     }
-    reassignClearSelectionRef.current?.({});
-    reassignClearSelectionRef.current = null;
-    setReassignOpen(false);
-    setReassignIds([]);
-    setBulkTargetSubjectId('');
-    startTransition(() => router.refresh());
   };
 
   const handleRowReassign = useCallback(
-    async (vocab: TVocab, newSubjectId: string) => {
-      if (!newSubjectId || newSubjectId === subjectId) {
-        return;
+    async (vocab: TVocab, newSubjectIds: string[]): Promise<boolean> => {
+      const ids = newSubjectIds.filter(id => id !== subjectId);
+      if (ids.length === 0) {
+        toast.error('Select at least one subject.');
+        return false;
       }
       setRowBusyId(vocab.id);
       try {
         await updateVocab(
           vocab.id,
-          buildVocabUpdateForSubjectReassign(vocab, subjectId, newSubjectId),
+          buildVocabUpdateForSubjectReassign(vocab, subjectId, ids),
         );
         toast.success('Vocabulary reassigned.');
         startTransition(() => router.refresh());
+        return true;
       } catch (e) {
         toast.error(e instanceof Error ? e.message : 'Failed to reassign.');
+        return false;
       } finally {
         setRowBusyId(null);
       }
@@ -286,23 +331,20 @@ export default function ConflictVocabulariesContent({
         id: 'reassign',
         header: 'Reassign to new subject',
         cell: ({ row }) => (
-          <div data-no-expand role="button" tabIndex={0} onClick={e => e.stopPropagation()} onKeyDown={e => e.key === 'Enter' && e.preventDefault()}>
-            <Select
-              key={row.original.id}
-              disabled={rowBusyId === row.original.id || reassignOptions.length === 0}
-              onValueChange={v => void handleRowReassign(row.original, v)}
-            >
-              <SelectTrigger size="sm" className="h-8 w-[min(100%,220px)]" aria-label="Reassign subject">
-                <SelectValue placeholder="Select subject..." />
-              </SelectTrigger>
-              <SelectContent>
-                {reassignOptions.map(s => (
-                  <SelectItem key={s.id} value={s.id}>
-                    {s.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div
+            data-no-expand
+            role="presentation"
+            onClick={e => e.stopPropagation()}
+            onKeyDown={e => e.stopPropagation()}
+          >
+            <RowReassignSubjectsPopover
+              key={`${row.original.id}-${row.original.updatedAt ?? row.original.createdAt ?? ''}`}
+              vocab={row.original}
+              options={reassignOptions}
+              disabled={reassignOptions.length === 0}
+              applying={rowBusyId === row.original.id}
+              onApply={(v, ids) => handleRowReassign(v, ids)}
+            />
           </div>
         ),
         enableSorting: false,
@@ -472,41 +514,113 @@ export default function ConflictVocabulariesContent({
                 setReassignOpen(open);
                 if (!open) {
                   reassignClearSelectionRef.current = null;
+                  setBulkTargetSubjectIds([]);
+                  setPreviewVisibleCount(PREVIEW_PAGE_SIZE);
                 }
               }}
             >
-              <DialogContent className="sm:max-w-md">
+              <DialogContent className="max-h-[min(90vh,720px)] overflow-y-auto sm:max-w-lg">
                 <DialogHeader>
-                  <DialogTitle>Bulk reassign</DialogTitle>
+                  <DialogTitle>Bulk Reassign Subject</DialogTitle>
+                  <DialogDescription>
+                    Select new subjects for the
+                    {' '}
+                    {reassignIds.length}
+                    {' '}
+                    selected vocabularies. The conflicting subject will be removed and the chosen subjects added on all text targets.
+                  </DialogDescription>
                 </DialogHeader>
-                <p className="text-sm text-muted-foreground">
-                  Choose a subject for
-                  {' '}
-                  {reassignIds.length}
-                  {' '}
-                  selected vocabularies. The conflicting subject will be replaced for all text targets.
-                </p>
-                <div className="space-y-2 py-2">
-                  <Label>New subject</Label>
-                  <Select value={bulkTargetSubjectId} onValueChange={setBulkTargetSubjectId}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select subject..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {reassignOptions.map(s => (
-                        <SelectItem key={s.id} value={s.id}>
-                          {s.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+
+                <div className="space-y-4 py-1">
+                  <div className="space-y-2">
+                    <Label className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                      Target subjects
+                    </Label>
+                    <MultiSelect
+                      key={subjectMultiSelectKey}
+                      options={subjectMultiSelectOptions}
+                      defaultValue={[]}
+                      onValueChange={setBulkTargetSubjectIds}
+                      placeholder="Choose subjects..."
+                      maxCount={5}
+                      className="w-full"
+                      resetOnDefaultValueChange
+                    />
+                  </div>
+
+                  <div className="rounded-lg border border-border bg-muted/30 p-4">
+                    <div className="mb-3 flex items-center justify-between gap-2">
+                      <span className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                        Selected items preview
+                      </span>
+                      <span className="inline-flex items-center rounded-full bg-primary/15 px-2.5 py-0.5 text-xs font-medium text-primary">
+                        {reassignIds.length}
+                        {' '}
+                        total
+                      </span>
+                    </div>
+                    {reassignIds.length === 0
+                      ? (
+                          <p className="text-sm text-muted-foreground">No items selected.</p>
+                        )
+                      : (
+                          <div className="flex flex-wrap gap-2">
+                            {reassignIds.slice(0, previewVisibleCount).map(id => (
+                              <span
+                                key={id}
+                                className={cn(
+                                  'inline-flex items-center gap-2 rounded-full bg-primary/15 px-3 py-1 text-sm font-medium text-primary',
+                                  !textSourceById.get(id) && 'opacity-70',
+                                )}
+                              >
+                                <span className="max-w-[220px] truncate">{textSourceById.get(id) ?? '…'}</span>
+                                <button
+                                  type="button"
+                                  className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-primary transition-colors hover:bg-primary/15"
+                                  onClick={() => removeReassignId(id)}
+                                  aria-label={textSourceById.get(id) ? `Remove ${textSourceById.get(id)}` : 'Remove selected vocabulary'}
+                                >
+                                  <CloseCircle size={14} weight="BoldDuotone" />
+                                </button>
+                              </span>
+                            ))}
+                            {reassignIds.length > previewVisibleCount && (
+                              <button
+                                type="button"
+                                className="inline-flex items-center rounded-full bg-muted px-3 py-1 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/80"
+                                onClick={() =>
+                                  setPreviewVisibleCount(c => c + PREVIEW_PAGE_SIZE)}
+                                aria-label={`Show ${Math.min(PREVIEW_PAGE_SIZE, reassignIds.length - previewVisibleCount)} more selected items`}
+                              >
+                                +
+                                {reassignIds.length - previewVisibleCount}
+                                {' '}
+                                more
+                              </button>
+                            )}
+                          </div>
+                        )}
+                  </div>
+
+                  <Alert className="text-warning-950 dark:text-warning-100 [&>svg]:text-warning-700 dark:[&>svg]:text-warning-300 border-warning/40 bg-warning/10 dark:border-warning/30 dark:bg-warning/10">
+                    <InfoCircle className="size-4" />
+                    <AlertTitle>Note</AlertTitle>
+                    <AlertDescription>
+                      Reassigning these vocabularies resolves subject-related conflicts for this deletion flow. Changes are persisted on the server.
+                    </AlertDescription>
+                  </Alert>
                 </div>
+
                 <DialogFooter className="gap-2 sm:gap-0">
                   <Button type="button" variant="outline" onClick={() => setReassignOpen(false)}>
                     Cancel
                   </Button>
-                  <Button type="button" onClick={() => void confirmBulkReassign()}>
-                    Apply
+                  <Button
+                    type="button"
+                    disabled={reassignIds.length === 0 || bulkTargetSubjectIds.length === 0}
+                    onClick={() => void confirmBulkReassign()}
+                  >
+                    Confirm reassign
                   </Button>
                 </DialogFooter>
               </DialogContent>

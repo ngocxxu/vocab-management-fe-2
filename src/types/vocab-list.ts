@@ -45,6 +45,11 @@ export type TCreateVocab = {
   ];
 };
 
+export type TBulkVocabUpdateItem = {
+  id: string;
+  data: Partial<TCreateVocab>;
+};
+
 export type TCsvImportResponse = {
   created: number;
   updated: number;
