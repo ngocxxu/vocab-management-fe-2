@@ -39,6 +39,7 @@ export async function updateVocab(id: string, vocabData: Partial<TCreateVocab>) 
   try {
     const result = await vocabApi.update(id, vocabData);
     revalidatePath('/vocab-list');
+    revalidatePath('/subjects/conflict-vocabularies');
     return result;
   } catch (error) {
     throw toActionError(error, 'Failed to update vocabulary');
@@ -54,6 +55,7 @@ export async function deleteVocab(id: string): Promise<void> {
   try {
     await vocabApi.delete(id);
     revalidatePath('/vocab-list');
+    revalidatePath('/subjects/conflict-vocabularies');
   } catch (error) {
     throw toActionError(error, 'Failed to delete vocabulary');
   }
@@ -83,6 +85,7 @@ export async function deleteVocabsBulk(ids: string[]): Promise<{ success: boolea
   try {
     await vocabApi.deleteBulk(ids);
     revalidatePath('/vocab-list');
+    revalidatePath('/subjects/conflict-vocabularies');
     return { success: true };
   } catch (error) {
     throw toActionError(error, 'Failed to delete vocabularies');

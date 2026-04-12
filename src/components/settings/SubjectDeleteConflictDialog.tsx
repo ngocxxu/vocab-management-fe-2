@@ -29,7 +29,7 @@ export function SubjectDeleteConflictDialog({
 
   const handleViewVocabularies = () => {
     onOpenChange(false);
-    router.push(`/vocab-list?subjectIds=${encodeURIComponent(subjectId)}`);
+    router.push(`/subjects/conflict-vocabularies?subjectId=${encodeURIComponent(subjectId)}`);
   };
 
   const countLabel = vocabularyCount !== undefined
@@ -41,13 +41,13 @@ export function SubjectDeleteConflictDialog({
       <DialogContent showCloseButton={false} className="max-w-md gap-6 rounded-xl sm:max-w-md">
         <div className="flex flex-col items-center text-center">
           <div
-            className="mb-4 flex size-14 items-center justify-center rounded-full bg-primary/10 dark:bg-primary/90"
+            className="mb-4 flex size-14 items-center justify-center rounded-full bg-destructive/10 dark:bg-destructive/90"
             aria-hidden
           >
             <DangerTriangle
               size={32}
               weight="BoldDuotone"
-              className="text-primary dark:text-primary"
+              className="text-destructive dark:text-destructive"
             />
           </div>
           <DialogHeader className="items-center space-y-2 text-center sm:text-center">

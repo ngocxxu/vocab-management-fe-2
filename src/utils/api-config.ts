@@ -24,6 +24,15 @@ export type VocabQueryParams = {
   languageFolderId?: string;
 };
 
+export type VocabConflictBySubjectParams = {
+  subjectId: string;
+  page?: number;
+  pageSize?: number;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+  textSource?: string;
+};
+
 export type RandomVocabQueryParams = {
   count: number;
   languageFolderId?: string;
@@ -138,6 +147,10 @@ export const API_METHODS = {
     random: (params: RandomVocabQueryParams) => {
       const queryString = buildQueryString(params);
       return { endpoint: `${API_ENDPOINTS.vocabs}/random?${queryString}` };
+    },
+    conflictBySubject: (params: VocabConflictBySubjectParams) => {
+      const queryString = buildQueryString(params);
+      return { endpoint: `${API_ENDPOINTS.vocabs}/conflict/by-subject?${queryString}` };
     },
   },
   vocabTrainers: {

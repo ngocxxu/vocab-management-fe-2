@@ -87,7 +87,7 @@ const ExpandedRowContent: React.FC<ExpandedRowContentProps> = ({
                   <div className="mb-3 flex flex-wrap gap-1.5">
                     {target.wordType?.name && (
                       <span className="rounded-md bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-                        {target.wordType.name.toUpperCase()}
+                        {target.wordType?.name?.toUpperCase()}
                       </span>
                     )}
                   </div>

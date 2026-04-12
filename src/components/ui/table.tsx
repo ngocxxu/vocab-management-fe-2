@@ -23,6 +23,7 @@ import {
   AltArrowLeft,
   AltArrowRight,
   AltArrowUp,
+  RefreshCircle,
   SortVertical,
   TrashBin2,
 } from '@solar-icons/react/ssr';
@@ -51,6 +52,9 @@ type DataTableProps<TData extends { id: string }, TValue> = {
   onExpandedChange?: (expanded: Record<string, boolean>) => void;
   onRowClick?: (row: TData) => void;
   onBulkDelete?: (ids: string[], emptyRowSelection: React.Dispatch<React.SetStateAction<RowSelectionState>>) => void;
+  onBulkReassign?: (ids: string[], emptyRowSelection: React.Dispatch<React.SetStateAction<RowSelectionState>>) => void;
+  splitToolbar?: boolean;
+  filterTrigger?: React.ReactNode;
   // Server-side pagination & sorting
   manualPagination?: boolean;
   manualSorting?: boolean;
@@ -83,6 +87,9 @@ export function DataTable<TData extends { id: string }, TValue>({
   onExpandedChange,
   onRowClick,
   onBulkDelete,
+  onBulkReassign,
+  splitToolbar = false,
+  filterTrigger,
   // Server-side props
   manualPagination = false,
   manualSorting = false,
@@ -100,6 +107,10 @@ export function DataTable<TData extends { id: string }, TValue>({
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [globalFilter, setGlobalFilter] = useState(searchValue);
+
+  React.useEffect(() => {
+    setGlobalFilter(searchValue);
+  }, [searchValue]);
 
   const memoizedColumns = useMemo(() => columns, [columns]);
 
@@ -176,7 +187,55 @@ export function DataTable<TData extends { id: string }, TValue>({
   return (
     <div className={`space-y-4 ${className}`}>
       {/* Search Input */}
-      {showSearch && (
+      {showSearch && splitToolbar && (
+        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
+            {filterTrigger}
+            <input
+              placeholder={searchPlaceholder}
+              value={globalFilter ?? ''}
+              onChange={event => table.setGlobalFilter(event.target.value)}
+              className="min-w-0 flex-1 rounded-lg border border-input bg-background/80 px-4 py-2 text-foreground backdrop-blur-sm placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20 focus:outline-none sm:w-64 sm:max-w-xs sm:flex-none"
+            />
+          </div>
+          {selectedRowCount > 0 && (onBulkDelete || onBulkReassign) && (
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                {selectedRowCount}
+                {' '}
+                selected
+              </span>
+              {onBulkReassign && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-primary/40 text-primary"
+                  onClick={() => {
+                    onBulkReassign(selectedIds, setRowSelection);
+                  }}
+                >
+                  <RefreshCircle size={16} weight="BoldDuotone" className="mr-1.5" />
+                  Bulk reassign
+                </Button>
+              )}
+              {onBulkDelete && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-destructive/60 text-destructive hover:bg-destructive/10"
+                  onClick={() => {
+                    onBulkDelete(selectedIds, setRowSelection);
+                  }}
+                >
+                  <TrashBin2 size={16} weight="BoldDuotone" className="mr-1.5" />
+                  Bulk delete
+                </Button>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+      {showSearch && !splitToolbar && (
         <div className="flex items-center justify-between">
           {onBulkDelete && selectedRowCount > 0 && (
             <Button

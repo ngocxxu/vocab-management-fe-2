@@ -1,4 +1,4 @@
-import type { LanguageFolderQueryParams, RandomVocabQueryParams, VocabQueryParams, VocabTrainerQueryParams } from './api-config';
+import type { LanguageFolderQueryParams, RandomVocabQueryParams, VocabConflictBySubjectParams, VocabQueryParams, VocabTrainerQueryParams } from './api-config';
 import type { ResponseAPI, TLanguage, TLanguageFolder, TUser } from '@/types';
 import type { TSessionDto } from '@/types/auth';
 import type {
@@ -11,6 +11,7 @@ import type {
   TUpdateNotificationStatusInput,
 } from '@/types/notification';
 import type { TSubjectResponse } from '@/types/subject';
+import type { TVocabConflictListResponse } from '@/types/vocab-conflict';
 import type { TCreateVocab, TVocab } from '@/types/vocab-list';
 import type { TCreateVocabTrainer, TFormTestVocabTrainerUnion, TVocabTrainer } from '@/types/vocab-trainer';
 import type { TWordTypeResponse } from '@/types/word-type';
@@ -223,6 +224,10 @@ export const vocabApi = {
   getAll: (params?: VocabQueryParams) => {
     const config = API_METHODS.vocabs.getAll(params);
     return serverApi.get<ResponseAPI<TVocab[]>>(config.endpoint);
+  },
+  getConflictBySubject: (params: VocabConflictBySubjectParams) => {
+    const config = API_METHODS.vocabs.conflictBySubject(params);
+    return serverApi.get<TVocabConflictListResponse>(config.endpoint);
   },
   random: (params: RandomVocabQueryParams) => {
     const config = API_METHODS.vocabs.random(params);
