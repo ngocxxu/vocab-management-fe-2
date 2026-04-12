@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 import React, { useMemo, useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { createSubject, deleteSubject, reorderSubjects, updateSubject } from '@/actions/subjects';
+import { SubjectDeleteConflictDialog } from '@/components/settings/SubjectDeleteConflictDialog';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -27,6 +28,11 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingSubject, setEditingSubject] = useState<TSubject | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [conflictDialog, setConflictDialog] = useState<{
+    open: boolean;
+    subjectId: string;
+    vocabularyCount?: number;
+  }>({ open: false, subjectId: '' });
   const [page, setPage] = useState(1);
   const router = useRouter();
   const [, startTransition] = useTransition();
@@ -93,7 +99,15 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
 
   const handleDelete = async (id: string) => {
     try {
-      await deleteSubject(id);
+      const result = await deleteSubject(id);
+      if (!result.ok && result.code === 'CONFLICT') {
+        setConflictDialog({
+          open: true,
+          subjectId: id,
+          vocabularyCount: result.vocabularyCount,
+        });
+        return;
+      }
       toast.success('Subject deleted successfully');
       startTransition(() => router.refresh());
     } catch (error) {
@@ -298,6 +312,13 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
           />
         </DialogContent>
       </Dialog>
+
+      <SubjectDeleteConflictDialog
+        open={conflictDialog.open}
+        onOpenChange={open => setConflictDialog(prev => ({ ...prev, open }))}
+        subjectId={conflictDialog.subjectId}
+        vocabularyCount={conflictDialog.vocabularyCount}
+      />
     </SettingsPageShell>
   );
 };

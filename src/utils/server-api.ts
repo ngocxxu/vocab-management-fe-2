@@ -14,8 +14,8 @@ import type { TSubjectResponse } from '@/types/subject';
 import type { TCreateVocab, TVocab } from '@/types/vocab-list';
 import type { TCreateVocabTrainer, TFormTestVocabTrainerUnion, TVocabTrainer } from '@/types/vocab-trainer';
 import type { TWordTypeResponse } from '@/types/word-type';
-import { ApiError } from 'next/dist/server/api-utils';
 import { Env } from '@/libs/Env';
+import { BackendRequestError } from '@/utils/backend-request-error';
 import { logger } from '@/libs/Logger';
 import { getAccessToken, getRefreshToken } from '@/utils/auth-cookies';
 import { handleTokenExpiration } from '@/utils/auth-utils';
@@ -119,7 +119,7 @@ class ServerAPI {
     }
 
     if (!response.ok) {
-      const error = new ApiError(response.status, response.statusText);
+      const error = new BackendRequestError(response.statusText, response.status, data);
 
       if (response.status === 401) {
         logger.debug(`[API] ${options.method || 'GET'} ${endpoint}: unauthenticated`);

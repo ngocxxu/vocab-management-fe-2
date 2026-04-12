@@ -1,9 +1,16 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { isStandardErrorBody } from '@/types/api-error';
+import { BackendRequestError } from '@/utils/backend-request-error';
+import { parseVocabularyCountFromConflictMessage } from '@/utils/parse-vocabulary-conflict-count';
 import { subjectsApi } from '@/utils/server-api';
 import { requireAuth } from './auth';
 import { toActionError } from './utils';
+
+export type DeleteSubjectResult
+  = | { ok: true }
+    | { ok: false; code: 'CONFLICT'; vocabularyCount?: number };
 
 export async function createSubject(subjectData: { name: string }) {
   await requireAuth();
@@ -29,14 +36,21 @@ export async function updateSubject(id: string, subjectData: { name: string; ord
   }
 }
 
-export async function deleteSubject(id: string) {
+export async function deleteSubject(id: string): Promise<DeleteSubjectResult> {
   await requireAuth();
   try {
-    const result = await subjectsApi.delete(id);
+    await subjectsApi.delete(id);
     revalidatePath('/subjects');
     revalidatePath('/vocab-list');
-    return result;
+    return { ok: true };
   } catch (error) {
+    if (error instanceof BackendRequestError && error.statusCode === 409) {
+      let vocabularyCount: number | undefined;
+      if (isStandardErrorBody(error.body)) {
+        vocabularyCount = parseVocabularyCountFromConflictMessage(error.body.message);
+      }
+      return { ok: false, code: 'CONFLICT', vocabularyCount };
+    }
     throw toActionError(error, 'Failed to delete subject');
   }
 }
