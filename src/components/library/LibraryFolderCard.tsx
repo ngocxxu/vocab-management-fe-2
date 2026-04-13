@@ -23,7 +23,12 @@ import { Folder, MenuDots, NotebookMinimalistic, Pen, TrashBin2 } from '@solar-i
 import React, { useCallback, useState } from 'react';
 import { formatEditedAgo } from './utils';
 
-const MASTERY_PERCENT = 0;
+function clampInt(value: number, min: number, max: number): number {
+  if (Number.isNaN(value)) {
+    return min;
+  }
+  return Math.min(max, Math.max(min, Math.round(value)));
+}
 
 function masteryTextClass(percent: number): string {
   if (percent >= 67) {
@@ -76,8 +81,14 @@ const LibraryFolderCard: React.FC<LibraryFolderCardProps> = ({
     setShowDeleteDialog(false);
   }, [folder.id, onDelete]);
 
-  const textClass = masteryTextClass(MASTERY_PERCENT);
-  const fillClass = masteryFillClass(MASTERY_PERCENT);
+  const vocabCount = folder.vocabCount ?? 0;
+  const wordsLabel = `${vocabCount} word${vocabCount === 1 ? '' : 's'}`;
+
+  const masteryScore = folder.averageMastery ?? 0;
+  const masteryPercent = clampInt(masteryScore * 10, 0, 100);
+
+  const textClass = masteryTextClass(masteryPercent);
+  const fillClass = masteryFillClass(masteryPercent);
 
   const sourceName
     = languageNameByCode?.[folder.sourceLanguageCode.toLowerCase()]
@@ -153,7 +164,7 @@ const LibraryFolderCard: React.FC<LibraryFolderCardProps> = ({
         <div className="mt-4 flex items-center gap-1 text-base font-normal text-muted-foreground">
           <span className="flex items-center gap-1.5">
             <NotebookMinimalistic size={16} weight="BoldDuotone" className="shrink-0 text-muted-foreground" />
-            0 words
+            {wordsLabel}
           </span>
           <span className="mx-1.5 h-1 w-1 rounded-full bg-muted-foreground/30"></span>
           <span className="text-xs font-medium">
@@ -171,14 +182,14 @@ const LibraryFolderCard: React.FC<LibraryFolderCardProps> = ({
               Mastery
             </span>
             <span className={cn('text-base font-semibold', textClass)}>
-              {MASTERY_PERCENT}
+              {masteryPercent}
               %
             </span>
           </div>
           <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
             <div
               className={cn('h-full rounded-full transition-all', fillClass)}
-              style={{ width: `${MASTERY_PERCENT}%` }}
+              style={{ width: `${masteryPercent}%` }}
             />
           </div>
         </div>

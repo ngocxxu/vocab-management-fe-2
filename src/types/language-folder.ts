@@ -6,6 +6,8 @@ export type TLanguageFolder = {
   targetLanguageCode: string;
   createdAt?: string;
   updatedAt?: string;
+  vocabCount?: number;
+  averageMastery?: number | null;
 };
 
 export type TCreateLanguageFolder = {
