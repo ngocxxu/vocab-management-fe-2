@@ -23,7 +23,7 @@ import { DataTable } from '@/components/ui/table';
 import { useApiPagination, useLocalPagination, useVocabSelection } from '@/hooks';
 import { getRandomVocabsForSelection } from '@/actions';
 import { cn } from '@/libs/utils';
-import { getMasteryLevel } from '@/utils/vocab-mastery';
+import { getMasteryColors, getMasteryDisplay, getMasteryStatus } from '@/utils/vocab-mastery';
 
 const EMPTY_CACHED_FOLDERS: TVocabSelectionFolderArray = [];
 
@@ -183,15 +183,11 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
       id: 'status',
       header: 'Status',
       cell: ({ row }) => {
-        const status = getMasteryLevel(row.original.masteryScore);
-        const statusClass = {
-          New: 'bg-muted text-muted-foreground',
-          Learning: 'bg-warning/20 text-warning-foreground',
-          Mastered: 'bg-success/15 text-success',
-          Difficult: 'bg-destructive/15 text-destructive',
-        }[status];
+        const status = getMasteryStatus(row.original.masteryScore);
+        const { kind } = getMasteryDisplay(row.original.masteryScore);
+        const colors = getMasteryColors(kind);
         return (
-          <span className={cn('inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium', statusClass)}>
+          <span className={cn('inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium', colors.pill)}>
             {status}
           </span>
         );

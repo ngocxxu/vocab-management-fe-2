@@ -7,7 +7,7 @@ import { getVocabsForSelection } from '@/actions';
 import { getMyLanguageFoldersForSelection } from '@/actions/language-folders';
 import { logger } from '@/libs/Logger';
 import { isSameLocalDay } from '@/utils/date';
-import { getMasteryLevel } from '@/utils/vocab-mastery';
+import { getMasteryStatus } from '@/utils/vocab-mastery';
 
 const QUICK_FILTER_PAGE_SIZE = 1000;
 const QUICK_FILTER_MAX_ITEMS = 20_000;
@@ -79,10 +79,10 @@ export const useVocabSelection = ({
       return vocabs.filter(v => isToday(v.createdAt));
     }
     if (quickFilter === 'difficult') {
-      return vocabs.filter(v => getMasteryLevel(v.masteryScore) === 'Difficult');
+      return vocabs.filter(v => getMasteryStatus(v.masteryScore) === 'Beginner');
     }
     if (quickFilter === 'unlearned') {
-      return vocabs.filter(v => getMasteryLevel(v.masteryScore) === 'New');
+      return vocabs.filter(v => getMasteryStatus(v.masteryScore) === 'Unstarted');
     }
     return vocabs;
   }, [isQuickFilterActive, quickFilter, vocabs]);

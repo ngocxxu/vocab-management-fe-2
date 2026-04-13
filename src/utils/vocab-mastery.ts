@@ -1,29 +1,49 @@
-export type MasteryLevel = 'New' | 'Difficult' | 'Learning' | 'Mastered';
+export type MasteryStatus = 'Unstarted' | 'Beginner' | 'Learning' | 'Mastered';
 
 export type MasteryDisplayKind = 'unstarted' | 'beginner' | 'learning' | 'mastered';
 
-export function getMasteryLevel(score?: number): MasteryLevel {
-  if (score == null || score === 0) {
-    return 'New';
+const MAX_MASTERY_SCORE = 10;
+
+function clampMasteryScore(score: number | undefined): number {
+  if (typeof score !== 'number' || Number.isNaN(score)) {
+    return 0;
   }
-  if (score < 50) {
-    return 'Difficult';
+  return Math.min(MAX_MASTERY_SCORE, Math.max(0, score));
+}
+
+export function getMasteryStatus(score?: number): MasteryStatus {
+  const s = clampMasteryScore(score);
+  if (s === 0) {
+    return 'Unstarted';
   }
-  if (score < 80) {
+  if (s < 4) {
+    return 'Beginner';
+  }
+  if (s < 8) {
     return 'Learning';
   }
   return 'Mastered';
 }
 
-export function getMasteryDisplay(score?: number): { label: string; kind: MasteryDisplayKind } {
-  const level = getMasteryLevel(score);
-  const map: Record<MasteryLevel, { label: string; kind: MasteryDisplayKind }> = {
-    New: { label: 'Unstarted', kind: 'unstarted' },
-    Difficult: { label: 'Beginner', kind: 'beginner' },
+export function getMasteryStatusFromStats(
+  averageMastery: number | null | undefined,
+  vocabCount: number | undefined,
+): MasteryStatus {
+  if (typeof vocabCount === 'number' && vocabCount === 0) {
+    return 'Unstarted';
+  }
+  return getMasteryStatus(averageMastery ?? 0);
+}
+
+export function getMasteryDisplay(score?: number): { label: MasteryStatus; kind: MasteryDisplayKind } {
+  const status = getMasteryStatus(score);
+  const map: Record<MasteryStatus, { label: MasteryStatus; kind: MasteryDisplayKind }> = {
+    Unstarted: { label: 'Unstarted', kind: 'unstarted' },
+    Beginner: { label: 'Beginner', kind: 'beginner' },
     Learning: { label: 'Learning', kind: 'learning' },
     Mastered: { label: 'Mastered', kind: 'mastered' },
   };
-  return map[level];
+  return map[status];
 }
 
 export function getMasteryColors(kind: MasteryDisplayKind): {
@@ -57,8 +77,6 @@ export function getMasteryColors(kind: MasteryDisplayKind): {
 }
 
 export function clampMasteryPercent(score: number | undefined = 0): number {
-  if (typeof score !== 'number' || Number.isNaN(score)) {
-    return 0;
-  }
-  return Math.min(100, Math.max(0, score));
+  const s = clampMasteryScore(score);
+  return (s / MAX_MASTERY_SCORE) * 100;
 }
