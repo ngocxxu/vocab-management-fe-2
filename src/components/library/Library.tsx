@@ -31,6 +31,17 @@ const Library: React.FC<LibraryProps> = ({ initialData, initialLanguagesData }) 
   const [editingFolder, setEditingFolder] = useState<TLanguageFolder | null>(null);
   const [showEditDialog, setShowEditDialog] = useState(false);
 
+  const languageNameByCode = useMemo<Record<string, string>>(() => {
+    const languages = initialLanguagesData?.items ?? [];
+    return languages.reduce<Record<string, string>>((acc, lang) => {
+      if (!lang?.code || !lang?.name) {
+        return acc;
+      }
+      acc[lang.code.toLowerCase()] = lang.name;
+      return acc;
+    }, {});
+  }, [initialLanguagesData?.items]);
+
   useEffect(() => {
     verifyUser().then(setUser);
   }, []);
@@ -173,6 +184,7 @@ const Library: React.FC<LibraryProps> = ({ initialData, initialLanguagesData }) 
               <LibraryFolderCard
                 key={folder.id}
                 folder={folder}
+                languageNameByCode={languageNameByCode}
                 onClick={handleFolderClick}
                 onEdit={handleEdit}
                 onDelete={handleDelete}

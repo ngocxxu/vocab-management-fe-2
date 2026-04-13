@@ -45,6 +45,7 @@ const VocabLanguageForm: React.FC<VocabLanguageFormProps> = ({ initialLanguagesD
                     form.setValue('targetLanguageCode', '');
                   }
                 }}
+                disabled
                 value={field.value}
               >
                 <FormControl>
@@ -93,6 +94,7 @@ const VocabLanguageForm: React.FC<VocabLanguageFormProps> = ({ initialLanguagesD
                     form.setValue('sourceLanguageCode', '');
                   }
                 }}
+                disabled={true}
                 value={field.value}
               >
                 <FormControl>

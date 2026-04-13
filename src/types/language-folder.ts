@@ -36,6 +36,7 @@ export type LibraryHeaderProps = {
 
 export type LibraryFolderCardProps = {
   folder: TLanguageFolder;
+  languageNameByCode?: Record<string, string>;
   onClick: (folder: TLanguageFolder) => void;
   onEdit: (folder: TLanguageFolder) => void;
   onDelete: (folderId: string) => void | Promise<void>;

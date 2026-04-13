@@ -47,6 +47,7 @@ function masteryFillClass(percent: number): string {
 
 const LibraryFolderCard: React.FC<LibraryFolderCardProps> = ({
   folder,
+  languageNameByCode,
   onClick,
   onEdit,
   onDelete,
@@ -77,6 +78,14 @@ const LibraryFolderCard: React.FC<LibraryFolderCardProps> = ({
 
   const textClass = masteryTextClass(MASTERY_PERCENT);
   const fillClass = masteryFillClass(MASTERY_PERCENT);
+
+  const sourceName
+    = languageNameByCode?.[folder.sourceLanguageCode.toLowerCase()]
+      ?? folder.sourceLanguageCode.toUpperCase();
+
+  const targetName
+    = languageNameByCode?.[folder.targetLanguageCode.toLowerCase()]
+      ?? folder.targetLanguageCode.toUpperCase();
 
   return (
     <>
@@ -109,6 +118,7 @@ const LibraryFolderCard: React.FC<LibraryFolderCardProps> = ({
               </h3>
               <p className="mt-0.5 text-sm font-normal text-muted-foreground">
                 Edited
+                {' '}
                 {formatEditedAgo(folder.updatedAt)}
               </p>
             </div>
@@ -146,8 +156,12 @@ const LibraryFolderCard: React.FC<LibraryFolderCardProps> = ({
             0 words
           </span>
           <span className="mx-1.5 h-1 w-1 rounded-full bg-muted-foreground/30"></span>
-          <span>
-            Daily Goal: —
+          <span className="text-xs font-medium">
+            {sourceName}
+            {' '}
+            →
+            {' '}
+            {targetName}
           </span>
         </div>
 
