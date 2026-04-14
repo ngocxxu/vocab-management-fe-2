@@ -128,7 +128,7 @@ const LibraryFolderCard: React.FC<LibraryFolderCardProps> = ({
                 {folder.name}
               </h3>
               <p className="mt-0.5 text-sm font-normal text-muted-foreground">
-                Edited
+                Created
                 {' '}
                 {formatEditedAgo(folder.updatedAt)}
               </p>
