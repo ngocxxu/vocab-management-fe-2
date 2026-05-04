@@ -43,7 +43,7 @@ export const formatNotificationMessage = (notification: TNotification): string =
     case 'VOCAB_TRAINER':
       switch (action) {
         case 'CREATE':
-          return `New trainer "${trainerName}" has been created`;
+          return `Trainer "${trainerName}" has been completed`;
         case 'UPDATE':
           return `Trainer "${trainerName}" has been updated`;
         case 'DELETE':
