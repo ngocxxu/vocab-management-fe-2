@@ -6,11 +6,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { getVocabsForSelection } from '@/actions';
 import { getMyLanguageFoldersForSelection } from '@/actions/language-folders';
 import { logger } from '@/libs/Logger';
-import { isSameLocalDay } from '@/utils/date';
-import { getMasteryStatus } from '@/utils/vocab-mastery';
-
-const QUICK_FILTER_PAGE_SIZE = 500;
-const QUICK_FILTER_MAX_ITEMS = 20_000;
 
 export type VocabFilters = {
   globalFilter: string;
@@ -54,55 +49,9 @@ export const useVocabSelection = ({
   const lastFetchParamsRef = useRef<string>('');
   const hasFetchedLanguageFoldersRef = useRef<boolean>(false);
 
-  const isQuickFilterActive = quickFilter !== 'all';
-
   const languageFolders = useMemo(() => {
     return cachedLanguageFolders.length > 0 ? cachedLanguageFolders : fetchedLanguageFolders;
   }, [cachedLanguageFolders, fetchedLanguageFolders]);
-
-  const isToday = (createdAt: string | undefined): boolean => {
-    if (!createdAt) {
-      return false;
-    }
-    const created = new Date(createdAt);
-    if (Number.isNaN(created.getTime())) {
-      return false;
-    }
-    return isSameLocalDay(created, new Date());
-  };
-
-  const filteredVocabs = useMemo(() => {
-    if (!isQuickFilterActive) {
-      return vocabs;
-    }
-    if (quickFilter === 'recent') {
-      return vocabs.filter(v => isToday(v.createdAt));
-    }
-    if (quickFilter === 'difficult') {
-      return vocabs.filter(v => getMasteryStatus(v.masteryScore) === 'Beginner');
-    }
-    if (quickFilter === 'unlearned') {
-      return vocabs.filter(v => getMasteryStatus(v.masteryScore) === 'Unstarted');
-    }
-    return vocabs;
-  }, [isQuickFilterActive, quickFilter, vocabs]);
-
-  const paginatedVocabs = useMemo(() => {
-    if (!isQuickFilterActive) {
-      return vocabs;
-    }
-    const start = (pagination.page - 1) * pagination.pageSize;
-    const end = start + pagination.pageSize;
-    return filteredVocabs.slice(start, end);
-  }, [filteredVocabs, isQuickFilterActive, pagination.page, pagination.pageSize, vocabs]);
-
-  const totalItemsComputed = isQuickFilterActive ? filteredVocabs.length : totalItems;
-  const totalPagesComputed = isQuickFilterActive
-    ? (totalItemsComputed === 0 ? 0 : Math.ceil(totalItemsComputed / pagination.pageSize))
-    : totalPages;
-  const currentPageComputed = isQuickFilterActive
-    ? (totalPagesComputed === 0 ? 1 : Math.min(pagination.page, totalPagesComputed))
-    : currentPage;
 
   useEffect(() => {
     if (!open) {
@@ -141,12 +90,12 @@ export const useVocabSelection = ({
     }
 
     const fetchParams = JSON.stringify({
-      page: isQuickFilterActive ? 1 : pagination.page,
-      pageSize: isQuickFilterActive ? QUICK_FILTER_PAGE_SIZE : pagination.pageSize,
+      page: pagination.page,
+      pageSize: pagination.pageSize,
       sortBy: pagination.sortBy,
       sortOrder: pagination.sortOrder,
       ...filters,
-      clientQuickFilter: isQuickFilterActive ? quickFilter : 'all',
+      filter: quickFilter === 'all' ? undefined : quickFilter,
     });
 
     if (lastFetchParamsRef.current === fetchParams) {
@@ -165,58 +114,22 @@ export const useVocabSelection = ({
           sourceLanguageCode: filters.sourceLanguageCode === 'ALL' ? undefined : filters.sourceLanguageCode,
           targetLanguageCode: filters.targetLanguageCode === 'ALL' ? undefined : filters.targetLanguageCode,
           languageFolderId: filters.languageFolderId === 'ALL' ? undefined : filters.languageFolderId,
+          filter: quickFilter === 'all' ? undefined : quickFilter,
         } as const;
 
-        if (!isQuickFilterActive) {
-          const result = await getVocabsForSelection({
-            page: pagination.page,
-            pageSize: pagination.pageSize,
-            ...baseParams,
-          });
-          if ('error' in result) {
-            logger.error('Failed to fetch vocabs:', { error: result.error });
-            return;
-          }
-          setVocabs(result.items || []);
-          setTotalItems(result.totalItems || 0);
-          setTotalPages(result.totalPages || 0);
-          setCurrentPage(result.currentPage || 1);
+        const result = await getVocabsForSelection({
+          page: pagination.page,
+          pageSize: pagination.pageSize,
+          ...baseParams,
+        });
+        if ('error' in result) {
+          logger.error('Failed to fetch vocabs:', { error: result.error });
           return;
         }
-
-        const maxPages = Math.max(1, Math.ceil(QUICK_FILTER_MAX_ITEMS / QUICK_FILTER_PAGE_SIZE));
-        const collected: TVocab[] = [];
-
-        for (let page = 1; page <= maxPages; page += 1) {
-          const result = await getVocabsForSelection({
-            page,
-            pageSize: QUICK_FILTER_PAGE_SIZE,
-            ...baseParams,
-          });
-          if ('error' in result) {
-            logger.error('Failed to fetch vocabs:', { error: result.error, page });
-            return;
-          }
-
-          const items = result.items || [];
-          collected.push(...items);
-
-          const totalPagesFromApi = result.totalPages || 0;
-          if (totalPagesFromApi > 0 && page >= totalPagesFromApi) {
-            break;
-          }
-          if (items.length === 0) {
-            break;
-          }
-          if (collected.length >= QUICK_FILTER_MAX_ITEMS) {
-            break;
-          }
-        }
-
-        setVocabs(collected.slice(0, QUICK_FILTER_MAX_ITEMS));
-        setTotalItems(collected.length);
-        setTotalPages(Math.ceil(collected.length / pagination.pageSize));
-        setCurrentPage(1);
+        setVocabs(result.items || []);
+        setTotalItems(result.totalItems || 0);
+        setTotalPages(result.totalPages || 0);
+        setCurrentPage(result.currentPage || 1);
       } catch (error) {
         logger.error('Failed to fetch vocabs:', { error });
       } finally {
@@ -225,14 +138,14 @@ export const useVocabSelection = ({
     };
 
     fetchVocabs();
-  }, [open, pagination.page, pagination.pageSize, pagination.sortBy, pagination.sortOrder, filters, isQuickFilterActive, quickFilter]);
+  }, [open, pagination.page, pagination.pageSize, pagination.sortBy, pagination.sortOrder, filters, quickFilter]);
 
   return {
-    vocabs: isQuickFilterActive ? paginatedVocabs : vocabs,
+    vocabs,
     languageFolders,
-    totalItems: totalItemsComputed,
-    totalPages: totalPagesComputed,
-    currentPage: currentPageComputed,
+    totalItems,
+    totalPages,
+    currentPage,
     isLoading,
   };
 };

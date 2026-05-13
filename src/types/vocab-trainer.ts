@@ -297,7 +297,7 @@ export type AddVocabTrainerDialogProps = {
   userRole?: string;
 };
 
-export type QuickFilter = 'all' | 'recent' | 'difficult' | 'unlearned';
+export type QuickFilter = 'all' | 'recent' | 'difficult' | 'unstarted';
 
 export type VocabSelectionFormProps = {
   selectedIds: string[];

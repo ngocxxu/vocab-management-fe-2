@@ -31,7 +31,7 @@ const QUICK_FILTERS: { id: QuickFilter; label: string }[] = [
   { id: 'all', label: 'All Words' },
   { id: 'recent', label: 'Recently Added' },
   { id: 'difficult', label: 'Difficult' },
-  { id: 'unlearned', label: 'Unlearned' },
+  { id: 'unstarted', label: 'Unstarted' },
 ];
 
 const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({

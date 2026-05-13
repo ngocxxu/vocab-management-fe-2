@@ -22,6 +22,7 @@ export type VocabQueryParams = {
   subjectIds?: string[];
   userId?: string;
   languageFolderId?: string;
+  filter?: 'recent' | 'difficult' | 'unstarted';
 };
 
 export type VocabConflictBySubjectParams = {
