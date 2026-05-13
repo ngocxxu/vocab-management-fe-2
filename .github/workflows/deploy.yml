@@ -98,6 +98,7 @@ jobs:
             NEXT_PUBLIC_SOCKET_URL=${{ secrets.NEXT_PUBLIC_SOCKET_URL }}
             NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
             NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+            NEXT_PUBLIC_SENTRY_DSN=${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/vocab-fe:${{ steps.bump.outputs.version }}
             ${{ secrets.DOCKERHUB_USERNAME }}/vocab-fe:latest

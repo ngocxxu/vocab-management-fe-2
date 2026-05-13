@@ -9,7 +9,7 @@ import { logger } from '@/libs/Logger';
 import { isSameLocalDay } from '@/utils/date';
 import { getMasteryStatus } from '@/utils/vocab-mastery';
 
-const QUICK_FILTER_PAGE_SIZE = 1000;
+const QUICK_FILTER_PAGE_SIZE = 500;
 const QUICK_FILTER_MAX_ITEMS = 20_000;
 
 export type VocabFilters = {
