@@ -91,7 +91,17 @@ const ExamResults: React.FC<ExamResultsProps> = ({
     <div className="min-h-screen bg-background px-4 py-8 sm:px-6">
       <div className="mx-auto max-w-6xl space-y-8">
         <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <Button
+            type="button"
+            onClick={handleBackToTrainers}
+            variant="link"
+            className="border-border bg-secondary !p-0 text-foreground hover:bg-secondary/80"
+          >
+            <AltArrowLeft size={20} weight="BoldDuotone" className="mr-2" />
+            Back to Trainers
+          </Button>
           <div>
+
             <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
               Exam Results
             </h1>
@@ -373,7 +383,7 @@ const ExamResults: React.FC<ExamResultsProps> = ({
           <Button
             type="button"
             onClick={handleBackToTrainers}
-            variant="outline"
+            variant="link"
             className="border-border bg-secondary text-foreground hover:bg-secondary/80"
           >
             <AltArrowLeft size={20} weight="BoldDuotone" className="mr-2" />
