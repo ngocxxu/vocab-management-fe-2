@@ -2,17 +2,16 @@
 commit-msg:
   commands:
     commitlint:
-      run: sh -c 'cd "$(git rev-parse --show-toplevel)" && node ./node_modules/.pnpm/@commitlint+cli*/node_modules/@commitlint/cli/cli.js --edit {1}'
+      run: sh -c 'if ! command -v node >/dev/null 2>&1; then for node_dir in "$HOME"/.nvm/versions/node/*/bin; do if [ -x "$node_dir/node" ]; then PATH="$node_dir:$PATH"; export PATH; break; fi; done; fi; cd "$(git rev-parse --show-toplevel)" && node ./node_modules/.pnpm/@commitlint+cli*/node_modules/@commitlint/cli/cli.js --edit {1}'
 
 # Validate content before committing
 pre-commit:
   commands:
     lint:
       glob: '*'
-      run: npx --no -- eslint --fix --no-warn-ignored
-      stage_fixed: true
+      run: sh -c 'if ! command -v node >/dev/null 2>&1; then for node_dir in "$HOME"/.nvm/versions/node/*/bin; do if [ -x "$node_dir/node" ]; then PATH="$node_dir:$PATH"; export PATH; break; fi; done; fi; npx --no -- eslint --no-warn-ignored'
       priority: 1
     check-types:
       glob: '*.{ts,tsx}'
-      run: npm run check:types
+      run: sh -c 'if ! command -v node >/dev/null 2>&1; then for node_dir in "$HOME"/.nvm/versions/node/*/bin; do if [ -x "$node_dir/node" ]; then PATH="$node_dir:$PATH"; export PATH; break; fi; done; fi; npm run check:types'
       priority: 2

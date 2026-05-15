@@ -240,8 +240,7 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
         handlers.setPage(1);
       }
 
-      dialogState.setOpen(false);
-      resetForm();
+      dialogState.handleClose();
       startTransition(() => {
         router.refresh();
       });

@@ -364,8 +364,7 @@ const VocabList: React.FC<VocabListProps> = ({
         toast.success('Vocabulary created successfully');
       }
 
-      dialogState.setOpen(false);
-      resetForm();
+      dialogState.handleClose();
       startTransition(() => {
         router.refresh();
       });

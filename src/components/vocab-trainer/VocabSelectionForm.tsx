@@ -8,19 +8,19 @@ import type { TVocab } from '@/types/vocab-list';
 import { Folder, Magnifer, Shuffle } from '@solar-icons/react/ssr';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { DataTable } from '@/components/ui/table';
-import { useApiPagination, useLocalPagination, useVocabSelection } from '@/hooks';
+} from '@/shared/ui/form';
+import { Button } from '@/shared/ui/button';
+import { Checkbox } from '@/shared/ui/checkbox';
+import { Input } from '@/shared/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
+import { DataTable } from '@/shared/ui/table';
+import { useLocalPagination, useVocabSelection } from '@/hooks';
 import { getRandomVocabsForSelection } from '@/actions';
 import { cn } from '@/libs/utils';
 import { getMasteryColors, getMasteryDisplay, getMasteryStatus } from '@/utils/vocab-mastery';
@@ -39,17 +39,15 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
   open = true,
   cachedLanguageFolders = EMPTY_CACHED_FOLDERS,
   onLanguageFoldersLoaded,
-  editMode = false,
 }) => {
   const form = useFormContext();
   const [quickFilter, setQuickFilter] = useState<QuickFilter>('all');
   const [randomCount, setRandomCount] = useState<number>(10);
   const [isRandomizing, setIsRandomizing] = useState(false);
 
-  const apiPagination = useApiPagination({ page: 1, pageSize: 5, sortBy: 'updatedAt', sortOrder: 'desc' });
   const localPagination = useLocalPagination({ page: 1, pageSize: 5, sortBy: 'updatedAt', sortOrder: 'desc' });
 
-  const { pagination, handlers } = editMode ? localPagination : apiPagination;
+  const { pagination, handlers } = localPagination;
 
   const [filters, setFilters] = useState<VocabFilters>({
     globalFilter: '',
@@ -239,33 +237,39 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
             Quick filters
           </p>
 
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-2 rounded-full bg-muted px-3 py-1.5">
+          <div className="flex h-9 w-full items-center rounded-md border border-input bg-background shadow-xs sm:w-auto">
+            <div className="flex min-w-0 flex-1 items-center justify-center pr-1 pl-2 sm:flex-none">
               <span className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Count</span>
               <input
                 type="number"
                 inputMode="numeric"
                 min={1}
+                aria-label="Random vocabulary count"
                 value={randomCount}
                 onChange={(e) => {
                   const next = Number(e.target.value);
                   setRandomCount(Number.isFinite(next) ? Math.max(1, next) : 1);
                 }}
                 className={cn(
-                  'h-7 w-[72px] rounded-md border border-input bg-background px-2 text-sm text-foreground shadow-xs outline-none',
-                  'focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50',
+                  'h-8 w-10 border-0 bg-none p-0 text-center text-sm font-semibold text-foreground shadow-none outline-none',
+                  'focus-visible:ring-0 disabled:pointer-events-none disabled:opacity-50',
                 )}
               />
             </div>
 
             <Button
               type="button"
-              variant="outline"
-              size="sm"
+              variant="ghost"
               onClick={handleRandomize}
               disabled={isLoading || isRandomizing}
+              className={cn(
+                'h-8 shrink-0 rounded-md bg-primary/15 text-sm font-medium text-primary hover:text-primary hover:bg-primary/25',
+                'disabled:opacity-50 sm:min-w-[132px]',
+              )}
             >
-              <Shuffle size={16} weight="BoldDuotone" />
+              <span className="flex size-5 items-center justify-center rounded-sm bg-background/15">
+                <Shuffle size={14} weight="BoldDuotone" />
+              </span>
               Randomize
             </Button>
           </div>
