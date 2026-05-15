@@ -65,6 +65,7 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
     try {
       setIsSubmitting(true);
       await createSubject(data);
+      setPage(1);
       setIsCreateDialogOpen(false);
       toast.success('Subject created successfully');
       startTransition(() => router.refresh());

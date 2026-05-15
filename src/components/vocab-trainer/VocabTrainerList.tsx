@@ -237,6 +237,7 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
         await updateVocabTrainer(dialogState.editingItem.id, apiData);
       } else {
         await createVocabTrainer(apiData);
+        handlers.setPage(1);
       }
 
       dialogState.setOpen(false);

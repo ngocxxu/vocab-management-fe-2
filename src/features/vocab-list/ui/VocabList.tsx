@@ -360,6 +360,7 @@ const VocabList: React.FC<VocabListProps> = ({
         toast.success('Vocabulary updated successfully');
       } else {
         await createVocab(apiData);
+        handlers.setPage(1);
         toast.success('Vocabulary created successfully');
       }
 
