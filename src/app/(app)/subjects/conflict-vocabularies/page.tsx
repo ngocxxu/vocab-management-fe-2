@@ -3,7 +3,7 @@ import { Suspense } from 'react';
 import ConflictVocabulariesContent from '@/features/subject-conflict-vocabs/ui/ConflictVocabulariesContent';
 import { getConflictVocabsPageData } from '@/features/subject-conflict-vocabs/services/server/getConflictVocabsPageData';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { hasUnauthorizedError } from '@/utils/auth-error';
+import { getExpiredSessionRedirect, hasUnauthorizedError } from '@/utils/auth-error';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,7 +23,7 @@ export default async function ConflictVocabulariesPage({ searchParams }: PagePro
     subjectId,
   );
   if (hasUnauthorizedError(Object.values(errors))) {
-    redirect('/signin?redirect=/subjects/conflict-vocabularies');
+    redirect(getExpiredSessionRedirect('/subjects/conflict-vocabularies'));
   }
 
   return (

@@ -1,6 +1,6 @@
 import ErrorState from '@/shared/ui/ErrorState';
 import { getDashboardData } from '@/features/dashboard/services/server/getDashboardData';
-import { isUnauthorizedError } from '@/utils/auth-error';
+import { getExpiredSessionRedirect, isUnauthorizedError } from '@/utils/auth-error';
 import { redirect } from 'next/navigation';
 import React from 'react';
 import { AnswerDistributionCard } from './cards/AnswerDistributionCard';
@@ -53,7 +53,7 @@ export const DashboardContent: React.FC = async () => {
     );
   } catch (error) {
     if (isUnauthorizedError(error)) {
-      redirect('/signin?redirect=/dashboard');
+      redirect(getExpiredSessionRedirect('/dashboard'));
     }
 
     return (

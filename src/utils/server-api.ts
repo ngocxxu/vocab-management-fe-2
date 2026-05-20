@@ -24,6 +24,24 @@ import { API_ENDPOINTS, API_METHODS } from './api-config';
 class ServerAPI {
   private readonly baseURL = Env.NESTJS_API_URL || 'http://localhost:3002/api/v1';
   private isRefreshing: Promise<TSessionDto | null> | null = null; // avoid race condition
+  private refreshBlockedUntil = 0;
+
+  private getRefreshCooldownMs(response: Response): number {
+    const retryAfter = response.headers.get('retry-after');
+    if (retryAfter) {
+      const retryAfterSeconds = Number(retryAfter);
+      if (Number.isFinite(retryAfterSeconds) && retryAfterSeconds > 0) {
+        return retryAfterSeconds * 1000;
+      }
+
+      const retryAfterDate = Date.parse(retryAfter);
+      if (!Number.isNaN(retryAfterDate)) {
+        return Math.max(retryAfterDate - Date.now(), 0);
+      }
+    }
+
+    return response.status === 429 ? 30_000 : 5_000;
+  }
 
   private async doFetch(endpoint: string, options: RequestInit): Promise<Response> {
     const token = await getAccessToken();
@@ -50,6 +68,10 @@ class ServerAPI {
       return response;
     }
 
+    if (Date.now() < this.refreshBlockedUntil) {
+      return response;
+    }
+
     this.isRefreshing ??= fetch(`${this.baseURL}${API_ENDPOINTS.auth.refresh}`, {
       method: 'POST',
       headers: {
@@ -64,6 +86,7 @@ class ServerAPI {
           : await refreshRes.text();
 
         if (!refreshRes.ok) {
+          this.refreshBlockedUntil = Date.now() + this.getRefreshCooldownMs(refreshRes);
           logger.warn('Refresh failed:', {
             status: refreshRes.status,
             statusText: refreshRes.statusText,
@@ -86,6 +109,7 @@ class ServerAPI {
           logger.warn('Unable to persist refreshed auth cookies in this server context:', { error });
         }
 
+        this.refreshBlockedUntil = 0;
         return session as TSessionDto;
       })
       .finally(() => {

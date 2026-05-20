@@ -1,6 +1,7 @@
 import type { NextFetchEvent, NextRequest } from 'next/server';
 import { detectBot } from '@arcjet/next';
 import { NextResponse } from 'next/server';
+import { AUTH_COOKIE_OPTIONS } from '@/utils/auth-cookies';
 import arcjet from '@/libs/Arcjet';
 
 // Improve security with Arcjet
@@ -50,6 +51,15 @@ export default async function proxy(
 
   // Get the accessToken from cookies
   const token = request.cookies.get('accessToken')?.value;
+  const isExpiredSessionRedirect = request.nextUrl.searchParams.get('expired') === '1';
+
+  if (isAuthRoute && isExpiredSessionRedirect) {
+    const response = NextResponse.next();
+    const clearOpts = { ...AUTH_COOKIE_OPTIONS, maxAge: 0 };
+    response.cookies.set('accessToken', '', clearOpts);
+    response.cookies.set('refreshToken', '', clearOpts);
+    return response;
+  }
 
   // If accessing a protected route without a token, redirect to signin
   if (isProtectedRoute && !token) {

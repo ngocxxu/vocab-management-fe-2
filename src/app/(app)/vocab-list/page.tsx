@@ -1,7 +1,7 @@
 import VocabListLayout from '@/features/vocab-list/ui/VocabListLayout';
 import { getVocabListPageData } from '@/features/vocab-list/services/server/getVocabListPageData';
 import { logger } from '@/libs/Logger';
-import { hasUnauthorizedError } from '@/utils/auth-error';
+import { getExpiredSessionRedirect, hasUnauthorizedError } from '@/utils/auth-error';
 import { redirect } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
@@ -25,7 +25,7 @@ export default async function VocabListPage({ searchParams }: PageProps) {
   const pageErrors = Object.values(errors);
 
   if (hasUnauthorizedError(pageErrors)) {
-    redirect('/signin?redirect=/vocab-list');
+    redirect(getExpiredSessionRedirect('/vocab-list'));
   }
 
   if (errors.vocabs) {

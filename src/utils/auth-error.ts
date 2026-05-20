@@ -21,3 +21,12 @@ export function isUnauthorizedError(error: unknown): boolean {
 export function hasUnauthorizedError(errors: unknown[]): boolean {
   return errors.some(isUnauthorizedError);
 }
+
+export function getExpiredSessionRedirect(path: string): string {
+  const params = new URLSearchParams({
+    redirect: path,
+    expired: '1',
+  });
+
+  return `/signin?${params.toString()}`;
+}
