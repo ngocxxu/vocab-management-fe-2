@@ -377,7 +377,7 @@ Before submitting code, verify:
 
 ### Adding a new server action
 
-```ts
+<!-- ```ts
 'use server';
 import { requireAuth } from './auth';
 import { toActionError } from './utils';
@@ -393,11 +393,11 @@ export async function myAction(data: TMyData) {
     throw toActionError(error, 'Fallback error message');
   }
 }
-```
+``` -->
 
 ### Form handling
 
-```tsx
+<!-- ```tsx
 const schema = z.object({ /* ... */ });
 type FormData = z.infer<typeof schema>;
 
@@ -406,7 +406,7 @@ const form = useForm<FormData>({
   mode: 'onChange',
   defaultValues: { /* ... */ },
 });
-```
+``` -->
 
 ---
 
