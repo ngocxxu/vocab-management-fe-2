@@ -3,7 +3,7 @@ import React, { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import VocabTrainerContent from './VocabTrainerContent';
 
-const VocabTrainerLayout: React.FC<VocabTrainerLayoutProps> = ({ initialData, initialLanguagesData }) => {
+const VocabTrainerLayout: React.FC<VocabTrainerLayoutProps> = ({ initialData, initialLanguagesData, loadError }) => {
   return (
     <Suspense fallback={(
       <div className="min-h-screen bg-background">
@@ -15,7 +15,7 @@ const VocabTrainerLayout: React.FC<VocabTrainerLayoutProps> = ({ initialData, in
       </div>
     )}
     >
-      <VocabTrainerContent initialData={initialData} initialLanguagesData={initialLanguagesData} />
+      <VocabTrainerContent initialData={initialData} initialLanguagesData={initialLanguagesData} loadError={loadError} />
     </Suspense>
   );
 };

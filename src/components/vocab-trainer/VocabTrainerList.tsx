@@ -45,7 +45,7 @@ const QUESTION_TYPE_BADGE_CLASSES: Record<string, string> = {
   default: 'bg-muted text-muted-foreground',
 };
 
-const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initialLanguagesData }) => {
+const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initialLanguagesData, loadError }) => {
   const [user, setUser] = useState<TUser | null>(null);
   const [isMounted, setIsMounted] = useState(false);
   const [cachedLanguageFolders, setCachedLanguageFolders] = useState<any[]>([]);
@@ -76,7 +76,7 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
   const totalPages = initialData?.totalPages || 0;
   const currentPage = initialData?.currentPage || 1;
   const isLoading = false;
-  const isError = false;
+  const isError = Boolean(loadError);
 
   const checkCooldown = useCallback(() => {
     setCooldownRemaining(getExamCooldownRemainingSeconds());
@@ -397,10 +397,10 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
         />
 
         {isError && (
-          <ErrorState message="Error loading vocab trainers. Please try again." />
+          <ErrorState message={loadError || 'Error loading vocab trainers. Please try again.'} />
         )}
 
-        {isMounted && (
+        {isMounted && !isError && (
           <>
             <AddVocabTrainerDialog
               formData={form.watch()}

@@ -24,6 +24,6 @@ export default async function VocabTrainerPage({ searchParams }: PageProps) {
     }
 
     logger.error('Failed to fetch vocab trainers:', { error });
-    throw new Error('Failed to load vocab trainers');
+    return <VocabTrainerLayout loadError="Unable to load vocab trainers right now. Please refresh the page or try again later." />;
   }
 }

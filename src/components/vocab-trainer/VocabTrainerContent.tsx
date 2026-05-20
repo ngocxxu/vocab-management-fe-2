@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/breadcrumb';
 import { VocabTrainerList } from './index';
 
-const VocabTrainerContent: React.FC<VocabTrainerContentProps> = ({ initialData, initialLanguagesData }) => {
+const VocabTrainerContent: React.FC<VocabTrainerContentProps> = ({ initialData, initialLanguagesData, loadError }) => {
   return (
     <div
       className="min-h-screen bg-background"
@@ -34,7 +34,7 @@ const VocabTrainerContent: React.FC<VocabTrainerContentProps> = ({ initialData, 
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-        <VocabTrainerList initialData={initialData} initialLanguagesData={initialLanguagesData} />
+        <VocabTrainerList initialData={initialData} initialLanguagesData={initialLanguagesData} loadError={loadError} />
       </div>
     </div>
   );

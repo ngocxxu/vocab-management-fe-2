@@ -311,6 +311,7 @@ export type VocabSelectionFormProps = {
 export type VocabTrainerLayoutProps = {
   initialData?: ResponseAPI<TVocabTrainer[]>;
   initialLanguagesData?: ResponseAPI<TLanguage[]>;
+  loadError?: string;
 };
 
 export type VocabTrainerHeaderProps = {
@@ -329,6 +330,7 @@ export type VocabTrainerHeaderProps = {
 export type VocabTrainerContentProps = {
   initialData?: ResponseAPI<TVocabTrainer[]>;
   initialLanguagesData?: ResponseAPI<TLanguage[]>;
+  loadError?: string;
 };
 
 export type ExamLauncherProps = {
@@ -339,4 +341,5 @@ export type ExamLauncherProps = {
 export type VocabTrainerListProps = {
   initialData?: ResponseAPI<TVocabTrainer[]>;
   initialLanguagesData?: ResponseAPI<TLanguage[]>;
+  loadError?: string;
 };
