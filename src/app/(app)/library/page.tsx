@@ -1,5 +1,8 @@
 import { Library } from '@/components/library';
 import { getLibraryPageData } from '@/features/library/services/server/getLibraryPageData';
+import { logger } from '@/libs/Logger';
+import { isUnauthorizedError } from '@/utils/auth-error';
+import { redirect } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,7 +19,11 @@ export default async function LibraryPage({ searchParams }: PageProps) {
     const { initialData, initialLanguagesData } = await getLibraryPageData(resolvedParams);
     return <Library initialData={initialData} initialLanguagesData={initialLanguagesData} />;
   } catch (error) {
-    console.error('Failed to fetch library data:', error);
+    if (isUnauthorizedError(error)) {
+      redirect('/signin?redirect=/library');
+    }
+
+    logger.error('Failed to fetch library data:', { error });
     throw new Error('Failed to load library data');
   }
 }

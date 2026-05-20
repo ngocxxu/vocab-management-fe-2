@@ -1,4 +1,5 @@
 import type { TNotification } from '@/types/notification';
+import { logger } from '@/libs/Logger';
 import { notificationsApi } from '@/utils/server-api';
 
 export async function getNotificationsPageData() {
@@ -12,10 +13,9 @@ export async function getNotificationsPageData() {
       return { notification, isRead };
     });
   } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
-      console.error('Notifications page fetch error:', error);
-    }
+    logger.warn('Notifications page fetch failed:', { error });
+    return { notificationsWithRead, error };
   }
 
-  return { notificationsWithRead };
+  return { notificationsWithRead, error: undefined };
 }

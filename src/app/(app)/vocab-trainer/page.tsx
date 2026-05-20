@@ -1,5 +1,8 @@
 import VocabTrainerLayout from '@/components/vocab-trainer/VocabTrainerLayout';
 import { getVocabTrainerPageData } from '@/features/vocab-trainer/services/server/getVocabTrainerPageData';
+import { logger } from '@/libs/Logger';
+import { isUnauthorizedError } from '@/utils/auth-error';
+import { redirect } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,7 +19,11 @@ export default async function VocabTrainerPage({ searchParams }: PageProps) {
 
     return <VocabTrainerLayout initialData={initialData} initialLanguagesData={initialLanguagesData} />;
   } catch (error) {
-    console.error('Failed to fetch vocab trainers:', error);
+    if (isUnauthorizedError(error)) {
+      redirect('/signin?redirect=/vocab-trainer');
+    }
+
+    logger.error('Failed to fetch vocab trainers:', { error });
     throw new Error('Failed to load vocab trainers');
   }
 }

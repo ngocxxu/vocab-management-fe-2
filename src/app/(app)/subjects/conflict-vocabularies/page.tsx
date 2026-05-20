@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import ConflictVocabulariesContent from '@/features/subject-conflict-vocabs/ui/ConflictVocabulariesContent';
 import { getConflictVocabsPageData } from '@/features/subject-conflict-vocabs/services/server/getConflictVocabsPageData';
 import { Skeleton } from '@/shared/ui/skeleton';
+import { hasUnauthorizedError } from '@/utils/auth-error';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,10 +18,13 @@ export default async function ConflictVocabulariesPage({ searchParams }: PagePro
     redirect('/subjects');
   }
 
-  const { conflictData, subjects, conflictSubject, loadFailed } = await getConflictVocabsPageData(
+  const { conflictData, subjects, conflictSubject, loadFailed, errors } = await getConflictVocabsPageData(
     resolvedParams,
     subjectId,
   );
+  if (hasUnauthorizedError(Object.values(errors))) {
+    redirect('/signin?redirect=/subjects/conflict-vocabularies');
+  }
 
   return (
     <Suspense

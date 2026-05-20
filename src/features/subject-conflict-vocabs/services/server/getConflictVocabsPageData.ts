@@ -12,6 +12,11 @@ export async function getConflictVocabsPageData(
   subjects?: TSubjectResponse;
   conflictSubject: TSubject | null;
   loadFailed: boolean;
+  errors: {
+    conflict?: unknown;
+    subjects?: unknown;
+    subject?: unknown;
+  };
 }> {
   const rawPage = Number(resolvedParams.page);
   const rawPageSize = Number(resolvedParams.pageSize);
@@ -47,5 +52,10 @@ export async function getConflictVocabsPageData(
     subjects,
     conflictSubject,
     loadFailed: conflictResult.status === 'rejected',
+    errors: {
+      conflict: conflictResult.status === 'rejected' ? conflictResult.reason : undefined,
+      subjects: subjectsResult.status === 'rejected' ? subjectsResult.reason : undefined,
+      subject: subjectResult.status === 'rejected' ? subjectResult.reason : undefined,
+    },
   };
 }

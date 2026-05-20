@@ -1,5 +1,7 @@
 import ErrorState from '@/shared/ui/ErrorState';
 import { getDashboardData } from '@/features/dashboard/services/server/getDashboardData';
+import { isUnauthorizedError } from '@/utils/auth-error';
+import { redirect } from 'next/navigation';
 import React from 'react';
 import { AnswerDistributionCard } from './cards/AnswerDistributionCard';
 import { DistributionChart } from './cards/DistributionChart';
@@ -50,6 +52,10 @@ export const DashboardContent: React.FC = async () => {
       </main>
     );
   } catch (error) {
+    if (isUnauthorizedError(error)) {
+      redirect('/signin?redirect=/dashboard');
+    }
+
     return (
       <main className="flex-1 overflow-y-auto bg-background p-4 md:p-6 lg:p-8">
         <div className="container mx-auto">

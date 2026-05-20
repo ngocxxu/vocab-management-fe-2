@@ -1,5 +1,8 @@
 import VocabListLayout from '@/features/vocab-list/ui/VocabListLayout';
 import { getVocabListPageData } from '@/features/vocab-list/services/server/getVocabListPageData';
+import { logger } from '@/libs/Logger';
+import { hasUnauthorizedError } from '@/utils/auth-error';
+import { redirect } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,21 +22,26 @@ export default async function VocabListPage({ searchParams }: PageProps) {
     vocabListLoadFailed,
     errors,
   } = await getVocabListPageData(resolvedParams);
+  const pageErrors = Object.values(errors);
+
+  if (hasUnauthorizedError(pageErrors)) {
+    redirect('/signin?redirect=/vocab-list');
+  }
 
   if (errors.vocabs) {
-    console.error('Failed to fetch vocab list:', errors.vocabs);
+    logger.error('Failed to fetch vocab list:', { error: errors.vocabs });
   }
   if (errors.folder) {
-    console.error('Failed to fetch language folder:', errors.folder);
+    logger.error('Failed to fetch language folder:', { error: errors.folder });
   }
   if (errors.subjects) {
-    console.error('Failed to fetch subjects:', errors.subjects);
+    logger.error('Failed to fetch subjects:', { error: errors.subjects });
   }
   if (errors.languages) {
-    console.error('Failed to fetch languages:', errors.languages);
+    logger.error('Failed to fetch languages:', { error: errors.languages });
   }
   if (errors.wordTypes) {
-    console.error('Failed to fetch word types:', errors.wordTypes);
+    logger.error('Failed to fetch word types:', { error: errors.wordTypes });
   }
 
   return (

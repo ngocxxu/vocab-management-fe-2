@@ -1,10 +1,15 @@
 import { NotificationsPageContent } from '@/components/notifications/NotificationsPageContent';
 import { getNotificationsPageData } from '@/features/notifications/services/server/getNotificationsPageData';
+import { isUnauthorizedError } from '@/utils/auth-error';
+import { redirect } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 
 export default async function NotificationsPage() {
-  const { notificationsWithRead } = await getNotificationsPageData();
+  const { notificationsWithRead, error } = await getNotificationsPageData();
+  if (isUnauthorizedError(error)) {
+    redirect('/signin?redirect=/notifications');
+  }
 
   return (
     <div className="min-h-screen bg-background">

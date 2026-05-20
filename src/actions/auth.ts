@@ -4,6 +4,7 @@ import { cache } from 'react';
 import type { TAuthResponse, TRefreshData, TResetPasswordData, TSigninData, TSignupData, TUser } from '@/types/auth';
 import { logger } from '@/libs/Logger';
 import { clearAuthCookies, getAccessToken, setAuthCookies } from '@/utils/auth-cookies';
+import { isUnauthorizedError } from '@/utils/auth-error';
 import { authApi } from '@/utils/server-api';
 import { toActionError } from './utils';
 
@@ -85,11 +86,8 @@ async function verifyUserImpl(): Promise<TUser | null> {
     const result = await authApi.verify();
     return result;
   } catch (error) {
-    if (error && typeof error === 'object' && 'status' in error) {
-      const errorStatus = (error as { status: number }).status;
-      if (errorStatus === 403 || errorStatus === 401) {
-        return null;
-      }
+    if (isUnauthorizedError(error)) {
+      return null;
     }
     logger.error('Failed to verify user:', { error });
     return null;
