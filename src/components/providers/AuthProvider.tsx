@@ -4,6 +4,7 @@ import type { TUser } from '@/types/auth';
 import { createContext, use, useCallback, useEffect, useMemo, useState } from 'react';
 import { signin, signup, verifyUser } from '@/actions';
 import { signoutClient } from '@/utils/auth-utils';
+import { logger } from '@/libs/Logger';
 import { Skeleton } from '@/components/ui/skeleton';
 
 type AuthContextType = {
@@ -48,7 +49,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setUser(userData || undefined);
         setIsError(false);
       } catch (error) {
-        console.error('Failed to load user:', error);
+        logger.error('Failed to load user:', { error });
         setIsError(true);
         setUser(undefined);
       } finally {
@@ -67,7 +68,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const userData = await verifyUser();
       setUser(userData || undefined);
     } catch (error) {
-      console.error('Signin failed:', error);
+      logger.error('Signin failed:', { error });
       throw error;
     }
   }, []);
@@ -86,14 +87,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const userDataResult = await verifyUser();
       setUser(userDataResult || undefined);
     } catch (error) {
-      console.error('Signup failed:', error);
+      logger.error('Signup failed:', { error });
       throw error;
     }
   }, []);
 
   const handleSignout = useCallback(() => {
     return signoutClient('/').catch((error) => {
-      console.error('Signout failed:', error);
+      logger.error('Signout failed:', { error });
       throw error;
     });
   }, []);

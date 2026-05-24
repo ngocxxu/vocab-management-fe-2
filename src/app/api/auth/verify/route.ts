@@ -3,14 +3,9 @@ import { NextResponse } from 'next/server';
 import { logger } from '@/libs/Logger';
 import { serverApi } from '@/utils/server-api';
 
-type VerifyResponse = {
-  user: TUser;
-  isAuthenticated: boolean;
-};
-
 export async function GET() {
   try {
-    const verifyResponse = await serverApi.get<VerifyResponse>('/auth/verify');
+    const verifyResponse = await serverApi.get<TUser>('/auth/verify');
     return NextResponse.json(verifyResponse);
   } catch (error) {
     logger.error('Verify error:', { error });

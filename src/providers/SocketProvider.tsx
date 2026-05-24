@@ -1,10 +1,9 @@
 'use client';
 
 import type { Socket } from 'socket.io-client';
-import type { SocketContextType, SocketProviderProps, TUser } from '@/types';
+import type { SocketContextType, SocketProviderProps } from '@/types';
 import React, { createContext, useEffect, useMemo, useState } from 'react';
 import { io } from 'socket.io-client';
-import { verifyUser } from '@/actions';
 import { Env } from '@/libs/Env';
 import { logger } from '@/libs/Logger';
 
@@ -13,23 +12,9 @@ const SocketContext = createContext<SocketContextType>({
   isConnected: false,
 });
 
-export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
+export const SocketProvider: React.FC<SocketProviderProps> = ({ children, user }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
-  const [user, setUser] = useState<TUser | null>(null);
-
-  useEffect(() => {
-    const loadUser = async () => {
-      try {
-        const userData = await verifyUser();
-        setUser(userData);
-      } catch (error) {
-        logger.error('Failed to verify user:', { error });
-        setUser(null);
-      }
-    };
-    loadUser();
-  }, []);
 
   const userId = user?.id;
 

@@ -1,3 +1,4 @@
+import { verifyUser } from '@/actions';
 import { languageFoldersApi, languagesApi, subjectsApi, vocabApi, wordTypesApi } from '@/utils/server-api';
 
 type SearchParams = { [key: string]: string | string[] | undefined };
@@ -24,7 +25,8 @@ export async function getVocabListPageData(resolvedParams: SearchParams) {
     subjectIds,
   };
 
-  const [vocabsResult, folderResult, subjectsResult, languagesResult, wordTypesResult] = await Promise.allSettled([
+  const [userResult, vocabsResult, folderResult, subjectsResult, languagesResult, wordTypesResult] = await Promise.allSettled([
+    verifyUser(),
     vocabApi.getAll(queryParams),
     languageFolderId ? languageFoldersApi.getById(languageFolderId) : Promise.resolve(null),
     subjectsApi.getAll(),
@@ -33,6 +35,7 @@ export async function getVocabListPageData(resolvedParams: SearchParams) {
   ]);
 
   return {
+    currentUser: userResult.status === 'fulfilled' ? userResult.value : null,
     initialVocabsData: vocabsResult.status === 'fulfilled' ? vocabsResult.value : undefined,
     vocabListLoadFailed: vocabsResult.status === 'rejected',
     initialLanguageFolderData: folderResult.status === 'fulfilled' ? folderResult.value || undefined : undefined,
@@ -40,6 +43,7 @@ export async function getVocabListPageData(resolvedParams: SearchParams) {
     initialLanguagesData: languagesResult.status === 'fulfilled' ? languagesResult.value : undefined,
     initialWordTypesData: wordTypesResult.status === 'fulfilled' ? wordTypesResult.value : undefined,
     errors: {
+      user: userResult.status === 'rejected' ? userResult.reason : undefined,
       vocabs: vocabsResult.status === 'rejected' ? vocabsResult.reason : undefined,
       folder: folderResult.status === 'rejected' ? folderResult.reason : undefined,
       subjects: subjectsResult.status === 'rejected' ? subjectsResult.reason : undefined,

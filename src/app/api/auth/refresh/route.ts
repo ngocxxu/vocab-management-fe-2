@@ -2,8 +2,8 @@ import type { NextRequest } from 'next/server';
 import type { TSessionDto } from '@/types/auth';
 import { NextResponse } from 'next/server';
 import { logger } from '@/libs/Logger';
-import { AUTH_COOKIE_OPTIONS, REFRESH_COOKIE_OPTIONS } from '@/utils/auth-cookies';
 import { API_ENDPOINTS } from '@/utils/api-config';
+import { createBackendErrorResponse, createValidatedAuthSessionResponse, getBackendAuthUrl, parseBackendResponse } from '../session-response';
 
 // POST /api/auth/refresh - Refresh authentication token
 export async function POST(request: NextRequest) {
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Call NestJS backend to refresh token (send refreshToken in body, not as cookie)
-    const nestResponse = await fetch(`${process.env.NESTJS_API_URL || 'http://localhost:3002/api/v1'}${API_ENDPOINTS.auth.refresh}`, {
+    const nestResponse = await fetch(getBackendAuthUrl(API_ENDPOINTS.auth.refresh), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -37,22 +37,13 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify({ refreshToken }),
     });
 
-    const data = await nestResponse.json() as TSessionDto;
+    const data = await parseBackendResponse<TSessionDto>(nestResponse);
 
     if (!nestResponse.ok) {
-      return NextResponse.json(data, { status: nestResponse.status });
+      return createBackendErrorResponse(data, nestResponse.status, nestResponse.statusText, 'Refresh failed');
     }
 
-    // Strip tokens and set HttpOnly cookies on the response object
-    const { access_token, refresh_token, expires_in, expires_at, token_type, ...responseData } = data;
-    const response = NextResponse.json(responseData, { status: nestResponse.status });
-
-    if (access_token && refresh_token) {
-      response.cookies.set('accessToken', access_token, AUTH_COOKIE_OPTIONS);
-      response.cookies.set('refreshToken', refresh_token, REFRESH_COOKIE_OPTIONS);
-    }
-
-    return response;
+    return createValidatedAuthSessionResponse(data, nestResponse.status);
   } catch (error) {
     logger.error('Refresh error:', { error });
     return NextResponse.json(

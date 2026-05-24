@@ -1,78 +1,146 @@
 import type { NextFetchEvent, NextRequest } from 'next/server';
 import { detectBot } from '@arcjet/next';
 import { NextResponse } from 'next/server';
-import { AUTH_COOKIE_OPTIONS } from '@/utils/auth-cookies';
+import { AUTH_COOKIE_OPTIONS, REFRESH_COOKIE_OPTIONS } from '@/utils/auth-cookies';
 import arcjet from '@/libs/Arcjet';
 
-// Improve security with Arcjet
 const aj = arcjet.withRule(
   detectBot({
     mode: 'LIVE',
-    // Block all bots except the following
-    allow: [
-      // See https://docs.arcjet.com/bot-protection/identifying-bots
-      'CATEGORY:SEARCH_ENGINE', // Allow search engines
-      'CATEGORY:PREVIEW', // Allow preview links to show OG images
-      'CATEGORY:MONITOR', // Allow uptime monitoring services
-    ],
+    allow: ['CATEGORY:SEARCH_ENGINE', 'CATEGORY:PREVIEW', 'CATEGORY:MONITOR'],
   }),
 );
 
-// Define protected routes that require authentication
-const protectedRoutes = ['/dashboard', '/library', '/vocab-list', '/vocab-trainer', '/profile', '/subjects', '/notifications'];
-const authRoutes = ['/signin', '/signup', '/forgot-password'];
-const publicRoutes = ['/auth/callback'];
+const PROTECTED = ['/dashboard', '/library', '/vocab-list', '/vocab-trainer', '/profile', '/subjects', '/notifications'];
+const AUTH_ROUTES = ['/signin', '/signup', '/forgot-password'];
+const PUBLIC_ROUTES = ['/auth/callback'];
+const REFRESH_THRESHOLD = 60;
 
-export default async function proxy(
-  request: NextRequest,
-  _event: NextFetchEvent,
-) {
+type Session = { access_token: string; refresh_token: string };
+
+function getSafeRedirectPath(value: string | null, fallback: string): string {
+  if (!value || !value.startsWith('/') || value.startsWith('//')) {
+    return fallback;
+  }
+
+  try {
+    const url = new URL(value, 'http://local.app');
+    return `${url.pathname}${url.search}${url.hash}`;
+  } catch {
+    return fallback;
+  }
+}
+
+function getJwtExp(token: string): number | null {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]!.replace(/-/g, '+').replace(/_/g, '/'))) as { exp?: unknown };
+    return typeof payload.exp === 'number' ? payload.exp : null;
+  } catch {
+    return null;
+  }
+}
+
+function isTokenExpiring(token?: string): boolean {
+  if (!token) {
+    return true;
+  }
+  const exp = getJwtExp(token);
+  return exp ? exp - Math.floor(Date.now() / 1000) <= REFRESH_THRESHOLD : false;
+}
+
+async function refreshSession(refreshToken: string): Promise<Session | null> {
+  const res = await fetch(`${process.env.NESTJS_API_URL ?? 'http://localhost:3002/api/v1'}/auth/refresh`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ refreshToken }),
+  });
+  if (!res.ok) {
+    return null;
+  }
+  const data = await res.json() as Partial<Session>;
+  return data.access_token && data.refresh_token ? (data as Session) : null;
+}
+
+function setAuthCookies(response: NextResponse, session: Session): NextResponse {
+  response.cookies.set('accessToken', session.access_token, AUTH_COOKIE_OPTIONS);
+  response.cookies.set('refreshToken', session.refresh_token, REFRESH_COOKIE_OPTIONS);
+  return response;
+}
+
+function clearAuthCookies(response: NextResponse): NextResponse {
+  response.cookies.set('accessToken', '', { ...AUTH_COOKIE_OPTIONS, maxAge: 0 });
+  response.cookies.set('refreshToken', '', { ...REFRESH_COOKIE_OPTIONS, maxAge: 0 });
+  return response;
+}
+
+function withRefreshedSession(request: NextRequest, session: Session): NextResponse {
+  const headers = new Headers(request.headers);
+  const cookies = new Map(
+    headers.get('cookie')?.split(';').map((c) => {
+      const [k = '', ...v] = c.trim().split('=');
+      return [k, v.join('=')] as const;
+    }) ?? [],
+  );
+  cookies.set('accessToken', session.access_token);
+  cookies.set('refreshToken', session.refresh_token);
+  headers.set('cookie', [...cookies.entries()].map(([k, v]) => `${k}=${v}`).join('; '));
+
+  return setAuthCookies(NextResponse.next({ request: { headers } }), session);
+}
+
+export default async function proxy(request: NextRequest, _event: NextFetchEvent) {
   const { pathname } = request.nextUrl;
 
-  // Verify the request with Arcjet
-  // Use `process.env` instead of Env to reduce bundle size in proxy
   if (process.env.ARCJET_KEY) {
     const decision = await aj.protect(request);
-
     if (decision.isDenied()) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
   }
 
-  // Check if the current path is a protected route
-  const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
-  const isAuthRoute = authRoutes.some(route => pathname.startsWith(route));
-  const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
+  const isProtected = PROTECTED.some(r => pathname.startsWith(r));
+  const isAuth = AUTH_ROUTES.some(r => pathname.startsWith(r));
 
-  // Allow public routes without authentication checks
-  if (isPublicRoute) {
+  if (PUBLIC_ROUTES.some(r => pathname.startsWith(r))) {
     return NextResponse.next();
   }
 
-  // Get the accessToken from cookies
   const token = request.cookies.get('accessToken')?.value;
-  const isExpiredSessionRedirect = request.nextUrl.searchParams.get('expired') === '1';
+  const refreshToken = request.cookies.get('refreshToken')?.value;
 
-  if (isAuthRoute && isExpiredSessionRedirect) {
-    const response = NextResponse.next();
-    const clearOpts = { ...AUTH_COOKIE_OPTIONS, maxAge: 0 };
-    response.cookies.set('accessToken', '', clearOpts);
-    response.cookies.set('refreshToken', '', clearOpts);
-    return response;
+  // Clear cookies on expired session redirect
+  if (isAuth && request.nextUrl.searchParams.get('expired') === '1') {
+    return clearAuthCookies(NextResponse.next());
   }
 
-  // If accessing a protected route without a token, redirect to signin
-  if (isProtectedRoute && !token) {
-    const signInUrl = new URL('/signin', request.url);
-    // Include both pathname and search params in redirect
-    const fullPath = `${pathname}${request.nextUrl.search}`;
-    signInUrl.searchParams.set('redirect', fullPath);
-    return NextResponse.redirect(signInUrl);
+  // Attempt token refresh
+  if ((isProtected || isAuth) && refreshToken && isTokenExpiring(token)) {
+    const session = await refreshSession(refreshToken);
+    if (session) {
+      if (isAuth) {
+        const redirectUrl = getSafeRedirectPath(request.nextUrl.searchParams.get('redirect'), '/dashboard');
+        return setAuthCookies(NextResponse.redirect(new URL(redirectUrl, request.url)), session);
+      }
+      return withRefreshedSession(request, session);
+    }
+
+    if (isProtected) {
+      const url = new URL('/signin', request.url);
+      url.searchParams.set('redirect', getSafeRedirectPath(`${pathname}${request.nextUrl.search}`, pathname));
+      return clearAuthCookies(NextResponse.redirect(url));
+    }
+
+    return clearAuthCookies(NextResponse.next());
   }
 
-  // If accessing auth routes with a token, redirect to dashboard
-  if (isAuthRoute && token) {
-    const redirectUrl = request.nextUrl.searchParams.get('redirect') || '/dashboard';
+  if (isProtected && !token) {
+    const url = new URL('/signin', request.url);
+    url.searchParams.set('redirect', getSafeRedirectPath(`${pathname}${request.nextUrl.search}`, pathname));
+    return NextResponse.redirect(url);
+  }
+
+  if (isAuth && token) {
+    const redirectUrl = getSafeRedirectPath(request.nextUrl.searchParams.get('redirect'), '/dashboard');
     return NextResponse.redirect(new URL(redirectUrl, request.url));
   }
 
@@ -80,7 +148,5 @@ export default async function proxy(
 }
 
 export const config = {
-  matcher: [
-    '/((?!_next|_vercel|monitoring|.*\\..*).*)',
-  ],
+  matcher: ['/((?!_next|_vercel|monitoring|.*\\..*).*)'],
 };

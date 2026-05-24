@@ -2,18 +2,12 @@ import type { NextRequest } from 'next/server';
 import type { TSessionDto } from '@/types/auth';
 import { NextResponse } from 'next/server';
 import { logger } from '@/libs/Logger';
-import { AUTH_COOKIE_OPTIONS, REFRESH_COOKIE_OPTIONS } from '@/utils/auth-cookies';
 import { API_ENDPOINTS } from '@/utils/api-config';
+import { createBackendErrorResponse, createValidatedAuthSessionResponse, getBackendAuthUrl, parseBackendResponse } from '../../session-response';
 
 type OAuthSyncRequestBody = {
   accessToken: string;
-  refreshToken?: string;
-};
-
-type OAuthSyncErrorResponse = {
-  error: string;
-  message?: string;
-  [key: string]: unknown;
+  refreshToken: string;
 };
 
 export async function POST(request: NextRequest) {
@@ -28,7 +22,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const nestResponse = await fetch(`${process.env.NESTJS_API_URL || 'http://localhost:3002/api/v1'}${API_ENDPOINTS.auth.oauthSync}`, {
+    if (!refreshToken || typeof refreshToken !== 'string') {
+      return NextResponse.json(
+        { error: 'Refresh token is required' },
+        { status: 400 },
+      );
+    }
+
+    const nestResponse = await fetch(getBackendAuthUrl(API_ENDPOINTS.auth.oauthSync), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -37,37 +38,13 @@ export async function POST(request: NextRequest) {
       credentials: 'include',
     });
 
-    const responseText = await nestResponse.text();
-    let data: TSessionDto | OAuthSyncErrorResponse;
-
-    try {
-      data = responseText ? JSON.parse(responseText) : {};
-    } catch {
-      data = { error: responseText || 'Unknown error' };
-    }
+    const data = await parseBackendResponse<TSessionDto>(nestResponse);
 
     if (!nestResponse.ok) {
-      const errorMessage = 'error' in data ? data.error : ('message' in data ? data.message : `OAuth sync failed: ${nestResponse.statusText}`);
-      return NextResponse.json(
-        {
-          error: errorMessage,
-          ...data,
-        },
-        { status: nestResponse.status },
-      );
+      return createBackendErrorResponse(data, nestResponse.status, nestResponse.statusText, 'OAuth sync failed');
     }
 
-    // Strip tokens and set HttpOnly cookies on the response object
-    const sessionData = data as TSessionDto;
-    const { access_token, refresh_token, expires_in, expires_at, token_type, ...responseData } = sessionData;
-    const response = NextResponse.json(responseData, { status: nestResponse.status });
-
-    if (access_token && refresh_token) {
-      response.cookies.set('accessToken', access_token, AUTH_COOKIE_OPTIONS);
-      response.cookies.set('refreshToken', refresh_token, REFRESH_COOKIE_OPTIONS);
-    }
-
-    return response;
+    return createValidatedAuthSessionResponse(data, nestResponse.status);
   } catch (error) {
     logger.error('OAuth sync error:', { error });
     return NextResponse.json(

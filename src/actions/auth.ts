@@ -1,7 +1,16 @@
 'use server';
 
 import { cache } from 'react';
-import type { TAuthResponse, TRefreshData, TResetPasswordData, TSigninData, TSignupData, TUser } from '@/types/auth';
+import type {
+  TAuthResponse,
+  TRefreshData,
+  TResendConfirmationData,
+  TResetPasswordData,
+  TSigninData,
+  TSignupData,
+  TUser,
+  TVerifyOtpData,
+} from '@/types/auth';
 import { logger } from '@/libs/Logger';
 import { clearAuthCookies, getAccessToken, setAuthCookies } from '@/utils/auth-cookies';
 import { isUnauthorizedError } from '@/utils/auth-error';
@@ -60,7 +69,11 @@ export async function signout(): Promise<{ message: string }> {
 export async function refresh(refreshData: TRefreshData): Promise<{ message: string }> {
   try {
     const result = await authApi.refresh(refreshData);
-    return result;
+    if (result.access_token && result.refresh_token) {
+      await setAuthCookies(result.access_token, result.refresh_token);
+    }
+
+    return { message: 'Token refreshed successfully' };
   } catch (error) {
     throw toActionError(error, 'Failed to refresh token');
   }
@@ -72,6 +85,32 @@ export async function resetPassword(resetData: TResetPasswordData): Promise<{ me
     return result;
   } catch (error) {
     throw toActionError(error, 'Failed to reset password');
+  }
+}
+
+export async function verifyOtp(verifyOtpData: TVerifyOtpData): Promise<TAuthResponse> {
+  try {
+    const result = await authApi.verifyOtp(verifyOtpData);
+
+    if (result.access_token && result.refresh_token) {
+      await setAuthCookies(result.access_token, result.refresh_token);
+    }
+
+    return {
+      user: result.user,
+      message: 'OTP verified successfully',
+    };
+  } catch (error) {
+    throw toActionError(error, 'Failed to verify OTP');
+  }
+}
+
+export async function resendConfirmation(data: TResendConfirmationData): Promise<{ message: string }> {
+  try {
+    const result = await authApi.resendConfirmation(data);
+    return result;
+  } catch (error) {
+    throw toActionError(error, 'Failed to resend confirmation');
   }
 }
 

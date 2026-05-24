@@ -1,5 +1,7 @@
 'use client';
 
+import type { TUser } from '@/types/auth';
+import type { TPlan } from '@/types/plan';
 import type { TSettings } from '@/types/settings';
 import React, { useState } from 'react';
 import { ProfileSection } from './ProfileSection';
@@ -35,7 +37,12 @@ const defaultSettings: TSettings = {
   },
 };
 
-export const ProfilePage: React.FC = () => {
+type ProfilePageProps = {
+  currentUser?: TUser | null;
+  currentPlan?: TPlan | null;
+};
+
+export const ProfilePage: React.FC<ProfilePageProps> = ({ currentUser, currentPlan }) => {
   const [_settings, setSettings] = useState<TSettings>(defaultSettings);
 
   const handleProfileChangeAction = (profile: Partial<TSettings['profile']>) => {
@@ -50,7 +57,11 @@ export const ProfilePage: React.FC = () => {
       title="Profile"
       description="Manage your personal profile information and application settings."
     >
-      <ProfileSection onProfileChangeAction={handleProfileChangeAction} />
+      <ProfileSection
+        currentUser={currentUser}
+        currentPlan={currentPlan}
+        onProfileChangeAction={handleProfileChangeAction}
+      />
     </SettingsPageShell>
   );
 };

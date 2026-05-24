@@ -1,6 +1,4 @@
-import { verifyUser } from '@/actions';
 import { signoutClient } from '@/utils/auth-utils';
-import { getPlans } from '@/actions/plans';
 import { NotificationDropdown } from '@/components/notifications/NotificationDropdown';
 import { Button } from '@/components/ui/button';
 import {
@@ -14,9 +12,9 @@ import {
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { useTheme } from '@/hooks/useTheme';
+import { logger } from '@/libs/Logger';
 import { cn } from '@/libs/utils';
-import type { TPlan } from '@/types/plan';
-import type { HeaderProps, TUser } from '@/types';
+import type { HeaderProps } from '@/types';
 import { getPlanBadgeClassName, getPlanDisplayName } from '@/constants/plan';
 import {
   HamburgerMenu,
@@ -34,6 +32,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 export const Header: React.FC<HeaderProps> = ({
   onSidebarToggle,
   isSidebarExpanded = true,
+  user,
+  currentPlan,
   allNotifications,
   unreadNotifications,
   unreadCount,
@@ -42,25 +42,7 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const { theme, toggleTheme, mounted } = useTheme();
   const router = useRouter();
-  const [user, setUser] = useState<TUser | null>(null);
-  const [currentPlan, setCurrentPlan] = useState<TPlan | null>(null);
   const [commandOpen, setCommandOpen] = useState(false);
-
-  useEffect(() => {
-    const loadUser = async () => {
-      const userData = await verifyUser();
-      setUser(userData);
-    };
-    loadUser();
-  }, []);
-
-  useEffect(() => {
-    if (!user?.role) {
-      setCurrentPlan(null);
-      return;
-    }
-    getPlans(user.role).then(plans => setCurrentPlan(plans[0] ?? null));
-  }, [user?.role]);
 
   const openCommand = useCallback(() => setCommandOpen(true), []);
   useEffect(() => {
@@ -75,7 +57,7 @@ export const Header: React.FC<HeaderProps> = ({
   }, []);
 
   const handleLogout = () => {
-    signoutClient('/').catch(error => console.error('Logout error:', error));
+    signoutClient('/').catch(error => logger.error('Logout error:', { error }));
   };
 
   const planBadgeLabel = (currentPlan ?? user?.role)

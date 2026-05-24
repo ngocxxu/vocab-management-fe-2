@@ -52,6 +52,8 @@ export type LibraryEmptyStateProps = {
 export type LibraryProps = {
   initialData?: import('@/types').ResponseAPI<TLanguageFolder[]>;
   initialLanguagesData?: import('@/types').ResponseAPI<import('@/types').TLanguage[]>;
+  currentUser?: import('@/types/auth').TUser | null;
+  currentPlan?: import('@/types/plan').TPlan | null;
 };
 
 export type LanguageFolderProps = {

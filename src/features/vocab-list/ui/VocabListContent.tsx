@@ -17,6 +17,7 @@ const VocabListContent: React.FC<VocabListContentProps> = ({
   initialSubjectsData,
   initialLanguagesData,
   initialWordTypesData,
+  currentUser,
   vocabListLoadFailed,
 }) => {
   return (
@@ -41,6 +42,7 @@ const VocabListContent: React.FC<VocabListContentProps> = ({
           initialSubjectsData={initialSubjectsData}
           initialLanguagesData={initialLanguagesData}
           initialWordTypesData={initialWordTypesData}
+          currentUser={currentUser}
           vocabListLoadFailed={vocabListLoadFailed}
         />
       </div>

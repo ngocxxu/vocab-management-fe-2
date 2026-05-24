@@ -17,9 +17,7 @@ import {
   User,
 } from '@solar-icons/react/ssr';
 import Image from 'next/image';
-import React, { useEffect, useState } from 'react';
-import { verifyUser } from '@/actions';
-import { getPlans } from '@/actions/plans';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -28,16 +26,19 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/libs/utils';
 
 type ProfileSectionProps = {
+  currentUser?: TUser | null;
+  currentPlan?: TPlan | null;
   onProfileChangeAction: (profile: Partial<TUserProfile>) => void;
 };
 
 export const ProfileSection: React.FC<ProfileSectionProps> = ({
+  currentUser,
+  currentPlan,
   onProfileChangeAction,
 }) => {
-  const [user, setUser] = useState<TUser | null>(null);
-  const [currentPlan, setCurrentPlan] = useState<TPlan | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
+  const user = currentUser ?? null;
+  const isLoading = false;
+  const isError = false;
   const [isEditing, setIsEditing] = useState(false);
   const [twoFaEnabled, setTwoFaEnabled] = useState(false);
   const [formData, setFormData] = useState<TUserProfile>({
@@ -51,33 +52,7 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
     isActive: false,
   });
 
-  useEffect(() => {
-    const loadUser = async () => {
-      try {
-        setIsLoading(true);
-        setIsError(false);
-        const userData = await verifyUser();
-        setUser(userData);
-      } catch (error) {
-        console.error('Failed to load user:', error);
-        setIsError(true);
-        setUser(null);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    loadUser();
-  }, []);
-
-  useEffect(() => {
-    if (!user?.role) {
-      setCurrentPlan(null);
-      return;
-    }
-    getPlans(user.role).then(plans => setCurrentPlan(plans[0] ?? null));
-  }, [user?.role]);
-
-  const profile: TUserProfile = React.useMemo(() => user
+  const profile: TUserProfile = useMemo(() => user
     ? {
         id: user.id,
         email: user.email,

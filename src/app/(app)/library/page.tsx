@@ -1,3 +1,5 @@
+import { verifyUser } from '@/actions';
+import { getPlans } from '@/actions/plans';
 import { Library } from '@/components/library';
 import { getLibraryPageData } from '@/features/library/services/server/getLibraryPageData';
 import { logger } from '@/libs/Logger';
@@ -16,8 +18,20 @@ export default async function LibraryPage({ searchParams }: PageProps) {
   const resolvedParams = await searchParams;
 
   try {
-    const { initialData, initialLanguagesData } = await getLibraryPageData(resolvedParams);
-    return <Library initialData={initialData} initialLanguagesData={initialLanguagesData} />;
+    const [user, pageData] = await Promise.all([
+      verifyUser(),
+      getLibraryPageData(resolvedParams),
+    ]);
+    const currentPlan = user?.role ? (await getPlans(user.role))[0] ?? null : null;
+    const { initialData, initialLanguagesData } = pageData;
+    return (
+      <Library
+        initialData={initialData}
+        initialLanguagesData={initialLanguagesData}
+        currentUser={user}
+        currentPlan={currentPlan}
+      />
+    );
   } catch (error) {
     if (isUnauthorizedError(error)) {
       redirect(getExpiredSessionRedirect('/library'));

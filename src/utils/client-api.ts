@@ -1,5 +1,13 @@
 import type { AxiosRequestConfig } from 'axios';
-import type { TAuthResponse, TOAuthSyncResponse } from '@/types/auth';
+import type {
+  TAuthResponse,
+  TOAuthData,
+  TOAuthResponse,
+  TOAuthSyncInput,
+  TOAuthSyncResponse,
+  TResendConfirmationData,
+  TVerifyOtpData,
+} from '@/types/auth';
 import axiosInstance from '@/libs/axios';
 import { API_METHODS } from './api-config';
 
@@ -54,8 +62,20 @@ export const authApi = {
     const config = API_METHODS.auth.signup(data);
     return ClientAPI.post<TAuthResponse>(config.endpoint, config.data);
   },
-  oauthSync: (data: { accessToken: string }) => {
+  oauthSync: (data: TOAuthSyncInput) => {
     const config = API_METHODS.auth.oauthSync(data);
     return ClientAPI.post<TOAuthSyncResponse>(config.endpoint, config.data);
+  },
+  oauth: (data: TOAuthData) => {
+    const config = API_METHODS.auth.oauth(data);
+    return ClientAPI.post<TOAuthResponse>(config.endpoint, config.data);
+  },
+  verifyOtp: (data: TVerifyOtpData) => {
+    const config = API_METHODS.auth.verifyOtp(data);
+    return ClientAPI.post<TAuthResponse>(config.endpoint, config.data);
+  },
+  resendConfirmation: (data: TResendConfirmationData) => {
+    const config = API_METHODS.auth.resendConfirmation(data);
+    return ClientAPI.post<{ message: string }>(config.endpoint, config.data);
   },
 };

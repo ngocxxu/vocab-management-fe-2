@@ -4,6 +4,24 @@ import { Env } from './Env';
 
 let supabaseClient: SupabaseClient | null = null;
 
+function clearStoredSupabaseSession(supabaseUrl: string): void {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  try {
+    const projectRef = new URL(supabaseUrl).hostname.split('.')[0];
+    if (!projectRef) {
+      return;
+    }
+
+    window.localStorage.removeItem(`sb-${projectRef}-auth-token`);
+    window.localStorage.removeItem(`sb-${projectRef}-auth-token-user`);
+  } catch {
+    // Storage can be unavailable in restricted browser contexts.
+  }
+}
+
 function getSupabaseClient(): SupabaseClient {
   if (supabaseClient) {
     return supabaseClient;
@@ -16,7 +34,14 @@ function getSupabaseClient(): SupabaseClient {
     throw new Error('Supabase URL and anon key are required. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY environment variables.');
   }
 
-  supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+  clearStoredSupabaseSession(supabaseUrl);
+
+  supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  });
   return supabaseClient;
 }
 

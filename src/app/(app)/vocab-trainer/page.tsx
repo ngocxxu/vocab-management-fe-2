@@ -15,9 +15,9 @@ export default async function VocabTrainerPage({ searchParams }: PageProps) {
   const resolvedParams = await searchParams;
 
   try {
-    const { initialData, initialLanguagesData } = await getVocabTrainerPageData(resolvedParams);
+    const { currentUser, initialData, initialLanguagesData } = await getVocabTrainerPageData(resolvedParams);
 
-    return <VocabTrainerLayout initialData={initialData} initialLanguagesData={initialLanguagesData} />;
+    return <VocabTrainerLayout currentUser={currentUser} initialData={initialData} initialLanguagesData={initialLanguagesData} />;
   } catch (error) {
     if (isUnauthorizedError(error)) {
       redirect(getExpiredSessionRedirect('/vocab-trainer'));

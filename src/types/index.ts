@@ -71,11 +71,14 @@ export type SidebarProps = {
   isOpen: boolean;
   onClose?: () => void;
   isExpanded?: boolean;
+  user?: import('@/types/auth').TUser | null;
 };
 
 export type HeaderProps = {
   onSidebarToggle: () => void;
   isSidebarExpanded?: boolean;
+  user?: import('@/types/auth').TUser | null;
+  currentPlan?: import('@/types/plan').TPlan | null;
   allNotifications?: ResponseAPI<import('@/types/notification').TNotification[]> | null;
   unreadNotifications?: ResponseAPI<import('@/types/notification').TNotification[]> | null;
   unreadCount?: import('@/types/notification').TUnreadCountResponse | null;
@@ -203,4 +206,5 @@ export type SocketContextType = {
 
 export type SocketProviderProps = {
   children: React.ReactNode;
+  user?: import('@/types/auth').TUser | null;
 };

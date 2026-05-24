@@ -1,6 +1,12 @@
 import type { EQuestionType } from '@/enum/vocab-trainer';
 import type { GenerateUploadSignatureInput } from '@/types/cloudinary';
 import type {
+  TOAuthData,
+  TOAuthSyncInput,
+  TResendConfirmationData,
+  TVerifyOtpData,
+} from '@/types/auth';
+import type {
   TNotificationInput,
   TUpdateNotificationStatusInput,
 } from '@/types/notification';
@@ -84,7 +90,10 @@ export const API_ENDPOINTS = {
     signout: '/auth/signout',
     resetPassword: '/auth/reset-password',
     verify: '/auth/verify',
+    oauth: '/auth/oauth',
     oauthSync: '/auth/oauth/sync',
+    verifyOtp: '/auth/verify-otp',
+    resendConfirmation: '/auth/resend-confirmation',
   },
   vocabs: '/vocabs',
   vocabTrainers: '/vocab-trainers',
@@ -106,7 +115,10 @@ export const API_METHODS = {
     signout: () => ({ endpoint: API_ENDPOINTS.auth.signout }),
     resetPassword: (data: { email: string }) => ({ endpoint: API_ENDPOINTS.auth.resetPassword, data }),
     verify: () => ({ endpoint: API_ENDPOINTS.auth.verify }),
-    oauthSync: (data: { accessToken: string }) => ({ endpoint: API_ENDPOINTS.auth.oauthSync, data }),
+    oauth: (data: TOAuthData) => ({ endpoint: API_ENDPOINTS.auth.oauth, data }),
+    oauthSync: (data: TOAuthSyncInput) => ({ endpoint: API_ENDPOINTS.auth.oauthSync, data }),
+    verifyOtp: (data: TVerifyOtpData) => ({ endpoint: API_ENDPOINTS.auth.verifyOtp, data }),
+    resendConfirmation: (data: TResendConfirmationData) => ({ endpoint: API_ENDPOINTS.auth.resendConfirmation, data }),
   },
   vocabs: {
     getAll: (params?: VocabQueryParams) => {

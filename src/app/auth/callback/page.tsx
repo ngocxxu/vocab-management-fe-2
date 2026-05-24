@@ -4,7 +4,21 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
 import { LoadingComponent } from '@/shared/ui/shared';
 import { Alert, AlertDescription } from '@/shared/ui/alert';
+import { logger } from '@/libs/Logger';
 import { supabase } from '@/libs/supabase';
+
+function getSafeRedirectPath(value: string | null, fallback: string): string {
+  if (!value || !value.startsWith('/') || value.startsWith('//')) {
+    return fallback;
+  }
+
+  try {
+    const url = new URL(value, window.location.origin);
+    return `${url.pathname}${url.search}${url.hash}`;
+  } catch {
+    return fallback;
+  }
+}
 
 function AuthCallbackContent() {
   const router = useRouter();
@@ -30,8 +44,8 @@ function AuthCallbackContent() {
         const accessToken = session.access_token;
         const refreshToken = session.refresh_token;
 
-        if (!accessToken) {
-          throw new Error('No access token in session');
+        if (!accessToken || !refreshToken) {
+          throw new Error('No access token or refresh token in session');
         }
 
         const response = await fetch('/api/auth/oauth/sync', {
@@ -50,10 +64,10 @@ function AuthCallbackContent() {
 
         await response.json();
 
-        const redirectTo = searchParams.get('redirect') || '/dashboard';
+        const redirectTo = getSafeRedirectPath(searchParams.get('redirect'), '/dashboard');
         router.push(redirectTo);
       } catch (err) {
-        console.error('OAuth callback error:', err);
+        logger.error('OAuth callback error:', { error: err });
         setError(err instanceof Error ? err.message : 'Failed to complete OAuth sign in');
         setIsLoading(false);
 

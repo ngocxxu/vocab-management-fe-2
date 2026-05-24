@@ -2,13 +2,9 @@
 
 import { createLanguageFolder, deleteLanguageFolder } from '@/actions/language-folders';
 import type { LibraryProps, TCreateLanguageFolder, TLanguageFolder } from '@/types/language-folder';
-import type { TUser } from '@/types/auth';
 import { useRouter } from 'next/navigation';
-import React, { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
+import React, { useCallback, useMemo, useState, useTransition } from 'react';
 import { toast } from 'sonner';
-import { verifyUser } from '@/actions';
-import { getPlans } from '@/actions/plans';
-import type { TPlan } from '@/types/plan';
 import { isQuotaError, QUOTA_ERROR_MESSAGE } from '@/utils/quota-error';
 import CreateFolderCard from './CreateFolderCard';
 import CreateFolderModal from './CreateFolderModal';
@@ -19,11 +15,10 @@ import LibraryHeader from './LibraryHeader';
 import LibraryLoadingState from './LibraryLoadingState';
 import LibrarySearch from './LibrarySearch';
 
-const Library: React.FC<LibraryProps> = ({ initialData, initialLanguagesData }) => {
+const Library: React.FC<LibraryProps> = ({ initialData, initialLanguagesData, currentUser, currentPlan }) => {
   const router = useRouter();
   const [, startTransition] = useTransition();
-  const [user, setUser] = useState<TUser | null>(null);
-  const [currentPlan, setCurrentPlan] = useState<TPlan | null>(null);
+  const user = currentUser ?? null;
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'updatedAt' | 'name'>('updatedAt');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
@@ -41,17 +36,6 @@ const Library: React.FC<LibraryProps> = ({ initialData, initialLanguagesData }) 
       return acc;
     }, {});
   }, [initialLanguagesData?.items]);
-
-  useEffect(() => {
-    verifyUser().then(setUser);
-  }, []);
-
-  useEffect(() => {
-    if (!user?.role) {
-      return;
-    }
-    getPlans(user.role).then(plans => setCurrentPlan(plans[0] ?? null));
-  }, [user?.role]);
 
   const folderCount = initialData?.items?.length ?? 0;
   const folderLimit = currentPlan?.limits.languageFolders ?? null;

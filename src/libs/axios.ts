@@ -72,7 +72,11 @@ axiosInstance.interceptors.response.use(
       throw error;
     }
 
-    if ((error.response?.status === 401) && !originalRequest._retry) {
+    if (
+      (error.response?.status === 401)
+      && !originalRequest._retry
+      && originalRequest.url !== API_ENDPOINTS.auth.refresh
+    ) {
       originalRequest._retry = true;
 
       try {
@@ -82,13 +86,8 @@ axiosInstance.interceptors.response.use(
         });
 
         if (refreshResponse.ok) {
-          const refreshData = await refreshResponse.json();
-
-          // Update the original request with new token
-          if (refreshData.accessToken || refreshData.token) {
-            // Retry the original request
-            return axiosInstance(originalRequest);
-          }
+          await refreshResponse.json();
+          return axiosInstance(originalRequest);
         }
       } catch (refreshError) {
         logger.error('Token refresh failed:', { error: refreshError });

@@ -1,3 +1,4 @@
+import { verifyUser } from '@/actions';
 import type { EQuestionType } from '@/enum/vocab-trainer';
 import { languagesApi, vocabTrainerApi } from '@/utils/server-api';
 
@@ -21,7 +22,8 @@ export async function getVocabTrainerPageData(resolvedParams: SearchParams) {
     questionType,
   };
 
-  const [initialData, initialLanguagesData] = await Promise.all([
+  const [currentUser, initialData, initialLanguagesData] = await Promise.all([
+    verifyUser(),
     vocabTrainerApi.getAll({
       page: queryParams.page,
       pageSize: queryParams.pageSize,
@@ -34,5 +36,5 @@ export async function getVocabTrainerPageData(resolvedParams: SearchParams) {
     languagesApi.getAll(),
   ]);
 
-  return { initialData, initialLanguagesData };
+  return { currentUser, initialData, initialLanguagesData };
 }

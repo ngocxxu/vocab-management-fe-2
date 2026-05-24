@@ -1,13 +1,17 @@
 'use client';
 
 import type { ResponseAPI } from '@/types';
+import type { TUser } from '@/types/auth';
 import type { TNotification, TUnreadCountResponse } from '@/types/notification';
+import type { TPlan } from '@/types/plan';
 import { useEffect, useState } from 'react';
 import { Header, Sidebar } from '@/components/dashboard';
 import { SocketProvider } from '@/providers/SocketProvider';
 
 type LayoutClientProps = {
   children: React.ReactNode;
+  currentUser?: TUser | null;
+  currentPlan?: TPlan | null;
   initialAllNotifications?: ResponseAPI<TNotification[]>;
   initialUnreadNotifications?: ResponseAPI<TNotification[]>;
   initialUnreadCount?: TUnreadCountResponse;
@@ -15,6 +19,8 @@ type LayoutClientProps = {
 
 export function LayoutClient({
   children,
+  currentUser,
+  currentPlan,
   initialAllNotifications,
   initialUnreadNotifications,
   initialUnreadCount,
@@ -56,7 +62,7 @@ export function LayoutClient({
   const mainMargin = isDesktop ? (isSidebarExpanded ? 'md:ml-72' : 'md:ml-16') : '';
 
   return (
-    <SocketProvider>
+    <SocketProvider user={currentUser}>
       <div className="flex h-screen bg-background">
         {isSidebarOpen && (
           <div
@@ -65,11 +71,18 @@ export function LayoutClient({
             aria-hidden="true"
           />
         )}
-        <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} isExpanded={isDesktop ? isSidebarExpanded : true} />
+        <Sidebar
+          isOpen={isSidebarOpen}
+          onClose={closeSidebar}
+          isExpanded={isDesktop ? isSidebarExpanded : true}
+          user={currentUser}
+        />
         <div className={`ml-0 flex flex-1 flex-col transition-all duration-300 ease-in-out ${mainMargin}`}>
           <Header
             onSidebarToggle={toggleSidebar}
             isSidebarExpanded={isSidebarExpanded}
+            user={currentUser}
+            currentPlan={currentPlan}
             allNotifications={initialAllNotifications}
             unreadNotifications={initialUnreadNotifications}
             unreadCount={initialUnreadCount}

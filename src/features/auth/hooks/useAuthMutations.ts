@@ -1,11 +1,9 @@
-import type { TSigninData, TSignupData } from '@/types/auth';
+import type { TOAuthProvider, TSigninData, TSignupData } from '@/types/auth';
 import { Env } from '@/libs/Env';
 import { supabase } from '@/libs/supabase';
 import { useCallback, useState } from 'react';
 import { authClient } from '../services/client/authClient';
 import { getAuthErrorMessage } from '../utils/getAuthErrorMessage';
-
-type OAuthProvider = 'google' | 'apple' | 'facebook' | 'twitter';
 
 function getOrigin(): string | undefined {
   if (typeof globalThis !== 'undefined' && 'location' in globalThis) {
@@ -41,7 +39,7 @@ export function useAuthMutations() {
     }
   }, []);
 
-  const signInWithProvider = useCallback(async (provider: OAuthProvider, redirectTo: string) => {
+  const signInWithProvider = useCallback(async (provider: TOAuthProvider, redirectTo: string) => {
     setIsOAuthLoading(true);
     setErrorMessage('');
 

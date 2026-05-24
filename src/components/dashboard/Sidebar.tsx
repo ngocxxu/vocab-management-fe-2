@@ -1,7 +1,7 @@
-import { verifyUser } from '@/actions';
 import { signoutClient } from '@/utils/auth-utils';
+import { logger } from '@/libs/Logger';
 import { Button } from '@/components/ui/button';
-import type { MenuItem, SidebarProps, TUser } from '@/types';
+import type { MenuItem, SidebarProps } from '@/types';
 import { useTheme } from '@/hooks/useTheme';
 import {
   Bell,
@@ -14,7 +14,7 @@ import {
 } from '@solar-icons/react/ssr';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 const mainMenuItems: MenuItem[] = [
   { id: 'dashboard', path: '/dashboard', label: 'Dashboard', icon: <HomeSmile size={20} weight="BoldDuotone" /> },
@@ -28,24 +28,15 @@ const settingsMenuItems: MenuItem[] = [
   { id: 'notifications', path: '/notifications', label: 'Notifications', icon: <Bell size={20} weight="BoldDuotone" /> },
 ];
 
-export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, isExpanded = true }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, isExpanded = true, user }) => {
   const collapsed = !isExpanded;
   const router = useRouter();
   const pathname = usePathname();
   const { theme, mounted } = useTheme();
-  const [user, setUser] = useState<TUser | null>(null);
   const logoSrc
     = !mounted || theme !== 'dark'
       ? '/assets/logo/logo-light-mode.png'
       : '/assets/logo/logo-dark-mode.png';
-
-  useEffect(() => {
-    const loadUser = async () => {
-      const userData = await verifyUser();
-      setUser(userData);
-    };
-    loadUser();
-  }, []);
 
   const isActivePath = (path: string) => {
     if (path === '/dashboard') {
@@ -62,7 +53,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, isExpanded = 
   };
 
   const handleSignOut = () => {
-    signoutClient('/signin').catch(error => console.error('Sign out failed:', error));
+    signoutClient('/signin').catch(error => logger.error('Sign out failed:', { error }));
   };
 
   return (

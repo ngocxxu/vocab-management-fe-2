@@ -200,6 +200,7 @@ export type VocabListLayoutProps = {
   initialSubjectsData?: import('@/types/subject').TSubjectResponse;
   initialLanguagesData?: import('@/types').ResponseAPI<import('@/types').TLanguage[]>;
   initialWordTypesData?: import('@/types/word-type').TWordTypeResponse;
+  currentUser?: import('@/types/auth').TUser | null;
   vocabListLoadFailed?: boolean;
 };
 

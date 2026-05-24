@@ -1,6 +1,6 @@
 import type { LanguageFolderQueryParams, RandomVocabQueryParams, VocabConflictBySubjectParams, VocabQueryParams, VocabTrainerQueryParams } from './api-config';
 import type { ResponseAPI, TLanguage, TLanguageFolder, TUser } from '@/types';
-import type { TSessionDto } from '@/types/auth';
+import type { TOAuthData, TOAuthResponse, TResendConfirmationData, TSessionDto, TVerifyOtpData } from '@/types/auth';
 import type {
   TDeleteNotificationResponse,
   TMarkAllAsReadResponse,
@@ -18,115 +18,20 @@ import type { TWordTypeResponse } from '@/types/word-type';
 import { Env } from '@/libs/Env';
 import { BackendRequestError } from '@/utils/backend-request-error';
 import { logger } from '@/libs/Logger';
-import { getAccessToken, getRefreshToken, setAuthCookies } from '@/utils/auth-cookies';
+import { getAccessToken } from '@/utils/auth-cookies';
 import { API_ENDPOINTS, API_METHODS } from './api-config';
 
 class ServerAPI {
   private readonly baseURL = Env.NESTJS_API_URL || 'http://localhost:3002/api/v1';
-  private isRefreshing: Promise<TSessionDto | null> | null = null; // avoid race condition
-  private refreshBlockedUntil = 0;
-
-  private getRefreshCooldownMs(response: Response): number {
-    const retryAfter = response.headers.get('retry-after');
-    if (retryAfter) {
-      const retryAfterSeconds = Number(retryAfter);
-      if (Number.isFinite(retryAfterSeconds) && retryAfterSeconds > 0) {
-        return retryAfterSeconds * 1000;
-      }
-
-      const retryAfterDate = Date.parse(retryAfter);
-      if (!Number.isNaN(retryAfterDate)) {
-        return Math.max(retryAfterDate - Date.now(), 0);
-      }
-    }
-
-    return response.status === 429 ? 30_000 : 5_000;
-  }
 
   private async doFetch(endpoint: string, options: RequestInit): Promise<Response> {
     const token = await getAccessToken();
 
-    const response = await fetch(`${this.baseURL}${endpoint}`, {
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-        ...options.headers,
-      },
-    });
-
-    if (response.status !== 401 && response.status !== 403) {
-      return response;
-    }
-
-    if (endpoint === API_ENDPOINTS.auth.signout) {
-      return response;
-    }
-
-    const refreshToken = await getRefreshToken();
-    if (!refreshToken) {
-      return response;
-    }
-
-    if (Date.now() < this.refreshBlockedUntil) {
-      return response;
-    }
-
-    this.isRefreshing ??= fetch(`${this.baseURL}${API_ENDPOINTS.auth.refresh}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ refreshToken }),
-    })
-      .then(async (refreshRes) => {
-        const contentType = refreshRes.headers.get('content-type');
-        const data = contentType?.includes('application/json')
-          ? await refreshRes.json() as unknown
-          : await refreshRes.text();
-
-        if (!refreshRes.ok) {
-          this.refreshBlockedUntil = Date.now() + this.getRefreshCooldownMs(refreshRes);
-          logger.warn('Refresh failed:', {
-            status: refreshRes.status,
-            statusText: refreshRes.statusText,
-            error: data,
-          });
-          return null;
-        }
-
-        const session = data as Partial<TSessionDto>;
-        if (!session.access_token || !session.refresh_token) {
-          logger.warn('Refresh response did not include replacement tokens:', {
-            status: refreshRes.status,
-          });
-          return null;
-        }
-
-        try {
-          await setAuthCookies(session.access_token, session.refresh_token);
-        } catch (error) {
-          logger.warn('Unable to persist refreshed auth cookies in this server context:', { error });
-        }
-
-        this.refreshBlockedUntil = 0;
-        return session as TSessionDto;
-      })
-      .finally(() => {
-        this.isRefreshing = null;
-      });
-
-    const refreshedSession = await this.isRefreshing;
-    if (!refreshedSession) {
-      return response;
-    }
-
-    // Retry request after refresh successfully, with new token
     return fetch(`${this.baseURL}${endpoint}`, {
       ...options,
       headers: {
         'Content-Type': 'application/json',
-        ...(refreshedSession.access_token && { Authorization: `Bearer ${refreshedSession.access_token}` }),
+        ...(token && { Authorization: `Bearer ${token}` }),
         ...options.headers,
       },
     });
@@ -241,7 +146,7 @@ export const authApi = {
   },
   refresh: (data: { refreshToken: string }) => {
     const config = API_METHODS.auth.refresh(data);
-    return serverApi.post<{ message: string }>(config.endpoint, config.data);
+    return serverApi.post<TSessionDto>(config.endpoint, config.data);
   },
   signout: () => {
     const config = API_METHODS.auth.signout();
@@ -255,9 +160,21 @@ export const authApi = {
     const config = API_METHODS.auth.verify();
     return serverApi.get<TUser>(config.endpoint);
   },
+  oauth: (data: TOAuthData) => {
+    const config = API_METHODS.auth.oauth(data);
+    return serverApi.post<TOAuthResponse>(config.endpoint, config.data);
+  },
   oauthSync: (data: { accessToken: string; refreshToken: string }) => {
     const config = API_METHODS.auth.oauthSync(data);
     return serverApi.post<TSessionDto>(config.endpoint, config.data);
+  },
+  verifyOtp: (data: TVerifyOtpData) => {
+    const config = API_METHODS.auth.verifyOtp(data);
+    return serverApi.post<TSessionDto>(config.endpoint, config.data);
+  },
+  resendConfirmation: (data: TResendConfirmationData) => {
+    const config = API_METHODS.auth.resendConfirmation(data);
+    return serverApi.post<{ message: string }>(config.endpoint, config.data);
   },
 };
 

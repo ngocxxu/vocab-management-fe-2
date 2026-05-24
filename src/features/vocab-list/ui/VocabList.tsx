@@ -15,8 +15,6 @@ import { useForm } from 'react-hook-form';
 import { useSpeechSynthesis } from 'react-speech-kit';
 import { toast } from 'sonner';
 import { z } from 'zod';
-import { verifyUser } from '@/actions';
-import type { TUser } from '@/types/auth';
 import { createVocab, deleteVocabsBulk, updateVocab } from '@/actions/vocabs';
 import { isQuotaError, QUOTA_ERROR_MESSAGE } from '@/utils/quota-error';
 import { BulkDeleteDialog, DeleteActionButton, ErrorState } from '@/shared/ui/shared';
@@ -66,15 +64,12 @@ const VocabList: React.FC<VocabListProps> = ({
   initialSubjectsData,
   initialLanguagesData,
   initialWordTypesData,
+  currentUser,
   vocabListLoadFailed = false,
 }) => {
-  const [user, setUser] = useState<TUser | null>(null);
   const [importDialogOpen, setImportDialogOpen] = React.useState(false);
   const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    verifyUser().then(setUser);
-  }, []);
+  const user = currentUser ?? null;
   const [expanded, setExpanded] = React.useState<Record<string, boolean>>({});
   const { speak, cancel, voices } = useSpeechSynthesis();
 
