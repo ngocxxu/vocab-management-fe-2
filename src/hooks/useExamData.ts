@@ -8,7 +8,7 @@ import { useSocket } from '@/hooks/useSocket';
 import { logger } from '@/libs/Logger';
 import { SOCKET_EVENTS } from '@/utils/socket-config';
 
-// --- Helpers: Separate storage logic ---
+// --- Storage helpers ---
 const getStorageKey = (id: string) => `exam_data_${id}`;
 
 const loadCachedData = (id: string): TQuestionAPI | null => {
@@ -43,94 +43,108 @@ export const useExamData = ({
   onSuccessAction,
   onErrorAction,
 }: UseExamDataOptions) => {
-  // State
   const [examData, setExamData] = useState<TQuestionAPI | null>(null);
   const [status, setStatus] = useState<GenerationStatus>('idle');
   const [error, setError] = useState<unknown>(null);
 
-  // Hooks & Refs
   const { socket, isConnected } = useSocket();
+
+  // Refs that never need to trigger a re-render
   const jobIdRef = useRef<string | null>(null);
-
-  const latestActions = useRef({ onSuccessAction, onErrorAction });
   const trainerIdRef = useRef(trainerId);
+  const loadPromiseRef = useRef<Promise<void> | null>(null);
+  const successFiredRef = useRef(false);
+  const latestActions = useRef({ onSuccessAction, onErrorAction });
 
-  // Derived state
   const isLoading = status === 'generating';
   const isError = status === 'failed';
 
-  // --- Effect: Sync Refs ---
+  // Keep callback refs fresh without affecting other deps
   useEffect(() => {
     latestActions.current = { onSuccessAction, onErrorAction };
-    trainerIdRef.current = trainerId;
-  }, [onSuccessAction, onErrorAction, trainerId]);
+  }, [onSuccessAction, onErrorAction]);
 
-  // --- Core Logic: Fetch Data ---
+  // Keep trainerId ref in sync
+  useEffect(() => {
+    trainerIdRef.current = trainerId;
+  }, [trainerId]);
+
   const loadExamData = useCallback(async () => {
     if (!trainerId) {
       return;
     }
-
-    // 1. Check Cache
-    const cached = loadCachedData(trainerId);
-    if (cached?.questionAnswers?.length) {
-      setExamData(cached);
-      setStatus('completed');
-      // Access callback via Ref to keep this hook's dependency stable
-      latestActions.current.onSuccessAction?.(cached);
-      return;
+    if (loadPromiseRef.current) {
+      return loadPromiseRef.current;
     }
 
-    // 2. Fetch API
-    try {
-      setStatus('generating');
-      setError(null);
-
-      const data = await getExam(trainerId);
-      setExamData(data);
-
-      // Case A: Data is ready immediately
-      if (data.questionAnswers?.length > 0) {
-        saveCachedData(trainerId, data);
-        setStatus('completed');
+    const fireSuccess = (data: TQuestionAPI) => {
+      if (!successFiredRef.current) {
+        successFiredRef.current = true;
         latestActions.current.onSuccessAction?.(data);
+      }
+    };
+
+    const loadPromise = (async () => {
+      // 1. Cache hit
+      const cached = loadCachedData(trainerId);
+      if (cached?.questionAnswers?.length) {
+        successFiredRef.current = false; // reset for this cycle
+        setExamData(cached);
+        setStatus('completed');
+        fireSuccess(cached);
         return;
       }
 
-      // Case B: Need to wait for socket generation
-      jobIdRef.current = data.jobId || trainerId;
+      // 2. Fetch
+      try {
+        successFiredRef.current = false;
+        setStatus('generating');
+        setError(null);
 
-      if (!socket?.connected) {
-        logger.warn('Socket not connected, waiting for connection...', { trainerId });
+        const data = await getExam(trainerId);
+        setExamData(data);
+
+        // Case A: ready immediately
+        if (data.questionAnswers?.length > 0) {
+          saveCachedData(trainerId, data);
+          setStatus('completed');
+          fireSuccess(data);
+          return;
+        }
+
+        // Case B: wait for socket
+        jobIdRef.current = data.jobId || trainerId;
+
+        if (!socket?.connected) {
+          logger.warn('Socket not connected, waiting for connection...', { trainerId });
+        }
+      } catch (err) {
+        logger.error('Fetch error:', { error: err, trainerId });
+        setError(err);
+        setStatus('failed');
+        latestActions.current.onErrorAction?.(err);
       }
-    } catch (err) {
-      logger.error('Fetch error:', { error: err, trainerId });
-      setError(err);
-      setStatus('failed');
-      latestActions.current.onErrorAction?.(err);
+    })();
+
+    loadPromiseRef.current = loadPromise;
+    try {
+      await loadPromise;
+    } finally {
+      loadPromiseRef.current = null;
     }
-    // Dependencies: Only re-create this function if trainerId or socket instance changes.
-    // Actions are accessed via Ref, so they are not needed here.
   }, [trainerId, socket]);
 
-  // --- Core Logic: Socket Listener ---
+  // Socket listener — only active while generating
   useEffect(() => {
-    // Only subscribe if we are in 'generating' state and have a valid socket
     if (!socket || !isConnected || !jobIdRef.current || status !== 'generating') {
       return;
     }
 
     const handleProgress = (event: TExamGenerationProgress) => {
-      // Security: Ensure event matches the current job
-      // Convert both to string for comparison to handle type mismatch
-      const currentJobId = String(jobIdRef.current);
-      const eventJobId = String(event.jobId);
-
-      if (eventJobId !== currentJobId) {
+      if (String(event.jobId) !== String(jobIdRef.current)) {
         return;
       }
 
-      // Handle Failure
       if (event.status === 'failed') {
         const errMsg = event.data?.error || 'Generation failed';
         setError(errMsg);
@@ -139,62 +153,50 @@ export const useExamData = ({
         return;
       }
 
-      // Handle Completion
       if (event.status === 'completed' && event.data?.questions) {
-        setExamData((prev) => {
-          if (!prev) {
-            return null;
-          }
+        const completedData: TQuestionAPI = {
+          ...examData!,
+          questionAnswers: event.data.questions,
+          questionType: examData!.questionType ?? EQuestionType.MULTIPLE_CHOICE,
+        };
 
-          const completedData: TQuestionAPI = {
-            ...prev,
-            questionAnswers: event.data!.questions || [],
-            questionType: prev.questionType || EQuestionType.MULTIPLE_CHOICE,
-          };
+        if (trainerIdRef.current) {
+          saveCachedData(trainerIdRef.current, completedData);
+        }
 
-          const currentTrainerId = trainerIdRef.current;
-          if (currentTrainerId) {
-            saveCachedData(currentTrainerId, completedData);
-          }
-
-          return completedData;
-        });
-
+        setExamData(completedData);
         setStatus('completed');
+
+        if (!successFiredRef.current) {
+          successFiredRef.current = true;
+          latestActions.current.onSuccessAction?.(completedData);
+        }
       }
     };
 
     socket.on(SOCKET_EVENTS.MULTIPLE_CHOICE_GENERATION_PROGRESS, handleProgress);
-
     return () => {
       socket.off(SOCKET_EVENTS.MULTIPLE_CHOICE_GENERATION_PROGRESS, handleProgress);
     };
-  }, [socket, isConnected, status]);
+  }, [socket, isConnected, status, examData]);
 
-  // --- Effect: Handle completion callback ---
-  useEffect(() => {
-    if (status === 'completed' && examData?.questionAnswers?.length) {
-      // Only call once when transitioning from generating to completed
-      latestActions.current.onSuccessAction?.(examData);
-    }
-  }, [status, examData]);
-
-  // --- Auto Load ---
+  // Auto-load
   useEffect(() => {
     if (autoLoad && trainerId) {
       loadExamData();
     }
   }, [autoLoad, trainerId, loadExamData]);
 
-  // --- Reset Action ---
   const clearExamData = useCallback(() => {
     if (trainerId) {
       localStorage.removeItem(getStorageKey(trainerId));
     }
     setExamData(null);
     setStatus('idle');
-    jobIdRef.current = null;
     setError(null);
+    jobIdRef.current = null;
+    loadPromiseRef.current = null;
+    successFiredRef.current = false;
   }, [trainerId]);
 
   return {
