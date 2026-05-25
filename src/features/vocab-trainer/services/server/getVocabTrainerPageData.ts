@@ -1,5 +1,6 @@
 import { verifyUser } from '@/actions';
 import type { EQuestionType } from '@/enum/vocab-trainer';
+import { getCachedLanguages } from '@/features/reference-data';
 import { languagesApi, vocabTrainerApi } from '@/utils/server-api';
 
 type SearchParams = { [key: string]: string | string[] | undefined };
@@ -33,7 +34,7 @@ export async function getVocabTrainerPageData(resolvedParams: SearchParams) {
       status: queryParams.status,
       questionType: queryParams.questionType as EQuestionType,
     }),
-    languagesApi.getAll(),
+    getCachedLanguages().catch(() => languagesApi.getAll()),
   ]);
 
   return { currentUser, initialData, initialLanguagesData };

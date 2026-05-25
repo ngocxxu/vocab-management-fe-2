@@ -12,10 +12,12 @@ import { SOCKET_EVENTS } from '@/utils/socket-config';
 const getStorageKey = (id: string) => `exam_data_${id}`;
 
 const loadCachedData = (id: string): TQuestionAPI | null => {
+  const storageKey = getStorageKey(id);
   try {
-    const cached = localStorage.getItem(getStorageKey(id));
+    const cached = localStorage.getItem(storageKey);
     return cached ? JSON.parse(cached) : null;
   } catch {
+    localStorage.removeItem(storageKey);
     return null;
   }
 };
@@ -44,7 +46,7 @@ export const useExamData = ({
   onErrorAction,
 }: UseExamDataOptions) => {
   const [examData, setExamData] = useState<TQuestionAPI | null>(null);
-  const [status, setStatus] = useState<GenerationStatus>('idle');
+  const [status, setStatus] = useState<GenerationStatus>(() => autoLoad && trainerId ? 'generating' : 'idle');
   const [error, setError] = useState<unknown>(null);
 
   const { socket, isConnected } = useSocket();
@@ -183,6 +185,7 @@ export const useExamData = ({
   // Auto-load
   useEffect(() => {
     if (autoLoad && trainerId) {
+      setStatus('generating');
       loadExamData();
     }
   }, [autoLoad, trainerId, loadExamData]);

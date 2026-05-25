@@ -1,15 +1,6 @@
 import type { NextFetchEvent, NextRequest } from 'next/server';
-import { detectBot } from '@arcjet/next';
 import { NextResponse } from 'next/server';
 import { AUTH_COOKIE_OPTIONS, REFRESH_COOKIE_OPTIONS } from '@/utils/auth-cookies';
-import arcjet from '@/libs/Arcjet';
-
-const aj = arcjet.withRule(
-  detectBot({
-    mode: 'LIVE',
-    allow: ['CATEGORY:SEARCH_ENGINE', 'CATEGORY:PREVIEW', 'CATEGORY:MONITOR'],
-  }),
-);
 
 const PROTECTED = ['/dashboard', '/library', '/vocab-list', '/vocab-trainer', '/profile', '/subjects', '/notifications'];
 const AUTH_ROUTES = ['/signin', '/signup', '/forgot-password'];
@@ -90,13 +81,6 @@ function withRefreshedSession(request: NextRequest, session: Session): NextRespo
 
 export default async function proxy(request: NextRequest, _event: NextFetchEvent) {
   const { pathname } = request.nextUrl;
-
-  if (process.env.ARCJET_KEY) {
-    const decision = await aj.protect(request);
-    if (decision.isDenied()) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
-  }
 
   const isProtected = PROTECTED.some(r => pathname.startsWith(r));
   const isAuth = AUTH_ROUTES.some(r => pathname.startsWith(r));

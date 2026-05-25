@@ -2,6 +2,7 @@ export * from './auth';
 export * from './cloudinary';
 export * from './language-folders';
 export * from './languages';
+export * from './layout-header';
 export * from './notifications';
 export * from './subjects';
 export * from './vocab-trainers';

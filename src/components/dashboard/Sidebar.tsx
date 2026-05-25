@@ -13,8 +13,9 @@ import {
   User,
 } from '@solar-icons/react/ssr';
 import Image from 'next/image';
+import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 const mainMenuItems: MenuItem[] = [
   { id: 'dashboard', path: '/dashboard', label: 'Dashboard', icon: <HomeSmile size={20} weight="BoldDuotone" /> },
@@ -45,8 +46,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, isExpanded = 
     return pathname === path || pathname.startsWith(`${path}/`);
   };
 
-  const handleNav = (path: string) => {
-    router.push(path);
+  useEffect(() => {
+    for (const item of [...mainMenuItems, ...settingsMenuItems]) {
+      router.prefetch(item.path);
+    }
+  }, [router]);
+
+  const handleNav = () => {
     if (onClose && window.innerWidth < 768) {
       onClose();
     }
@@ -95,18 +101,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, isExpanded = 
               <Button
                 key={`${item.id}-${item.label}`}
                 variant="ghost"
+                asChild
                 className={`w-full cursor-pointer transition-all duration-300 ease-in-out hover:bg-accent ${
                   collapsed ? 'h-10 justify-center rounded-lg px-0' : 'h-11 justify-start rounded-xl px-4'
                 } ${
                   isActive ? 'bg-accent text-primary hover:bg-accent hover:text-primary' : 'text-foreground hover:bg-accent hover:text-foreground'
                 }`}
-                onClick={() => handleNav(item.path)}
                 title={collapsed ? item.label : undefined}
               >
-                <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'}`}>
+                <Link href={item.path} onClick={handleNav}>
                   <span className={isActive ? 'text-primary' : 'text-muted-foreground'}>{item.icon}</span>
                   {!collapsed && <span className="font-medium">{item.label}</span>}
-                </div>
+                </Link>
               </Button>
             );
           })}
@@ -122,18 +128,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, isExpanded = 
               <Button
                 key={`${item.id}-${item.label}`}
                 variant="ghost"
+                asChild
                 className={`w-full cursor-pointer transition-all duration-300 ease-in-out hover:bg-accent ${
                   collapsed ? 'h-10 justify-center rounded-lg px-0' : 'h-11 justify-start rounded-xl px-4'
                 } ${
                   isActive ? 'bg-accent text-primary hover:bg-accent hover:text-primary' : 'text-foreground hover:bg-accent hover:text-foreground'
                 }`}
-                onClick={() => handleNav(item.path)}
                 title={collapsed ? item.label : undefined}
               >
-                <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'}`}>
+                <Link href={item.path} onClick={handleNav}>
                   <span className={isActive ? 'text-primary' : 'text-muted-foreground'}>{item.icon}</span>
                   {!collapsed && <span className="font-medium">{item.label}</span>}
-                </div>
+                </Link>
               </Button>
             );
           })}

@@ -6,7 +6,7 @@
 - **Auth**: Cookie-based JWT (HttpOnly). Supabase for OAuth. Tokens never exposed to client JS.
 - **Deployment**: Docker → DockerHub (standalone output). Also deployable to Vercel.
 - **Observability**: Sentry (error tracking, session replay, logs), LogTape → Better Stack, PostHog (analytics)
-- **Security**: Arcjet (bot detection, shield), middleware auth guards in `src/proxy.ts`
+- **Security**: Cloudflare edge protection, middleware auth guards in `src/proxy.ts`
 
 ---
 
@@ -36,7 +36,7 @@ src/
 │       ├── ui/       # Feature-specific UI components
 │       └── utils/    # Feature-specific utilities
 ├── hooks/            # Global hooks (useAuth, useBulkDelete, useApiPagination, etc.)
-├── libs/             # Core libraries (Axios, Env, Logger, Supabase, Arcjet, validations)
+├── libs/             # Core libraries (Axios, Env, Logger, Supabase, validations)
 ├── providers/        # React context providers (SocketProvider)
 ├── shared/           # Re-export layer for components/ui (import from @/shared/ui/*)
 │   └── ui/           # Barrel re-exports of @/components/ui/* and @/components/shared/*
@@ -191,7 +191,7 @@ export async function createVocab(vocabData: TCreateVocab) {
 
 - Validated at build time via `@t3-oss/env-nextjs` + Zod in `src/libs/Env.ts`
 - All public vars prefixed `NEXT_PUBLIC_*`
-- Server-only vars (e.g., `NESTJS_API_URL`, `ARCJET_KEY`) never exposed to client
+- Server-only vars (e.g., `NESTJS_API_URL`) never exposed to client
 - New env vars MUST be added to: `src/libs/Env.ts`, `.env.example`, and Dockerfile `ARG`/`ENV` if public
 
 ---
@@ -213,7 +213,7 @@ export async function createVocab(vocabData: TCreateVocab) {
 - Cookie management: `src/utils/auth-cookies.ts` (server-side read/write/clear)
 - Auth verification: `verifyUser()` (cached via `React.cache()`) in `src/actions/auth.ts`
 - Auth guard: `requireAuth()` — throws `Error('Unauthorized')` if no valid user
-- Middleware: `src/proxy.ts` — Arcjet bot detection + route protection (redirect to `/signin`)
+- Middleware: `src/proxy.ts` — route protection and token refresh redirects
 - OAuth: Supabase → `src/app/auth/` callback → NestJS sync
 - Protected routes: `/dashboard`, `/library`, `/vocab-list`, `/vocab-trainer`, `/profile`, `/subjects`, `/notifications`
 
@@ -286,12 +286,12 @@ export async function createVocab(vocabData: TCreateVocab) {
 
 ## Security
 
-- **Arcjet**: Bot detection (`LIVE` mode) + Shield in middleware. Allows search engines, preview crawlers, monitors.
+- **Cloudflare**: Edge-level DDoS, bot, WAF, and rate-limit protections should be configured before traffic reaches the app.
 - **Auth cookies**: HttpOnly, not accessible via client JS
 - **CORS**: Axios configured with `withCredentials: true`
 - **No `poweredByHeader`** in Next.js config
 - **Input validation**: Zod schemas for forms + runtime guards in server actions/API methods
-- **Rate limiting**: Via Arcjet rules (configurable per-route)
+- **Rate limiting**: Managed at the Cloudflare edge for sensitive routes
 - **Sentry PII**: `sendDefaultPii: true` — request headers and IP are collected
 
 ---

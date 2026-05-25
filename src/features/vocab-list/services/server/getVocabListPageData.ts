@@ -1,4 +1,5 @@
 import { verifyUser } from '@/actions';
+import { getCachedLanguages, getCachedWordTypes } from '@/features/reference-data';
 import { languageFoldersApi, languagesApi, subjectsApi, vocabApi, wordTypesApi } from '@/utils/server-api';
 
 type SearchParams = { [key: string]: string | string[] | undefined };
@@ -30,8 +31,8 @@ export async function getVocabListPageData(resolvedParams: SearchParams) {
     vocabApi.getAll(queryParams),
     languageFolderId ? languageFoldersApi.getById(languageFolderId) : Promise.resolve(null),
     subjectsApi.getAll(),
-    languagesApi.getAll(),
-    wordTypesApi.getAll(),
+    getCachedLanguages().catch(() => languagesApi.getAll()),
+    getCachedWordTypes().catch(() => wordTypesApi.getAll()),
   ]);
 
   return {

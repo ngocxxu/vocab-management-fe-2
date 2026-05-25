@@ -4,8 +4,10 @@ import type { ResponseAPI } from '@/types';
 import type { TUser } from '@/types/auth';
 import type { TNotification, TUnreadCountResponse } from '@/types/notification';
 import type { TPlan } from '@/types/plan';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { getLayoutHeaderData } from '@/actions/layout-header';
 import { Header, Sidebar } from '@/components/dashboard';
+import { logger } from '@/libs/Logger';
 import { SocketProvider } from '@/providers/SocketProvider';
 
 type LayoutClientProps = {
@@ -28,6 +30,17 @@ export function LayoutClient({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   const [isDesktop, setIsDesktop] = useState(false);
+  const currentUserId = currentUser?.id;
+  const currentUserRole = currentUser?.role;
+  const loadedHeaderDataKeyRef = useRef<string | null>(null);
+  const [headerData, setHeaderData] = useState({
+    currentPlan,
+    allNotifications: initialAllNotifications,
+    unreadNotifications: initialUnreadNotifications,
+    unreadCount: initialUnreadCount,
+  });
+  const [isHeaderDataLoading, setIsHeaderDataLoading] = useState(Boolean(currentUser));
+  const [headerDataError, setHeaderDataError] = useState<string | null>(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -44,6 +57,56 @@ export function LayoutClient({
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  useEffect(() => {
+    if (!currentUserId) {
+      loadedHeaderDataKeyRef.current = null;
+      setIsHeaderDataLoading(false);
+      return;
+    }
+
+    const headerDataKey = `${currentUserId}:${currentUserRole ?? ''}`;
+    if (loadedHeaderDataKeyRef.current === headerDataKey) {
+      return;
+    }
+
+    let cancelled = false;
+    loadedHeaderDataKeyRef.current = headerDataKey;
+    setIsHeaderDataLoading(true);
+    setHeaderDataError(null);
+
+    getLayoutHeaderData()
+      .then((data) => {
+        if (cancelled) {
+          return;
+        }
+
+        setHeaderData({
+          currentPlan: data.currentPlan,
+          allNotifications: data.allNotifications,
+          unreadNotifications: data.unreadNotifications,
+          unreadCount: data.unreadCount,
+        });
+      })
+      .catch((error: unknown) => {
+        if (cancelled) {
+          return;
+        }
+
+        loadedHeaderDataKeyRef.current = null;
+        logger.error('Failed to load layout header data:', { error });
+        setHeaderDataError('Unable to load notifications');
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setIsHeaderDataLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [currentUserId, currentUserRole]);
 
   const toggleSidebar = () => {
     if (isDesktop) {
@@ -82,12 +145,12 @@ export function LayoutClient({
             onSidebarToggle={toggleSidebar}
             isSidebarExpanded={isSidebarExpanded}
             user={currentUser}
-            currentPlan={currentPlan}
-            allNotifications={initialAllNotifications}
-            unreadNotifications={initialUnreadNotifications}
-            unreadCount={initialUnreadCount}
-            isLoading={false}
-            error={null}
+            currentPlan={headerData.currentPlan}
+            allNotifications={headerData.allNotifications}
+            unreadNotifications={headerData.unreadNotifications}
+            unreadCount={headerData.unreadCount}
+            isLoading={isHeaderDataLoading}
+            error={headerDataError}
           />
           <div className="flex-1 overflow-auto bg-background">
             {children}

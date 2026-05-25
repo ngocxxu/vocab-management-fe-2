@@ -45,6 +45,13 @@ export const Header: React.FC<HeaderProps> = ({
   const [commandOpen, setCommandOpen] = useState(false);
 
   const openCommand = useCallback(() => setCommandOpen(true), []);
+
+  useEffect(() => {
+    router.prefetch('/dashboard');
+    router.prefetch('/library');
+    router.prefetch('/vocab-trainer');
+  }, [router]);
+
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {

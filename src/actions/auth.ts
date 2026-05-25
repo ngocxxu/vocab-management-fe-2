@@ -125,6 +125,9 @@ async function verifyUserImpl(): Promise<TUser | null> {
     const result = await authApi.verify();
     return result;
   } catch (error) {
+    if (error && typeof error === 'object' && 'digest' in error && error.digest === 'DYNAMIC_SERVER_USAGE') {
+      throw error;
+    }
     if (isUnauthorizedError(error)) {
       return null;
     }
