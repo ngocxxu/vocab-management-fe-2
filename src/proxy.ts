@@ -39,6 +39,14 @@ function isTokenExpiring(token?: string): boolean {
   return exp ? exp - Math.floor(Date.now() / 1000) <= REFRESH_THRESHOLD : false;
 }
 
+function isTokenExpired(token?: string): boolean {
+  if (!token) {
+    return true;
+  }
+  const exp = getJwtExp(token);
+  return exp ? exp <= Math.floor(Date.now() / 1000) : true;
+}
+
 async function refreshSession(refreshToken: string): Promise<Session | null> {
   const res = await fetch(`${process.env.NESTJS_API_URL ?? 'http://localhost:3002/api/v1'}/auth/refresh`, {
     method: 'POST',
@@ -106,6 +114,17 @@ export default async function proxy(request: NextRequest, _event: NextFetchEvent
         return setAuthCookies(NextResponse.redirect(new URL(redirectUrl, request.url)), session);
       }
       return withRefreshedSession(request, session);
+    }
+
+    // Concurrent navigations/server actions can race refresh-token rotation in production.
+    // If the access token still exists and is not expired, keep this request alive instead
+    // of clearing cookies because another concurrent request may have already refreshed.
+    if (token && !isTokenExpired(token)) {
+      if (isAuth) {
+        const redirectUrl = getSafeRedirectPath(request.nextUrl.searchParams.get('redirect'), '/dashboard');
+        return NextResponse.redirect(new URL(redirectUrl, request.url));
+      }
+      return NextResponse.next();
     }
 
     if (isProtected) {
