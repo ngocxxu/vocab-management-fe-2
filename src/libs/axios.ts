@@ -1,5 +1,6 @@
 import type { AxiosInstance, AxiosResponse } from 'axios';
 import axios from 'axios';
+import { refreshAccessTokenOnce } from '@/libs/auth-refresh-client';
 import { API_ENDPOINTS } from '@/utils/api-config';
 import { getIsSigningOut, handleTokenExpiration } from '@/utils/auth-utils';
 import { Env } from './Env';
@@ -80,13 +81,9 @@ axiosInstance.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const refreshResponse = await fetch(`/api${API_ENDPOINTS.auth.refresh}`, {
-          method: 'POST',
-          credentials: 'include',
-        });
+        const refreshed = await refreshAccessTokenOnce();
 
-        if (refreshResponse.ok) {
-          await refreshResponse.json();
+        if (refreshed) {
           return axiosInstance(originalRequest);
         }
       } catch (refreshError) {

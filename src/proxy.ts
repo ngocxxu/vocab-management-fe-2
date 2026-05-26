@@ -1,5 +1,6 @@
 import type { NextFetchEvent, NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import { getRefreshLock, getRefreshLockKey, performRefresh } from '@/libs/refresh-lock';
 import { AUTH_COOKIE_OPTIONS, REFRESH_COOKIE_OPTIONS } from '@/utils/auth-cookies';
 
 const PROTECTED = ['/dashboard', '/library', '/vocab-list', '/vocab-trainer', '/profile', '/subjects', '/notifications'];
@@ -47,17 +48,17 @@ function isTokenExpired(token?: string): boolean {
   return exp ? exp <= Math.floor(Date.now() / 1000) : true;
 }
 
-async function refreshSession(refreshToken: string): Promise<Session | null> {
-  const res = await fetch(`${process.env.NESTJS_API_URL ?? 'http://localhost:3002/api/v1'}/auth/refresh`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ refreshToken }),
-  });
-  if (!res.ok) {
-    return null;
+function shouldRefresh(accessToken: string | undefined, request: NextRequest): boolean {
+  if (!isTokenExpiring(accessToken)) {
+    return false;
   }
-  const data = await res.json() as Partial<Session>;
-  return data.access_token && data.refresh_token ? (data as Session) : null;
+
+  const cookieAccessToken = request.cookies.get('accessToken')?.value;
+  if (cookieAccessToken && !isTokenExpiring(cookieAccessToken)) {
+    return false;
+  }
+
+  return true;
 }
 
 function setAuthCookies(response: NextResponse, session: Session): NextResponse {
@@ -106,8 +107,16 @@ export default async function proxy(request: NextRequest, _event: NextFetchEvent
   }
 
   // Attempt token refresh
-  if ((isProtected || isAuth) && refreshToken && isTokenExpiring(token)) {
-    const session = await refreshSession(refreshToken);
+  if ((isProtected || isAuth) && refreshToken && shouldRefresh(token, request)) {
+    const lockKey = getRefreshLockKey(token, refreshToken);
+    const sessionDto = await getRefreshLock(lockKey).getOrRefresh(
+      () => performRefresh(refreshToken),
+    );
+
+    const session = sessionDto
+      ? { access_token: sessionDto.access_token, refresh_token: sessionDto.refresh_token }
+      : null;
+
     if (session) {
       if (isAuth) {
         const redirectUrl = getSafeRedirectPath(request.nextUrl.searchParams.get('redirect'), '/dashboard');

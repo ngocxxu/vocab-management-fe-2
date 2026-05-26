@@ -12,7 +12,8 @@ import type {
   TVerifyOtpData,
 } from '@/types/auth';
 import { logger } from '@/libs/Logger';
-import { clearAuthCookies, getAccessToken, setAuthCookies } from '@/utils/auth-cookies';
+import { getRefreshLock, getRefreshLockKey, invalidateRefreshLock, performRefresh } from '@/libs/refresh-lock';
+import { clearAuthCookies, getAccessToken, getRefreshToken, setAuthCookies } from '@/utils/auth-cookies';
 import { isUnauthorizedError } from '@/utils/auth-error';
 import { authApi } from '@/utils/server-api';
 import { toActionError } from './utils';
@@ -56,22 +57,32 @@ export async function signup(signupData: TSignupData): Promise<TAuthResponse> {
 }
 
 export async function signout(): Promise<{ message: string }> {
+  const accessToken = await getAccessToken();
+  const refreshToken = await getRefreshToken();
+
   try {
     const result = await authApi.signout();
     return result;
   } catch (error) {
     throw toActionError(error, 'Failed to sign out');
   } finally {
+    invalidateRefreshLock(accessToken, refreshToken);
     await clearAuthCookies();
   }
 }
 
 export async function refresh(refreshData: TRefreshData): Promise<{ message: string }> {
   try {
-    const result = await authApi.refresh(refreshData);
-    if (result.access_token && result.refresh_token) {
-      await setAuthCookies(result.access_token, result.refresh_token);
+    const lockKey = getRefreshLockKey(undefined, refreshData.refreshToken);
+    const result = await getRefreshLock(lockKey).getOrRefresh(
+      () => performRefresh(refreshData.refreshToken),
+    );
+
+    if (!result) {
+      throw new Error('Failed to refresh token');
     }
+
+    await setAuthCookies(result.access_token, result.refresh_token);
 
     return { message: 'Token refreshed successfully' };
   } catch (error) {
