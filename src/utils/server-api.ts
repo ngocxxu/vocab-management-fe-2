@@ -1,4 +1,11 @@
-import type { LanguageFolderQueryParams, RandomVocabQueryParams, VocabConflictBySubjectParams, VocabQueryParams, VocabTrainerQueryParams } from './api-config';
+import type {
+  LanguageFolderQueryParams,
+  NotificationQueryParams,
+  RandomVocabQueryParams,
+  VocabConflictBySubjectParams,
+  VocabQueryParams,
+  VocabTrainerQueryParams,
+} from './api-config';
 import type { ResponseAPI, TLanguage, TLanguageFolder, TUser } from '@/types';
 import type { TOAuthData, TOAuthResponse, TResendConfirmationData, TSessionDto, TVerifyOtpData } from '@/types/auth';
 import type {
@@ -19,7 +26,7 @@ import { Env } from '@/libs/Env';
 import { BackendRequestError } from '@/utils/backend-request-error';
 import { logger } from '@/libs/Logger';
 import { getAccessToken } from '@/utils/auth-cookies';
-import { API_ENDPOINTS, API_METHODS } from './api-config';
+import { API_ENDPOINTS, API_METHODS, DEFAULT_NOTIFICATION_QUERY_PARAMS } from './api-config';
 
 class ServerAPI {
   private readonly baseURL = Env.NESTJS_API_URL || 'http://localhost:3002/api/v1';
@@ -483,13 +490,18 @@ export const languageFoldersApi = {
 
 // Notifications API endpoints
 export const notificationsApi = {
-  getMy: (includeDeleted?: boolean) => {
-    const config = API_METHODS.notifications.getMy();
-    const endpoint = includeDeleted ? `${config.endpoint}?includeDeleted=true` : config.endpoint;
-    return serverApi.get<ResponseAPI<TNotification[]>>(endpoint);
+  getMy: (params?: NotificationQueryParams) => {
+    const config = API_METHODS.notifications.getMy({
+      ...DEFAULT_NOTIFICATION_QUERY_PARAMS,
+      ...params,
+    });
+    return serverApi.get<ResponseAPI<TNotification[]>>(config.endpoint);
   },
-  getUnread: () => {
-    const config = API_METHODS.notifications.getUnread();
+  getUnread: (params?: NotificationQueryParams) => {
+    const config = API_METHODS.notifications.getUnread({
+      ...DEFAULT_NOTIFICATION_QUERY_PARAMS,
+      ...params,
+    });
     return serverApi.get<ResponseAPI<TNotification[]>>(config.endpoint);
   },
   getUnreadCount: () => {

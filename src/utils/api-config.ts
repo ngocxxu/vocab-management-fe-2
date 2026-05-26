@@ -81,6 +81,19 @@ export type LanguageFolderQueryParams = {
   sortOrder?: 'asc' | 'desc';
 };
 
+export type NotificationQueryParams = {
+  page?: number;
+  pageSize?: number;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+  includeDeleted?: boolean;
+};
+
+export const DEFAULT_NOTIFICATION_QUERY_PARAMS = {
+  sortBy: 'createdAt',
+  sortOrder: 'desc',
+} as const satisfies Pick<NotificationQueryParams, 'sortBy' | 'sortOrder'>;
+
 // API endpoint definitions
 export const API_ENDPOINTS = {
   auth: {
@@ -223,8 +236,14 @@ export const API_METHODS = {
     delete: (id: string) => ({ endpoint: `${API_ENDPOINTS.languageFolders}/${id}` }),
   },
   notifications: {
-    getMy: () => ({ endpoint: `${API_ENDPOINTS.notifications}/my` }),
-    getUnread: () => ({ endpoint: `${API_ENDPOINTS.notifications}/my/unread` }),
+    getMy: (params?: NotificationQueryParams) => {
+      const queryString = buildQueryString(params ?? {});
+      return { endpoint: `${API_ENDPOINTS.notifications}/my${queryString ? `?${queryString}` : ''}` };
+    },
+    getUnread: (params?: NotificationQueryParams) => {
+      const queryString = buildQueryString(params ?? {});
+      return { endpoint: `${API_ENDPOINTS.notifications}/my/unread${queryString ? `?${queryString}` : ''}` };
+    },
     getUnreadCount: () => ({ endpoint: `${API_ENDPOINTS.notifications}/my/unread-count` }),
     markAsRead: (id: string) => ({ endpoint: `${API_ENDPOINTS.notifications}/${id}/my/mark-as-read` }),
     markAllAsRead: () => ({ endpoint: `${API_ENDPOINTS.notifications}/my/mark-all-as-read` }),
