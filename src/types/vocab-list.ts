@@ -188,7 +188,9 @@ export type ExpandedRowContentProps = {
 };
 
 export type SubjectsSectionProps = {
+  targetId: string;
   targetIndex: number;
+  subjectIds: string[];
   subjects: import('@/types/subject').TSubject[];
   subjectsLoading: boolean;
   subjectsError: boolean;

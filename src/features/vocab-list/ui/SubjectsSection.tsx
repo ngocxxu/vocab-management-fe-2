@@ -14,13 +14,17 @@ import { MultiSelect } from '@/shared/ui/multi-select';
 import { Skeleton } from '@/shared/ui/skeleton';
 
 const SubjectsSection: React.FC<SubjectsSectionProps> = React.memo(({
+  targetId,
   targetIndex,
+  subjectIds,
   subjects,
   subjectsLoading,
   subjectsError,
 }) => {
   const form = useFormContext();
   const [isMounted, setIsMounted] = useState(false);
+  const subjectIdsPath = `textTargets.${targetIndex}.subjectIds` as const;
+  const subjectIdsValue = subjectIds ?? [];
 
   useEffect(() => {
     const timer = setTimeout(() => setIsMounted(true), 0);
@@ -56,18 +60,23 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = React.memo(({
     <div className="space-y-4">
       <h4 className="text-sm font-medium">Subjects</h4>
       <FormField
-        control={form?.control}
-        name={`textTargets.${targetIndex}.subjectIds`}
-        render={({ field }) => (
+        key={targetId}
+        control={form.control}
+        name={subjectIdsPath}
+        render={() => (
           <FormItem>
             <FormLabel className="sr-only">Subjects</FormLabel>
             <FormControl>
               <MultiSelect
+                key={targetId}
                 options={subjectOptions}
-                defaultValue={field.value || []}
+                defaultValue={subjectIdsValue}
                 onValueChange={(newValue) => {
-                  field.onChange(newValue);
-                  form.clearErrors(`textTargets.${targetIndex}.subjectIds`);
+                  form.setValue(subjectIdsPath, newValue, {
+                    shouldDirty: true,
+                    shouldValidate: true,
+                  });
+                  form.clearErrors(subjectIdsPath);
                 }}
                 placeholder="Choose subjects..."
                 maxCount={4}

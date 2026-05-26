@@ -240,7 +240,14 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
               />
             </div>
           </div>
-          <SubjectsSection targetIndex={targetIndex} subjects={subjects} subjectsLoading={subjectsLoading} subjectsError={subjectsError} />
+          <SubjectsSection
+            targetId={target.id}
+            targetIndex={targetIndex}
+            subjectIds={target.subjectIds}
+            subjects={subjects}
+            subjectsLoading={subjectsLoading}
+            subjectsError={subjectsError}
+          />
         </div>
       </section>
 

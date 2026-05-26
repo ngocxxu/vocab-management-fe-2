@@ -4,7 +4,9 @@ import type { ExpandedRowContentProps, TExamples, TVocab } from '@/types/vocab-l
 import { AltArrowUp, Pen, VolumeLoud } from '@solar-icons/react/ssr';
 import React, { useCallback } from 'react';
 import { useSpeechSynthesis } from 'react-speech-kit';
+import { cn } from '@/libs/utils';
 import { Button } from '@/shared/ui/button';
+import { getSubjectColor } from '@/utils/subject';
 import { selectVoiceByCode } from '@/utils/textToSpeech';
 
 function boldVocabInSentence(sentence: string, word: string): React.ReactNode {
@@ -32,6 +34,7 @@ const ExpandedRowContent: React.FC<ExpandedRowContentProps> = ({
   className = '',
   showExplanations = true,
   showExamples = true,
+  showSubjects = true,
   onCollapse,
   onEdit,
 }) => {
@@ -69,6 +72,19 @@ const ExpandedRowContent: React.FC<ExpandedRowContentProps> = ({
                       >
                         <VolumeLoud size={18} weight="BoldDuotone" className="text-muted-foreground" />
                       </Button>
+
+                      {showSubjects && target.textTargetSubjects?.map((tts, subIndex) =>
+                        tts.subject?.name
+                          ? (
+                              <span
+                                key={tts.subject.id}
+                                className={cn('rounded-md px-2 py-0.5 text-xs font-medium', getSubjectColor(subIndex + 2))}
+                              >
+                                {tts.subject.name}
+                              </span>
+                            )
+                          : null,
+                      )}
                     </div>
                     {onEdit && (
                       <Button
@@ -90,6 +106,7 @@ const ExpandedRowContent: React.FC<ExpandedRowContentProps> = ({
                         {target.wordType?.name?.toUpperCase()}
                       </span>
                     )}
+
                   </div>
 
                   {showExplanations && (target.explanationSource || target.explanationTarget) && (

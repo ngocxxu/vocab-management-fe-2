@@ -182,24 +182,29 @@ const VocabList: React.FC<VocabListProps> = ({
   });
 
   const addTextTarget = () => {
-    const newIndex = form.watch('textTargets').length;
-    form.setValue('textTargets', [...form.watch('textTargets'), {
+    const currentTargets = form.getValues('textTargets');
+    const newIndex = currentTargets.length;
+    form.setValue('textTargets', [...currentTargets, {
       id: generateId(),
       wordTypeId: '',
       textTarget: '',
       grammar: '',
       explanationSource: '',
       explanationTarget: '',
-      subjectIds: [], // Ensure this is always initialized as an empty array
+      subjectIds: [],
       vocabExamples: [{ id: generateId(), source: '', target: '' }],
-    }]);
+    }], { shouldDirty: true, shouldValidate: true });
     setActiveTab(newIndex.toString());
   };
 
   const removeTextTarget = (index: number) => {
-    if (form.watch('textTargets').length > 1) {
-      form.setValue('textTargets', form.watch('textTargets').filter((_, i) => i !== index));
-      // Switch to the previous tab if removing the current one
+    const currentTargets = form.getValues('textTargets');
+    if (currentTargets.length > 1) {
+      form.setValue(
+        'textTargets',
+        currentTargets.filter((_, i) => i !== index),
+        { shouldDirty: true, shouldValidate: true },
+      );
       if (activeTab === index.toString()) {
         setActiveTab(Math.max(0, index - 1).toString());
       }
@@ -240,56 +245,40 @@ const VocabList: React.FC<VocabListProps> = ({
 
   const handleInputChange = (field: string, value: string, targetIndex?: number) => {
     if (targetIndex !== undefined && targetIndex !== null) {
-      const currentTargets = form.watch('textTargets');
-      const updatedTargets = currentTargets.map((target, index) =>
-        index === targetIndex
-          ? { ...target, [field]: value }
-          : target,
+      form.setValue(
+        `textTargets.${targetIndex}.${field}` as `textTargets.${number}.textTarget`,
+        value,
+        { shouldDirty: true, shouldValidate: true },
       );
-      form.setValue('textTargets', updatedTargets);
     } else {
-      form.setValue(field as keyof FormData, value);
+      form.setValue(field as keyof FormData, value, { shouldDirty: true, shouldValidate: true });
     }
   };
 
   const handleExampleChange = (exampleIndex: number, field: 'source' | 'target', value: string, targetIndex: number = 0) => {
-    const currentTargets = form.watch('textTargets');
-    const updatedTargets = currentTargets.map((target, index) =>
-      index === targetIndex
-        ? {
-            ...target,
-            vocabExamples: target.vocabExamples.map((example, exIndex) =>
-              exIndex === exampleIndex
-                ? { ...example, [field]: value }
-                : example,
-            ),
-          }
-        : target,
+    form.setValue(
+      `textTargets.${targetIndex}.vocabExamples.${exampleIndex}.${field}`,
+      value,
+      { shouldDirty: true, shouldValidate: true },
     );
-    form.setValue('textTargets', updatedTargets);
   };
 
   const addExample = (targetIndex: number = 0) => {
-    const currentTargets = form.watch('textTargets');
-    const updatedTargets = currentTargets.map((target, index) =>
-      index === targetIndex
-        ? { ...target, vocabExamples: [...target.vocabExamples, { id: generateId(), source: '', target: '' }] }
-        : target,
+    const examples = form.getValues(`textTargets.${targetIndex}.vocabExamples`);
+    form.setValue(
+      `textTargets.${targetIndex}.vocabExamples`,
+      [...examples, { id: generateId(), source: '', target: '' }],
+      { shouldDirty: true, shouldValidate: true },
     );
-    form.setValue('textTargets', updatedTargets);
   };
 
   const removeExample = (exampleIndex: number, targetIndex: number = 0) => {
-    const currentTargets = form.watch('textTargets');
-    const updatedTargets = currentTargets.map((target, index) =>
-      index === targetIndex
-        ? {
-            ...target,
-            vocabExamples: target.vocabExamples.filter((_, exIndex) => exIndex !== exampleIndex),
-          }
-        : target,
+    const examples = form.getValues(`textTargets.${targetIndex}.vocabExamples`);
+    form.setValue(
+      `textTargets.${targetIndex}.vocabExamples`,
+      examples.filter((_, exIndex) => exIndex !== exampleIndex),
+      { shouldDirty: true, shouldValidate: true },
     );
-    form.setValue('textTargets', updatedTargets);
   };
 
   const handleImportSuccess = useCallback(() => {
