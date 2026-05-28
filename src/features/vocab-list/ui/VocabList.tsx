@@ -397,7 +397,15 @@ const VocabList: React.FC<VocabListProps> = ({
       cell: ({ row }) => {
         return (
           <div className="flex items-center space-x-3">
-            <div className="font-semibold text-foreground">{row.original.textSource}</div>
+            <span
+              key={`${row.original.textSource}`}
+              className="inline-flex max-w-32 min-w-0 shrink-0 items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground sm:max-w-40 md:max-w-48"
+              title={row.original.textSource}
+            >
+              <span className="block min-w-0 truncate">
+                {row.original.textSource}
+              </span>
+            </span>
 
             <Button
               variant="ghost"

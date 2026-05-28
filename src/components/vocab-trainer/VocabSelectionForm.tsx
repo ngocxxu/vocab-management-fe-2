@@ -151,7 +151,15 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
       accessorKey: 'textSource',
       header: 'Text Source',
       cell: ({ row }) => (
-        <div className="font-medium text-foreground">{row.original.textSource}</div>
+        <span
+          key={`${row.original.textSource}`}
+          className="inline-flex max-w-32 min-w-0 shrink-0 items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground sm:max-w-40 md:max-w-48"
+          title={row.original.textSource}
+        >
+          <span className="block min-w-0 truncate">
+            {row.original.textSource}
+          </span>
+        </span>
       ),
       enableSorting: true,
     },
@@ -160,17 +168,15 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
       header: 'Text Targets',
       cell: ({ row }) => (
         <div className="flex flex-wrap gap-1">
-          {row.original.textTargets.map((t, i) => (
+          {row.original.textTargets.map(t => (
             <span
               key={`${t.textTarget}-${row.original.id}`}
-              className={cn(
-                'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
-                i === 0
-                  ? 'text-foreground'
-                  : 'bg-muted text-muted-foreground',
-              )}
+              className="inline-flex max-w-32 min-w-0 shrink-0 items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground sm:max-w-40"
+              title={t.textTarget}
             >
-              {t.textTarget}
+              <span className="block min-w-0 truncate">
+                {t.textTarget}
+              </span>
             </span>
           ))}
         </div>
