@@ -426,13 +426,16 @@ const VocabList: React.FC<VocabListProps> = ({
         const textTargets = row.original.textTargets;
 
         return (
-          <div className="flex flex-wrap gap-1">
+          <div className="flex min-w-0 gap-1 overflow-hidden">
             {textTargets.map((textTarget, index) => (
               <span
                 key={`${textTarget.textTarget}-${index}`}
-                className="inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground"
+                className="inline-flex max-w-32 min-w-0 shrink-0 items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground sm:max-w-40 md:max-w-48"
+                title={textTarget.textTarget}
               >
-                {textTarget.textTarget}
+                <span className="block min-w-0 truncate">
+                  {textTarget.textTarget}
+                </span>
               </span>
             ))}
           </div>
