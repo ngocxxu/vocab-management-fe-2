@@ -43,6 +43,8 @@ const QUESTION_TYPE_BADGE_CLASSES: Record<string, string> = {
   default: 'bg-muted text-muted-foreground',
 };
 
+const MAX_PASS_COUNT = 6;
+
 const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initialLanguagesData, currentUser, loadError }) => {
   const [isMounted, setIsMounted] = useState(false);
   const [cachedLanguageFolders, setCachedLanguageFolders] = useState<any[]>([]);
@@ -285,6 +287,10 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
       header: 'Status',
       cell: ({ row }) => {
         const status = row.original.status;
+        const passCount = row.original.reminderRepeat;
+        const displayStatus = status === 'PASSED'
+          ? `${status} ${Number.isFinite(passCount) ? passCount : 0}/${MAX_PASS_COUNT}`
+          : status;
         const statusColors = {
           PENDING: 'bg-warning/20 text-warning-foreground',
           PASSED: 'bg-success/15 text-success',
@@ -292,7 +298,7 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
         };
         return (
           <Badge className={statusColors[status as keyof typeof statusColors] || 'bg-muted text-muted-foreground'}>
-            {status}
+            {displayStatus}
           </Badge>
         );
       },
