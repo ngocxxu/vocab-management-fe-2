@@ -1,32 +1,12 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { errorRateStatusConfig, getErrorRateStatus, getErrorRateTextClass } from '@/features/dashboard/utils/statusConfig';
 import type { TTextTarget } from '@/types/vocab-list';
 import Link from 'next/link';
 import React from 'react';
 
 import type { ProblematicVocabsTableProps } from '@/types';
-
-function getErrorRateColor(pct: number): string {
-  if (pct >= 60) {
-    return '#EA4335';
-  }
-  if (pct >= 30) {
-    return '#FBBC04';
-  }
-  return '#34A853';
-}
-
-function getStatus(pct: number): { label: string; className: string } {
-  if (pct >= 60) {
-    return { label: 'CRITICAL', className: 'bg-destructive/10 text-destructive' };
-  }
-  if (pct >= 30) {
-    return { label: 'STRUGGLING', className: 'bg-warning/10 text-warning' };
-  }
-  return { label: 'REVIEW NEEDED', className: 'bg-warning/10 text-warning' };
-}
 
 function getDefinition(target: TTextTarget | undefined): string {
   if (!target) {
@@ -52,50 +32,40 @@ export const ProblematicVocabsTable: React.FC<ProblematicVocabsTableProps> = ({ 
           <p className="text-sm text-muted-foreground">Words requiring immediate attention based on recent errors.</p>
         </CardHeader>
         <CardContent className="p-6">
-          <div className="flex h-32 items-center justify-center text-muted-foreground">
-            No problematic vocabs found
-          </div>
+          <p className="text-center text-sm text-muted-foreground">
+            No words need review right now. Keep practicing!
+          </p>
         </CardContent>
       </Card>
     );
   }
 
   const sortedData = [...data].sort((a, b) => b.incorrectCount - a.incorrectCount);
+  const practiceCount = sortedData.length;
 
   return (
     <Card className="overflow-hidden border-0 bg-card shadow-sm">
       <CardHeader className="pb-4">
-        <div className="flex flex-wrap items-start justify-between gap-2">
-          <div>
-            <CardTitle className="text-xl font-bold text-foreground">Problematic Vocabs</CardTitle>
-            <p className="text-sm text-muted-foreground">Words requiring immediate attention based on recent errors.</p>
-          </div>
-          <Link
-            href="/vocab-trainer"
-            className="text-sm font-medium text-primary hover:underline"
-          >
-            View All
-          </Link>
-        </div>
+        <CardTitle className="text-xl font-bold text-foreground">Problematic Vocabs</CardTitle>
+        <p className="text-sm text-muted-foreground">Words requiring immediate attention based on recent errors.</p>
       </CardHeader>
       <CardContent className="p-0">
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-border bg-muted/50">
-                <th className="px-4 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase">Vocabulary Word</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase">Category</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase">Error Rate</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase">Status</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase">Action</th>
+              <tr className="border-b border-border">
+                <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">Word</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">Subject</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">Error rate</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">Status</th>
               </tr>
             </thead>
             <tbody>
               {sortedData.map((item) => {
                 const total = item.correctCount + item.incorrectCount;
                 const errorRatePct = total > 0 ? Math.round((item.incorrectCount / total) * 100) : 0;
-                const barColor = getErrorRateColor(errorRatePct);
-                const status = getStatus(errorRatePct);
+                const status = getErrorRateStatus(errorRatePct);
+                const statusStyle = errorRateStatusConfig[status];
                 const target = item.vocab.textTargets?.[0];
                 const definition = getDefinition(target);
                 const category = getCategory(target);
@@ -103,44 +73,41 @@ export const ProblematicVocabsTable: React.FC<ProblematicVocabsTableProps> = ({ 
                 return (
                   <tr
                     key={item.vocabId}
-                    className="border-b border-border transition-colors hover:bg-muted/30"
+                    className="border-b border-border/60 transition-colors last:border-0 hover:bg-muted/30"
                   >
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-2.5">
                       <div className="flex flex-col">
-                        <span className="font-semibold text-foreground">{item.vocab.textSource}</span>
+                        <span className="font-medium text-foreground">{item.vocab.textSource}</span>
                         <span className="mt-0.5 text-xs text-muted-foreground">{definition}</span>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-sm text-muted-foreground">{category}</td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <div className="h-2 w-24 min-w-[6rem] overflow-hidden rounded-full bg-muted">
-                          <div
-                            className="h-full rounded-full transition-all duration-300"
-                            style={{ width: `${errorRatePct}%`, backgroundColor: barColor }}
-                          />
-                        </div>
-                        <span className="text-sm font-medium text-foreground">
-                          {errorRatePct}
-                          %
-                        </span>
-                      </div>
+                    <td className="px-4 py-2.5 text-muted-foreground">{category}</td>
+                    <td className={`px-4 py-2.5 font-medium ${getErrorRateTextClass(errorRatePct)}`}>
+                      {errorRatePct}
+                      %
                     </td>
-                    <td className="px-4 py-3">
-                      <span className={`inline-flex rounded-md px-2 py-0.5 text-xs font-medium ${status.className}`}>
-                        {status.label}
+                    <td className="px-4 py-2.5">
+                      <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${statusStyle.className}`}>
+                        {statusStyle.label}
                       </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <Button size="sm" className="rounded-lg bg-primary text-primary-foreground hover:bg-primary/90" asChild>
-                        <Link href="/vocab-trainer">Practice Now</Link>
-                      </Button>
                     </td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
+        </div>
+        <div className="flex justify-end px-4 pb-4">
+          <Link
+            href="/vocab-trainer?preset=problematic"
+            className="mt-4 inline-flex items-center gap-1.5 rounded-md border border-primary/30 bg-primary/10 px-3.5 py-1.5 text-sm font-medium text-primary transition-colors hover:bg-primary/15"
+          >
+            Practice these
+            {' '}
+            {practiceCount}
+            {' '}
+            words →
+          </Link>
         </div>
       </CardContent>
     </Card>

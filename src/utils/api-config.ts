@@ -167,6 +167,25 @@ export const API_METHODS = {
       return { endpoint: `${API_ENDPOINTS.vocabs}/statistics/problematic?${queryString}` };
     },
     getStatisticsDistribution: () => ({ endpoint: `${API_ENDPOINTS.vocabs}/statistics/distribution` }),
+    getStatisticsDashboard: (params?: {
+      include?: string[];
+      startDate?: string;
+      endDate?: string;
+    }) => {
+      const queryParams: Record<string, QueryParamValue> = {};
+      if (params?.include?.length) {
+        queryParams.include = params.include.join(',');
+      }
+      if (params?.startDate) {
+        queryParams.startDate = params.startDate;
+      }
+      if (params?.endDate) {
+        queryParams.endDate = params.endDate;
+      }
+      const queryString = buildQueryString(queryParams);
+      const suffix = queryString ? `?${queryString}` : '';
+      return { endpoint: `${API_ENDPOINTS.vocabs}/statistics/dashboard${suffix}` };
+    },
     random: (params: RandomVocabQueryParams) => {
       const queryString = buildQueryString(params);
       return { endpoint: `${API_ENDPOINTS.vocabs}/random?${queryString}` };

@@ -1,25 +1,29 @@
 import type { TVocab } from './vocab-list';
 
-export type MasterySummary = {
+export type TMasterySummary = {
   totalVocabs: number;
   totalCorrect: number;
   totalIncorrect: number;
   averageMastery: number;
+  lastPracticeAt: string | null;
+  criticalCount: number;
+  warningCount: number;
 };
 
-export type MasteryBySubject = {
+export type TMasteryBySubject = {
   subjectId: string;
   subjectName: string;
   averageMastery: number;
   vocabCount: number;
 };
 
-export type ProgressOverTime = {
+export type TProgressOverTime = {
   date: string;
   averageMastery: number;
+  practiceCount: number;
 };
 
-export type TopProblematicVocab = {
+export type TTopProblematicVocab = {
   vocabId: string;
   vocab: TVocab;
   incorrectCount: number;
@@ -27,7 +31,26 @@ export type TopProblematicVocab = {
   correctCount: number;
 };
 
-export type MasteryDistribution = {
+export type TMasteryDistribution = {
   scoreRange: string;
   count: number;
 };
+
+export type TDashboardStatistics = {
+  summary?: TMasterySummary;
+  subjects?: TMasteryBySubject[];
+  problematic?: TTopProblematicVocab[];
+  distribution?: TMasteryDistribution[];
+  progress?: TProgressOverTime[];
+};
+
+/** @deprecated Use TMasterySummary */
+export type MasterySummary = TMasterySummary;
+/** @deprecated Use TMasteryBySubject */
+export type MasteryBySubject = TMasteryBySubject;
+/** @deprecated Use TProgressOverTime */
+export type ProgressOverTime = TProgressOverTime;
+/** @deprecated Use TTopProblematicVocab */
+export type TopProblematicVocab = TTopProblematicVocab;
+/** @deprecated Use TMasteryDistribution */
+export type MasteryDistribution = TMasteryDistribution;

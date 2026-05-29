@@ -1,10 +1,10 @@
 'use client';
 
+import { getMasteryBarClass } from '@/features/dashboard/utils/masteryThresholds';
+import { cn } from '@/libs/utils';
 import type { SubjectMasteryChartProps } from '@/types';
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-
-const BAR_COLOR = '#1A73E8';
 
 export const SubjectMasteryChart: React.FC<SubjectMasteryChartProps> = ({ data }) => {
   if (!data || data.length === 0) {
@@ -37,12 +37,12 @@ export const SubjectMasteryChart: React.FC<SubjectMasteryChartProps> = ({ data }
               <div key={item.subjectId} className="space-y-1.5">
                 <div className="flex items-center justify-between text-sm">
                   <span className="font-medium text-foreground">{item.subjectName}</span>
-                  <span className="font-medium text-primary">{item.averageMastery.toFixed(1)}</span>
+                  <span className="font-medium text-foreground">{item.averageMastery.toFixed(1)}</span>
                 </div>
                 <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
                   <div
-                    className="h-full rounded-full transition-all duration-300"
-                    style={{ width: `${pct}%`, backgroundColor: BAR_COLOR }}
+                    className={cn('h-full rounded-full transition-all duration-300', getMasteryBarClass(item.averageMastery))}
+                    style={{ width: `${pct}%` }}
                   />
                 </div>
               </div>

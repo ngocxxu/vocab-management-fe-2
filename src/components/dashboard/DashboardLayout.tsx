@@ -1,8 +1,6 @@
 import React from 'react';
-import { DashboardContent } from './DashboardContent';
+import { DashboardPageView } from '@/features/dashboard/ui/DashboardPageView';
 
 export const DashboardLayout: React.FC = () => {
-  return (
-    <DashboardContent />
-  );
+  return <DashboardPageView />;
 };

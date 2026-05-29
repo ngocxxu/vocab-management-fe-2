@@ -1,28 +1,16 @@
 'use client';
 
+import { groupDistributionBuckets } from '@/features/dashboard/utils/groupDistributionBuckets';
 import type { DistributionChartProps, DistributionChartTooltipProps } from '@/types';
-import type { MasteryDistribution } from '@/types/statistics';
 import React from 'react';
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-const BAR_GROUPS = [
-  { key: 'low', label: 'LOW (0-2)', scoreRanges: ['0', '1-2', '3-4'], color: '#EA4335' },
-  { key: 'mid', label: 'MID (5-7)', scoreRanges: ['5-6', '7-8'], color: '#FBBC04' },
-  { key: 'high', label: 'HIGH (8-10)', scoreRanges: ['9-10'], color: '#34A853' },
-] as const;
-
-function aggregateToBars(data: MasteryDistribution[]): { name: string; count: number; color: string }[] {
-  if (!data.length) {
-    return BAR_GROUPS.map(g => ({ name: g.label, count: 0, color: g.color }));
-  }
-  return BAR_GROUPS.map((group) => {
-    const count = data
-      .filter(d => (group.scoreRanges as readonly string[]).includes(d.scoreRange))
-      .reduce((sum, d) => sum + d.count, 0);
-    return { name: group.label, count, color: group.color };
-  });
-}
+const BAR_FILL: Record<string, string> = {
+  'bg-destructive': 'var(--destructive)',
+  'bg-warning': 'var(--warning)',
+  'bg-success': 'var(--success)',
+};
 
 const CustomTooltip = ({ active, payload }: DistributionChartTooltipProps) => {
   if (active && payload?.length && payload[0]) {
@@ -56,7 +44,11 @@ export const DistributionChart: React.FC<DistributionChartProps> = ({ data }) =>
     );
   }
 
-  const barData = aggregateToBars(data);
+  const barData = groupDistributionBuckets(data).map(bar => ({
+    name: bar.label,
+    count: bar.count,
+    color: BAR_FILL[bar.barClass] ?? 'var(--muted)',
+  }));
 
   return (
     <Card className="overflow-hidden border-0 bg-card shadow-sm">

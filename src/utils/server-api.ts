@@ -329,6 +329,14 @@ export const statisticsApi = {
     const config = API_METHODS.vocabs.getStatisticsDistribution();
     return serverApi.get<import('@/types/statistics').MasteryDistribution[]>(config.endpoint);
   },
+  getDashboard: async (params?: {
+    include?: string[];
+    startDate?: string;
+    endDate?: string;
+  }) => {
+    const config = API_METHODS.vocabs.getStatisticsDashboard(params);
+    return serverApi.get<import('@/types/statistics').TDashboardStatistics>(config.endpoint);
+  },
 };
 
 // Vocabulary Trainer API endpoints
