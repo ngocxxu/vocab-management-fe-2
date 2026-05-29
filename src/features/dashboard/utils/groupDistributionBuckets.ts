@@ -44,7 +44,7 @@ export function groupDistributionBuckets(
     counts[group] += item.count;
   }
 
-  return (['low', 'mid', 'high'] as const).map((key) => ({
+  return (['low', 'mid', 'high'] as const).map(key => ({
     key,
     label: GROUP_META[key].label,
     count: counts[key],

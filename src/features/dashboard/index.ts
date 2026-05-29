@@ -1,1 +1,1 @@
-export { DashboardPageView } from '@/features/dashboard/ui/DashboardPageView';
+export { DashboardPageView } from './ui/DashboardPageView';

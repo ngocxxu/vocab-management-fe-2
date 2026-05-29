@@ -1,13 +1,13 @@
-import { SectionLabel } from '@/features/dashboard/components/SectionLabel';
-import { ChartsSkeleton } from '@/features/dashboard/components/skeletons/ChartsSkeleton';
-import { HeroCTASkeleton } from '@/features/dashboard/components/skeletons/HeroCTASkeleton';
-import { HeatmapSkeleton } from '@/features/dashboard/components/skeletons/HeatmapSkeleton';
-import { TableSkeleton } from '@/features/dashboard/components/skeletons/TableSkeleton';
-import { DashboardChartsZone } from '@/features/dashboard/ui/DashboardChartsZone';
-import { DashboardCriticalZone } from '@/features/dashboard/ui/DashboardCriticalZone';
-import { DashboardHeatmapZone } from '@/features/dashboard/ui/DashboardHeatmapZone';
-import { DashboardNextActionZone } from '@/features/dashboard/ui/DashboardNextActionZone';
-import { DashboardProblematicZone } from '@/features/dashboard/ui/DashboardProblematicZone';
+import { SectionLabel } from '../components/SectionLabel';
+import { ChartsSkeleton } from '../components/skeletons/ChartsSkeleton';
+import { HeroCTASkeleton } from '../components/skeletons/HeroCTASkeleton';
+import { HeatmapSkeleton } from '../components/skeletons/HeatmapSkeleton';
+import { TableSkeleton } from '../components/skeletons/TableSkeleton';
+import { DashboardChartsZone } from './DashboardChartsZone';
+import { DashboardCriticalZone } from './DashboardCriticalZone';
+import { DashboardHeatmapZone } from './DashboardHeatmapZone';
+import { DashboardNextActionZone } from './DashboardNextActionZone';
+import { DashboardProblematicZone } from './DashboardProblematicZone';
 import { Suspense } from 'react';
 
 export function DashboardPageView() {

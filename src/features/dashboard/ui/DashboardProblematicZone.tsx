@@ -1,6 +1,6 @@
 import { ProblematicVocabsTable } from '@/components/dashboard/cards/ProblematicVocabsTable';
-import { ZoneError } from '@/features/dashboard/components/ZoneError';
-import { getDashboardProblematicData } from '@/features/dashboard/services/server/getDashboardProblematicData';
+import { ZoneError } from '../components/ZoneError';
+import { getDashboardProblematicData } from '../services/server/getDashboardProblematicData';
 import { getExpiredSessionRedirect, isUnauthorizedError } from '@/utils/auth-error';
 import { redirect } from 'next/navigation';
 

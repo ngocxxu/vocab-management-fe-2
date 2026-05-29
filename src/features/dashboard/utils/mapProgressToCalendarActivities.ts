@@ -1,4 +1,4 @@
-import { practiceCountToLevel } from '@/features/dashboard/utils/practiceCountLevels';
+import { practiceCountToLevel } from './practiceCountLevels';
 import type { TProgressOverTime } from '@/types/statistics';
 import type { Activity } from 'react-activity-calendar';
 

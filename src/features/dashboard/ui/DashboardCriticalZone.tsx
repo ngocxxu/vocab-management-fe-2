@@ -1,6 +1,6 @@
-import { KpiGrid } from '@/features/dashboard/components/KpiGrid';
-import { SectionLabel } from '@/features/dashboard/components/SectionLabel';
-import { getDashboardCriticalData } from '@/features/dashboard/services/server/getDashboardCriticalData';
+import { KpiGrid } from '../components/KpiGrid';
+import { SectionLabel } from '../components/SectionLabel';
+import { getDashboardCriticalData } from '../services/server/getDashboardCriticalData';
 import { getExpiredSessionRedirect, isUnauthorizedError } from '@/utils/auth-error';
 import { redirect } from 'next/navigation';
 

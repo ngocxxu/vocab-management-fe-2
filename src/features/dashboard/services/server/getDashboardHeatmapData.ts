@@ -1,4 +1,4 @@
-import { getCalendarYearDateRange } from '@/features/dashboard/utils/dateRange';
+import { getCalendarYearDateRange } from '../../utils/dateRange';
 import { statisticsApi } from '@/utils/server-api';
 
 export async function getDashboardHeatmapData() {

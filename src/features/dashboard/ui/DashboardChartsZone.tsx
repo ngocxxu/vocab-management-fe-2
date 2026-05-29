@@ -2,8 +2,8 @@ import { AnswerDistributionCard } from '@/components/dashboard/cards/AnswerDistr
 import { DistributionChart } from '@/components/dashboard/cards/DistributionChart';
 import { ProgressChart } from '@/components/dashboard/cards/ProgressChart';
 import { SubjectMasteryChart } from '@/components/dashboard/cards/SubjectMasteryChart';
-import { ZoneError } from '@/features/dashboard/components/ZoneError';
-import { getDashboardChartsData } from '@/features/dashboard/services/server/getDashboardChartsData';
+import { ZoneError } from '../components/ZoneError';
+import { getDashboardChartsData } from '../services/server/getDashboardChartsData';
 import { getExpiredSessionRedirect, isUnauthorizedError } from '@/utils/auth-error';
 import { redirect } from 'next/navigation';
 

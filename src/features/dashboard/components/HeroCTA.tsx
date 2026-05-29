@@ -1,5 +1,5 @@
 import { Card, CardContent } from '@/components/ui/card';
-import { buildHeroCtaContent } from '@/features/dashboard/utils/heroCtaContent';
+import { buildHeroCtaContent } from '../utils/heroCtaContent';
 import { Button } from '@/shared/ui/button';
 import { Danger } from '@solar-icons/react/ssr';
 import Link from 'next/link';
@@ -47,14 +47,14 @@ export function HeroCTA({ criticalCount, warningCount, lastPracticeAt }: THeroCT
           </span>
         </div>
 
-        <h2 className="mt-5 text-pretty text-2xl font-extrabold leading-tight text-foreground sm:text-3xl">
+        <h2 className="mt-5 text-2xl leading-tight font-extrabold text-pretty text-foreground sm:text-3xl">
           {content.title.count !== null
             ? (
-              <>
-                <span className="text-destructive">{`${content.title.count} words`}</span>
-                <span>{content.title.rest}</span>
-              </>
-            )
+                <>
+                  <span className="text-destructive">{`${content.title.count} words`}</span>
+                  <span>{content.title.rest}</span>
+                </>
+              )
             : content.title.rest}
         </h2>
 
@@ -62,12 +62,12 @@ export function HeroCTA({ criticalCount, warningCount, lastPracticeAt }: THeroCT
           {content.body.kind === 'noSessions'
             ? 'No practice sessions yet. Start your first session today.'
             : (
-              <>
-                {`It’s been `}
-                <strong className="font-semibold text-foreground">{`${content.body.days} day${content.body.days === 1 ? '' : 's'}`}</strong>
-                {` since your last practice session.`}
-              </>
-            )}
+                <>
+                  {`It’s been `}
+                  <strong className="font-semibold text-foreground">{`${content.body.days} day${content.body.days === 1 ? '' : 's'}`}</strong>
+                  {` since your last practice session.`}
+                </>
+              )}
         </p>
 
         {content.showCta && (

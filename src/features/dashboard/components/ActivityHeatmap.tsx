@@ -1,9 +1,9 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ACTIVITY_CALENDAR_THEME } from '@/features/dashboard/utils/activityCalendarTheme';
-import { getCalendarYearDateRange } from '@/features/dashboard/utils/dateRange';
-import { mapProgressToCalendarActivities } from '@/features/dashboard/utils/mapProgressToCalendarActivities';
+import { ACTIVITY_CALENDAR_THEME } from '../utils/activityCalendarTheme';
+import { getCalendarYearDateRange } from '../utils/dateRange';
+import { mapProgressToCalendarActivities } from '../utils/mapProgressToCalendarActivities';
 import { useTheme } from '@/hooks/useTheme';
 import type { TProgressOverTime } from '@/types/statistics';
 import { format, parseISO } from 'date-fns';

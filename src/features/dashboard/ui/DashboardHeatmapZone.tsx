@@ -1,6 +1,6 @@
-import { ActivityHeatmap } from '@/features/dashboard/components/ActivityHeatmap';
-import { ZoneError } from '@/features/dashboard/components/ZoneError';
-import { getDashboardHeatmapData } from '@/features/dashboard/services/server/getDashboardHeatmapData';
+import { ActivityHeatmap } from '../components/ActivityHeatmap';
+import { ZoneError } from '../components/ZoneError';
+import { getDashboardHeatmapData } from '../services/server/getDashboardHeatmapData';
 import { getExpiredSessionRedirect, isUnauthorizedError } from '@/utils/auth-error';
 import { redirect } from 'next/navigation';
 

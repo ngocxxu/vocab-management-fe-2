@@ -1,8 +1,8 @@
 import { Card, CardContent } from '@/components/ui/card';
-import { computeAccuracyDelta } from '@/features/dashboard/utils/computeAccuracyDelta';
-import { formatCount } from '@/features/dashboard/types';
-import { getMasteryTextClass } from '@/features/dashboard/utils/masteryThresholds';
-import type { TProgressOverTime, TMasterySummary } from '@/types/statistics';
+import { formatCount } from '../types';
+import { computeAccuracyDelta } from '../utils/computeAccuracyDelta';
+import { getMasteryTextClass } from '../utils/masteryThresholds';
+import type { TMasterySummary, TProgressOverTime } from '@/types/statistics';
 import {
   AltArrowDown,
   AltArrowUp,

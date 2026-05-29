@@ -98,4 +98,3 @@ export function buildHeroCtaContent(input: TBuildHeroCtaContentInput): THeroCtaC
     ctaLabel,
   };
 }
-

@@ -1,5 +1,5 @@
 import { verifyUser } from '@/actions';
-import { getProgressDateRange } from '@/features/dashboard/utils/dateRange';
+import { getProgressDateRange } from '../../utils/dateRange';
 import { statisticsApi } from '@/utils/server-api';
 
 export async function getDashboardCriticalData() {

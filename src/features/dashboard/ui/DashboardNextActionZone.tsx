@@ -1,6 +1,6 @@
-import { HeroCTA } from '@/features/dashboard/components/HeroCTA';
-import { ZoneError } from '@/features/dashboard/components/ZoneError';
-import { getDashboardNextActionData } from '@/features/dashboard/services/server/getDashboardNextActionData';
+import { HeroCTA } from '../components/HeroCTA';
+import { ZoneError } from '../components/ZoneError';
+import { getDashboardNextActionData } from '../services/server/getDashboardNextActionData';
 import { getExpiredSessionRedirect, isUnauthorizedError } from '@/utils/auth-error';
 import { redirect } from 'next/navigation';
 
