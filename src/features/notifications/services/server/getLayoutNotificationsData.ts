@@ -1,11 +1,10 @@
-import { DEFAULT_NOTIFICATION_QUERY_PARAMS } from '@/utils/api-config';
 import { notificationsApi } from '@/utils/server-api';
 
 export async function getLayoutNotificationsData() {
   try {
     const [allRes, unreadRes, countRes] = await Promise.allSettled([
-      notificationsApi.getMy(DEFAULT_NOTIFICATION_QUERY_PARAMS).catch(() => undefined),
-      notificationsApi.getUnread(DEFAULT_NOTIFICATION_QUERY_PARAMS).catch(() => undefined),
+      notificationsApi.getMy().catch(() => undefined),
+      notificationsApi.getUnread().catch(() => undefined),
       notificationsApi.getUnreadCount().catch(() => undefined),
     ]);
 

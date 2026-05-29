@@ -26,7 +26,7 @@ import { Env } from '@/libs/Env';
 import { BackendRequestError } from '@/utils/backend-request-error';
 import { logger } from '@/libs/Logger';
 import { getAccessToken } from '@/utils/auth-cookies';
-import { API_ENDPOINTS, API_METHODS, DEFAULT_NOTIFICATION_QUERY_PARAMS } from './api-config';
+import { API_ENDPOINTS, API_METHODS } from './api-config';
 
 class ServerAPI {
   private readonly baseURL = Env.NESTJS_API_URL || 'http://localhost:3002/api/v1';
@@ -491,17 +491,11 @@ export const languageFoldersApi = {
 // Notifications API endpoints
 export const notificationsApi = {
   getMy: (params?: NotificationQueryParams) => {
-    const config = API_METHODS.notifications.getMy({
-      ...DEFAULT_NOTIFICATION_QUERY_PARAMS,
-      ...params,
-    });
+    const config = API_METHODS.notifications.getMy(params);
     return serverApi.get<ResponseAPI<TNotification[]>>(config.endpoint);
   },
   getUnread: (params?: NotificationQueryParams) => {
-    const config = API_METHODS.notifications.getUnread({
-      ...DEFAULT_NOTIFICATION_QUERY_PARAMS,
-      ...params,
-    });
+    const config = API_METHODS.notifications.getUnread(params);
     return serverApi.get<ResponseAPI<TNotification[]>>(config.endpoint);
   },
   getUnreadCount: () => {

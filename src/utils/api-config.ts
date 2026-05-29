@@ -84,15 +84,8 @@ export type LanguageFolderQueryParams = {
 export type NotificationQueryParams = {
   page?: number;
   pageSize?: number;
-  sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
   includeDeleted?: boolean;
 };
-
-export const DEFAULT_NOTIFICATION_QUERY_PARAMS = {
-  sortBy: 'createdAt',
-  sortOrder: 'desc',
-} as const satisfies Pick<NotificationQueryParams, 'sortBy' | 'sortOrder'>;
 
 // API endpoint definitions
 export const API_ENDPOINTS = {
