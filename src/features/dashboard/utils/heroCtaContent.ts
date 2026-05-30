@@ -18,8 +18,6 @@ export type THeroCtaContent = {
   totalNeedReview: number;
   title: THeroCtaTitle;
   body: { kind: 'daysSince'; days: number } | { kind: 'noSessions' };
-  showCta: boolean;
-  ctaLabel: string;
 };
 
 type TBuildHeroCtaContentInput = {
@@ -80,13 +78,10 @@ export function buildHeroCtaContent(input: TBuildHeroCtaContentInput): THeroCtaC
       totalNeedReview,
       title: { count: null, rest: 'You’re on track — nothing needs review.' },
       body,
-      showCta: false,
-      ctaLabel: '',
     };
   }
 
   const rest = priority === 'critical' ? ' need your urgent review' : ' need review';
-  const ctaLabel = `Practice These ${totalNeedReview} Words →`;
 
   return {
     priority,
@@ -94,7 +89,5 @@ export function buildHeroCtaContent(input: TBuildHeroCtaContentInput): THeroCtaC
     totalNeedReview,
     title: { count: totalNeedReview, rest },
     body,
-    showCta: true,
-    ctaLabel,
   };
 }

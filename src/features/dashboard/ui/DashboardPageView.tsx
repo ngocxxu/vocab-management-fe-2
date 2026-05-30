@@ -48,14 +48,14 @@ export function DashboardPageView() {
           </div>
         </div>
 
-        <SectionLabel>Charts</SectionLabel>
-        <Suspense fallback={<ChartsSkeleton />}>
-          <DashboardChartsZone />
-        </Suspense>
-
         <SectionLabel>Words to review</SectionLabel>
         <Suspense fallback={<TableSkeleton />}>
           <DashboardProblematicZone />
+        </Suspense>
+
+        <SectionLabel>Charts</SectionLabel>
+        <Suspense fallback={<ChartsSkeleton />}>
+          <DashboardChartsZone />
         </Suspense>
 
       </div>

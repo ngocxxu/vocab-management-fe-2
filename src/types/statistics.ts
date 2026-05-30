@@ -23,12 +23,16 @@ export type TProgressOverTime = {
   practiceCount: number;
 };
 
+export type TNeedsReviewStatusFilter = 'critical' | 'warning' | 'all';
+
 export type TTopProblematicVocab = {
   vocabId: string;
   vocab: TVocab;
   incorrectCount: number;
   masteryScore: number;
   correctCount: number;
+  errorRate: number;
+  healthStatus: 'CRITICAL' | 'WARNING';
 };
 
 export type TMasteryDistribution = {

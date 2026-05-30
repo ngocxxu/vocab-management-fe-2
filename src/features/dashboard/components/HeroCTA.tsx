@@ -1,8 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { buildHeroCtaContent } from '../utils/heroCtaContent';
-import { Button } from '@/shared/ui/button';
 import { Danger } from '@solar-icons/react/ssr';
-import Link from 'next/link';
 
 type THeroCTAProps = {
   criticalCount: number;
@@ -69,12 +67,6 @@ export function HeroCTA({ criticalCount, warningCount, lastPracticeAt }: THeroCT
                 </>
               )}
         </p>
-
-        {content.showCta && (
-          <Button asChild className="mt-auto h-12 w-full rounded-2xl text-base font-semibold">
-            <Link href="/vocab-trainer?preset=problematic">{content.ctaLabel}</Link>
-          </Button>
-        )}
       </CardContent>
     </Card>
   );

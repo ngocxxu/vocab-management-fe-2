@@ -1,7 +1,8 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { errorRateStatusConfig, getErrorRateStatus, getErrorRateTextClass } from '@/features/dashboard/utils/statusConfig';
+import { errorRateStatusConfig, getErrorRateTextClass } from '@/features/dashboard/utils/statusConfig';
+import { Button } from '@/shared/ui/button';
 import type { TTextTarget } from '@/types/vocab-list';
 import Link from 'next/link';
 import React from 'react';
@@ -18,18 +19,22 @@ function getDefinition(target: TTextTarget | undefined): string {
   return part || target.textTarget || '—';
 }
 
-function getCategory(target: TTextTarget | undefined): string {
-  const subject = target?.textTargetSubjects?.[0]?.subject?.name;
-  return subject ?? '—';
+// function getCategory(target: TTextTarget | undefined): string {
+//   const subject = target?.textTargetSubjects?.[0]?.subject?.name;
+//   return subject ?? '—';
+// }
+
+function toErrorRatePct(errorRate: number): number {
+  return Math.round(errorRate * 100);
 }
 
-export const ProblematicVocabsTable: React.FC<ProblematicVocabsTableProps> = ({ data }) => {
+export const ProblematicVocabsTable: React.FC<ProblematicVocabsTableProps> = ({ data, totalNeedReview }) => {
   if (!data || data.length === 0) {
     return (
       <Card className="overflow-hidden border-0 bg-card shadow-sm">
         <CardHeader className="pb-4">
-          <CardTitle className="text-xl font-bold text-foreground">Problematic Vocabs</CardTitle>
-          <p className="text-sm text-muted-foreground">Words requiring immediate attention based on recent errors.</p>
+          <CardTitle className="text-xl font-bold text-foreground">Top 10 Problematic Vocabs</CardTitle>
+          <p className="text-sm text-muted-foreground">Words requiring immediate attention based on error rate.</p>
         </CardHeader>
         <CardContent className="p-6">
           <p className="text-center text-sm text-muted-foreground">
@@ -40,14 +45,29 @@ export const ProblematicVocabsTable: React.FC<ProblematicVocabsTableProps> = ({ 
     );
   }
 
-  const sortedData = [...data].sort((a, b) => b.incorrectCount - a.incorrectCount);
-  const practiceCount = sortedData.length;
+  const sortedData = [...data].sort((a, b) => b.errorRate - a.errorRate);
+  const practiceCount = totalNeedReview > 0 ? totalNeedReview : sortedData.length;
+  const showingSubset = sortedData.length < practiceCount;
 
   return (
     <Card className="overflow-hidden border-0 bg-card shadow-sm">
       <CardHeader className="pb-4">
-        <CardTitle className="text-xl font-bold text-foreground">Problematic Vocabs</CardTitle>
-        <p className="text-sm text-muted-foreground">Words requiring immediate attention based on recent errors.</p>
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="min-w-0 flex-1">
+            <CardTitle className="text-xl font-bold text-foreground">Top 10 Problematic Vocabs</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Words requiring immediate attention based on error rate.
+              {showingSubset ? ` Showing top ${sortedData.length} of ${practiceCount}.` : null}
+            </p>
+          </div>
+          {practiceCount > 0 && (
+            <Button asChild className="shrink-0 rounded-xl font-semibold">
+              <Link href="/vocab-trainer?preset=problematic">
+                {`Practice These ${practiceCount} Words →`}
+              </Link>
+            </Button>
+          )}
+        </div>
       </CardHeader>
       <CardContent className="p-0">
         <div className="overflow-x-auto">
@@ -55,20 +75,19 @@ export const ProblematicVocabsTable: React.FC<ProblematicVocabsTableProps> = ({ 
             <thead>
               <tr className="border-b border-border">
                 <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">Word</th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">Subject</th>
+                {/* <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">Subject</th> */}
                 <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">Error rate</th>
                 <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">Status</th>
               </tr>
             </thead>
             <tbody>
               {sortedData.map((item) => {
-                const total = item.correctCount + item.incorrectCount;
-                const errorRatePct = total > 0 ? Math.round((item.incorrectCount / total) * 100) : 0;
-                const status = getErrorRateStatus(errorRatePct);
+                const errorRatePct = toErrorRatePct(item.errorRate);
+                const status = item.healthStatus;
                 const statusStyle = errorRateStatusConfig[status];
                 const target = item.vocab.textTargets?.[0];
                 const definition = getDefinition(target);
-                const category = getCategory(target);
+                // const category = getCategory(target);
 
                 return (
                   <tr
@@ -81,7 +100,7 @@ export const ProblematicVocabsTable: React.FC<ProblematicVocabsTableProps> = ({ 
                         <span className="mt-0.5 text-xs text-muted-foreground">{definition}</span>
                       </div>
                     </td>
-                    <td className="px-4 py-2.5 text-muted-foreground">{category}</td>
+                    {/* <td className="px-4 py-2.5 text-muted-foreground">{category}</td> */}
                     <td className={`px-4 py-2.5 font-medium ${getErrorRateTextClass(errorRatePct)}`}>
                       {errorRatePct}
                       %
@@ -96,18 +115,6 @@ export const ProblematicVocabsTable: React.FC<ProblematicVocabsTableProps> = ({ 
               })}
             </tbody>
           </table>
-        </div>
-        <div className="flex justify-end px-4 pb-4">
-          <Link
-            href="/vocab-trainer?preset=problematic"
-            className="mt-4 inline-flex items-center gap-1.5 rounded-md border border-primary/30 bg-primary/10 px-3.5 py-1.5 text-sm font-medium text-primary transition-colors hover:bg-primary/15"
-          >
-            Practice these
-            {' '}
-            {practiceCount}
-            {' '}
-            words →
-          </Link>
         </div>
       </CardContent>
     </Card>

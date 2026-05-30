@@ -6,8 +6,8 @@ import { redirect } from 'next/navigation';
 
 export async function DashboardProblematicZone() {
   try {
-    const { problematic } = await getDashboardProblematicData();
-    return <ProblematicVocabsTable data={problematic} />;
+    const { problematic, totalNeedReview } = await getDashboardProblematicData();
+    return <ProblematicVocabsTable data={problematic} totalNeedReview={totalNeedReview} />;
   } catch (error) {
     if (isUnauthorizedError(error)) {
       redirect(getExpiredSessionRedirect('/dashboard'));

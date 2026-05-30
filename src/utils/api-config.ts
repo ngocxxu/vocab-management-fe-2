@@ -159,8 +159,8 @@ export const API_METHODS = {
       const queryString = buildQueryString(params);
       return { endpoint: `${API_ENDPOINTS.vocabs}/statistics/progress?${queryString}` };
     },
-    getStatisticsProblematic: (params?: { minIncorrect?: number; limit?: number }) => {
-      if (!params || (!params.minIncorrect && !params.limit)) {
+    getStatisticsProblematic: (params?: { status?: 'critical' | 'warning' | 'all'; limit?: number; page?: number }) => {
+      if (!params || (!params.status && !params.limit && !params.page)) {
         return { endpoint: `${API_ENDPOINTS.vocabs}/statistics/problematic` };
       }
       const queryString = buildQueryString(params);

@@ -136,6 +136,7 @@ export type DistributionChartProps = {
 
 export type ProblematicVocabsTableProps = {
   data: import('@/types/statistics').TopProblematicVocab[];
+  totalNeedReview: number;
 };
 
 export type AnswerDistributionCardProps = {

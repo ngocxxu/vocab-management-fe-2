@@ -1,18 +1,24 @@
 import { statisticsApi } from '@/utils/server-api';
 
+const PROBLEMATIC_TABLE_LIMIT = 20;
+
 export async function getDashboardProblematicData() {
-  const dashboard = await statisticsApi.getDashboard({
-    include: ['problematic'],
-  });
+  const [dashboard, problematic] = await Promise.all([
+    statisticsApi.getDashboard({
+      include: ['summary'],
+    }),
+    statisticsApi.getProblematic({
+      status: 'all',
+      limit: PROBLEMATIC_TABLE_LIMIT,
+      page: 1,
+    }),
+  ]);
 
-  if (dashboard.problematic?.length) {
-    return { problematic: dashboard.problematic };
-  }
+  const summary = dashboard.summary;
+  const totalNeedReview = summary ? summary.criticalCount + summary.warningCount : 0;
 
-  const problematic = await statisticsApi.getProblematic({
-    minIncorrect: 5,
-    limit: 10,
-  });
-
-  return { problematic };
+  return {
+    problematic: problematic ?? [],
+    totalNeedReview,
+  };
 }

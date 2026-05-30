@@ -15,10 +15,6 @@ export function HeroCTASkeleton() {
         <div className="h-4 w-11/12 rounded bg-muted" />
         <div className="h-4 w-3/5 rounded bg-muted" />
       </div>
-
-      <div className="mt-auto pt-6">
-        <div className="h-12 w-full rounded-2xl bg-muted" />
-      </div>
     </div>
   );
 }

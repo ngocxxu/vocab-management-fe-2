@@ -321,7 +321,7 @@ export const statisticsApi = {
     const config = API_METHODS.vocabs.getStatisticsProgress(params);
     return serverApi.get<import('@/types/statistics').ProgressOverTime[]>(config.endpoint);
   },
-  getProblematic: async (params?: { minIncorrect?: number; limit?: number }) => {
+  getProblematic: async (params?: { status?: 'critical' | 'warning' | 'all'; limit?: number; page?: number }) => {
     const config = API_METHODS.vocabs.getStatisticsProblematic(params);
     return serverApi.get<import('@/types/statistics').TopProblematicVocab[]>(config.endpoint);
   },
