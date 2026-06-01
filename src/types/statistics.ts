@@ -54,7 +54,6 @@ export type MasterySummary = TMasterySummary;
 export type MasteryBySubject = TMasteryBySubject;
 /** @deprecated Use TProgressOverTime */
 export type ProgressOverTime = TProgressOverTime;
-/** @deprecated Use TTopProblematicVocab */
 export type TopProblematicVocab = TTopProblematicVocab;
 /** @deprecated Use TMasteryDistribution */
 export type MasteryDistribution = TMasteryDistribution;

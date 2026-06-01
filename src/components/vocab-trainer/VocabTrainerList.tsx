@@ -5,9 +5,11 @@ import type { TVocabTrainer, VocabTrainerListProps } from '@/types/vocab-trainer
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DangerTriangle, Pen } from '@solar-icons/react/ssr';
 import { useRouter, useSearchParams } from 'next/navigation';
-import React, { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react';
+import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { getProblematicVocabIdsForPractice } from '@/actions/statistics';
 import { createVocabTrainer, deleteVocabTrainer, deleteVocabTrainersBulk, updateVocabTrainer } from '@/actions/vocab-trainers';
 import { BulkDeleteDialog, DeleteActionButton, ErrorState } from '@/shared/ui/shared';
 import { Badge } from '@/shared/ui/badge';
@@ -120,6 +122,46 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
       resetForm();
     },
   });
+  const setCreateDialogOpen = dialogState.setOpen;
+
+  const problematicPresetConsumedRef = useRef(false);
+
+  useEffect(() => {
+    if (!isMounted || searchParams.get('preset') !== 'problematic' || problematicPresetConsumedRef.current) {
+      return;
+    }
+
+    problematicPresetConsumedRef.current = true;
+    router.replace('/vocab-trainer');
+
+    let cancelled = false;
+
+    (async () => {
+      const result = await getProblematicVocabIdsForPractice();
+      if (cancelled) {
+        return;
+      }
+
+      if (!Array.isArray(result)) {
+        toast.error(result.error);
+        return;
+      }
+
+      if (result.length === 0) {
+        toast.info('No words need practice right now.');
+        return;
+      }
+
+      form.setValue('vocabAssignmentIds', result, { shouldDirty: true, shouldValidate: true });
+      form.setValue('name', 'Problematic words practice', { shouldDirty: true });
+      form.clearErrors('vocabAssignmentIds');
+      setCreateDialogOpen(true);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isMounted, searchParams, form, setCreateDialogOpen, router]);
 
   const bulkDelete = useBulkDelete({
     deleteMutation: async (ids: string[]) => {

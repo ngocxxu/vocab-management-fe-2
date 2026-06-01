@@ -4,6 +4,7 @@ export * from './language-folders';
 export * from './languages';
 export * from './layout-header';
 export * from './notifications';
+export * from './statistics';
 export * from './subjects';
 export * from './vocab-trainers';
 export * from './vocabs';

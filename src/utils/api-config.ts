@@ -146,6 +146,7 @@ export const API_METHODS = {
       data: { updates },
     }),
     deleteBulk: (ids: string[]) => ({ endpoint: `${API_ENDPOINTS.vocabs}/bulk/delete`, data: { ids } }),
+    getBulk: (ids: string[]) => ({ endpoint: `${API_ENDPOINTS.vocabs}/bulk/get`, data: { ids } }),
     importCsv: (params: { languageFolderId: string; sourceLanguageCode: string; targetLanguageCode: string }) => {
       const queryString = buildQueryString(params);
       return { endpoint: `${API_ENDPOINTS.vocabs}/import/csv?${queryString}` };

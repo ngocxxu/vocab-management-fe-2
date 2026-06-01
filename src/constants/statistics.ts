@@ -1,0 +1,1 @@
+export const MAX_PROBLEMATIC_PRACTICE_LIMIT = 500;

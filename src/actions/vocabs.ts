@@ -5,7 +5,6 @@ import type { TBulkVocabUpdateItem, TCreateVocab, TVocab } from '@/types/vocab-l
 import type { RandomVocabQueryParams, VocabQueryParams } from '@/utils/api-config';
 import { revalidatePath } from 'next/cache';
 import { vocabApi } from '@/utils/server-api';
-import { logger } from '@/libs/Logger';
 import { requireAuth } from './auth';
 import { toActionError } from './utils';
 
@@ -204,26 +203,12 @@ export async function getVocabsByIds(ids: string[]): Promise<TVocab[] | { error:
       throw new TypeError('IDs must be an array');
     }
 
-    const uniqueIds = Array.from(new Set(ids)).filter(Boolean);
-    if (uniqueIds.length === 0) {
+    const cleaned = ids.filter(Boolean);
+    if (cleaned.length === 0) {
       return [];
     }
 
-    const results = await Promise.allSettled(uniqueIds.map(id => vocabApi.getById(id)));
-    const vocabs: TVocab[] = [];
-
-    results.forEach((res, idx) => {
-      if (res.status === 'fulfilled') {
-        vocabs.push(res.value);
-        return;
-      }
-      logger.error('Failed to fetch vocab by id', {
-        id: uniqueIds[idx],
-        error: res.reason instanceof Error ? res.reason.message : String(res.reason),
-      });
-    });
-
-    return vocabs;
+    return await vocabApi.getBulk(cleaned);
   } catch (error) {
     return {
       error: error instanceof Error ? error.message : 'Failed to fetch vocabularies by ids',

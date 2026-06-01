@@ -246,6 +246,13 @@ export const vocabApi = {
     const config = API_METHODS.vocabs.deleteBulk(ids);
     return serverApi.post(config.endpoint, config.data);
   },
+  getBulk: (ids: string[]) => {
+    if (!Array.isArray(ids)) {
+      throw new TypeError('IDs array is required');
+    }
+    const config = API_METHODS.vocabs.getBulk(ids);
+    return serverApi.post<TVocab[]>(config.endpoint, config.data);
+  },
   importCsv: async (file: File, params: { languageFolderId: string; sourceLanguageCode: string; targetLanguageCode: string }) => {
     const formData = new FormData();
     formData.append('file', file);
