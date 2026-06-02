@@ -10,7 +10,7 @@ export async function markNotificationAsRead(id: string) {
   await requireAuth();
   try {
     const result = await notificationsApi.markAsRead(id);
-    revalidatePath('/(app)');
+    revalidatePath('/notifications');
     return result;
   } catch (error) {
     throw toActionError(error, 'Failed to mark notification as read');
@@ -21,7 +21,7 @@ export async function markAllNotificationsAsRead() {
   await requireAuth();
   try {
     const result = await notificationsApi.markAllAsRead();
-    revalidatePath('/(app)');
+    revalidatePath('/notifications');
     return result;
   } catch (error) {
     throw toActionError(error, 'Failed to mark all notifications as read');
@@ -32,7 +32,7 @@ export async function deleteNotification(id: string) {
   await requireAuth();
   try {
     const result = await notificationsApi.delete(id);
-    revalidatePath('/(app)');
+    revalidatePath('/notifications');
     return result;
   } catch (error) {
     throw toActionError(error, 'Failed to delete notification');
@@ -43,7 +43,7 @@ export async function createNotification(notificationData: TNotificationInput) {
   await requireAuth();
   try {
     const result = await notificationsApi.create(notificationData);
-    revalidatePath('/(app)');
+    revalidatePath('/notifications');
     return result;
   } catch (error) {
     throw toActionError(error, 'Failed to create notification');
@@ -54,7 +54,7 @@ export async function updateNotification(id: string, notificationData: Partial<T
   await requireAuth();
   try {
     const result = await notificationsApi.update(id, notificationData);
-    revalidatePath('/(app)');
+    revalidatePath('/notifications');
     return result;
   } catch (error) {
     throw toActionError(error, 'Failed to update notification');
@@ -65,7 +65,7 @@ export async function updateNotificationStatus(id: string, statusData: TUpdateNo
   await requireAuth();
   try {
     const result = await notificationsApi.updateStatus(id, statusData);
-    revalidatePath('/(app)');
+    revalidatePath('/notifications');
     return result;
   } catch (error) {
     throw toActionError(error, 'Failed to update notification status');

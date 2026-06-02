@@ -1,5 +1,6 @@
 'use client';
 
+import { TOP_PROBLEMATIC_LIMIT } from '@/constants/statistics';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { errorRateStatusConfig, getErrorRateTextClass } from '@/features/dashboard/utils/statusConfig';
 import { Button } from '@/shared/ui/button';
@@ -45,9 +46,12 @@ export const ProblematicVocabsTable: React.FC<ProblematicVocabsTableProps> = ({ 
     );
   }
 
-  const sortedData = [...data].sort((a, b) => b.errorRate - a.errorRate);
-  const practiceCount = totalNeedReview > 0 ? totalNeedReview : sortedData.length;
-  const showingSubset = sortedData.length < practiceCount;
+  const sortedData = [...data]
+    .sort((a, b) => b.errorRate - a.errorRate)
+    .slice(0, TOP_PROBLEMATIC_LIMIT);
+  const totalAvailable = totalNeedReview > 0 ? totalNeedReview : sortedData.length;
+  const practiceCount = Math.min(totalAvailable, TOP_PROBLEMATIC_LIMIT);
+  const showingSubset = totalAvailable > TOP_PROBLEMATIC_LIMIT;
 
   return (
     <Card className="overflow-hidden border-0 bg-card shadow-sm">
@@ -57,7 +61,7 @@ export const ProblematicVocabsTable: React.FC<ProblematicVocabsTableProps> = ({ 
             <CardTitle className="text-xl font-bold text-foreground">Top 10 Problematic Vocabs</CardTitle>
             <p className="text-sm text-muted-foreground">
               Words requiring immediate attention based on error rate.
-              {showingSubset ? ` Showing top ${sortedData.length} of ${practiceCount}.` : null}
+              {showingSubset ? ` Showing top ${sortedData.length} of ${totalAvailable}.` : null}
             </p>
           </div>
           {practiceCount > 0 && (

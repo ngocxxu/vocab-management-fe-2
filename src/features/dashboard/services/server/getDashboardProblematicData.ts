@@ -1,6 +1,5 @@
+import { TOP_PROBLEMATIC_LIMIT } from '@/constants/statistics';
 import { statisticsApi } from '@/utils/server-api';
-
-const PROBLEMATIC_TABLE_LIMIT = 20;
 
 export async function getDashboardProblematicData() {
   const [dashboard, problematic] = await Promise.all([
@@ -9,7 +8,7 @@ export async function getDashboardProblematicData() {
     }),
     statisticsApi.getProblematic({
       status: 'all',
-      limit: PROBLEMATIC_TABLE_LIMIT,
+      limit: TOP_PROBLEMATIC_LIMIT,
       page: 1,
     }),
   ]);

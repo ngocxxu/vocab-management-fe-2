@@ -1,76 +1,56 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { formatCount } from '../types';
-import { computeAccuracyDelta } from '../utils/computeAccuracyDelta';
 import { getMasteryTextClass } from '../utils/masteryThresholds';
-import type { TMasterySummary, TProgressOverTime } from '@/types/statistics';
+import type { TMasterySummary } from '@/types/statistics';
 import {
-  AltArrowDown,
-  AltArrowUp,
   Book,
   CheckCircle,
-  CloseCircle,
+  DangerTriangle,
   Star,
 } from '@solar-icons/react/ssr';
 import type { ReactNode } from 'react';
 
 type TKpiGridProps = {
   summary: TMasterySummary;
-  progress: TProgressOverTime[];
 };
 
 type TMetricCardProps = {
   title: string;
   value: ReactNode;
   icon: ReactNode;
+  cardClassName: string;
   iconBgClass: string;
   valueClassName?: string;
-  trend?: { text: string; positive: boolean } | null;
+  trend: { text: string; className: string };
 };
 
-function MetricCard({ title, value, icon, iconBgClass, valueClassName, trend }: TMetricCardProps) {
+function MetricCard({ title, value, icon, cardClassName, iconBgClass, valueClassName, trend }: TMetricCardProps) {
   return (
-    <Card className="h-full overflow-hidden rounded-2xl border border-border bg-card shadow-md">
-      <CardContent className="flex flex-col px-6 py-2">
-        <div className="flex items-start justify-between gap-4">
-          <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${iconBgClass}`}>
-            {icon}
-          </div>
-          {trend && (
-            <span
-              className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium ${
-                trend.positive ? 'bg-success/15 text-success' : 'bg-destructive/15 text-destructive'
-              }`}
-            >
-              {trend.positive
-                ? <AltArrowUp size={12} weight="BoldDuotone" />
-                : <AltArrowDown size={12} weight="BoldDuotone" />}
-              <span>{trend.text}</span>
-            </span>
-          )}
+    <Card className={`h-full overflow-hidden rounded-2xl border shadow-sm ${cardClassName}`}>
+      <CardContent className="flex items-center gap-5 px-6 py-2">
+        <div className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl ${iconBgClass}`}>
+          {icon}
         </div>
-        <p className="mt-4 text-xs font-semibold text-muted-foreground min-[1600px]:text-base sm:text-xl">
-          {title}
-        </p>
-        <div className={`mt-2 text-2xl font-bold tracking-tight min-[1600px]:text-4xl sm:text-3xl ${valueClassName ?? 'text-foreground'}`}>
-          {value}
+        <div className="min-w-0">
+          <p className="text-base font-semibold text-muted-foreground sm:text-xl">
+            {title}
+          </p>
+          <div className="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+            <div className={`text-3xl font-bold tracking-tight sm:text-4xl ${valueClassName ?? 'text-foreground'}`}>
+              {value}
+            </div>
+            <span className={`text-base font-semibold sm:text-lg ${trend.className}`}>{trend.text}</span>
+          </div>
         </div>
       </CardContent>
     </Card>
   );
 }
 
-export function KpiGrid({ summary, progress }: TKpiGridProps) {
+export function KpiGrid({ summary }: TKpiGridProps) {
   const totalAnswers = summary.totalCorrect + summary.totalIncorrect;
   const accuracyPct = totalAnswers > 0 ? Math.round((summary.totalCorrect / totalAnswers) * 100) : 0;
   const needReview = summary.criticalCount + summary.warningCount;
-  const accuracyDelta = computeAccuracyDelta(progress, summary.totalCorrect, summary.totalIncorrect);
-
-  const accuracyTrend = accuracyDelta !== null
-    ? {
-        text: `${accuracyDelta > 0 ? '↑' : '↓'} ${Math.abs(accuracyDelta)}%`,
-        positive: accuracyDelta > 0,
-      }
-    : null;
 
   const masteryValueClass = getMasteryTextClass(summary.averageMastery);
   const needReviewClass = needReview > 0 ? 'text-warning' : 'text-success';
@@ -81,8 +61,10 @@ export function KpiGrid({ summary, progress }: TKpiGridProps) {
       <MetricCard
         title="Total words"
         value={formatCount(summary.totalVocabs)}
-        icon={<Book size={20} weight="BoldDuotone" className="text-primary" />}
-        iconBgClass="bg-primary/10"
+        icon={<Book size={32} weight="BoldDuotone" className="text-primary" />}
+        cardClassName="border-primary/15 bg-primary/5"
+        iconBgClass="bg-primary/15"
+        trend={{ text: '↑ +12%', className: 'text-success' }}
       />
       <MetricCard
         title="Avg. mastery"
@@ -93,23 +75,28 @@ export function KpiGrid({ summary, progress }: TKpiGridProps) {
           </span>
         )}
         valueClassName={masteryValueClass}
-        icon={<Star size={20} weight="BoldDuotone" className="text-warning" />}
+        icon={<Star size={32} weight="BoldDuotone" className="text-warning" />}
+        cardClassName="border-warning/30 bg-warning/5"
         iconBgClass="bg-warning/20"
+        trend={{ text: '↓ -0.2', className: 'text-destructive' }}
       />
       <MetricCard
         title="Accuracy"
         value={`${accuracyPct}%`}
         valueClassName={accuracyClass}
-        icon={<CheckCircle size={20} weight="BoldDuotone" className="text-success" />}
-        iconBgClass="bg-success/10"
-        trend={accuracyTrend}
+        icon={<CheckCircle size={32} weight="BoldDuotone" className="text-success" />}
+        cardClassName="border-success/30 bg-success/5"
+        iconBgClass="bg-success/15"
+        trend={{ text: '↑ +5%', className: 'text-success' }}
       />
       <MetricCard
         title="Need review"
         value={formatCount(needReview)}
         valueClassName={needReviewClass}
-        icon={<CloseCircle size={20} weight="BoldDuotone" className="text-destructive" />}
-        iconBgClass="bg-destructive/10"
+        icon={<DangerTriangle size={32} weight="BoldDuotone" className="text-destructive" />}
+        cardClassName="border-destructive/20 bg-destructive/5"
+        iconBgClass="bg-destructive/15"
+        trend={{ text: '↓ -2', className: 'text-success' }}
       />
     </div>
   );

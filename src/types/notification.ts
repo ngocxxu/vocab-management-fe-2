@@ -102,6 +102,7 @@ export type NotificationDropdownProps = {
   unreadCount?: TUnreadCountResponse | null;
   isLoading?: boolean;
   error?: string | null;
+  onNotificationsChanged?: () => Promise<void> | void;
 };
 
 export type NotificationWithReadStatus = TNotification & {
@@ -117,7 +118,7 @@ export type NotificationItemProps = {
   itemIndex: number;
   notification: TNotification;
   isRead: boolean;
-  onMarkAsRead?: () => void;
+  onMarkAsRead?: () => Promise<void> | void;
   onDelete?: () => void;
   variant?: 'dropdown' | 'page';
 };

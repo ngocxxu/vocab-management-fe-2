@@ -4,7 +4,7 @@ import type { ResponseAPI } from '@/types';
 import type { TUser } from '@/types/auth';
 import type { TNotification, TUnreadCountResponse } from '@/types/notification';
 import type { TPlan } from '@/types/plan';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { getLayoutHeaderData } from '@/actions/layout-header';
 import { Header, Sidebar } from '@/components/dashboard';
 import { logger } from '@/libs/Logger';
@@ -42,6 +42,39 @@ export function LayoutClient({
   const [isHeaderDataLoading, setIsHeaderDataLoading] = useState(Boolean(currentUser));
   const [headerDataError, setHeaderDataError] = useState<string | null>(null);
 
+  const refreshHeaderData = useCallback(async (force = false) => {
+    if (!currentUserId) {
+      loadedHeaderDataKeyRef.current = null;
+      setIsHeaderDataLoading(false);
+      return;
+    }
+
+    const headerDataKey = `${currentUserId}:${currentUserRole ?? ''}`;
+    if (!force && loadedHeaderDataKeyRef.current === headerDataKey) {
+      return;
+    }
+
+    loadedHeaderDataKeyRef.current = headerDataKey;
+    setIsHeaderDataLoading(true);
+    setHeaderDataError(null);
+
+    try {
+      const data = await getLayoutHeaderData();
+      setHeaderData({
+        currentPlan: data.currentPlan,
+        allNotifications: data.allNotifications,
+        unreadNotifications: data.unreadNotifications,
+        unreadCount: data.unreadCount,
+      });
+    } catch (error) {
+      loadedHeaderDataKeyRef.current = null;
+      logger.error('Failed to load layout header data:', { error });
+      setHeaderDataError('Unable to load notifications');
+    } finally {
+      setIsHeaderDataLoading(false);
+    }
+  }, [currentUserId, currentUserRole]);
+
   useEffect(() => {
     const handleResize = () => {
       const desktop = window.innerWidth >= 768;
@@ -59,54 +92,8 @@ export function LayoutClient({
   }, []);
 
   useEffect(() => {
-    if (!currentUserId) {
-      loadedHeaderDataKeyRef.current = null;
-      setIsHeaderDataLoading(false);
-      return;
-    }
-
-    const headerDataKey = `${currentUserId}:${currentUserRole ?? ''}`;
-    if (loadedHeaderDataKeyRef.current === headerDataKey) {
-      return;
-    }
-
-    let cancelled = false;
-    loadedHeaderDataKeyRef.current = headerDataKey;
-    setIsHeaderDataLoading(true);
-    setHeaderDataError(null);
-
-    getLayoutHeaderData()
-      .then((data) => {
-        if (cancelled) {
-          return;
-        }
-
-        setHeaderData({
-          currentPlan: data.currentPlan,
-          allNotifications: data.allNotifications,
-          unreadNotifications: data.unreadNotifications,
-          unreadCount: data.unreadCount,
-        });
-      })
-      .catch((error: unknown) => {
-        if (cancelled) {
-          return;
-        }
-
-        loadedHeaderDataKeyRef.current = null;
-        logger.error('Failed to load layout header data:', { error });
-        setHeaderDataError('Unable to load notifications');
-      })
-      .finally(() => {
-        if (!cancelled) {
-          setIsHeaderDataLoading(false);
-        }
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [currentUserId, currentUserRole]);
+    void refreshHeaderData();
+  }, [refreshHeaderData]);
 
   const toggleSidebar = () => {
     if (isDesktop) {
@@ -151,6 +138,7 @@ export function LayoutClient({
             unreadCount={headerData.unreadCount}
             isLoading={isHeaderDataLoading}
             error={headerDataError}
+            onNotificationsChanged={() => refreshHeaderData(true)}
           />
           <div className="flex-1 overflow-auto bg-background">
             {children}

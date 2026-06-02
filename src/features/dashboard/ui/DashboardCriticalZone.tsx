@@ -6,7 +6,7 @@ import { redirect } from 'next/navigation';
 
 export async function DashboardCriticalZone() {
   try {
-    const { user, summary, progress } = await getDashboardCriticalData();
+    const { user, summary } = await getDashboardCriticalData();
     const firstName = user?.firstName ?? 'there';
 
     return (
@@ -24,7 +24,7 @@ export async function DashboardCriticalZone() {
         </header>
 
         <SectionLabel>Overview</SectionLabel>
-        <KpiGrid summary={summary} progress={progress} />
+        <KpiGrid summary={summary} />
       </>
     );
   } catch (error) {

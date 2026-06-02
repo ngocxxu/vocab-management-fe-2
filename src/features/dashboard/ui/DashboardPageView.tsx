@@ -10,6 +10,8 @@ import { DashboardNextActionZone } from './DashboardNextActionZone';
 import { DashboardProblematicZone } from './DashboardProblematicZone';
 import { Suspense } from 'react';
 
+const OVERVIEW_SKELETON_KEYS = ['total-words', 'average-mastery', 'accuracy', 'need-review'];
+
 export function DashboardPageView() {
   return (
     <main className="flex-1 overflow-y-auto bg-background p-4 md:p-6 lg:p-8">
@@ -19,8 +21,8 @@ export function DashboardPageView() {
             <div className="animate-pulse space-y-6">
               <div className="h-16 rounded-lg bg-muted" />
               <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
-                {Array.from({ length: 4 }).map((_, i) => (
-                  <div key={i} className="h-32 rounded-lg bg-muted" />
+                {OVERVIEW_SKELETON_KEYS.map(key => (
+                  <div key={key} className="h-32 rounded-2xl bg-muted" />
                 ))}
               </div>
             </div>

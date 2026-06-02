@@ -84,6 +84,7 @@ export type HeaderProps = {
   unreadCount?: import('@/types/notification').TUnreadCountResponse | null;
   isLoading?: boolean;
   error?: string | null;
+  onNotificationsChanged?: () => Promise<void> | void;
 };
 
 export type ProgressChartTooltipPayload = {

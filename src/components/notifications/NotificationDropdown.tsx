@@ -23,6 +23,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
   unreadCount,
   isLoading = false,
   error = null,
+  onNotificationsChanged,
 }) => {
   const [displayedCount, setDisplayedCount] = useState(5);
   const [activeTab, setActiveTab] = useState<'all' | 'unread'>('all');
@@ -38,23 +39,30 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
     setDisplayedCount(5);
   }, []);
 
+  const refreshNotifications = async () => {
+    if (onNotificationsChanged) {
+      await onNotificationsChanged();
+      return;
+    }
+
+    startTransition(() => {
+      router.refresh();
+    });
+  };
+
   const handleMarkAllAsRead = async () => {
     try {
       await markAllNotificationsAsRead();
       toast.success('All notifications marked as read');
-      startTransition(() => {
-        router.refresh();
-      });
+      await refreshNotifications();
     } catch (error) {
       console.error('Failed to mark all notifications as read:', error);
       toast.error('Failed to mark all notifications as read');
     }
   };
 
-  const handleNotificationRead = () => {
-    startTransition(() => {
-      router.refresh();
-    });
+  const handleNotificationRead = async () => {
+    await refreshNotifications();
   };
 
   const handleNotificationDelete = () => {

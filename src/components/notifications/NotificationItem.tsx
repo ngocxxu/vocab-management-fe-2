@@ -4,7 +4,7 @@ import type { EQuestionType } from '@/enum/vocab-trainer';
 import type { NotificationItemProps } from '@/types/notification';
 import { RefreshCircle } from '@solar-icons/react/ssr';
 import { useRouter } from 'next/navigation';
-import React, { useState, useTransition } from 'react';
+import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { getExam } from '@/actions';
 import { markNotificationAsRead } from '@/actions/notifications';
@@ -29,7 +29,6 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
   onDelete: _onDelete,
 }) => {
   const router = useRouter();
-  const [, startTransition] = useTransition();
   const [isLoadingExam, setIsLoadingExam] = useState(false);
   const IconComponent = getNotificationIcon(notification.type);
   const iconBg = getNotificationIconBg(notification.type);
@@ -42,53 +41,52 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
 
   const isVocabTrainerRemind = notification.type === ENotificationType.VOCAB_TRAINER && notification.action === ENotificationAction.REMIND;
 
-  const handleClick = async () => {
+  const handleMarkAsRead = async () => {
     if (!isRead && onMarkAsRead) {
       try {
         await markNotificationAsRead(notification.id);
-        onMarkAsRead();
+        await onMarkAsRead();
         toast.success('Notification marked as read');
-        startTransition(() => {
-          router.refresh();
-        });
       } catch (error) {
         console.error('Failed to mark notification as read:', error);
         toast.error('Failed to mark notification as read');
       }
     }
+  };
 
-    if (isVocabTrainerRemind) {
-      const data = notification.data || {};
-      const trainerId = 'trainerId' in data && typeof data.trainerId === 'string' ? data.trainerId : undefined;
-      const questionType = 'questionType' in data && typeof data.questionType === 'string' ? data.questionType as EQuestionType : undefined;
+  const handleStartExam = async () => {
+    await handleMarkAsRead();
 
-      if (!trainerId || !questionType) {
-        logger.error('Missing trainerId or questionType:', { trainerId, questionType, data });
-        toast.error('Invalid notification data');
-        return;
+    const data = notification.data || {};
+    const trainerId = 'trainerId' in data && typeof data.trainerId === 'string' ? data.trainerId : undefined;
+    const questionType = 'questionType' in data && typeof data.questionType === 'string' ? data.questionType as EQuestionType : undefined;
+
+    if (!trainerId || !questionType) {
+      logger.error('Missing trainerId or questionType:', { trainerId, questionType, data });
+      toast.error('Invalid notification data');
+      return;
+    }
+
+    setIsLoadingExam(true);
+    try {
+      const examData = await getExam(trainerId);
+
+      if (!examData) {
+        throw new Error('No exam data received');
       }
 
-      setIsLoadingExam(true);
-      try {
-        const examData = await getExam(trainerId);
+      const storageKey = `exam_data_${trainerId}`;
+      const examDataString = JSON.stringify(examData);
+      localStorage.setItem(storageKey, examDataString);
 
-        if (!examData) {
-          throw new Error('No exam data received');
-        }
-
-        const storageKey = `exam_data_${trainerId}`;
-        const examDataString = JSON.stringify(examData);
-        localStorage.setItem(storageKey, examDataString);
-
-        const verifyData = localStorage.getItem(storageKey);
-        if (verifyData) {
-          router.push(getExamUrl(trainerId, questionType));
-        }
-      } catch (error) {
-        console.error('Failed to load exam data:', error);
-        toast.error('Failed to load exam. Please try again.');
-        setIsLoadingExam(false);
+      const verifyData = localStorage.getItem(storageKey);
+      if (verifyData) {
+        router.push(getExamUrl(trainerId, questionType));
       }
+    } catch (error) {
+      console.error('Failed to load exam data:', error);
+      toast.error('Failed to load exam. Please try again.');
+      setIsLoadingExam(false);
     }
   };
 
@@ -101,11 +99,11 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
         )}
         role="button"
         tabIndex={0}
-        onClick={handleClick}
+        onClick={() => void handleMarkAsRead()}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
-            handleClick();
+            void handleMarkAsRead();
           }
         }}
       >
@@ -143,11 +141,11 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
       )}
       role="button"
       tabIndex={0}
-      onClick={handleClick}
+      onClick={() => void handleMarkAsRead()}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          handleClick();
+          void handleMarkAsRead();
         }
       }}
     >
@@ -177,7 +175,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
             className="mt-2 rounded-md border border-border px-2.5 py-1 text-xs font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground"
             onClick={(e) => {
               e.stopPropagation();
-              handleClick();
+              void handleStartExam();
             }}
           >
             Start Exam

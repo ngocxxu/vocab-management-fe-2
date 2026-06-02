@@ -39,6 +39,7 @@ export const Header: React.FC<HeaderProps> = ({
   unreadCount,
   isLoading = false,
   error = null,
+  onNotificationsChanged,
 }) => {
   const { theme, toggleTheme, mounted } = useTheme();
   const router = useRouter();
@@ -141,6 +142,7 @@ export const Header: React.FC<HeaderProps> = ({
             unreadCount={unreadCount}
             isLoading={isLoading}
             error={error}
+            onNotificationsChanged={onNotificationsChanged}
           />
 
           <Separator orientation="vertical" />
