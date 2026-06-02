@@ -21,8 +21,28 @@ type TMetricCardProps = {
   cardClassName: string;
   iconBgClass: string;
   valueClassName?: string;
-  trend: { text: string; className: string };
+  trend: TMetricTrend | null;
 };
+
+type TMetricTrend = { text: string; className: string };
+
+function formatTrend(value: number | null, suffix = '', inverse = false): TMetricTrend | null {
+  if (value === null) {
+    return null;
+  }
+
+  if (value === 0) {
+    return { text: '', className: 'text-muted-foreground' };
+  }
+
+  const isPositive = value > 0;
+  const isImprovement = inverse ? !isPositive : isPositive;
+
+  return {
+    text: `${isPositive ? '↑ +' : '↓ '}${value}${suffix}`,
+    className: isImprovement ? 'text-success' : 'text-destructive',
+  };
+}
 
 function MetricCard({ title, value, icon, cardClassName, iconBgClass, valueClassName, trend }: TMetricCardProps) {
   return (
@@ -39,7 +59,7 @@ function MetricCard({ title, value, icon, cardClassName, iconBgClass, valueClass
             <div className={`text-3xl font-bold tracking-tight sm:text-4xl ${valueClassName ?? 'text-foreground'}`}>
               {value}
             </div>
-            <span className={`text-base font-semibold sm:text-lg ${trend.className}`}>{trend.text}</span>
+            {trend && <span className={`text-base font-semibold sm:text-lg ${trend.className}`}>{trend.text}</span>}
           </div>
         </div>
       </CardContent>
@@ -64,7 +84,7 @@ export function KpiGrid({ summary }: TKpiGridProps) {
         icon={<Book size={32} weight="BoldDuotone" className="text-primary" />}
         cardClassName="border-primary/15 bg-primary/5"
         iconBgClass="bg-primary/15"
-        trend={{ text: '↑ +12%', className: 'text-success' }}
+        trend={formatTrend(summary.trends.totalVocabsPercentDelta, '%')}
       />
       <MetricCard
         title="Avg. mastery"
@@ -78,7 +98,7 @@ export function KpiGrid({ summary }: TKpiGridProps) {
         icon={<Star size={32} weight="BoldDuotone" className="text-warning" />}
         cardClassName="border-warning/30 bg-warning/5"
         iconBgClass="bg-warning/20"
-        trend={{ text: '↓ -0.2', className: 'text-destructive' }}
+        trend={formatTrend(summary.trends.averageMasteryDelta)}
       />
       <MetricCard
         title="Accuracy"
@@ -87,7 +107,7 @@ export function KpiGrid({ summary }: TKpiGridProps) {
         icon={<CheckCircle size={32} weight="BoldDuotone" className="text-success" />}
         cardClassName="border-success/30 bg-success/5"
         iconBgClass="bg-success/15"
-        trend={{ text: '↑ +5%', className: 'text-success' }}
+        trend={formatTrend(summary.trends.accuracyPercentDelta, '%')}
       />
       <MetricCard
         title="Need review"
@@ -96,7 +116,7 @@ export function KpiGrid({ summary }: TKpiGridProps) {
         icon={<DangerTriangle size={32} weight="BoldDuotone" className="text-destructive" />}
         cardClassName="border-destructive/20 bg-destructive/5"
         iconBgClass="bg-destructive/15"
-        trend={{ text: '↓ -2', className: 'text-success' }}
+        trend={formatTrend(summary.trends.needReviewDelta, '', true)}
       />
     </div>
   );

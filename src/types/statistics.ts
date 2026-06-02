@@ -1,5 +1,12 @@
 import type { TVocab } from './vocab-list';
 
+export type TMasterySummaryTrends = {
+  totalVocabsPercentDelta: number | null;
+  averageMasteryDelta: number | null;
+  accuracyPercentDelta: number | null;
+  needReviewDelta: number | null;
+};
+
 export type TMasterySummary = {
   totalVocabs: number;
   totalCorrect: number;
@@ -8,6 +15,7 @@ export type TMasterySummary = {
   lastPracticeAt: string | null;
   criticalCount: number;
   warningCount: number;
+  trends: TMasterySummaryTrends;
 };
 
 export type TMasteryBySubject = {
