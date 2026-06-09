@@ -14,8 +14,25 @@ import {
 import { Input } from '@/shared/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import type { TLanguage } from '@/types';
+import WordRelationsSection from './WordRelationsSection';
 
-const VocabLanguageForm: React.FC<VocabLanguageFormProps> = ({ initialLanguagesData }) => {
+const VocabLanguageForm: React.FC<VocabLanguageFormProps> = ({
+  initialLanguagesData,
+  relationDrafts,
+  relationInputValue,
+  relationPendingFlags,
+  editingRelationId,
+  relationAutocompleteItems,
+  relationAutocompleteLoading,
+  editMode = false,
+  onRelationInputChange,
+  onRelationFlagToggle,
+  onAddFreeTextRelation,
+  onAddLinkedRelation,
+  onOpenRelationEditor,
+  onUpdateRelationFlags,
+  onRemoveRelation,
+}) => {
   const form = useFormContext();
   const languages = initialLanguagesData?.items || [];
   const isLoading = false;
@@ -142,6 +159,23 @@ const VocabLanguageForm: React.FC<VocabLanguageFormProps> = ({ initialLanguagesD
             <FormMessage />
           </FormItem>
         )}
+      />
+
+      <WordRelationsSection
+        relationDrafts={relationDrafts}
+        relationInputValue={relationInputValue}
+        relationPendingFlags={relationPendingFlags}
+        editingRelationId={editingRelationId}
+        relationAutocompleteItems={relationAutocompleteItems}
+        relationAutocompleteLoading={relationAutocompleteLoading}
+        editMode={editMode}
+        onRelationInputChange={onRelationInputChange}
+        onRelationFlagToggle={onRelationFlagToggle}
+        onAddFreeTextRelation={onAddFreeTextRelation}
+        onAddLinkedRelation={onAddLinkedRelation}
+        onOpenRelationEditor={onOpenRelationEditor}
+        onUpdateRelationFlags={onUpdateRelationFlags}
+        onRemoveRelation={onRemoveRelation}
       />
     </div>
   );

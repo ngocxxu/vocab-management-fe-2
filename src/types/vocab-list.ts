@@ -1,3 +1,10 @@
+import type {
+  TRelatedWordAutocompleteItem,
+  TRelatedWordItem,
+  TRelatedWordsGroupedResponse,
+  TReplaceRelatedWordEntry,
+} from './vocab-related-word';
+
 export type TExamples = { source: string; target: string };
 
 export type TTextTargetSubject = {
@@ -21,6 +28,7 @@ export type TVocab = {
   targetLanguageCode: string;
   textSource: string;
   textTargets: TTextTarget[];
+  relatedWords?: TRelatedWordItem[] | TRelatedWordsGroupedResponse;
   languageFolderId?: string;
   masteryScore?: number;
   createdAt?: string;
@@ -32,6 +40,7 @@ export type TCreateVocab = {
   languageFolderId: string;
   sourceLanguageCode: string;
   targetLanguageCode: string;
+  relatedWords?: TReplaceRelatedWordEntry[];
   textTargets: [
     {
       wordTypeId: string;
@@ -86,6 +95,38 @@ export type VocabFormData = {
   textTargets: TextTargetFormItem[];
 };
 
+export type TWordRelationDraft = {
+  id: string;
+  word: string;
+  linkedVocabId: string | null;
+  freeText: string | null;
+  isSynonym: boolean;
+  isAntonym: boolean;
+  isRelated: boolean;
+};
+
+export type TWordRelationPendingFlags = {
+  isSynonym: boolean;
+  isAntonym: boolean;
+  isRelated: boolean;
+};
+
+export type TWordRelationsController = {
+  relationDrafts: TWordRelationDraft[];
+  relationInputValue: string;
+  relationPendingFlags: TWordRelationPendingFlags;
+  editingRelationId: string | null;
+  relationAutocompleteItems: TRelatedWordAutocompleteItem[];
+  relationAutocompleteLoading: boolean;
+  onRelationInputChange: (value: string) => void;
+  onRelationFlagToggle: (flag: keyof TWordRelationPendingFlags) => void;
+  onAddFreeTextRelation: () => void;
+  onAddLinkedRelation: (item: TRelatedWordAutocompleteItem) => void;
+  onOpenRelationEditor: (relationId: string | null) => void;
+  onUpdateRelationFlags: (relationId: string, flag: keyof TWordRelationPendingFlags) => void;
+  onRemoveRelation: (relationId: string) => void;
+};
+
 export type AddVocabDialogProps = {
   formData: VocabFormData;
   activeTab: string;
@@ -106,7 +147,7 @@ export type AddVocabDialogProps = {
   initialLanguagesData?: import('@/types').ResponseAPI<import('@/types').TLanguage[]>;
   initialWordTypesData?: import('@/types/word-type').TWordTypeResponse;
   userRole?: string;
-};
+} & TWordRelationsController;
 
 export type ImportVocabDialogProps = {
   open: boolean;
@@ -119,7 +160,12 @@ export type ImportVocabDialogProps = {
 
 export type VocabLanguageFormProps = {
   initialLanguagesData?: import('@/types').ResponseAPI<import('@/types').TLanguage[]>;
-};
+  editMode?: boolean;
+} & TWordRelationsController;
+
+export type WordRelationsSectionProps = {
+  editMode?: boolean;
+} & TWordRelationsController;
 
 export type TextTargetTabsProps = {
   variant?: 'default' | 'sidebar' | 'content';

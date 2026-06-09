@@ -35,6 +35,19 @@ const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
   initialSubjectsData,
   initialLanguagesData,
   initialWordTypesData,
+  relationDrafts,
+  relationInputValue,
+  relationPendingFlags,
+  editingRelationId,
+  relationAutocompleteItems,
+  relationAutocompleteLoading,
+  onRelationInputChange,
+  onRelationFlagToggle,
+  onAddFreeTextRelation,
+  onAddLinkedRelation,
+  onOpenRelationEditor,
+  onUpdateRelationFlags,
+  onRemoveRelation,
   userRole,
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -68,7 +81,23 @@ const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
           </DialogHeader>
           <div className="grid grid-cols-1 gap-6 p-6 pb-0 lg:grid-cols-[minmax(0,300px)_1fr]">
             <div className="space-y-6">
-              <VocabLanguageForm initialLanguagesData={initialLanguagesData} />
+              <VocabLanguageForm
+                initialLanguagesData={initialLanguagesData}
+                relationDrafts={relationDrafts}
+                relationInputValue={relationInputValue}
+                relationPendingFlags={relationPendingFlags}
+                editingRelationId={editingRelationId}
+                relationAutocompleteItems={relationAutocompleteItems}
+                relationAutocompleteLoading={relationAutocompleteLoading}
+                editMode={editMode}
+                onRelationInputChange={onRelationInputChange}
+                onRelationFlagToggle={onRelationFlagToggle}
+                onAddFreeTextRelation={onAddFreeTextRelation}
+                onAddLinkedRelation={onAddLinkedRelation}
+                onOpenRelationEditor={onOpenRelationEditor}
+                onUpdateRelationFlags={onUpdateRelationFlags}
+                onRemoveRelation={onRemoveRelation}
+              />
               <TextTargetTabs
                 variant="sidebar"
                 initialWordTypesData={initialWordTypesData}

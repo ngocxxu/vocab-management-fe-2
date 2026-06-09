@@ -1,7 +1,11 @@
 'use client';
 
 import type { ColumnDef } from '@tanstack/react-table';
-import type { TCreateVocab, TVocab, VocabListProps } from '@/types/vocab-list';
+import type {
+  TCreateVocab,
+  TVocab,
+  VocabListProps,
+} from '@/types/vocab-list';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   AltArrowDown,
@@ -15,7 +19,12 @@ import { useForm } from 'react-hook-form';
 import { useSpeechSynthesis } from 'react-speech-kit';
 import { toast } from 'sonner';
 import { z } from 'zod';
-import { createVocab, deleteVocabsBulk, updateVocab } from '@/actions/vocabs';
+import {
+  createVocab,
+  deleteVocabsBulk,
+  getVocabsForSelection,
+  updateVocab,
+} from '@/actions/vocabs';
 import { isQuotaError, QUOTA_ERROR_MESSAGE } from '@/utils/quota-error';
 import { BulkDeleteDialog, DeleteActionButton, ErrorState } from '@/shared/ui/shared';
 import { Button } from '@/shared/ui/button';
@@ -31,6 +40,7 @@ import ExpandedRowContent from './ExpandedRowContent';
 import ImportVocabDialog from './ImportVocabDialog';
 import MasteryScoreCell from './MasteryScoreCell';
 import VocabListHeader from './VocabListHeader';
+import { useWordRelations } from '../hooks/useWordRelations';
 
 // Utility function to generate unique IDs
 const generateId = () => `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
@@ -142,6 +152,32 @@ const VocabList: React.FC<VocabListProps> = ({
 
   const { handleSort, handlePageChange } = handlers;
 
+  const dialogState = useDialogState<TVocab>();
+
+  const bulkDelete = useBulkDelete({
+    deleteMutation: async (ids: string[]) => {
+      await deleteVocabsBulk(ids);
+      return { success: true };
+    },
+    onSuccess: () => {
+      startTransition(() => {
+        router.refresh();
+      });
+    },
+    itemName: 'vocabulary item',
+    itemNamePlural: 'vocabulary items',
+  });
+
+  const { relationController, relatedWords, resetRelations } = useWordRelations({
+    dialogOpen: dialogState.open,
+    editMode: dialogState.editMode,
+    editingItem: dialogState.editingItem,
+    sourceLanguageCode: form.watch('sourceLanguageCode') || undefined,
+    targetLanguageCode: form.watch('targetLanguageCode') || undefined,
+    languageFolderId,
+    getVocabsForSelection,
+  });
+
   const resetForm = () => {
     form.reset({
       textSource: '',
@@ -159,27 +195,8 @@ const VocabList: React.FC<VocabListProps> = ({
       }],
     });
     setActiveTab('0');
+    resetRelations();
   };
-
-  const dialogState = useDialogState<TVocab>({
-    onClose: () => {
-      resetForm();
-    },
-  });
-
-  const bulkDelete = useBulkDelete({
-    deleteMutation: async (ids: string[]) => {
-      await deleteVocabsBulk(ids);
-      return { success: true };
-    },
-    onSuccess: () => {
-      startTransition(() => {
-        router.refresh();
-      });
-    },
-    itemName: 'vocabulary item',
-    itemNamePlural: 'vocabulary items',
-  });
 
   const addTextTarget = () => {
     const currentTargets = form.getValues('textTargets');
@@ -240,6 +257,7 @@ const VocabList: React.FC<VocabListProps> = ({
   );
 
   const handleCloseDialog = () => {
+    resetForm();
     dialogState.handleClose();
   };
 
@@ -333,6 +351,7 @@ const VocabList: React.FC<VocabListProps> = ({
       const apiData = {
         ...formData,
         languageFolderId: languageFolderId || '',
+        relatedWords,
         textTargets: formData.textTargets.map(({ id, ...target }) => ({
           ...target,
           vocabExamples: target.vocabExamples.map(({ id: _exampleId, ...example }) => example),
@@ -341,13 +360,14 @@ const VocabList: React.FC<VocabListProps> = ({
 
       if (dialogState.editMode && dialogState.editingItem) {
         await updateVocab(dialogState.editingItem.id, apiData);
-        toast.success('Vocabulary updated successfully');
       } else {
         await createVocab(apiData);
         handlers.setPage(1);
-        toast.success('Vocabulary created successfully');
       }
 
+      toast.success(dialogState.editMode ? 'Vocabulary updated successfully' : 'Vocabulary created successfully');
+
+      resetForm();
       dialogState.handleClose();
       startTransition(() => {
         router.refresh();
@@ -578,6 +598,7 @@ const VocabList: React.FC<VocabListProps> = ({
               initialSubjectsData={initialSubjectsData}
               initialLanguagesData={initialLanguagesData}
               initialWordTypesData={initialWordTypesData}
+              {...relationController}
               userRole={user?.role}
             />
 

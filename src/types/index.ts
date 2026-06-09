@@ -57,6 +57,8 @@ export * from './statistics';
 // Export subject types
 export * from './subject';
 
+export * from './vocab-related-word';
+
 export * from './word-type';
 
 export type MenuItem = {
