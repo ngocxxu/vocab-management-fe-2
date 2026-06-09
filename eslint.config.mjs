@@ -28,6 +28,7 @@ export default antfu(
     ignores: [
       'migrations/**/*',
       '.pnpm-store/**/*',
+      '.venv/**/*',
       'node_modules/**/*',
       '.next/**/*',
       'dist/**/*',
