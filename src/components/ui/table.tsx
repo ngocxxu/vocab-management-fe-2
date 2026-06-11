@@ -33,6 +33,27 @@ import { Button } from './button';
 import { Skeleton } from './skeleton';
 
 const DEFAULT_EXPANDED_STATE = {};
+const DEFAULT_VISIBLE_PAGE_COUNT = 5;
+const EXPANDED_VISIBLE_PAGE_COUNT = 9;
+const EXPANDED_WINDOW_TRIGGER_PAGE = 5;
+
+function getVisiblePageNumbers(currentPage: number, totalPages: number) {
+  if (totalPages <= DEFAULT_VISIBLE_PAGE_COUNT) {
+    return Array.from({ length: totalPages }, (_, index) => index + 1);
+  }
+
+  if (currentPage < EXPANDED_WINDOW_TRIGGER_PAGE) {
+    return Array.from({ length: DEFAULT_VISIBLE_PAGE_COUNT }, (_, index) => index + 1);
+  }
+
+  const safeCurrentPage = Math.min(Math.max(currentPage, 1), totalPages);
+  const halfWindow = Math.floor(EXPANDED_VISIBLE_PAGE_COUNT / 2);
+  const visibleCount = Math.min(EXPANDED_VISIBLE_PAGE_COUNT, totalPages);
+  const maxStartPage = totalPages - visibleCount + 1;
+  const startPage = Math.min(Math.max(safeCurrentPage - halfWindow, 1), maxStartPage);
+
+  return Array.from({ length: visibleCount }, (_, index) => startPage + index);
+}
 
 type DataTableProps<TData extends { id: string }, TValue> = {
   columns: ColumnDef<TData, TValue>[];
@@ -183,6 +204,10 @@ export function DataTable<TData extends { id: string }, TValue>({
   const selectedIds = useMemo(() => {
     return Object.keys(rowSelection).filter((id: string) => rowSelection[id as keyof typeof rowSelection]);
   }, [rowSelection]);
+  const totalPages = manualPagination ? pageCount : table.getPageCount();
+  const visiblePageNumbers = useMemo(() => {
+    return getVisiblePageNumbers(currentPage, totalPages);
+  }, [currentPage, totalPages]);
 
   return (
     <div className={`space-y-4 ${className}`}>
@@ -433,17 +458,18 @@ export function DataTable<TData extends { id: string }, TValue>({
             </Button>
 
             <div className="flex items-center space-x-1">
-              {Array.from({ length: Math.min(5, manualPagination ? pageCount : table.getPageCount()) }, (_, i) => {
-                const pageNumber = i + 1;
-                const isActive = manualPagination ? currentPage === pageNumber : table.getState().pagination.pageIndex === i;
+              {visiblePageNumbers.map((pageNumber) => {
+                const isActive = manualPagination
+                  ? currentPage === pageNumber
+                  : table.getState().pagination.pageIndex === pageNumber - 1;
                 return (
                   <Button
-                    key={`${pageNumber}-${i}`}
+                    key={pageNumber}
                     onClick={() => {
                       if (manualPagination && onPageChange) {
                         onPageChange(pageNumber);
                       } else {
-                        table.setPageIndex(i);
+                        table.setPageIndex(pageNumber - 1);
                       }
                     }}
                     variant={isActive ? 'default' : 'ghost'}
@@ -458,30 +484,30 @@ export function DataTable<TData extends { id: string }, TValue>({
                   </Button>
                 );
               })}
-              {(manualPagination ? pageCount : table.getPageCount()) > 5 && (
+              {totalPages > visiblePageNumbers.at(-1)! && (
                 <span className="px-2 text-muted-foreground">...</span>
               )}
-              {(manualPagination ? pageCount : table.getPageCount()) > 5 && (
+              {totalPages > visiblePageNumbers.at(-1)! && (
                 <Button
-                  key={`${manualPagination ? pageCount : table.getPageCount()}-last`}
+                  key={`${totalPages}-last`}
                   onClick={() => {
                     if (manualPagination && onPageChange) {
                       onPageChange(pageCount);
                     } else {
-                      table.setPageIndex(table.getPageCount() - 1);
+                      table.setPageIndex(totalPages - 1);
                     }
                   }}
                   variant="ghost"
                   size="sm"
                   className="h-8 w-8 rounded-full p-0 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                 >
-                  {manualPagination ? pageCount : table.getPageCount()}
+                  {totalPages}
                 </Button>
               )}
             </div>
 
             <Button
-              key={`${manualPagination ? pageCount : table.getPageCount()}-next`}
+              key={`${totalPages}-next`}
               onClick={() => {
                 if (manualPagination && onPageChange) {
                   onPageChange(currentPage + 1);
@@ -489,7 +515,7 @@ export function DataTable<TData extends { id: string }, TValue>({
                   table.nextPage();
                 }
               }}
-              disabled={manualPagination ? currentPage >= pageCount : !table.getCanNextPage()}
+              disabled={manualPagination ? currentPage >= totalPages : !table.getCanNextPage()}
               variant="ghost"
               size="sm"
               className="flex items-center space-x-2 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
