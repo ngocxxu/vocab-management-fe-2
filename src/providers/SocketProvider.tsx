@@ -6,6 +6,11 @@ import React, { createContext, useEffect, useMemo, useState } from 'react';
 import { io } from 'socket.io-client';
 import { Env } from '@/libs/Env';
 import { logger } from '@/libs/Logger';
+import {
+  writeCachedAudioEvaluation,
+  writeCachedFillInBlankEvaluation,
+} from '@/utils/exam-evaluation-cache';
+import { SOCKET_EVENTS } from '@/utils/socket-config';
 
 const SocketContext = createContext<SocketContextType>({
   socket: null,
@@ -119,6 +124,14 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children, user }
       logger.debug('Socket connected:', { data });
     });
 
+    socketInstance.on(SOCKET_EVENTS.FILL_IN_BLANK_EVALUATION_PROGRESS, (data) => {
+      writeCachedFillInBlankEvaluation(data);
+    });
+
+    socketInstance.on(SOCKET_EVENTS.AUDIO_EVALUATION_PROGRESS, (data) => {
+      writeCachedAudioEvaluation(data);
+    });
+
     socketInstance.on('reconnect_error', (error) => {
       logger.error('Socket reconnection error:', { error });
     });
@@ -137,6 +150,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children, user }
 
     // Cleanup on unmount
     return () => {
+      socketInstance.off(SOCKET_EVENTS.FILL_IN_BLANK_EVALUATION_PROGRESS);
+      socketInstance.off(SOCKET_EVENTS.AUDIO_EVALUATION_PROGRESS);
       socketInstance.disconnect();
       setSocket(null);
       setIsConnected(false);

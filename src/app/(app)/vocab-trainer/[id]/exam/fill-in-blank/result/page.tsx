@@ -8,6 +8,11 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { ExamErrorState } from '@/shared/ui/shared';
 import ExamResults from '@/components/vocab-trainer/ExamResults';
 import { useSocket } from '@/hooks/useSocket';
+import {
+  clearCachedFillInBlankEvaluation,
+  readCachedFillInBlankEvaluation,
+  writeCachedFillInBlankEvaluation,
+} from '@/utils/exam-evaluation-cache';
 import { SOCKET_EVENTS } from '@/utils/socket-config';
 
 const FillInBlankResultPage: React.FC = () => {
@@ -33,6 +38,15 @@ const FillInBlankResultPage: React.FC = () => {
         const parsedData = JSON.parse(cachedData);
         setJobId(parsedData.jobId);
         setTimeElapsed(parsedData.timeElapsed || 0);
+
+        if (typeof parsedData.jobId === 'string') {
+          const cachedEvaluation = readCachedFillInBlankEvaluation(parsedData.jobId);
+          if (cachedEvaluation) {
+            setEvaluationResults(cachedEvaluation.results);
+            setCompletedAt(cachedEvaluation.completedAt);
+            setIsLoading(false);
+          }
+        }
 
         if (parsedData.questions) {
           setQuestions(parsedData.questions);
@@ -77,12 +91,13 @@ const FillInBlankResultPage: React.FC = () => {
         setError(null);
       } else if (data.status === 'completed') {
         if (data.data?.results) {
+          writeCachedFillInBlankEvaluation(data);
           const results: TExamSubmitResponse = {
             status: 'completed',
             results: data.data.results,
           };
           setEvaluationResults(results);
-          setCompletedAt(new Date().toISOString());
+          setCompletedAt(data.timestamp);
         }
         setIsLoading(false);
       } else if (data.status === 'failed') {
@@ -101,6 +116,9 @@ const FillInBlankResultPage: React.FC = () => {
   const handleBackToTrainers = () => {
     const storageKey = `fill_in_blank_result_${trainerId}`;
     localStorage.removeItem(storageKey);
+    if (jobId) {
+      clearCachedFillInBlankEvaluation(jobId);
+    }
     router.push('/vocab-trainer');
   };
 

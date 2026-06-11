@@ -6,6 +6,11 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { ExamErrorState } from '@/shared/ui/shared';
 import TranslationAudioResults from '@/components/vocab-trainer/TranslationAudioResults';
 import { useSocket } from '@/hooks/useSocket';
+import {
+  clearCachedAudioEvaluation,
+  readCachedAudioEvaluation,
+  writeCachedAudioEvaluation,
+} from '@/utils/exam-evaluation-cache';
 import { SOCKET_EVENTS } from '@/utils/socket-config';
 
 const TranslationAudioResultPage: React.FC = () => {
@@ -32,6 +37,17 @@ const TranslationAudioResultPage: React.FC = () => {
         const parsedData = JSON.parse(cachedData);
         setJobId(parsedData.jobId);
         setTimeElapsed(parsedData.timeElapsed || 0);
+
+        if (typeof parsedData.jobId === 'string') {
+          const cachedEvaluation = readCachedAudioEvaluation(parsedData.jobId);
+          if (cachedEvaluation) {
+            setEvaluationResult({
+              transcript: cachedEvaluation.transcript,
+              markdownReport: cachedEvaluation.markdownReport,
+            });
+            setIsLoading(false);
+          }
+        }
       } catch (err) {
         console.error('Failed to parse result data:', err);
         localStorage.removeItem(storageKey);
@@ -72,6 +88,7 @@ const TranslationAudioResultPage: React.FC = () => {
         setIsLoading(true);
         setError(null);
       } else if (data.status === 'completed') {
+        writeCachedAudioEvaluation(data);
         setEvaluationResult({
           transcript: data.data?.transcript,
           markdownReport: data.data?.markdownReport,
@@ -93,6 +110,9 @@ const TranslationAudioResultPage: React.FC = () => {
   const handleBackToTrainers = () => {
     const storageKey = `translation_audio_result_${trainerId}`;
     localStorage.removeItem(storageKey);
+    if (jobId) {
+      clearCachedAudioEvaluation(jobId);
+    }
     router.push('/vocab-trainer');
   };
 
