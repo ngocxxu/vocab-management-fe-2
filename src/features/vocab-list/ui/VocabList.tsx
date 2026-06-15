@@ -316,6 +316,29 @@ const VocabList: React.FC<VocabListProps> = ({
     router.push(`?${params.toString()}`);
   }, [router, searchParams]);
 
+  const handleLinkedWordClick = useCallback((word: string) => {
+    handleSearchChange(word);
+  }, [handleSearchChange]);
+
+  const handleAddFreeTextWord = useCallback((word: string) => {
+    form.reset({
+      textSource: word,
+      sourceLanguageCode: sourceLanguageCode || '',
+      targetLanguageCode: targetLanguageCode || '',
+      textTargets: [{
+        id: generateId(),
+        wordTypeId: '',
+        textTarget: '',
+        grammar: '',
+        explanationSource: '',
+        explanationTarget: '',
+        subjectIds: [],
+        vocabExamples: [{ id: generateId(), source: '', target: '' }],
+      }],
+    });
+    dialogState.setOpen(true);
+  }, [form, dialogState, sourceLanguageCode, targetLanguageCode]);
+
   const handleSubjectFilterChange = useCallback((subjectIds: string[]) => {
     const params = new URLSearchParams(searchParams.toString());
     if (subjectIds.length > 0) {
@@ -645,6 +668,8 @@ const VocabList: React.FC<VocabListProps> = ({
                     columnsCount={columns.length}
                     onCollapse={() => setExpanded(prev => ({ ...prev, [row.original.id]: false }))}
                     onEdit={handleEdit}
+                    onLinkedWordClick={handleLinkedWordClick}
+                    onAddFreeTextWord={handleAddFreeTextWord}
                   />
                 )}
                 manualPagination={true}

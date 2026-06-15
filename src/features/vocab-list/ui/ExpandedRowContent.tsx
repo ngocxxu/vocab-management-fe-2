@@ -8,6 +8,7 @@ import { Button } from '@/shared/ui/button';
 import { selectVoiceByCode } from '@/utils/textToSpeech';
 import type { TSubjectBadge } from './SubjectBadgeGroup';
 import { SubjectBadgeGroup } from './SubjectBadgeGroup';
+import WordRelationsDisplay from './WordRelationsDisplay';
 
 function boldVocabInSentence(sentence: string, word: string): React.ReactNode {
   if (!word.trim()) {
@@ -37,6 +38,8 @@ const ExpandedRowContent: React.FC<ExpandedRowContentProps> = ({
   showSubjects = true,
   onCollapse,
   onEdit,
+  onLinkedWordClick,
+  onAddFreeTextWord,
 }) => {
   const { speak, cancel, voices } = useSpeechSynthesis();
 
@@ -141,6 +144,14 @@ const ExpandedRowContent: React.FC<ExpandedRowContentProps> = ({
                 );
               })}
             </div>
+
+            {vocab.relatedWords && onLinkedWordClick && onAddFreeTextWord && (
+              <WordRelationsDisplay
+                relatedWords={vocab.relatedWords}
+                onLinkedWordClick={onLinkedWordClick}
+                onAddFreeTextWord={onAddFreeTextWord}
+              />
+            )}
 
             {onCollapse && (
               <div className="mt-4 flex justify-center">
