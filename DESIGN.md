@@ -125,9 +125,9 @@ Consistent icon family across all surfaces. Do not mix with other icon sets.
 ## Plan Badge System
 
 ```css
-.plan-badge-free  { @apply bg-muted text-muted-foreground; }
+/* .plan-badge-free  { @apply bg-muted text-muted-foreground; }
 .plan-badge-pro   { @apply bg-accent text-accent-foreground; }
-.plan-badge-admin { @apply bg-primary text-primary-foreground; }
+.plan-badge-admin { @apply bg-primary text-primary-foreground; } */
 ```
 
 Applied to user plan indicators in profile, sidebar, and settings surfaces.
@@ -141,10 +141,10 @@ Applied to user plan indicators in profile, sidebar, and settings surfaces.
 3D card flip for flashcard interaction:
 
 ```css
-.perspective-1000 { perspective: 1000px; }
+/* .perspective-1000 { perspective: 1000px; }
 .transform-gpu    { transform-style: preserve-3d; }
 .backface-hidden  { backface-visibility: hidden; }
-.rotate-y-180     { transform: rotateY(180deg); }
+.rotate-y-180     { transform: rotateY(180deg); } */
 ```
 
 Animates `transform` only — compositor-friendly, no layout reflow.
