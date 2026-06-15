@@ -2,6 +2,7 @@ import type {
   LanguageFolderQueryParams,
   NotificationQueryParams,
   RandomVocabQueryParams,
+  TextTargetQueryParams,
   VocabConflictBySubjectParams,
   VocabQueryParams,
   VocabTrainerQueryParams,
@@ -19,7 +20,7 @@ import type {
 } from '@/types/notification';
 import type { TSubjectResponse } from '@/types/subject';
 import type { TVocabConflictListResponse } from '@/types/vocab-conflict';
-import type { TBulkVocabUpdateItem, TCreateVocab, TVocab } from '@/types/vocab-list';
+import type { TBulkVocabUpdateItem, TCreateTextTarget, TCreateVocab, TTextTarget, TUpdateTextTarget, TVocab } from '@/types/vocab-list';
 import type { TCreateVocabTrainer, TFormTestVocabTrainerUnion, TVocabTrainer } from '@/types/vocab-trainer';
 import type { TWordTypeResponse } from '@/types/word-type';
 import { Env } from '@/libs/Env';
@@ -29,7 +30,7 @@ import { getAccessToken } from '@/utils/auth-cookies';
 import { API_ENDPOINTS, API_METHODS } from './api-config';
 
 class ServerAPI {
-  private readonly baseURL = Env.NESTJS_API_URL || 'http://localhost:3002/api/v1';
+  readonly baseURL = Env.NESTJS_API_URL || 'http://localhost:3002/api/v1';
 
   private async doFetch(endpoint: string, options: RequestInit): Promise<Response> {
     const token = await getAccessToken();
@@ -93,13 +94,9 @@ class ServerAPI {
   }
 
   post<T>(endpoint: string, data: unknown) {
-    if (!endpoint || typeof endpoint !== 'string') {
-      throw new Error('Endpoint must be a non-empty string');
-    }
-
     logger.debug('Server API POST Request:', {
       endpoint: `${this.baseURL}${endpoint}`,
-      dataKeys: data && typeof data === 'object' ? Object.keys(data) : [],
+      dataKeys: data && typeof data === 'object' ? Object.keys(data as object) : [],
     });
 
     return this.request<T>(endpoint, {
@@ -109,10 +106,6 @@ class ServerAPI {
   }
 
   put<T>(endpoint: string, data: unknown) {
-    if (!endpoint || typeof endpoint !== 'string') {
-      throw new Error('Endpoint must be a non-empty string');
-    }
-
     return this.request<T>(endpoint, {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -120,18 +113,10 @@ class ServerAPI {
   }
 
   delete<T>(endpoint: string) {
-    if (!endpoint || typeof endpoint !== 'string') {
-      throw new Error('Endpoint must be a non-empty string');
-    }
-
     return this.request<T>(endpoint, { method: 'DELETE' });
   }
 
   patch<T>(endpoint: string, data: unknown) {
-    if (!endpoint || typeof endpoint !== 'string') {
-      throw new Error('Endpoint must be a non-empty string');
-    }
-
     return this.request<T>(endpoint, {
       method: 'PATCH',
       body: JSON.stringify(data),
@@ -261,9 +246,7 @@ export const vocabApi = {
     const endpoint = `${API_ENDPOINTS.vocabs}/import/csv?${queryString}`;
 
     const token = await getAccessToken();
-    const backendUrl = `${Env.NESTJS_API_URL || 'http://localhost:3002/api/v1'}${endpoint}`;
-
-    const response = await fetch(backendUrl, {
+    const response = await fetch(`${serverApi.baseURL}${endpoint}`, {
       method: 'POST',
       body: formData,
       headers: {
@@ -283,9 +266,7 @@ export const vocabApi = {
     const endpoint = `${API_ENDPOINTS.vocabs}/export/csv?${queryString}`;
 
     const token = await getAccessToken();
-    const backendUrl = `${Env.NESTJS_API_URL || 'http://localhost:3002/api/v1'}${endpoint}`;
-
-    const response = await fetch(backendUrl, {
+    const response = await fetch(`${serverApi.baseURL}${endpoint}`, {
       method: 'GET',
       headers: {
         ...(token && { Authorization: `Bearer ${token}` }),
@@ -311,6 +292,30 @@ export const vocabApi = {
       subjectIds: string[];
       vocabExamples: Array<{ source: string; target: string }>;
     }>(config.endpoint, config.data);
+  },
+};
+
+// Text Target API endpoints
+export const textTargetApi = {
+  getAll: (vocabId: string, params?: TextTargetQueryParams) => {
+    const config = API_METHODS.textTargets.getAll(vocabId, params);
+    return serverApi.get<ResponseAPI<TTextTarget[]>>(config.endpoint);
+  },
+  getById: (vocabId: string, id: string) => {
+    const config = API_METHODS.textTargets.getById(vocabId, id);
+    return serverApi.get<TTextTarget>(config.endpoint);
+  },
+  create: (vocabId: string, data: TCreateTextTarget) => {
+    const config = API_METHODS.textTargets.create(vocabId, data);
+    return serverApi.post<TTextTarget>(config.endpoint, config.data);
+  },
+  update: (vocabId: string, id: string, data: TUpdateTextTarget) => {
+    const config = API_METHODS.textTargets.update(vocabId, id, data);
+    return serverApi.put<TTextTarget>(config.endpoint, config.data);
+  },
+  delete: (vocabId: string, id: string) => {
+    const config = API_METHODS.textTargets.delete(vocabId, id);
+    return serverApi.delete<void>(config.endpoint);
   },
 };
 
@@ -354,7 +359,7 @@ export const vocabTrainerApi = {
   },
   getById: (id: string) => {
     const config = API_METHODS.vocabTrainers.getById(id);
-    return serverApi.get(config.endpoint);
+    return serverApi.get<TVocabTrainer>(config.endpoint);
   },
   create: (trainerData: TCreateVocabTrainer) => {
     if (!trainerData || typeof trainerData !== 'object') {

@@ -13,14 +13,31 @@ export type TTextTargetSubject = {
 };
 
 export type TTextTarget = {
+  id: string;
+  vocabId: string;
+  wordTypeId: string | null;
   textTarget: string;
-  wordType: { id: string; name: string; description: string } | null;
+  grammar: string;
   explanationSource: string;
   explanationTarget: string;
+  createdAt: string;
+  updatedAt: string;
+  wordType: { id: string; name: string; description: string } | null;
   vocabExamples: TExamples[];
-  grammar: string;
   textTargetSubjects: TTextTargetSubject[];
 };
+
+export type TCreateTextTarget = {
+  textTarget: string;
+  grammar: string;
+  explanationSource: string;
+  explanationTarget: string;
+  wordTypeId?: string;
+  subjectIds: string[];
+  vocabExamples: TExamples[];
+};
+
+export type TUpdateTextTarget = Partial<TCreateTextTarget>;
 
 export type TVocab = {
   id: string;

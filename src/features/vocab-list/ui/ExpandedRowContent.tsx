@@ -8,6 +8,7 @@ import { Button } from '@/shared/ui/button';
 import { selectVoiceByCode } from '@/utils/textToSpeech';
 import type { TSubjectBadge } from './SubjectBadgeGroup';
 import { SubjectBadgeGroup } from './SubjectBadgeGroup';
+import { TextTargetBalloon } from './TextTargetBalloon';
 import WordRelationsDisplay from './WordRelationsDisplay';
 
 function boldVocabInSentence(sentence: string, word: string): React.ReactNode {
@@ -88,18 +89,22 @@ const ExpandedRowContent: React.FC<ExpandedRowContentProps> = ({
 
                         {showSubjects && <SubjectBadgeGroup subjects={subjects} />}
                       </div>
-                      {onEdit && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 shrink-0 rounded-full p-0"
-                          onClick={() => onEdit(vocab, index)}
-                          aria-label="Edit vocab"
-                          title="Edit"
-                        >
-                          <Pen size={16} weight="BoldDuotone" className="text-muted-foreground" />
-                        </Button>
-                      )}
+                      {target.id
+                        ? (
+                            <TextTargetBalloon vocabId={vocab.id} target={target} />
+                          )
+                        : onEdit && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 shrink-0 rounded-full p-0"
+                            onClick={() => onEdit(vocab, index)}
+                            aria-label="Edit vocab"
+                            title="Edit"
+                          >
+                            <Pen size={16} weight="BoldDuotone" className="text-muted-foreground" />
+                          </Button>
+                        )}
                     </div>
 
                     <div className="mb-3 flex flex-wrap gap-1.5">

@@ -3,6 +3,7 @@
 import type {
   ColumnDef,
   ColumnFiltersState,
+  ColumnSizingState,
   Row,
   RowSelectionState,
   SortingState,
@@ -88,6 +89,7 @@ type DataTableProps<TData extends { id: string }, TValue> = {
   // Loading state to render skeleton rows inside the table
   isLoading?: boolean;
   skeletonRowCount?: number;
+  enableColumnResizing?: boolean;
 };
 
 export function DataTable<TData extends { id: string }, TValue>({
@@ -122,12 +124,14 @@ export function DataTable<TData extends { id: string }, TValue>({
   onSortingChange,
   isLoading = false,
   skeletonRowCount,
+  enableColumnResizing = false,
 }: Readonly<DataTableProps<TData, TValue>>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [globalFilter, setGlobalFilter] = useState(searchValue);
+  const [columnSizing, setColumnSizing] = useState<ColumnSizingState>({});
 
   React.useEffect(() => {
     setGlobalFilter(searchValue);
@@ -154,17 +158,20 @@ export function DataTable<TData extends { id: string }, TValue>({
     data,
     columns: memoizedColumns,
     getRowId: (row): string => row.id,
+    columnResizeMode: enableColumnResizing ? 'onChange' : undefined,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
       globalFilter,
+      columnSizing,
       pagination: {
         pageIndex: currentPage - 1, // TanStack uses 0-based index
         pageSize,
       },
     },
+    onColumnSizingChange: setColumnSizing,
     onSortingChange: handleSortingChange,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
@@ -302,7 +309,7 @@ export function DataTable<TData extends { id: string }, TValue>({
                       {headerGroup.headers.map(header => (
                         <th
                           key={`${header.id}-${header.column.id}`}
-                          className={`bg-muted/30 px-3 py-3 text-left text-xs font-semibold text-muted-foreground sm:px-6 sm:py-4 sm:text-sm ${headerClassName}`}
+                          className={`relative bg-muted/30 px-3 py-3 text-left text-xs font-semibold text-muted-foreground sm:px-6 sm:py-4 sm:text-sm ${headerClassName}`}
                           style={{ width: header.getSize() !== 150 ? header.getSize() : undefined }}
                         >
                           {header.isPlaceholder
@@ -347,6 +354,28 @@ export function DataTable<TData extends { id: string }, TValue>({
                                   )}
                                 </div>
                               )}
+                          {enableColumnResizing && header.column.getCanResize() && (
+                            <div
+                              onMouseDown={(e) => {
+                                e.stopPropagation();
+                                header.getResizeHandler()(e);
+                              }}
+                              onTouchStart={(e) => {
+                                e.stopPropagation();
+                                header.getResizeHandler()(e);
+                              }}
+                              className="group absolute top-0 right-0 flex h-full w-3 cursor-col-resize items-center justify-center select-none"
+                              aria-hidden="true"
+                            >
+                              <div
+                                className={`h-4 w-0.5 rounded-full transition-all ${
+                                  header.column.getIsResizing()
+                                    ? 'h-full w-1 bg-primary'
+                                    : 'bg-border group-hover:h-full group-hover:w-1 group-hover:bg-primary/60'
+                                }`}
+                              />
+                            </div>
+                          )}
                         </th>
                       ))}
                     </tr>

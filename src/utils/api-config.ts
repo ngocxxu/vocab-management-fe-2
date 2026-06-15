@@ -10,7 +10,7 @@ import type {
   TNotificationInput,
   TUpdateNotificationStatusInput,
 } from '@/types/notification';
-import type { TBulkVocabUpdateItem, TCreateVocab } from '@/types/vocab-list';
+import type { TBulkVocabUpdateItem, TCreateTextTarget, TCreateVocab, TUpdateTextTarget } from '@/types/vocab-list';
 import type {
   TCreateVocabTrainer,
   TFormTestVocabTrainerUnion,
@@ -43,6 +43,17 @@ export type VocabConflictBySubjectParams = {
 export type RandomVocabQueryParams = {
   count: number;
   languageFolderId?: string;
+};
+
+export type TextTargetQueryParams = {
+  page?: number;
+  pageSize?: number;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+  textTarget?: string;
+  grammar?: string;
+  wordTypeId?: string;
+  subjectIds?: string[];
 };
 
 export type QueryParamValue = string | number | boolean | string[] | undefined;
@@ -102,6 +113,7 @@ export const API_ENDPOINTS = {
     resendConfirmation: '/auth/resend-confirmation',
   },
   vocabs: '/vocabs',
+  textTargets: '/vocabs/:vocabId/text-targets',
   vocabTrainers: '/vocab-trainers',
   subjects: '/subjects',
   wordTypes: '/word-types',
@@ -271,5 +283,29 @@ export const API_METHODS = {
       const queryString = buildQueryString(params || {});
       return { endpoint: `${API_ENDPOINTS.cloudinary}/upload-signature${queryString ? `?${queryString}` : ''}` };
     },
+  },
+  textTargets: {
+    getAll: (vocabId: string, params?: TextTargetQueryParams) => {
+      const base = API_ENDPOINTS.textTargets.replace(':vocabId', vocabId);
+      if (!params) {
+        return { endpoint: base };
+      }
+      const queryString = buildQueryString(params);
+      return { endpoint: queryString ? `${base}?${queryString}` : base };
+    },
+    getById: (vocabId: string, id: string) => ({
+      endpoint: `${API_ENDPOINTS.textTargets.replace(':vocabId', vocabId)}/${id}`,
+    }),
+    create: (vocabId: string, data: TCreateTextTarget) => ({
+      endpoint: API_ENDPOINTS.textTargets.replace(':vocabId', vocabId),
+      data,
+    }),
+    update: (vocabId: string, id: string, data: TUpdateTextTarget) => ({
+      endpoint: `${API_ENDPOINTS.textTargets.replace(':vocabId', vocabId)}/${id}`,
+      data,
+    }),
+    delete: (vocabId: string, id: string) => ({
+      endpoint: `${API_ENDPOINTS.textTargets.replace(':vocabId', vocabId)}/${id}`,
+    }),
   },
 } as const;

@@ -10,6 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {
   AltArrowDown,
   AltArrowLeft,
+  Eye,
   Pen,
   VolumeLoud,
 } from '@solar-icons/react/ssr';
@@ -109,6 +110,7 @@ const VocabList: React.FC<VocabListProps> = ({
   const languageFolderId = searchParams.get('languageFolderId') || undefined;
   const textSource = searchParams.get('textSource') || '';
   const subjectIdsParam = searchParams.get('subjectIds');
+  const openAdd = searchParams.get('openAdd') || '';
   const selectedSubjectIds = subjectIdsParam ? subjectIdsParam.split(',') : [];
 
   const totalItems = initialVocabsData?.totalItems || 0;
@@ -153,6 +155,32 @@ const VocabList: React.FC<VocabListProps> = ({
   const { handleSort, handlePageChange } = handlers;
 
   const dialogState = useDialogState<TVocab>();
+
+  useEffect(() => {
+    if (!openAdd) {
+      return;
+    }
+    form.reset({
+      textSource: openAdd,
+      sourceLanguageCode: sourceLanguageCode || '',
+      targetLanguageCode: targetLanguageCode || '',
+      textTargets: [{
+        id: generateId(),
+        wordTypeId: '',
+        textTarget: '',
+        grammar: '',
+        explanationSource: '',
+        explanationTarget: '',
+        subjectIds: [],
+        vocabExamples: [{ id: generateId(), source: '', target: '' }],
+      }],
+    });
+    dialogState.setOpen(true);
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('openAdd');
+    router.replace(`/vocab-list?${params.toString()}`, { scroll: false });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openAdd]);
 
   const bulkDelete = useBulkDelete({
     deleteMutation: async (ids: string[]) => {
@@ -534,6 +562,14 @@ const VocabList: React.FC<VocabListProps> = ({
       header: '',
       cell: ({ row: _row }) => (
         <div className="flex items-center space-x-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 rounded-lg hover:bg-accent"
+            onClick={() => router.push(`/vocab-list/${_row.original.id}`)}
+          >
+            <Eye size={16} weight="BoldDuotone" className="text-muted-foreground" />
+          </Button>
           <Button
             variant="ghost"
             size="icon"
