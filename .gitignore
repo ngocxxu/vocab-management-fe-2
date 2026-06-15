@@ -57,6 +57,7 @@ build-archive.log
 .cursor/
 .agents/
 .agent/
-AGENTS.md
+AGENT*
+CLAUDE*
 
 *.env

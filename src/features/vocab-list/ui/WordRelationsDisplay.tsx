@@ -22,11 +22,43 @@ function flattenRelatedWords(
   if (Array.isArray(relatedWords)) {
     return relatedWords;
   }
-  return [
-    ...relatedWords.synonyms,
-    ...relatedWords.antonyms,
-    ...relatedWords.related,
-  ];
+  const seen = new Set<string>();
+  const result: TRelatedWordItem[] = [];
+  for (const item of [...relatedWords.synonyms, ...relatedWords.antonyms, ...relatedWords.related]) {
+    if (!seen.has(item.id)) {
+      seen.add(item.id);
+      result.push(item);
+    }
+  }
+  return result;
+}
+
+function RelationLetterBadges({ item }: { item: TRelatedWordItem }) {
+  const badges: { letter: string; className: string }[] = [];
+  if (item.isSynonym) {
+    badges.push({ letter: 'S', className: 'bg-success text-success-foreground' });
+  }
+  if (item.isAntonym) {
+    badges.push({ letter: 'A', className: 'bg-destructive text-destructive-foreground' });
+  }
+  if (item.isRelated) {
+    badges.push({ letter: 'R', className: 'bg-primary text-primary-foreground' });
+  }
+  if (badges.length === 0) {
+    return null;
+  }
+  return (
+    <span className="flex items-center gap-0.5">
+      {badges.map(b => (
+        <span
+          key={b.letter}
+          className={`inline-flex h-4 min-w-4 items-center justify-center rounded px-1 text-[10px] font-semibold ${b.className}`}
+        >
+          {b.letter}
+        </span>
+      ))}
+    </span>
+  );
 }
 
 const WordRelationsDisplay: React.FC<WordRelationsDisplayProps> = ({
@@ -57,9 +89,10 @@ const WordRelationsDisplay: React.FC<WordRelationsDisplayProps> = ({
                     key={item.id}
                     type="button"
                     onClick={() => onLinkedWordClick(item.word)}
-                    className="inline-flex cursor-pointer items-center rounded-lg border border-primary/50 bg-primary/10 px-3 py-1 text-sm font-medium text-primary transition-colors hover:bg-primary/20"
+                    className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-primary/50 bg-primary/10 px-3 py-1 text-sm font-medium text-primary transition-colors hover:bg-primary/20"
                   >
                     {item.word}
+                    <RelationLetterBadges item={item} />
                   </button>
                 )
               : (
@@ -67,6 +100,7 @@ const WordRelationsDisplay: React.FC<WordRelationsDisplayProps> = ({
                     <TooltipTrigger asChild>
                       <span className="inline-flex items-center gap-1.5 rounded-lg border border-dashed border-muted-foreground/30 bg-muted/40 px-3 py-1 text-sm text-foreground">
                         {item.word}
+                        <RelationLetterBadges item={item} />
                         <button
                           type="button"
                           onClick={() => onAddFreeTextWord(item.word)}
