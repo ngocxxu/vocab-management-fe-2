@@ -507,6 +507,7 @@ export default function ConflictVocabulariesContent({
               totalItems={totalItems}
               onPageChange={handlers.handlePageChange}
               onSortingChange={handlers.handleSort}
+              onPageSizeChange={handlers.handlePageSizeChange}
             />
 
             <BulkDeleteDialog

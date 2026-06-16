@@ -75,6 +75,7 @@ const TextTargetsContent: React.FC<TextTargetsContentProps> = ({
   const totalItems = initialTextTargetsData?.totalItems;
   const totalPages = initialTextTargetsData?.totalPages;
   const currentPage = initialTextTargetsData?.currentPage;
+  const pageSize = Number(searchParams.get('pageSize') ?? 10);
 
   const hasActiveFilters = selectedSubjectIds.length > 0 || !!textTarget;
 
@@ -219,6 +220,7 @@ const TextTargetsContent: React.FC<TextTargetsContentProps> = ({
           totalItems={totalItems}
           totalPages={totalPages}
           currentPage={currentPage}
+          pageSize={pageSize}
           searchValue={textTarget}
           onSearchChange={handleSearchChange}
         />

@@ -20,8 +20,6 @@ import { SubjectTableRow } from '@/components/settings/SubjectTableRow';
 import { SubjectsPagination } from '@/components/settings/SubjectsPagination';
 import { SettingsPageShell } from '@/components/settings/SettingsPageShell';
 
-const PAGE_SIZE = 10;
-
 export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsData }) => {
   const subjects = initialSubjectsData?.items || [];
   const isLoading = false;
@@ -34,6 +32,7 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
     vocabularyCount?: number;
   }>({ open: false, subjectId: '' });
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const router = useRouter();
   const [, startTransition] = useTransition();
 
@@ -50,11 +49,11 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
   );
 
   const paginatedSubjects = useMemo(() => {
-    const start = (page - 1) * PAGE_SIZE;
-    return sortedSubjects.slice(start, start + PAGE_SIZE);
-  }, [sortedSubjects, page]);
+    const start = (page - 1) * pageSize;
+    return sortedSubjects.slice(start, start + pageSize);
+  }, [sortedSubjects, page, pageSize]);
 
-  const totalPages = Math.max(1, Math.ceil(sortedSubjects.length / PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(sortedSubjects.length / pageSize));
   React.useEffect(() => {
     if (page > totalPages && totalPages > 0) {
       setPage(totalPages);
@@ -264,7 +263,7 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
                                 <SubjectTableRow
                                   key={subject.id}
                                   subject={subject}
-                                  index={(page - 1) * PAGE_SIZE + index}
+                                  index={(page - 1) * pageSize + index}
                                   onEdit={setEditingSubject}
                                   onDelete={handleDelete}
                                 />
@@ -280,8 +279,12 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
                 <SubjectsPagination
                   currentPage={page}
                   totalItems={sortedSubjects.length}
-                  pageSize={PAGE_SIZE}
+                  pageSize={pageSize}
                   onPageChange={setPage}
+                  onPageSizeChange={(s) => {
+                    setPageSize(s);
+                    setPage(1);
+                  }}
                 />
 
                 <Alert className="border-border bg-accent/40">

@@ -325,6 +325,7 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
                 totalItems={totalItems}
                 onPageChange={handlers.handlePageChange}
                 onSortingChange={handlers.handleSort}
+                onPageSizeChange={handlers.handlePageSizeChange}
               />
             </FormControl>
             <FormMessage />

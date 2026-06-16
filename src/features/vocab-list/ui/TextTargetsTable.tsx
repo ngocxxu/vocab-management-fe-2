@@ -81,6 +81,13 @@ const TextTargetsTable: React.FC<TextTargetsTableProps> = ({
     router.push(`?${params.toString()}`);
   };
 
+  const handlePageSizeChange = (size: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('pageSize', String(size));
+    params.set('page', '1');
+    router.push(`?${params.toString()}`);
+  };
+
   const handleSortingChange = (sortBy: string, sortOrder: 'asc' | 'desc') => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('sortBy', sortBy);
@@ -215,6 +222,7 @@ const TextTargetsTable: React.FC<TextTargetsTableProps> = ({
       pageSize={pageSize}
       onPageChange={handlePageChange}
       onSortingChange={handleSortingChange}
+      onPageSizeChange={handlePageSizeChange}
     />
   );
 };

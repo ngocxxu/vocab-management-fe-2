@@ -716,6 +716,7 @@ const VocabList: React.FC<VocabListProps> = ({
                 totalItems={totalItems}
                 onPageChange={handlePageChange}
                 onSortingChange={handleSort}
+                onPageSizeChange={handlers.handlePageSizeChange}
                 onBulkDelete={bulkDelete.handleBulkDelete}
               />
             )}

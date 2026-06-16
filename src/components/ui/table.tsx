@@ -30,6 +30,8 @@ import {
 } from '@solar-icons/react/ssr';
 import React, { useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
+import { PAGE_SIZE_OPTIONS } from '@/constants/pagination';
 import { Button } from './button';
 import { Skeleton } from './skeleton';
 
@@ -86,6 +88,8 @@ type DataTableProps<TData extends { id: string }, TValue> = {
   totalItems?: number;
   onPageChange?: (page: number) => void;
   onSortingChange?: (sortBy: string, sortOrder: 'asc' | 'desc') => void;
+  onPageSizeChange?: (pageSize: number) => void;
+  pageSizeOptions?: number[];
   // Loading state to render skeleton rows inside the table
   isLoading?: boolean;
   skeletonRowCount?: number;
@@ -122,6 +126,8 @@ export function DataTable<TData extends { id: string }, TValue>({
   totalItems = 0,
   onPageChange,
   onSortingChange,
+  onPageSizeChange,
+  pageSizeOptions = PAGE_SIZE_OPTIONS as unknown as number[],
   isLoading = false,
   skeletonRowCount,
   enableColumnResizing = false,
@@ -456,16 +462,38 @@ export function DataTable<TData extends { id: string }, TValue>({
       {/* Pagination */}
       {showPagination && (
         <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
-          <div className="text-xs text-muted-foreground sm:text-sm">
-            Showing
-            {' '}
-            {manualPagination ? data.length : table.getFilteredRowModel().rows.length}
-            {' '}
-            of
-            {' '}
-            {manualPagination ? totalItems : data.length}
-            {' '}
-            results
+          <div className="flex items-center gap-3">
+            <div className="text-xs text-muted-foreground sm:text-sm">
+              Showing
+              {' '}
+              {manualPagination ? data.length : table.getFilteredRowModel().rows.length}
+              {' '}
+              of
+              {' '}
+              {manualPagination ? totalItems : data.length}
+              {' '}
+              results
+            </div>
+            {onPageSizeChange && (
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs text-muted-foreground">Rows per page</span>
+                <Select
+                  value={String(pageSize)}
+                  onValueChange={v => onPageSizeChange(Number(v))}
+                >
+                  <SelectTrigger className="h-7 w-[70px] border-border bg-background text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {pageSizeOptions.map(size => (
+                      <SelectItem key={size} value={String(size)} className="text-xs">
+                        {size}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </div>
 
           <div className="flex items-center space-x-3">

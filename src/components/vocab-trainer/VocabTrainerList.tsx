@@ -491,6 +491,7 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
               totalItems={totalItems}
               onPageChange={handlePageChange}
               onSortingChange={handleSort}
+              onPageSizeChange={handlers.handlePageSizeChange}
               onBulkDelete={bulkDelete.handleBulkDelete}
             />
 

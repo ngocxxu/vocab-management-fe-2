@@ -40,6 +40,8 @@ export type SubjectsPaginationProps = Readonly<{
   totalItems: number;
   pageSize: number;
   onPageChange: (page: number) => void;
+  onPageSizeChange?: (pageSize: number) => void;
+  pageSizeOptions?: number[];
 }>;
 
 export type SubjectSectionProps = {

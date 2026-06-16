@@ -87,7 +87,7 @@ const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[960px] lg:max-w-[1100px]">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[700px] lg:max-w-[950px] xl:max-w-[1100px] 2xl:max-w-[1300px]">
         <div className="mx-auto w-full">
           <DialogHeader>
             <DialogTitle>{editMode ? 'Edit Vocab Trainer' : 'Create New Vocab Trainer'}</DialogTitle>
