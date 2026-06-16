@@ -96,6 +96,9 @@ type DataTableProps<TData extends { id: string }, TValue> = {
   isLoading?: boolean;
   skeletonRowCount?: number;
   enableColumnResizing?: boolean;
+  // Controlled column visibility — when provided, DataTable uses these instead of internal state
+  columnVisibility?: VisibilityState;
+  onColumnVisibilityChange?: (vis: VisibilityState) => void;
 };
 
 export function DataTable<TData extends { id: string }, TValue>({
@@ -133,10 +136,23 @@ export function DataTable<TData extends { id: string }, TValue>({
   isLoading = false,
   skeletonRowCount,
   enableColumnResizing = false,
+  columnVisibility: controlledColumnVisibility,
+  onColumnVisibilityChange: onControlledColumnVisibilityChange,
 }: Readonly<DataTableProps<TData, TValue>>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [internalColumnVisibility, setInternalColumnVisibility] = useState<VisibilityState>({});
+
+  // Use controlled visibility when provided, otherwise fall back to internal state
+  const columnVisibility = controlledColumnVisibility ?? internalColumnVisibility;
+  const setColumnVisibility = (updater: VisibilityState | ((prev: VisibilityState) => VisibilityState)) => {
+    const next = typeof updater === 'function' ? updater(columnVisibility) : updater;
+    if (onControlledColumnVisibilityChange) {
+      onControlledColumnVisibilityChange(next);
+    } else {
+      setInternalColumnVisibility(next);
+    }
+  };
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [globalFilter, setGlobalFilter] = useState(searchValue);
   const [columnSizing, setColumnSizing] = useState<ColumnSizingState>({});

@@ -4,6 +4,7 @@ import type { ResponseAPI } from '@/types';
 import type { TTextTarget, TVocab } from '@/types/vocab-list';
 import type { TSubjectResponse } from '@/types/subject';
 import type { TWordTypeResponse } from '@/types/word-type';
+import type { VisibilityState } from '@tanstack/react-table';
 import { AddCircle, Filter } from '@solar-icons/react/ssr';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -20,6 +21,7 @@ import {
 import { Button } from '@/shared/ui/button';
 import { MultiSelect } from '@/shared/ui/multi-select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
+import { ColumnsDropdown } from './ColumnsDropdown';
 import TextTargetDialog from './TextTargetDialog';
 import TextTargetsTable from './TextTargetsTable';
 import WordRelationsDisplay from './WordRelationsDisplay';
@@ -59,6 +61,7 @@ const TextTargetsContent: React.FC<TextTargetsContentProps> = ({
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<TTextTarget | null>(null);
   const [editMode, setEditMode] = useState(false);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
   const textTarget = searchParams.get('textTarget') || '';
   const subjectIdsParam = searchParams.get('subjectIds');
@@ -206,6 +209,11 @@ const TextTargetsContent: React.FC<TextTargetsContentProps> = ({
               </PopoverContent>
             </Popover>
 
+            <ColumnsDropdown
+              columnVisibility={columnVisibility}
+              onColumnVisibilityChange={setColumnVisibility}
+            />
+
             <Button onClick={handleOpenAdd} className="h-10 bg-primary text-primary-foreground shadow-lg hover:opacity-90">
               <AddCircle size={16} weight="BoldDuotone" className="mr-2" />
               <span className="hidden sm:inline">Add Target</span>
@@ -223,6 +231,8 @@ const TextTargetsContent: React.FC<TextTargetsContentProps> = ({
           pageSize={pageSize}
           searchValue={textTarget}
           onSearchChange={handleSearchChange}
+          columnVisibility={columnVisibility}
+          onColumnVisibilityChange={setColumnVisibility}
         />
 
         <TextTargetDialog

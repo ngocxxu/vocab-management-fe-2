@@ -1,6 +1,6 @@
 'use client';
 
-import type { ColumnDef } from '@tanstack/react-table';
+import type { ColumnDef, VisibilityState } from '@tanstack/react-table';
 import type { TTextTarget } from '@/types/vocab-list';
 import { Pen } from '@solar-icons/react/ssr';
 import React, { useMemo, useTransition } from 'react';
@@ -21,6 +21,8 @@ type TextTargetsTableProps = {
   pageSize?: number;
   searchValue?: string;
   onSearchChange?: (query: string) => void;
+  columnVisibility?: VisibilityState;
+  onColumnVisibilityChange?: (vis: VisibilityState) => void;
 };
 
 function GrammarTags({ grammar }: { grammar: string }) {
@@ -70,6 +72,8 @@ const TextTargetsTable: React.FC<TextTargetsTableProps> = ({
   pageSize = 10,
   searchValue,
   onSearchChange,
+  columnVisibility,
+  onColumnVisibilityChange,
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -223,6 +227,8 @@ const TextTargetsTable: React.FC<TextTargetsTableProps> = ({
       onPageChange={handlePageChange}
       onSortingChange={handleSortingChange}
       onPageSizeChange={handlePageSizeChange}
+      columnVisibility={columnVisibility}
+      onColumnVisibilityChange={onColumnVisibilityChange}
     />
   );
 };
