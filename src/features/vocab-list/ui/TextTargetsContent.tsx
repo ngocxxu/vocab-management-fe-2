@@ -127,11 +127,11 @@ const TextTargetsContent: React.FC<TextTargetsContentProps> = ({
   };
 
   const handleLinkedWordClick = useCallback((word: string) => {
-    router.push(`/vocab-list?textSource=${encodeURIComponent(word)}`);
+    router.push(`/vocab-list?textSource=${encodeURIComponent(word)}&sourceLanguageCode=${vocab.sourceLanguageCode}&targetLanguageCode=${vocab.targetLanguageCode}`);
   }, [router]);
 
   const handleAddFreeTextWord = useCallback((word: string) => {
-    router.push(`/vocab-list?openAdd=${encodeURIComponent(word)}`);
+    router.push(`/vocab-list?openAdd=${encodeURIComponent(word)}&sourceLanguageCode=${vocab.sourceLanguageCode}&targetLanguageCode=${vocab.targetLanguageCode}`);
   }, [router]);
 
   return (
@@ -147,7 +147,7 @@ const TextTargetsContent: React.FC<TextTargetsContentProps> = ({
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link href="/vocab-list">Vocab List</Link>
+                <Link href={`/vocab-list?sourceLanguageCode=${vocab.sourceLanguageCode}&targetLanguageCode=${vocab.targetLanguageCode}`}>Vocab List</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
