@@ -142,6 +142,7 @@ export type TWordRelationsController = {
   onOpenRelationEditor: (relationId: string | null) => void;
   onUpdateRelationFlags: (relationId: string, flag: keyof TWordRelationPendingFlags) => void;
   onRemoveRelation: (relationId: string) => void;
+  hasInvalidRelationDrafts: boolean;
 };
 
 export type AddVocabDialogProps = {

@@ -194,6 +194,7 @@ export default function WordRelationsSection({
   onOpenRelationEditor,
   onUpdateRelationFlags,
   onRemoveRelation,
+  hasInvalidRelationDrafts: _hasInvalidRelationDrafts,
 }: WordRelationsSectionProps) {
   const hasAutocomplete = relationInputValue.trim().length > 0;
   const hasSuggestions = relationAutocompleteItems.length > 0;
@@ -369,66 +370,75 @@ export default function WordRelationsSection({
         <div className="flex flex-wrap gap-2">
           {relationDrafts.map((relation) => {
             const isOpen = editingRelationId === relation.id;
+            const hasNoFlags = !relation.isSynonym && !relation.isAntonym && !relation.isRelated;
 
             return (
-              <Popover
-                key={relation.id}
-                open={isOpen}
-                onOpenChange={(open) => {
-                  onOpenRelationEditor(open ? relation.id : null);
-                }}
-              >
-                <PopoverTrigger asChild>
-                  <div
-                    role="button"
-                    tabIndex={0}
-                    className={cn(
-                      'flex w-full items-center gap-3 rounded-lg border px-4 py-2.5 text-left shadow-sm transition-colors',
-                      isOpen
-                        ? 'border-primary/40 bg-primary/10 ring-2 ring-primary/20'
-                        : 'border-border/70 bg-card hover:bg-muted/30',
-                    )}
-                    onKeyDown={(event) => {
-                      if (event.key === 'Enter' || event.key === ' ') {
-                        event.preventDefault();
-                        onOpenRelationEditor(isOpen ? null : relation.id);
-                      }
-                    }}
-                    title={relation.word}
-                  >
-                    <span className={cn(
-                      'min-w-0 flex-1 truncate text-base font-medium leading-none',
-                      isOpen ? 'text-primary' : 'text-foreground',
-                    )}
-                    >
-                      {relation.word}
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <RelationBadge active={relation.isSynonym} label="S" tone="success" />
-                      <RelationBadge active={relation.isAntonym} label="A" tone="destructive" />
-                      <RelationBadge active={relation.isRelated} label="R" tone="primary" />
-                    </div>
-                    <button
-                      type="button"
-                      className="text-xl leading-none text-muted-foreground transition-colors hover:text-foreground"
-                      onClick={(event) => {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        onRemoveRelation(relation.id);
+              <div key={relation.id} className="w-full">
+                <Popover
+                  open={isOpen}
+                  onOpenChange={(open) => {
+                    onOpenRelationEditor(open ? relation.id : null);
+                  }}
+                >
+                  <PopoverTrigger asChild>
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      className={cn(
+                        'flex w-full items-center gap-3 rounded-lg border px-4 py-2.5 text-left shadow-sm transition-colors',
+                        hasNoFlags
+                          ? 'border-dashed border-destructive bg-destructive/5'
+                          : isOpen
+                            ? 'border-primary/40 bg-primary/10 ring-2 ring-primary/20'
+                            : 'border-border/70 bg-card hover:bg-muted/30',
+                      )}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                          event.preventDefault();
+                          onOpenRelationEditor(isOpen ? null : relation.id);
+                        }
                       }}
-                      aria-label={`Remove ${relation.word}`}
+                      title={relation.word}
                     >
-                      ×
-                    </button>
-                  </div>
-                </PopoverTrigger>
-                <PopoverContent align="start" className="w-[20rem] rounded-2xl">
-                  <RelationEditor
-                    relation={relation}
-                    onUpdateRelationFlags={onUpdateRelationFlags}
-                  />
-                </PopoverContent>
-              </Popover>
+                      <span className={cn(
+                        'min-w-0 flex-1 truncate text-base font-medium leading-none',
+                        isOpen ? 'text-primary' : 'text-foreground',
+                      )}
+                      >
+                        {relation.word}
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <RelationBadge active={relation.isSynonym} label="S" tone="success" />
+                        <RelationBadge active={relation.isAntonym} label="A" tone="destructive" />
+                        <RelationBadge active={relation.isRelated} label="R" tone="primary" />
+                      </div>
+                      <button
+                        type="button"
+                        className="text-xl leading-none text-muted-foreground transition-colors hover:text-foreground"
+                        onClick={(event) => {
+                          event.preventDefault();
+                          event.stopPropagation();
+                          onRemoveRelation(relation.id);
+                        }}
+                        aria-label={`Remove ${relation.word}`}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  </PopoverTrigger>
+                  <PopoverContent align="start" className="w-[20rem] rounded-2xl">
+                    <RelationEditor
+                      relation={relation}
+                      onUpdateRelationFlags={onUpdateRelationFlags}
+                    />
+                  </PopoverContent>
+                </Popover>
+                {hasNoFlags && (
+                  <p className="mt-1 text-xs text-destructive">
+                    At least one relation required
+                  </p>
+                )}
+              </div>
             );
           })}
         </div>

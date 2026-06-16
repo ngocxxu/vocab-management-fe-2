@@ -32,6 +32,7 @@ const VocabLanguageForm: React.FC<VocabLanguageFormProps> = ({
   onOpenRelationEditor,
   onUpdateRelationFlags,
   onRemoveRelation,
+  hasInvalidRelationDrafts,
 }) => {
   const form = useFormContext();
   const languages = initialLanguagesData?.items || [];
@@ -176,6 +177,7 @@ const VocabLanguageForm: React.FC<VocabLanguageFormProps> = ({
         onOpenRelationEditor={onOpenRelationEditor}
         onUpdateRelationFlags={onUpdateRelationFlags}
         onRemoveRelation={onRemoveRelation}
+        hasInvalidRelationDrafts={hasInvalidRelationDrafts}
       />
     </div>
   );

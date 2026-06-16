@@ -48,6 +48,7 @@ const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
   onOpenRelationEditor,
   onUpdateRelationFlags,
   onRemoveRelation,
+  hasInvalidRelationDrafts,
   userRole,
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -97,6 +98,7 @@ const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
                 onOpenRelationEditor={onOpenRelationEditor}
                 onUpdateRelationFlags={onUpdateRelationFlags}
                 onRemoveRelation={onRemoveRelation}
+                hasInvalidRelationDrafts={hasInvalidRelationDrafts}
               />
               <TextTargetTabs
                 variant="sidebar"
@@ -137,7 +139,7 @@ const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
             </DialogClose>
             <Button
               onClick={handleSubmit}
-              disabled={isSubmitting}
+              disabled={isSubmitting || hasInvalidRelationDrafts}
               className="bg-primary text-primary-foreground hover:bg-primary/90"
             >
               {isSubmitting

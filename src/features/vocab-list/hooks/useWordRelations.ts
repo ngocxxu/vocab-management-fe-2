@@ -118,15 +118,11 @@ function wordRelationsReducer(state: TWordRelationsState, action: TWordRelations
           }
 
           return toggleRelationFlags(relation, action.flag);
-        })
-        .filter(relation => relation.isSynonym || relation.isAntonym || relation.isRelated);
+        });
 
       return {
         ...state,
         relationDrafts: nextDrafts,
-        editingRelationId: nextDrafts.some(relation => relation.id === action.relationId)
-          ? state.editingRelationId
-          : null,
       };
     }
     case 'remove-draft':
@@ -364,6 +360,10 @@ export function useWordRelations({
     targetLanguageCode,
   ]);
 
+  const hasInvalidRelationDrafts = state.relationDrafts.some(
+    relation => !relation.isSynonym && !relation.isAntonym && !relation.isRelated,
+  );
+
   const relationController = useMemo<TWordRelationsController>(() => ({
     relationDrafts: state.relationDrafts,
     relationInputValue: state.relationInputValue,
@@ -378,6 +378,7 @@ export function useWordRelations({
     onOpenRelationEditor,
     onUpdateRelationFlags,
     onRemoveRelation,
+    hasInvalidRelationDrafts,
   }), [
     onAddFreeTextRelation,
     onAddLinkedRelation,
@@ -386,6 +387,7 @@ export function useWordRelations({
     onRelationInputChange,
     onRemoveRelation,
     onUpdateRelationFlags,
+    hasInvalidRelationDrafts,
     state.editingRelationId,
     state.relationAutocompleteItems,
     state.relationAutocompleteLoading,

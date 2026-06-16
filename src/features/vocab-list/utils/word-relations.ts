@@ -7,7 +7,7 @@ import type {
 import type { TRelatedWordAutocompleteItem } from '@/types/vocab-related-word';
 
 export const DEFAULT_RELATION_PENDING_FLAGS: TWordRelationPendingFlags = {
-  isSynonym: true,
+  isSynonym: false,
   isAntonym: false,
   isRelated: false,
 };
