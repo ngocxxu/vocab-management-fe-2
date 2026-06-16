@@ -24,6 +24,8 @@ import {
   AltArrowLeft,
   AltArrowRight,
   AltArrowUp,
+  CloseCircle,
+  Magnifer,
   RefreshCircle,
   SortVertical,
   TrashBin2,
@@ -224,87 +226,117 @@ export function DataTable<TData extends { id: string }, TValue>({
 
   return (
     <div className={`space-y-4 ${className}`}>
-      {/* Search Input */}
-      {showSearch && splitToolbar && (
-        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
-          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
-            {filterTrigger}
-            <input
-              placeholder={searchPlaceholder}
-              value={globalFilter ?? ''}
-              onChange={event => table.setGlobalFilter(event.target.value)}
-              className="min-w-0 flex-1 rounded-lg border border-input bg-background/80 px-4 py-2 text-foreground backdrop-blur-sm placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20 focus:outline-none sm:w-64 sm:max-w-xs sm:flex-none"
-            />
-          </div>
-          {selectedRowCount > 0 && (onBulkDelete || onBulkReassign) && (
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                {selectedRowCount}
-                {' '}
-                selected
-              </span>
-              {onBulkReassign && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-primary/40 text-primary"
-                  onClick={() => {
-                    onBulkReassign(selectedIds, setRowSelection);
-                  }}
-                >
-                  <RefreshCircle size={16} weight="BoldDuotone" className="mr-1.5" />
-                  Bulk reassign
-                </Button>
-              )}
-              {onBulkDelete && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-destructive/60 text-destructive hover:bg-destructive/10"
-                  onClick={() => {
-                    onBulkDelete(selectedIds, setRowSelection);
-                  }}
-                >
-                  <TrashBin2 size={16} weight="BoldDuotone" className="mr-1.5" />
-                  Bulk delete
-                </Button>
-              )}
-            </div>
-          )}
-        </div>
-      )}
-      {showSearch && !splitToolbar && (
-        <div className="flex items-center justify-between">
-          {onBulkDelete && selectedRowCount > 0 && (
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={() => {
-                onBulkDelete(selectedIds, setRowSelection);
-              }}
-              className="flex items-center"
-            >
-              <TrashBin2 size={16} weight="BoldDuotone" />
-              <span>
-                Delete (
-                {selectedRowCount}
-                )
-              </span>
-            </Button>
-          )}
-          <div className={onBulkDelete && selectedRowCount > 0 ? '' : 'ml-auto'}>
-            <input
-              placeholder={searchPlaceholder}
-              value={globalFilter ?? ''}
-              onChange={event => table.setGlobalFilter(event.target.value)}
-              className="w-64 rounded-lg border border-input bg-background/80 px-4 py-2 text-foreground backdrop-blur-sm placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20 focus:outline-none"
-            />
-          </div>
-        </div>
-      )}
-
       {/* Table */}
       <Card className="overflow-hidden border-0 bg-card/80 shadow-[0_8px_30px_rgb(0,0,0,0.08)] backdrop-blur-sm">
+        {/* Search bar inside card, above table headers */}
+        {showSearch && (
+          <div className="border-b border-border px-4 py-3 pt-0 sm:px-6">
+            {splitToolbar
+              ? (
+                  <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+                    <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
+                      {filterTrigger}
+                      <div className="relative min-w-0 flex-1 sm:max-w-xs sm:flex-none">
+                        <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
+                          <Magnifer size={16} weight="BoldDuotone" className="text-muted-foreground" />
+                        </span>
+                        <input
+                          placeholder={searchPlaceholder}
+                          value={globalFilter ?? ''}
+                          onChange={event => table.setGlobalFilter(event.target.value)}
+                          className="w-full rounded-full border-0 bg-muted/60 py-2.5 pr-8 pl-9 text-sm text-foreground placeholder:text-muted-foreground focus:ring-0 focus:outline-none"
+                        />
+                        {globalFilter && (
+                          <button
+                            type="button"
+                            onClick={() => table.setGlobalFilter('')}
+                            className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-foreground"
+                          >
+                            <CloseCircle size={16} weight="BoldDuotone" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                    {selectedRowCount > 0 && (onBulkDelete || onBulkReassign) && (
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                          {selectedRowCount}
+                          {' '}
+                          selected
+                        </span>
+                        {onBulkReassign && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="border-primary/40 text-primary"
+                            onClick={() => {
+                              onBulkReassign(selectedIds, setRowSelection);
+                            }}
+                          >
+                            <RefreshCircle size={16} weight="BoldDuotone" className="mr-1.5" />
+                            Bulk reassign
+                          </Button>
+                        )}
+                        {onBulkDelete && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="border-destructive/60 text-destructive hover:bg-destructive/10"
+                            onClick={() => {
+                              onBulkDelete(selectedIds, setRowSelection);
+                            }}
+                          >
+                            <TrashBin2 size={16} weight="BoldDuotone" className="mr-1.5" />
+                            Bulk delete
+                          </Button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )
+              : (
+                  <div className="flex items-center justify-between gap-3">
+                    {onBulkDelete && selectedRowCount > 0 && (
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => {
+                          onBulkDelete(selectedIds, setRowSelection);
+                        }}
+                        className="flex items-center"
+                      >
+                        <TrashBin2 size={16} weight="BoldDuotone" />
+                        <span>
+                          Delete (
+                          {selectedRowCount}
+                          )
+                        </span>
+                      </Button>
+                    )}
+                    <div className={`relative ${onBulkDelete && selectedRowCount > 0 ? 'flex-1' : 'w-full max-w-sm'}`}>
+                      <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
+                        <Magnifer size={16} weight="BoldDuotone" className="text-muted-foreground" />
+                      </span>
+                      <input
+                        placeholder={searchPlaceholder}
+                        value={globalFilter ?? ''}
+                        onChange={event => table.setGlobalFilter(event.target.value)}
+                        className="w-full rounded-full border-0 bg-muted/60 py-2.5 pr-8 pl-9 text-sm text-foreground placeholder:text-muted-foreground focus:ring-0 focus:outline-none"
+                      />
+                      {globalFilter && (
+                        <button
+                          type="button"
+                          onClick={() => table.setGlobalFilter('')}
+                          className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-foreground"
+                        >
+                          <CloseCircle size={16} weight="BoldDuotone" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
+          </div>
+        )}
         <CardContent className="p-0">
           <div className="-mx-4 overflow-x-auto sm:mx-0">
             <div className="inline-block min-w-full align-middle sm:px-0">
