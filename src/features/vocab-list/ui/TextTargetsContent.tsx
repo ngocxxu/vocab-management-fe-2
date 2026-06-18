@@ -151,7 +151,7 @@ const TextTargetsContent: React.FC<TextTargetsContentProps> = ({
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link href={`/vocab-list?sourceLanguageCode=${vocab.sourceLanguageCode}&targetLanguageCode=${vocab.targetLanguageCode}`}>Vocab List</Link>
+                <Link href={`/vocab-list?sourceLanguageCode=${vocab.sourceLanguageCode}&targetLanguageCode=${vocab.targetLanguageCode}${vocab.languageFolderId ? `&languageFolderId=${vocab.languageFolderId}` : ''}`}>Vocab List</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
