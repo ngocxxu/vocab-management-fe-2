@@ -195,7 +195,7 @@ const TextTargetDialog: React.FC<TextTargetDialogProps> = ({
         explanationSource: form.explanationSource,
         explanationTarget: form.explanationTarget,
         wordTypeId: form.wordTypeId || undefined,
-        subjectIds: form.subjectIds,
+        subjects: form.subjectIds.map(id => ({ id })),
         vocabExamples: form.vocabExamples.map(({ source, target }) => ({ source, target })),
       };
 

@@ -228,10 +228,11 @@ export const API_METHODS = {
   subjects: {
     getAll: () => ({ endpoint: API_ENDPOINTS.subjects }),
     getById: (id: string) => ({ endpoint: `${API_ENDPOINTS.subjects}/${id}` }),
-    create: (subjectData: { name: string }) => ({ endpoint: API_ENDPOINTS.subjects, data: subjectData }),
-    update: (id: string, subjectData: { name: string; order: number }) => ({ endpoint: `${API_ENDPOINTS.subjects}/${id}`, data: subjectData }),
+    create: (subjectData: { name: string; targetLanguageCode: string }) => ({ endpoint: API_ENDPOINTS.subjects, data: subjectData }),
+    update: (id: string, subjectData: { name: string; order: number; targetLanguageCode?: string }) => ({ endpoint: `${API_ENDPOINTS.subjects}/${id}`, data: subjectData }),
     delete: (id: string) => ({ endpoint: `${API_ENDPOINTS.subjects}/${id}` }),
     reorder: (subjects: { id: string; order: number }[]) => ({ endpoint: `${API_ENDPOINTS.subjects}/reorder`, data: subjects }),
+    generate: (data: { textTarget: string; targetLanguageCode: string }) => ({ endpoint: `${API_ENDPOINTS.subjects}/generate`, data }),
   },
   wordTypes: {
     getAll: () => ({ endpoint: API_ENDPOINTS.wordTypes }),

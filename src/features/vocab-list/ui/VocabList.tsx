@@ -51,20 +51,26 @@ const FormSchema = z.object({
   textSource: z.string().min(1, 'Source text is required'),
   sourceLanguageCode: z.string().min(1, 'Source language is required'),
   targetLanguageCode: z.string().min(1, 'Target language is required'),
-  textTargets: z.array(z.object({
-    id: z.string(),
-    wordTypeId: z.string().optional(),
-    textTarget: z.string().min(1, 'Target text is required'),
-    grammar: z.string(),
-    explanationSource: z.string(),
-    explanationTarget: z.string(),
-    subjectIds: z.array(z.string()).min(1, 'At least one subject must be selected'),
-    vocabExamples: z.array(z.object({
+  textTargets: z.array(
+    z.object({
       id: z.string(),
-      source: z.string(),
-      target: z.string(),
-    })),
-  })).min(1, 'At least one text target is required'),
+      wordTypeId: z.string().optional(),
+      textTarget: z.string().min(1, 'Target text is required'),
+      grammar: z.string(),
+      explanationSource: z.string(),
+      explanationTarget: z.string(),
+      subjectIds: z.array(z.string()),
+      pendingSubjectNames: z.array(z.string()),
+      vocabExamples: z.array(z.object({
+        id: z.string(),
+        source: z.string(),
+        target: z.string(),
+      })),
+    }).refine(
+      data => data.subjectIds.length > 0 || data.pendingSubjectNames.length > 0,
+      { message: 'At least one subject must be selected', path: ['subjectIds'] },
+    ),
+  ).min(1, 'At least one text target is required'),
 });
 
 type FormData = z.infer<typeof FormSchema>;
@@ -140,6 +146,7 @@ const VocabList: React.FC<VocabListProps> = ({
         explanationSource: '',
         explanationTarget: '',
         subjectIds: [],
+        pendingSubjectNames: [],
         vocabExamples: [{ id: generateId(), source: '', target: '' }],
       }],
     },
@@ -172,6 +179,7 @@ const VocabList: React.FC<VocabListProps> = ({
         explanationSource: '',
         explanationTarget: '',
         subjectIds: [],
+        pendingSubjectNames: [],
         vocabExamples: [{ id: generateId(), source: '', target: '' }],
       }],
     });
@@ -219,6 +227,7 @@ const VocabList: React.FC<VocabListProps> = ({
         explanationSource: '',
         explanationTarget: '',
         subjectIds: [],
+        pendingSubjectNames: [],
         vocabExamples: [{ id: generateId(), source: '', target: '' }],
       }],
     });
@@ -237,6 +246,7 @@ const VocabList: React.FC<VocabListProps> = ({
       explanationSource: '',
       explanationTarget: '',
       subjectIds: [],
+      pendingSubjectNames: [],
       vocabExamples: [{ id: generateId(), source: '', target: '' }],
     }], { shouldDirty: true, shouldValidate: true });
     setActiveTab(newIndex.toString());
@@ -272,6 +282,7 @@ const VocabList: React.FC<VocabListProps> = ({
           explanationSource: textTarget.explanationSource,
           explanationTarget: textTarget.explanationTarget,
           subjectIds: textTarget.textTargetSubjects?.map(tts => tts.subject.id) || [],
+          pendingSubjectNames: [],
           vocabExamples: (textTarget.vocabExamples || [{ source: '', target: '' }]).map(example => ({
             id: generateId(),
             source: example.source,
@@ -361,6 +372,7 @@ const VocabList: React.FC<VocabListProps> = ({
         explanationSource: '',
         explanationTarget: '',
         subjectIds: [],
+        pendingSubjectNames: [],
         vocabExamples: [{ id: generateId(), source: '', target: '' }],
       }],
     });
@@ -403,8 +415,12 @@ const VocabList: React.FC<VocabListProps> = ({
         ...formData,
         languageFolderId: languageFolderId || '',
         relatedWords,
-        textTargets: formData.textTargets.map(({ id, ...target }) => ({
+        textTargets: formData.textTargets.map(({ id, subjectIds, pendingSubjectNames, ...target }) => ({
           ...target,
+          subjects: [
+            ...subjectIds.map(sid => ({ id: sid })),
+            ...(pendingSubjectNames ?? []).map(name => ({ name })),
+          ],
           vocabExamples: target.vocabExamples.map(({ id: _exampleId, ...example }) => example),
         })),
       } as TCreateVocab;

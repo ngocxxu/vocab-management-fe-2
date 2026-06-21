@@ -84,7 +84,7 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
 
     try {
       setCreatingSubjects(prev => new Set(prev).add(subjectName));
-      await createSubject({ name: subjectName });
+      await createSubject({ name: subjectName, targetLanguageCode: targetLanguageCode ?? '' });
       setCreatedSubjects(prev => new Set(prev).add(subjectName));
       toast.success(`Subject '${subjectName}' created successfully`);
       startTransition(() => {

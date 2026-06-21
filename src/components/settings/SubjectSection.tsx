@@ -20,7 +20,7 @@ import { SubjectTableRow } from '@/components/settings/SubjectTableRow';
 import { SubjectsPagination } from '@/components/settings/SubjectsPagination';
 import { SettingsPageShell } from '@/components/settings/SettingsPageShell';
 
-export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsData }) => {
+export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsData, initialLanguagesData }) => {
   const subjects = initialSubjectsData?.items || [];
   const isLoading = false;
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -85,6 +85,7 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
       await updateSubject(editingSubject.id, {
         name: data.name,
         order: editingSubject.order,
+        targetLanguageCode: data.targetLanguageCode,
       });
       setEditingSubject(null);
       toast.success('Subject updated successfully');
@@ -157,6 +158,7 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
           onSubmit={handleCreate}
           onCancel={() => setIsCreateDialogOpen(false)}
           isLoading={isSubmitting}
+          initialLanguagesData={initialLanguagesData}
         />
       </DialogContent>
     </Dialog>
@@ -177,13 +179,14 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
                   <th className="bg-muted/30 px-3 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:px-6 sm:py-4" />
                   <th className="bg-muted/30 px-3 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:px-6 sm:py-4" />
                   <th className="bg-muted/30 px-3 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:px-6 sm:py-4" />
+                  <th className="bg-muted/30 px-3 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:px-6 sm:py-4" />
                   <th className="bg-muted/30 px-3 py-3 text-right text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:px-6 sm:py-4" />
                 </tr>
               </thead>
               <tbody>
                 {Array.from({ length: 4 }).map((_, i) => (
                   <tr key={i} className="border-b border-border">
-                    <td className="px-3 py-3 sm:px-6 sm:py-4" colSpan={5}>
+                    <td className="px-3 py-3 sm:px-6 sm:py-4" colSpan={6}>
                       <div className="flex items-center gap-4">
                         <Skeleton className="h-5 w-5" />
                         <Skeleton className="h-5 w-1/3" />
@@ -237,6 +240,9 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
                             </th>
                             <th className="bg-muted/30 px-3 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:px-6 sm:py-4">
                               Subject Details
+                            </th>
+                            <th className="bg-muted/30 px-3 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:px-6 sm:py-4">
+                              Target Language
                             </th>
                             <th className="bg-muted/30 px-3 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:px-6 sm:py-4">
                               Word Count
@@ -313,6 +319,7 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
             onSubmit={handleUpdate}
             onCancel={() => setEditingSubject(null)}
             isLoading={isSubmitting}
+            initialLanguagesData={initialLanguagesData}
           />
         </DialogContent>
       </Dialog>

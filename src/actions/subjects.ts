@@ -12,7 +12,7 @@ export type DeleteSubjectResult
   = | { ok: true }
     | { ok: false; code: 'CONFLICT'; vocabularyCount?: number };
 
-export async function createSubject(subjectData: { name: string }) {
+export async function createSubject(subjectData: { name: string; targetLanguageCode: string }) {
   await requireAuth();
   try {
     const result = await subjectsApi.create({ ...subjectData, order: 0 });
@@ -24,7 +24,7 @@ export async function createSubject(subjectData: { name: string }) {
   }
 }
 
-export async function updateSubject(id: string, subjectData: { name: string; order: number }) {
+export async function updateSubject(id: string, subjectData: { name: string; order: number; targetLanguageCode?: string }) {
   await requireAuth();
   try {
     const result = await subjectsApi.update(id, subjectData);
@@ -64,5 +64,17 @@ export async function reorderSubjects(subjects: { id: string; order: number }[])
     return result;
   } catch (error) {
     throw toActionError(error, 'Failed to reorder subjects');
+  }
+}
+
+export async function generateSubjectSuggestions(data: {
+  textTarget: string;
+  targetLanguageCode: string;
+}): Promise<{ jobId: string }> {
+  await requireAuth();
+  try {
+    return await subjectsApi.generate(data);
+  } catch (error) {
+    throw toActionError(error, 'Failed to generate subject suggestions');
   }
 }

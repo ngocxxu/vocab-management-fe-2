@@ -418,11 +418,11 @@ export const subjectsApi = {
     const config = API_METHODS.subjects.getById(id);
     return serverApi.get(config.endpoint);
   },
-  create: (subjectData: { name: string; order: number }) => {
+  create: (subjectData: { name: string; order: number; targetLanguageCode: string }) => {
     const config = API_METHODS.subjects.create(subjectData);
     return serverApi.post(config.endpoint, config.data);
   },
-  update: (id: string, subjectData: { name: string; order: number }) => {
+  update: (id: string, subjectData: { name: string; order: number; targetLanguageCode?: string }) => {
     const config = API_METHODS.subjects.update(id, subjectData);
     return serverApi.put(config.endpoint, config.data);
   },
@@ -433,6 +433,10 @@ export const subjectsApi = {
   reorder: (subjects: { id: string; order: number }[]) => {
     const config = API_METHODS.subjects.reorder(subjects);
     return serverApi.patch(config.endpoint, { subjectIds: config.data });
+  },
+  generate: (data: { textTarget: string; targetLanguageCode: string }): Promise<{ jobId: string }> => {
+    const config = API_METHODS.subjects.generate(data);
+    return serverApi.post(config.endpoint, config.data);
   },
 };
 

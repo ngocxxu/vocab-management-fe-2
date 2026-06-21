@@ -26,11 +26,11 @@ export function buildVocabUpdateForSubjectReassign(
     grammar: tt.grammar,
     explanationSource: tt.explanationSource,
     explanationTarget: tt.explanationTarget,
-    subjectIds: mergeReassignSubjectIds(
+    subjects: mergeReassignSubjectIds(
       tt.textTargetSubjects.map(rel => rel.subject.id),
       conflictSubjectId,
       newSubjectIds,
-    ),
+    ).map(id => ({ id })),
     vocabExamples: tt.vocabExamples,
   }));
   return {

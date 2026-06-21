@@ -196,6 +196,8 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
             subjects={subjects}
             subjectsLoading={subjectsLoading}
             subjectsError={subjectsError}
+            targetLanguageCode={targetLanguageCode}
+            textTarget={target.textTarget}
           />
         </div>
       </section>

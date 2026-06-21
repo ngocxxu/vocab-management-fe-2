@@ -33,7 +33,7 @@ export type TCreateTextTarget = {
   explanationSource: string;
   explanationTarget: string;
   wordTypeId?: string;
-  subjectIds: string[];
+  subjects: Array<{ id: string } | { name: string }>;
   vocabExamples: TExamples[];
 };
 
@@ -65,7 +65,7 @@ export type TCreateVocab = {
       grammar: string;
       explanationSource: string;
       explanationTarget: string;
-      subjectIds: string[];
+      subjects: Array<{ id: string } | { name: string }>;
       vocabExamples: TExamples[];
     },
   ];
@@ -102,6 +102,7 @@ export type TextTargetFormItem = {
   explanationSource: string;
   explanationTarget: string;
   subjectIds: string[];
+  pendingSubjectNames: string[];
   vocabExamples: VocabExampleForm[];
 };
 
@@ -260,6 +261,8 @@ export type SubjectsSectionProps = {
   subjects: import('@/types/subject').TSubject[];
   subjectsLoading: boolean;
   subjectsError: boolean;
+  targetLanguageCode: string;
+  textTarget: string;
 };
 
 export type VocabListLayoutProps = {
