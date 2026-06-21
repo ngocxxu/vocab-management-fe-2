@@ -23,7 +23,7 @@ const ExamplesSection: React.FC<ExamplesSectionProps> = ({
           variant="outline"
           size="sm"
           onClick={() => onAddExample(targetIndex)}
-          className="gap-1.5"
+          className="h-7 gap-1.5 text-xs"
         >
           <AddCircle size={14} weight="BoldDuotone" />
           Add Example

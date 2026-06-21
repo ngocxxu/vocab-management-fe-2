@@ -187,7 +187,7 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = React.memo(({
           size="sm"
           onClick={handleSuggest}
           disabled={suggestState === 'suggesting' || isCooldownActive || !textTarget?.trim()}
-          className="h-7 gap-1 text-xs"
+          className="h-7 gap-1.5 text-xs"
         >
           {suggestState === 'suggesting'
             ? '✦ Suggesting...'
