@@ -309,11 +309,12 @@ const TextTargetDialog: React.FC<TextTargetDialogProps> = ({
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
                   <Label htmlFor="wordType">Word Type</Label>
-                  <Select value={form.wordTypeId || ''} onValueChange={v => updateField('wordTypeId', v)}>
+                  <Select value={form.wordTypeId || ''} onValueChange={v => updateField('wordTypeId', v === '__none__' ? '' : v)}>
                     <SelectTrigger id="wordType" className="mt-1 w-full">
                       <SelectValue placeholder="Select word type" />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="__none__">None</SelectItem>
                       {wordTypes.map(wt => (
                         <SelectItem key={wt.id} value={wt.id}>{wt.name}</SelectItem>
                       ))}

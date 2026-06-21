@@ -41,7 +41,10 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
               <Label htmlFor={`wordType-${targetIndex}`}>Word Type</Label>
-              <Select value={target.wordTypeId || ''} onValueChange={(value: string) => onInputChange('wordTypeId', value, targetIndex)}>
+              <Select
+                value={target.wordTypeId || ''}
+                onValueChange={(value: string) => onInputChange('wordTypeId', value === '__none__' ? '' : value, targetIndex)}
+              >
                 <SelectTrigger className="mt-1 w-full">
                   <SelectValue placeholder="Select word type" />
                 </SelectTrigger>
@@ -59,11 +62,14 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
                           </SelectItem>
                         )
                       : (
-                          wordTypes.map((wordType: WordTypeItem) => (
-                            <SelectItem key={wordType.id} value={wordType.id}>
-                              {wordType.name}
-                            </SelectItem>
-                          ))
+                          <>
+                            <SelectItem value="__none__">None</SelectItem>
+                            {wordTypes.map((wordType: WordTypeItem) => (
+                              <SelectItem key={wordType.id} value={wordType.id}>
+                                {wordType.name}
+                              </SelectItem>
+                            ))}
+                          </>
                         )}
                 </SelectContent>
               </Select>

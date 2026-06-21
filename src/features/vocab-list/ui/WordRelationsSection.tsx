@@ -186,7 +186,7 @@ export default function WordRelationsSection({
   editingRelationId,
   relationAutocompleteItems,
   relationAutocompleteLoading,
-  editMode = false,
+  editMode: _editMode = false,
   onRelationInputChange,
   onRelationFlagToggle,
   onAddFreeTextRelation,
@@ -264,64 +264,9 @@ export default function WordRelationsSection({
 
   return (
     <div className="space-y-3">
-      <div className="space-y-1.5">
-        <h4 className="text-sm font-medium text-foreground">
-          Word Relations
-        </h4>
-        <Popover open={shouldOpenAutocomplete}>
-          <PopoverAnchor asChild>
-            <div>
-              <Input
-                type="text"
-                value={relationInputValue}
-                onChange={event => onRelationInputChange(event.target.value)}
-                onKeyDown={onInputKeyDown}
-                placeholder={editMode ? 'Type to add a related word or search vocabs' : 'Type a related word or search vocabs'}
-                className="mt-1 w-full"
-                aria-expanded={shouldOpenAutocomplete}
-                aria-autocomplete="list"
-                aria-controls="word-relations-autocomplete"
-              />
-            </div>
-          </PopoverAnchor>
-          <PopoverContent
-            align="start"
-            sideOffset={6}
-            onOpenAutoFocus={(event) => {
-              event.preventDefault();
-            }}
-            className="w-[var(--radix-popover-trigger-width)] rounded-xl border border-border/70 p-0 shadow-md"
-          >
-            <Command value={selectedAutocompleteId ?? undefined}>
-              <CommandList id="word-relations-autocomplete">
-                {relationAutocompleteLoading
-                  ? (
-                      <div className="px-3 py-2 text-sm text-muted-foreground">
-                        Searching vocabs...
-                      </div>
-                    )
-                  : (
-                      <>
-                        <CommandGroup>
-                          {relationAutocompleteItems.map(item => (
-                            <CommandItem
-                              key={item.id}
-                              value={item.id}
-                              onSelect={() => handleSelectLinkedRelation(item)}
-                              onMouseEnter={() => setActiveAutocompleteId(item.id)}
-                              className="flex items-center justify-between rounded-lg px-3 py-2"
-                            >
-                              <span className="text-base font-medium text-foreground">{item.sourceText}</span>
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </>
-                    )}
-              </CommandList>
-            </Command>
-          </PopoverContent>
-        </Popover>
-      </div>
+      <h4 className="text-sm font-medium text-foreground">
+        Word Relations
+      </h4>
 
       <div className="rounded-2xl border border-border/70 bg-muted p-3 shadow-sm">
         <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
@@ -346,21 +291,61 @@ export default function WordRelationsSection({
             onClick={() => onRelationFlagToggle('isRelated')}
           />
         </div>
-
-        <div className="mt-2.5 flex items-center justify-between gap-4 border-t border-border/60 pt-2">
-          <p className="text-xs text-muted-foreground italic">
-            Press Enter to add free text or choose from the dropdown.
-          </p>
-          <Button
-            type="button"
-            variant="ghost"
-            className="h-0 px-0 text-sm font-semibold text-primary hover:bg-transparent hover:text-primary/80"
-            onClick={onAddFreeTextRelation}
-          >
-            Add Word
-          </Button>
-        </div>
       </div>
+
+      <Popover open={shouldOpenAutocomplete}>
+        <PopoverAnchor asChild>
+          <div>
+            <Input
+              type="text"
+              value={relationInputValue}
+              onChange={event => onRelationInputChange(event.target.value)}
+              onKeyDown={onInputKeyDown}
+              placeholder="Type or search word and press Enter to add"
+              className="w-full"
+              aria-expanded={shouldOpenAutocomplete}
+              aria-autocomplete="list"
+              aria-controls="word-relations-autocomplete"
+            />
+          </div>
+        </PopoverAnchor>
+        <PopoverContent
+          align="start"
+          sideOffset={6}
+          onOpenAutoFocus={(event) => {
+            event.preventDefault();
+          }}
+          className="w-[var(--radix-popover-trigger-width)] rounded-xl border border-border/70 p-0 shadow-md"
+        >
+          <Command value={selectedAutocompleteId ?? undefined}>
+            <CommandList id="word-relations-autocomplete">
+              {relationAutocompleteLoading
+                ? (
+                    <div className="px-3 py-2 text-sm text-muted-foreground">
+                      Searching vocabs...
+                    </div>
+                  )
+                : (
+                    <>
+                      <CommandGroup>
+                        {relationAutocompleteItems.map(item => (
+                          <CommandItem
+                            key={item.id}
+                            value={item.id}
+                            onSelect={() => handleSelectLinkedRelation(item)}
+                            onMouseEnter={() => setActiveAutocompleteId(item.id)}
+                            className="flex items-center justify-between rounded-lg px-3 py-2"
+                          >
+                            <span className="text-base font-medium text-foreground">{item.sourceText}</span>
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </>
+                  )}
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
 
       <p className="text-xs text-muted-foreground">
         Tip: You can select both a relation (S/A) and Related (R) simultaneously.
