@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { TEXT_TARGET_COOLDOWN_DURATION_MS, TEXT_TARGET_GLOBAL_STORAGE_KEY } from '../constants/textTarget';
 
-export function useTextTargetCooldown() {
+export function useTextTargetCooldown(storageKey: string = TEXT_TARGET_GLOBAL_STORAGE_KEY) {
   const [isCooldownActive, setIsCooldownActive] = useState(false);
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
 
   const checkCooldown = useCallback(() => {
     try {
-      const lastClickTimeStr = localStorage.getItem(TEXT_TARGET_GLOBAL_STORAGE_KEY);
+      const lastClickTimeStr = localStorage.getItem(storageKey);
       if (!lastClickTimeStr) {
         setIsCooldownActive(false);
         setCooldownRemaining(0);
@@ -16,7 +16,7 @@ export function useTextTargetCooldown() {
 
       const lastClickTime = Number.parseInt(lastClickTimeStr, 10);
       if (Number.isNaN(lastClickTime)) {
-        localStorage.removeItem(TEXT_TARGET_GLOBAL_STORAGE_KEY);
+        localStorage.removeItem(storageKey);
         setIsCooldownActive(false);
         setCooldownRemaining(0);
         return;
@@ -28,7 +28,7 @@ export function useTextTargetCooldown() {
       if (elapsed >= TEXT_TARGET_COOLDOWN_DURATION_MS) {
         setIsCooldownActive(false);
         setCooldownRemaining(0);
-        localStorage.removeItem(TEXT_TARGET_GLOBAL_STORAGE_KEY);
+        localStorage.removeItem(storageKey);
       } else {
         setIsCooldownActive(true);
         setCooldownRemaining(Math.ceil((TEXT_TARGET_COOLDOWN_DURATION_MS - elapsed) / 1000));
@@ -37,7 +37,7 @@ export function useTextTargetCooldown() {
       setIsCooldownActive(false);
       setCooldownRemaining(0);
     }
-  }, []);
+  }, [storageKey]);
 
   useEffect(() => {
     checkCooldown();
@@ -47,7 +47,7 @@ export function useTextTargetCooldown() {
 
   const markUsed = useCallback(() => {
     try {
-      localStorage.setItem(TEXT_TARGET_GLOBAL_STORAGE_KEY, Date.now().toString());
+      localStorage.setItem(storageKey, Date.now().toString());
     } finally {
       checkCooldown();
     }

@@ -5,6 +5,8 @@ import type { TSubjectGenerateResult } from '@/types/subject';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { generateSubjectSuggestions } from '@/actions/subjects';
+import { SUGGEST_BUTTON_STORAGE_KEY } from '../constants/textTarget';
+import { useTextTargetCooldown } from '../hooks/useTextTargetCooldown';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
 import {
@@ -42,6 +44,7 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = React.memo(({
   const [currentJobId, setCurrentJobId] = useState<string | null>(null);
   const [pendingNewOptions, setPendingNewOptions] = useState<PendingNewOption[]>([]);
   const { socket, isConnected } = useSocket();
+  const { isCooldownActive, cooldownRemaining, markUsed } = useTextTargetCooldown(SUGGEST_BUTTON_STORAGE_KEY);
 
   const subjectIdsPath = `textTargets.${targetIndex}.subjectIds` as const;
   const pendingPath = `textTargets.${targetIndex}.pendingSubjectNames` as const;
@@ -106,10 +109,11 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = React.memo(({
     try {
       const { jobId } = await generateSubjectSuggestions({ textTarget, targetLanguageCode });
       setCurrentJobId(String(jobId));
+      markUsed();
     } catch {
       setSuggestState('idle');
     }
-  }, [textTarget, targetLanguageCode]);
+  }, [textTarget, targetLanguageCode, markUsed]);
 
   const handleMultiSelectChange = useCallback((newValues: string[]) => {
     const newRealIds = newValues.filter(v => !pendingTempIdSet.has(v));
@@ -182,10 +186,14 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = React.memo(({
           variant="outline"
           size="sm"
           onClick={handleSuggest}
-          disabled={suggestState === 'suggesting' || !textTarget?.trim()}
+          disabled={suggestState === 'suggesting' || isCooldownActive || !textTarget?.trim()}
           className="h-7 gap-1 text-xs"
         >
-          {suggestState === 'suggesting' ? '✦ Suggesting...' : '✦ Suggest'}
+          {suggestState === 'suggesting'
+            ? '✦ Suggesting...'
+            : isCooldownActive
+              ? `✦ Wait ${cooldownRemaining}s`
+              : '✦ Suggest'}
         </Button>
       </div>
 
@@ -215,9 +223,9 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = React.memo(({
       />
 
       {aiSuggestions && (
-        <div className="space-y-3 rounded-lg border bg-card p-3">
+        <div className="space-y-3 rounded-lg border border-primary/30 bg-primary/5 p-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-primary">AI SUGGESTED</span>
+            <span className="text-sm font-bold text-primary">AI SUGGESTED</span>
             <Badge variant="secondary">
               {aiSuggestions.totalCount}
               {' '}
@@ -238,8 +246,8 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = React.memo(({
                       onClick={() => toggleExistingSubject(s.id)}
                       className={
                         isAdded
-                          ? 'rounded-md border border-primary bg-primary px-3 py-1 text-sm text-primary-foreground transition-colors'
-                          : 'rounded-md border border-border px-3 py-1 text-sm text-foreground transition-colors hover:bg-accent hover:text-accent-foreground'
+                          ? 'rounded-full border border-primary bg-primary px-3 py-1 text-sm text-primary-foreground transition-colors'
+                          : 'rounded-full border border-border px-3 py-1 text-sm text-foreground transition-colors hover:bg-accent hover:text-accent-foreground'
                       }
                     >
                       {isAdded ? `${s.name} ✓` : `${s.name} +`}
@@ -263,8 +271,8 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = React.memo(({
                       onClick={() => toggleNewIdea(s.name)}
                       className={
                         isAdded
-                          ? 'rounded-md border border-primary bg-primary px-3 py-1 text-sm text-primary-foreground transition-colors'
-                          : 'rounded-md border border-dashed border-border px-3 py-1 text-sm text-foreground transition-colors hover:bg-accent hover:text-accent-foreground'
+                          ? 'rounded-full border border-primary bg-primary px-3 py-1 text-sm text-primary-foreground transition-colors'
+                          : 'rounded-full border border-dashed border-border px-3 py-1 text-sm text-foreground transition-colors hover:bg-accent hover:text-accent-foreground'
                       }
                     >
                       {isAdded ? `${s.name} ✓` : `${s.name} ✦`}

@@ -1,7 +1,7 @@
 'use client';
 
 import type { TextTargetTabsProps } from '@/types/vocab-list';
-import { AddCircle, AltArrowRight, CheckCircle, CloseCircle, Target, TrashBin2 } from '@solar-icons/react/ssr';
+import { AddCircle, AltArrowRight, CheckCircle, CloseCircle, TrashBin2 } from '@solar-icons/react/ssr';
 import React from 'react';
 import { Button } from '@/shared/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
@@ -19,13 +19,10 @@ const TextTargetTabs: React.FC<TextTargetTabsProps> = ({
   onRemoveExample,
   onAddTextTarget,
   onRemoveTextTarget,
-  textSource = '',
-  sourceLanguageCode = '',
   targetLanguageCode = '',
   initialSubjectsData,
   initialLanguagesData: _initialLanguagesData,
   initialWordTypesData,
-  userRole,
 }) => {
   const wordTypes = initialWordTypesData?.items || [];
   const isLoading = false;
@@ -36,26 +33,7 @@ const TextTargetTabs: React.FC<TextTargetTabsProps> = ({
 
   if (variant === 'sidebar') {
     return (
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h3 className="flex items-center gap-1.5 text-xs font-medium tracking-wide text-muted-foreground uppercase">
-            <Target size={14} weight="BoldDuotone" />
-            Text Targets
-          </h3>
-          {onAddTextTarget && (
-            <Button
-              type="button"
-              variant="link"
-              size="sm"
-              className="h-auto p-0 text-xs"
-              onClick={onAddTextTarget}
-              disabled={textTargets.length >= 5}
-            >
-              + Add New
-            </Button>
-          )}
-        </div>
-        <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2">
           {textTargets.map((target, index) => {
             const isActive = activeTab === index.toString();
             return (
@@ -107,7 +85,6 @@ const TextTargetTabs: React.FC<TextTargetTabsProps> = ({
               </button>
             );
           })}
-        </div>
       </div>
     );
   }
@@ -129,14 +106,11 @@ const TextTargetTabs: React.FC<TextTargetTabsProps> = ({
           subjects={subjects}
           subjectsLoading={subjectsLoading}
           subjectsError={subjectsError}
-          textSource={textSource}
-          sourceLanguageCode={sourceLanguageCode}
           targetLanguageCode={targetLanguageCode}
           onInputChange={onInputChange}
           onExampleChange={onExampleChange}
           onAddExample={onAddExample}
           onRemoveExample={onRemoveExample}
-          userRole={userRole}
         />
       </div>
     );
@@ -209,14 +183,11 @@ const TextTargetTabs: React.FC<TextTargetTabsProps> = ({
               subjects={subjects}
               subjectsLoading={subjectsLoading}
               subjectsError={subjectsError}
-              textSource={textSource}
-              sourceLanguageCode={sourceLanguageCode}
               targetLanguageCode={targetLanguageCode}
               onInputChange={onInputChange || (() => {})}
               onExampleChange={onExampleChange || (() => {})}
               onAddExample={onAddExample || (() => {})}
               onRemoveExample={onRemoveExample || (() => {})}
-              userRole={userRole}
             />
           </TabsContent>
         ))}

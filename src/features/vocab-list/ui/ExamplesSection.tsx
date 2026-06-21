@@ -16,11 +16,8 @@ const ExamplesSection: React.FC<ExamplesSectionProps> = ({
 }) => {
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="h-5 w-2 shrink-0 rounded-full bg-primary" />
-          <h4 className="text-sm font-semibold">Usage Examples</h4>
-        </div>
+      <div className="mb-3 flex items-center justify-between border-b pb-2">
+        <h4 className="text-sm font-medium">Examples</h4>
         <Button
           type="button"
           variant="outline"
@@ -32,6 +29,7 @@ const ExamplesSection: React.FC<ExamplesSectionProps> = ({
           Add Example
         </Button>
       </div>
+
       <div className="space-y-3">
         {examples.map((example, exampleIndex) => (
           <div key={example.id} className="flex items-center space-x-3 rounded-lg border p-3">

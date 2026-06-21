@@ -1,7 +1,6 @@
 'use client';
 
 import type { VocabLanguageFormProps } from '@/types/vocab-list';
-import { QuestionCircle } from '@solar-icons/react/ssr';
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
 import {
@@ -44,10 +43,6 @@ const VocabLanguageForm: React.FC<VocabLanguageFormProps> = ({
 
   return (
     <div className="space-y-4">
-      <h3 className="flex items-center gap-1.5 text-xs font-medium tracking-wide text-muted-foreground uppercase">
-        <QuestionCircle size={14} weight="BoldDuotone" />
-        Basic Information
-      </h3>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <FormField
           control={form.control}

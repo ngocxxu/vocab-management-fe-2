@@ -222,14 +222,11 @@ export type TextTargetFormProps = {
   subjects: import('@/types/subject').TSubject[];
   subjectsLoading: boolean;
   subjectsError: boolean;
-  textSource: string;
-  sourceLanguageCode: string;
   targetLanguageCode: string;
   onInputChange: (field: string, value: string, targetIndex: number) => void;
   onExampleChange: (exampleIndex: number, field: 'source' | 'target', value: string, targetIndex: number) => void;
   onAddExample: (targetIndex: number) => void;
   onRemoveExample: (exampleIndex: number, targetIndex: number) => void;
-  userRole?: string;
 };
 
 export type ExamplesSectionProps = {

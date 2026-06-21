@@ -1,14 +1,7 @@
 'use client';
 
 import type { TextTargetFormProps, WordTypeItem } from '@/types/vocab-list';
-import { MagicStick, RefreshCircle } from '@solar-icons/react/ssr';
-import React, { useState } from 'react';
-import { toast } from 'sonner';
-import { generateTextTargetContent } from '@/actions/vocabs';
-import { useTextTargetCooldown } from '../hooks/useTextTargetCooldown';
-import { PremiumFeatureGate } from '@/components/premium';
-import { UserRole } from '@/constants/auth';
-import { Button } from '@/shared/ui/button';
+import React from 'react';
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
@@ -25,118 +18,15 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
   subjects,
   subjectsLoading,
   subjectsError,
-  textSource,
-  sourceLanguageCode,
   targetLanguageCode,
   onInputChange,
   onExampleChange,
   onAddExample,
   onRemoveExample,
-  userRole,
 }) => {
-  const [isGenerating, setIsGenerating] = useState(false);
-  const { isCooldownActive, cooldownRemaining, markUsed } = useTextTargetCooldown();
-
-  const handleGenerateAI = async () => {
-    if (!textSource || !sourceLanguageCode || !targetLanguageCode) {
-      toast.error('Please fill in source text and language codes first');
-      return;
-    }
-
-    setIsGenerating(true);
-    try {
-      const result = await generateTextTargetContent({
-        textSource,
-        sourceLanguageCode,
-        targetLanguageCode,
-      });
-
-      onInputChange('textTarget', result.textTarget, targetIndex);
-      onInputChange('wordTypeId', result.wordTypeId, targetIndex);
-      onInputChange('explanationSource', result.explanationSource, targetIndex);
-      onInputChange('explanationTarget', result.explanationTarget, targetIndex);
-
-      if (result.vocabExamples && result.vocabExamples.length > 0) {
-        const firstExample = result.vocabExamples[0];
-        if (target.vocabExamples.length > 0) {
-          onExampleChange(0, 'source', firstExample?.source || '', targetIndex);
-          onExampleChange(0, 'target', firstExample?.target || '', targetIndex);
-        } else {
-          onAddExample(targetIndex);
-          setTimeout(() => {
-            onExampleChange(0, 'source', firstExample?.source || '', targetIndex);
-            onExampleChange(0, 'target', firstExample?.target || '', targetIndex);
-          }, 0);
-        }
-      }
-
-      toast.success('AI generated content successfully');
-      markUsed();
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to generate content');
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
   return (
     <div className="space-y-6">
-      <section className="pl-4">
-        <div className="mb-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="h-5 w-2 shrink-0 rounded-full bg-primary" />
-            <h4 className="text-sm font-semibold">Core Meaning</h4>
-          </div>
-          {userRole === UserRole.GUEST
-            ? (
-                <PremiumFeatureGate
-                  userRole={userRole}
-                  featureName="AI Generate (text target)"
-                  description="Auto-generate target text and examples with AI. Upgrade to Member to unlock."
-                  onClick={handleGenerateAI}
-                  variant="outline"
-                  size="sm"
-                  className="h-7 gap-1.5 text-xs"
-                >
-                  <MagicStick size={12} weight="BoldDuotone" />
-                  AI Generate
-                </PremiumFeatureGate>
-              )
-            : (
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={handleGenerateAI}
-                  disabled={isGenerating || isCooldownActive || !textSource || !sourceLanguageCode || !targetLanguageCode}
-                  className="h-7 gap-1.5 text-xs"
-                >
-                  {isGenerating
-                    ? (
-                        <>
-                          <RefreshCircle size={12} weight="BoldDuotone" className="animate-spin" />
-                          Generating...
-                        </>
-                      )
-                    : isCooldownActive
-                      ? (
-                          <>
-                            <RefreshCircle size={12} weight="BoldDuotone" />
-                            Wait
-                            {' '}
-                            {cooldownRemaining}
-                            s
-                          </>
-                        )
-                      : (
-                          <>
-                            <MagicStick size={12} weight="BoldDuotone" />
-                            AI Generate
-                          </>
-                        )}
-                </Button>
-              )}
-        </div>
+      <section>
         <div className="space-y-4">
           <div>
             <Label htmlFor={`textTarget-${targetIndex}`}>Target Text</Label>
@@ -202,10 +92,9 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
         </div>
       </section>
 
-      <section className="pl-4">
-        <div className="mb-3 flex items-center gap-2">
-          <div className="h-5 w-2 shrink-0 rounded-full bg-primary" />
-          <h4 className="text-sm font-semibold">Explanations</h4>
+      <section>
+        <div className="mb-3 border-b pb-2">
+          <h4 className="text-sm font-medium">Explanation & Usage</h4>
         </div>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div>
@@ -237,7 +126,7 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
         </div>
       </section>
 
-      <section className="pl-4">
+      <section>
         <ExamplesSection
           targetIndex={targetIndex}
           examples={target.vocabExamples}

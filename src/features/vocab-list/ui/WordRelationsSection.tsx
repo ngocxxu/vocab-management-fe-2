@@ -323,7 +323,7 @@ export default function WordRelationsSection({
         </Popover>
       </div>
 
-      <div className="rounded-2xl border border-border/70 bg-card p-3 shadow-sm">
+      <div className="rounded-2xl border border-border/70 bg-muted p-3 shadow-sm">
         <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
           Set Relationship Type
         </p>
@@ -390,7 +390,7 @@ export default function WordRelationsSection({
                           ? 'border-dashed border-destructive bg-destructive/5'
                           : isOpen
                             ? 'border-primary/40 bg-primary/10 ring-2 ring-primary/20'
-                            : 'border-border/70 bg-card hover:bg-muted/30',
+                            : 'border-border/70 bg-background hover:bg-muted/30',
                       )}
                       onKeyDown={(event) => {
                         if (event.key === 'Enter' || event.key === ' ') {
