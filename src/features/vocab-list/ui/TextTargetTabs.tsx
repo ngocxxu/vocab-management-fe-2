@@ -34,57 +34,57 @@ const TextTargetTabs: React.FC<TextTargetTabsProps> = ({
   if (variant === 'sidebar') {
     return (
       <div className="flex flex-col gap-2">
-          {textTargets.map((target, index) => {
-            const isActive = activeTab === index.toString();
-            return (
-              <button
-                key={target.id}
-                type="button"
-                className={cn(
-                  'group flex w-full items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left text-sm transition-colors',
-                  isActive
-                    ? 'border-primary bg-primary/10 text-primary hover:bg-primary/15'
-                    : 'border-border bg-background text-foreground hover:bg-muted/50',
-                )}
-                onClick={() => onActiveTabChange(index.toString())}
-              >
-                <span className="flex min-w-0 items-center gap-2">
-                  <span
-                    className={cn(
-                      'flex h-6 w-6 shrink-0 items-center justify-center rounded text-xs font-medium',
-                      isActive ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground',
-                    )}
-                  >
-                    {index + 1}
-                  </span>
-                  <span className="truncate">{target.textTarget?.trim() ? target.textTarget : `Vocab ${index + 1}`}</span>
-                </span>
-                <span className="relative flex h-6 w-6 shrink-0 items-center justify-center">
-                  <span
-                    className={cn(
-                      'transition-opacity group-hover:opacity-0',
-                      isActive ? 'text-primary' : 'text-muted-foreground',
-                    )}
-                  >
-                    {isActive ? <CheckCircle size={16} weight="BoldDuotone" /> : <AltArrowRight size={16} weight="BoldDuotone" />}
-                  </span>
-                  {textTargets.length > 1 && onRemoveTextTarget && (
-                    <button
-                      type="button"
-                      className="absolute inset-0 flex items-center justify-center text-destructive opacity-0 transition-opacity group-hover:opacity-100"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onRemoveTextTarget(index);
-                      }}
-                      aria-label="Remove target"
-                    >
-                      <TrashBin2 size={16} weight="BoldDuotone" />
-                    </button>
+        {textTargets.map((target, index) => {
+          const isActive = activeTab === index.toString();
+          return (
+            <button
+              key={target.id}
+              type="button"
+              className={cn(
+                'group flex w-full items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left text-sm transition-colors',
+                isActive
+                  ? 'border-primary bg-primary/10 text-primary hover:bg-primary/15'
+                  : 'border-border bg-background text-foreground hover:bg-muted/50',
+              )}
+              onClick={() => onActiveTabChange(index.toString())}
+            >
+              <span className="flex min-w-0 items-center gap-2">
+                <span
+                  className={cn(
+                    'flex h-6 w-6 shrink-0 items-center justify-center rounded text-xs font-medium',
+                    isActive ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground',
                   )}
+                >
+                  {index + 1}
                 </span>
-              </button>
-            );
-          })}
+                <span className="truncate">{target.textTarget?.trim() ? target.textTarget : `Vocab ${index + 1}`}</span>
+              </span>
+              <span className="relative flex h-6 w-6 shrink-0 items-center justify-center">
+                <span
+                  className={cn(
+                    'transition-opacity group-hover:opacity-0',
+                    isActive ? 'text-primary' : 'text-muted-foreground',
+                  )}
+                >
+                  {isActive ? <CheckCircle size={16} weight="BoldDuotone" /> : <AltArrowRight size={16} weight="BoldDuotone" />}
+                </span>
+                {textTargets.length > 1 && onRemoveTextTarget && (
+                  <button
+                    type="button"
+                    className="absolute inset-0 flex items-center justify-center text-destructive opacity-0 transition-opacity group-hover:opacity-100"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onRemoveTextTarget(index);
+                    }}
+                    aria-label="Remove target"
+                  >
+                    <TrashBin2 size={16} weight="BoldDuotone" />
+                  </button>
+                )}
+              </span>
+            </button>
+          );
+        })}
       </div>
     );
   }
