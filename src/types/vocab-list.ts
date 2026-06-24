@@ -303,3 +303,18 @@ export type ExportCsvButtonProps = {
   queryParams: import('@/utils/api-config').VocabQueryParams;
   disabled?: boolean;
 };
+
+export type TVocabGenerateTextTargetResult = {
+  jobId: string;
+  textSource: string;
+  result: {
+    textTarget: string;
+    grammar: string;
+    explanationSource: string;
+    explanationTarget: string;
+    wordTypeId?: string;
+    subjectIds: string[];
+    vocabExamples?: Array<{ source: string; target: string }>;
+  };
+  timestamp: string;
+};

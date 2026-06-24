@@ -220,23 +220,12 @@ export async function generateTextTargetContent(data: {
   textSource: string;
   sourceLanguageCode: string;
   targetLanguageCode: string;
-}): Promise<{
-  textTarget: string;
-  wordTypeId: string;
-  explanationSource: string;
-  explanationTarget: string;
-  subjectIds: string[];
-  vocabExamples: Array<{ source: string; target: string }>;
-}> {
+}): Promise<{ jobId: string }> {
   await requireAuth();
-  if (!data.textSource || !data.sourceLanguageCode || !data.targetLanguageCode) {
-    throw new Error('textSource, sourceLanguageCode, and targetLanguageCode are required');
-  }
 
   try {
-    const result = await vocabApi.generateTextTarget(data);
-    return result;
+    return await vocabApi.generateTextTarget(data);
   } catch (error) {
-    throw toActionError(error, 'Failed to generate text target content');
+    throw toActionError(error, 'Failed to enqueue text target generation');
   }
 }

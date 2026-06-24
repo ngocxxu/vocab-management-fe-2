@@ -1,6 +1,6 @@
 'use client';
 
-import type { TCreateTextTarget, TTextTarget, TUpdateTextTarget } from '@/types/vocab-list';
+import type { TCreateTextTarget, TTextTarget, TUpdateTextTarget, TVocabGenerateTextTargetResult } from '@/types/vocab-list';
 import type { TSubjectResponse } from '@/types/subject';
 import type { TWordTypeResponse } from '@/types/word-type';
 import { MagicStick, RefreshCircle } from '@solar-icons/react/ssr';
@@ -8,6 +8,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { generateTextTargetContent } from '@/actions/vocabs';
 import { createTextTarget, updateTextTarget } from '@/actions/text-targets';
+import { useSocket } from '@/hooks/useSocket';
+import { SOCKET_EVENTS } from '@/utils/socket-config';
 import { Button } from '@/shared/ui/button';
 import {
   Dialog,
@@ -80,8 +82,10 @@ const TextTargetDialog: React.FC<TextTargetDialogProps> = ({
   const [form, setForm] = useState<FormState>(defaultForm());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [currentJobId, setCurrentJobId] = useState<string | null>(null);
   const [isCooldownActive, setIsCooldownActive] = useState(false);
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
+  const { socket, isConnected } = useSocket();
 
   const checkCooldown = useCallback(() => {
     try {
@@ -121,14 +125,16 @@ const TextTargetDialog: React.FC<TextTargetDialogProps> = ({
     return () => clearInterval(interval);
   }, [open, checkCooldown]);
 
-  const handleGenerateAI = async () => {
-    if (!textSource || !sourceLanguageCode || !targetLanguageCode) {
-      toast.error('Missing source text or language codes');
+  useEffect(() => {
+    if (!socket || !isConnected || !currentJobId) {
       return;
     }
-    setIsGenerating(true);
-    try {
-      const result = await generateTextTargetContent({ textSource, sourceLanguageCode, targetLanguageCode });
+
+    const handler = (data: TVocabGenerateTextTargetResult) => {
+      if (String(data.jobId) !== String(currentJobId)) {
+        return;
+      }
+      const { result } = data;
       setForm(prev => ({
         ...prev,
         textTarget: result.textTarget,
@@ -144,9 +150,27 @@ const TextTargetDialog: React.FC<TextTargetDialogProps> = ({
         localStorage.setItem(GLOBAL_STORAGE_KEY, Date.now().toString());
         checkCooldown();
       } catch {}
+      setIsGenerating(false);
+      setCurrentJobId(null);
+    };
+
+    socket.on(SOCKET_EVENTS.VOCAB_GENERATE_TEXT_TARGET_RESULT, handler);
+    return () => {
+      socket.off(SOCKET_EVENTS.VOCAB_GENERATE_TEXT_TARGET_RESULT, handler);
+    };
+  }, [socket, isConnected, currentJobId, checkCooldown]);
+
+  const handleGenerateAI = async () => {
+    if (!textSource || !sourceLanguageCode || !targetLanguageCode) {
+      toast.error('Missing source text or language codes');
+      return;
+    }
+    setIsGenerating(true);
+    try {
+      const { jobId } = await generateTextTargetContent({ textSource, sourceLanguageCode, targetLanguageCode });
+      setCurrentJobId(String(jobId));
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Failed to generate content');
-    } finally {
       setIsGenerating(false);
     }
   };
