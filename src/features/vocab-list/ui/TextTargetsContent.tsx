@@ -249,7 +249,7 @@ const TextTargetsContent: React.FC<TextTargetsContentProps> = ({
           onSuccess={handleDialogSuccess}
         />
 
-        {vocab.relatedWords && (
+        {vocab.relatedWords && Object.values(vocab.relatedWords).some(arr => arr.length > 0) && (
           <div className="mt-6 rounded-lg border border-border bg-card p-4 pt-0 shadow-sm">
             <WordRelationsDisplay
               relatedWords={vocab.relatedWords}
