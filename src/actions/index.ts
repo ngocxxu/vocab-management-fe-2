@@ -6,6 +6,7 @@ export * from './layout-header';
 export * from './notifications';
 export * from './statistics';
 export * from './subjects';
+export * from './support';
 export * from './text-targets';
 export * from './vocab-trainers';
 export * from './vocabs';

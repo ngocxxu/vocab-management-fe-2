@@ -9,6 +9,7 @@ import { getLayoutHeaderData } from '@/actions/layout-header';
 import { Header, Sidebar } from '@/components/dashboard';
 import { logger } from '@/libs/Logger';
 import { SocketProvider } from '@/providers/SocketProvider';
+import { SupportButton } from '@/features/support';
 
 type LayoutClientProps = {
   children: React.ReactNode;
@@ -145,6 +146,7 @@ export function LayoutClient({
           </div>
         </div>
       </div>
+      <SupportButton userEmail={currentUser?.email} />
     </SocketProvider>
   );
 }
