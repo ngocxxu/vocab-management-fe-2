@@ -183,6 +183,9 @@ export function DataTable<TData extends { id: string }, TValue>({
     columns: memoizedColumns,
     getRowId: (row): string => row.id,
     columnResizeMode: enableColumnResizing ? 'onChange' : undefined,
+    defaultColumn: {
+      minSize: 60,
+    },
     state: {
       sorting,
       columnFilters,
@@ -356,7 +359,10 @@ export function DataTable<TData extends { id: string }, TValue>({
         <CardContent className="p-0">
           <div className="-mx-4 overflow-x-auto sm:mx-0">
             <div className="inline-block min-w-full align-middle sm:px-0">
-              <table className="w-full">
+              <table
+                style={enableColumnResizing ? { width: table.getTotalSize(), minWidth: '100%' } : undefined}
+                className={enableColumnResizing ? '' : 'w-full'}
+              >
                 <thead>
                   {table.getHeaderGroups().map(headerGroup => (
                     <tr key={headerGroup.id} className={`border-b border-border ${headerClassName}`}>
@@ -364,7 +370,7 @@ export function DataTable<TData extends { id: string }, TValue>({
                         <th
                           key={`${header.id}-${header.column.id}`}
                           className={`relative bg-muted/30 px-3 py-3 text-left text-xs font-semibold text-muted-foreground sm:px-6 sm:py-4 sm:text-sm ${headerClassName}`}
-                          style={{ width: header.getSize() !== 150 ? header.getSize() : undefined }}
+                          style={{ width: enableColumnResizing ? header.getSize() : (header.getSize() !== 150 ? header.getSize() : undefined) }}
                         >
                           {header.isPlaceholder
                             ? null

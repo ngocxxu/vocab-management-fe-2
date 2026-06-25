@@ -203,6 +203,7 @@ const TextTargetsTable: React.FC<TextTargetsTableProps> = ({
       ),
       enableSorting: false,
       enableHiding: false,
+      enableResizing: false,
       size: 80,
     },
   ], [onEdit, vocabId, router, startTransition]);
