@@ -30,9 +30,11 @@ import { Textarea } from '@/shared/ui/textarea';
 
 type SupportButtonProps = {
   userEmail?: string;
+  className?: string;
+  inline?: boolean;
 };
 
-export function SupportButton({ userEmail = '' }: SupportButtonProps) {
+export function SupportButton({ userEmail = '', className, inline = false }: SupportButtonProps) {
   const [open, setOpen] = useState(false);
 
   const form = useForm<TSupportFormData>({
@@ -64,15 +66,30 @@ export function SupportButton({ userEmail = '' }: SupportButtonProps) {
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        aria-label="Open support"
-        className="fixed right-6 bottom-6 z-50 flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2.5 text-sm font-medium text-foreground shadow-lg ring-1 ring-border/50 transition-all duration-200 hover:-translate-y-0.5 hover:bg-accent hover:shadow-xl focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-      >
-        <QuestionCircle size={18} weight="BoldDuotone" className="text-primary" />
-        <span>Support</span>
-      </button>
+      {inline
+        ? (
+            <Button
+              variant="ghost"
+              size="icon"
+              className={`h-10 w-10 flex-shrink-0 rounded-xl hover:bg-accent ${className ?? ''}`}
+              onClick={() => setOpen(true)}
+              title="Contact support"
+              aria-label="Open support"
+            >
+              <QuestionCircle size={20} weight="BoldDuotone" className="text-muted-foreground" />
+            </Button>
+          )
+        : (
+            <button
+              type="button"
+              onClick={() => setOpen(true)}
+              aria-label="Open support"
+              className={`fixed right-6 bottom-6 z-50 flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2.5 text-sm font-medium text-foreground shadow-lg ring-1 ring-border/50 transition-all duration-200 hover:-translate-y-0.5 hover:bg-accent hover:shadow-xl focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none ${className ?? ''}`}
+            >
+              <QuestionCircle size={18} weight="BoldDuotone" className="text-primary" />
+              <span>Support</span>
+            </button>
+          )}
 
       <Dialog open={open} onOpenChange={handleOpenChange}>
         <DialogContent className="sm:max-w-md">

@@ -1,4 +1,5 @@
 export * from './auth';
+export * from './chat';
 export * from './cloudinary';
 export * from './language-folders';
 export * from './languages';

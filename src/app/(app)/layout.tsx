@@ -1,14 +1,18 @@
-import { verifyUser } from '@/actions';
+import { getChatUnreadCount, verifyUser } from '@/actions';
 import { LayoutClient } from './LayoutClient';
 
 export default async function Layout(props: {
   children: React.ReactNode;
 }) {
-  const user = await verifyUser();
+  const [user, initialChatUnreadCount] = await Promise.all([
+    verifyUser(),
+    getChatUnreadCount().catch(() => 0),
+  ]);
 
   return (
     <LayoutClient
       currentUser={user}
+      initialChatUnreadCount={initialChatUnreadCount}
     >
       {props.children}
     </LayoutClient>

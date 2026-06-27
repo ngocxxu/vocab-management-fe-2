@@ -1,4 +1,5 @@
 import { signoutClient } from '@/utils/auth-utils';
+import { SupportButton } from '@/features/support';
 import { NotificationDropdown } from '@/components/notifications/NotificationDropdown';
 import { Button } from '@/components/ui/button';
 import {
@@ -144,6 +145,8 @@ export const Header: React.FC<HeaderProps> = ({
             error={error}
             onNotificationsChanged={onNotificationsChanged}
           />
+
+          <SupportButton userEmail={user?.email} inline />
 
           <Separator orientation="vertical" />
 

@@ -122,6 +122,9 @@ export const API_ENDPOINTS = {
   notifications: '/notifications',
   cloudinary: '/cloudinary',
   plans: '/plans',
+  chatMessages: '/chat/messages',
+  chatUnreadCount: '/chat/unread-count',
+  chatRead: '/chat/read',
 } as const;
 
 // API method configurations
@@ -308,5 +311,13 @@ export const API_METHODS = {
     delete: (vocabId: string, id: string) => ({
       endpoint: `${API_ENDPOINTS.textTargets.replace(':vocabId', vocabId)}/${id}`,
     }),
+  },
+  chat: {
+    getMessages: (cursor?: string) => {
+      const queryString = buildQueryString({ cursor, limit: 10 });
+      return { endpoint: `${API_ENDPOINTS.chatMessages}${queryString ? `?${queryString}` : ''}` };
+    },
+    getUnreadCount: () => ({ endpoint: API_ENDPOINTS.chatUnreadCount }),
+    markRead: () => ({ endpoint: API_ENDPOINTS.chatRead }),
   },
 } as const;

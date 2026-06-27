@@ -9,7 +9,7 @@ import { getLayoutHeaderData } from '@/actions/layout-header';
 import { Header, Sidebar } from '@/components/dashboard';
 import { logger } from '@/libs/Logger';
 import { SocketProvider } from '@/providers/SocketProvider';
-import { SupportButton } from '@/features/support';
+import { ChatBubble, ChatPanel, ChatProvider } from '@/features/chat';
 
 type LayoutClientProps = {
   children: React.ReactNode;
@@ -18,6 +18,7 @@ type LayoutClientProps = {
   initialAllNotifications?: ResponseAPI<TNotification[]>;
   initialUnreadNotifications?: ResponseAPI<TNotification[]>;
   initialUnreadCount?: TUnreadCountResponse;
+  initialChatUnreadCount?: number;
 };
 
 export function LayoutClient({
@@ -27,6 +28,7 @@ export function LayoutClient({
   initialAllNotifications,
   initialUnreadNotifications,
   initialUnreadCount,
+  initialChatUnreadCount,
 }: LayoutClientProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
@@ -146,7 +148,10 @@ export function LayoutClient({
           </div>
         </div>
       </div>
-      <SupportButton userEmail={currentUser?.email} />
+      <ChatProvider initialUnreadCount={initialChatUnreadCount ?? 0}>
+        <ChatBubble />
+        <ChatPanel />
+      </ChatProvider>
     </SocketProvider>
   );
 }
