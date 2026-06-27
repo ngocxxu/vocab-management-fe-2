@@ -9,7 +9,7 @@ type TRecognitionResult = {
 
 type TRecognitionResultList = {
   readonly length: number;
-  item(index: number): TRecognitionResult[] & { length: number };
+  item: (index: number) => TRecognitionResult[] & { length: number };
   [index: number]: TRecognitionResult[] & { length: number };
 };
 
@@ -20,8 +20,8 @@ type TRecognition = {
   onresult: ((event: { results: TRecognitionResultList }) => void) | null;
   onend: (() => void) | null;
   onerror: (() => void) | null;
-  start(): void;
-  stop(): void;
+  start: () => void;
+  stop: () => void;
 };
 
 type TSpeechRecognitionCtor = new () => TRecognition;
@@ -58,7 +58,9 @@ export function useMic(onTranscript: (text: string) => void): TUseMicReturn {
 
   const start = useCallback(() => {
     const SR = getSpeechRecognition();
-    if (!SR) return;
+    if (!SR) {
+      return;
+    }
 
     const recognition = new SR();
     recognition.continuous = false;
@@ -67,7 +69,9 @@ export function useMic(onTranscript: (text: string) => void): TUseMicReturn {
 
     recognition.onresult = (event) => {
       const text = event.results[0]?.[0]?.transcript ?? '';
-      if (text) onTranscript(text);
+      if (text) {
+        onTranscript(text);
+      }
     };
 
     recognition.onend = () => setIsRecording(false);
@@ -81,8 +85,7 @@ export function useMic(onTranscript: (text: string) => void): TUseMicReturn {
   const toggle = useCallback(() => {
     if (isRecording) {
       stop();
-    }
-    else {
+    } else {
       start();
     }
   }, [isRecording, start, stop]);
