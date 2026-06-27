@@ -57,7 +57,7 @@ export function MessageList() {
             height={28}
             className="mt-1 shrink-0 rounded-full object-cover"
           />
-          <div className="rounded-2xl rounded-tl-sm bg-card px-4 py-3">
+          <div className="rounded-2xl rounded-tl-sm bg-muted px-4 py-3">
             <div className="flex items-center gap-1">
               <span className="size-1.5 animate-bounce rounded-full bg-muted-foreground [animation-delay:-0.3s]" />
               <span className="size-1.5 animate-bounce rounded-full bg-muted-foreground [animation-delay:-0.15s]" />
