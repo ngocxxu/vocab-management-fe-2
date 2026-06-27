@@ -4,6 +4,7 @@ export type TMessage = {
   content: string;
   toolCalls?: unknown[];
   createdAt: string;
+  status?: 'sending' | 'sent' | 'failed';
 };
 
 export type TToolActivity = {
@@ -32,8 +33,11 @@ export type TChatState = {
 export type TChatContext = {
   state: TChatState;
   sendMessage: (message: string) => void;
+  retryMessage: (messageId: string, content: string) => void;
   confirmResponse: (requestId: string, confirmed: boolean) => void;
   cancelGeneration: () => void;
   loadMoreHistory: () => void;
   toggleOpen: (open: boolean) => void;
+  onInputFocus: () => void;
+  onInputBlur: () => void;
 };

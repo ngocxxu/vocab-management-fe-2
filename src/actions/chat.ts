@@ -21,8 +21,9 @@ export async function getChatMessages(cursor?: string): Promise<{ messages: TMes
   await requireAuth();
   try {
     const { endpoint } = API_METHODS.chat.getMessages(cursor);
-    const data = await serverApi.get<{ messages: TMessage[]; nextCursor: string | null }>(endpoint);
-    return { messages: data.messages ?? [], nextCursor: data.nextCursor ?? null };
+    const data = await serverApi.get<{ items: Array<Omit<TMessage, 'content'> & { message: string }>; nextCursor: string | null }>(endpoint);
+    const messages: TMessage[] = (data.items ?? []).map(item => ({ ...item, content: item.message }));
+    return { messages, nextCursor: data.nextCursor ?? null };
   } catch (error) {
     throw toActionError(error, 'Failed to fetch chat messages');
   }

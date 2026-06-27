@@ -133,14 +133,39 @@ async function verifyUserImpl(): Promise<TUser | null> {
       return null;
     }
 
-    const result = await authApi.verify();
-    return result;
+    try {
+      return await authApi.verify();
+    } catch (verifyError) {
+      if (!isUnauthorizedError(verifyError)) {
+        throw verifyError;
+      }
+
+      // Access token expired — refresh and retry (mirrors Axios 401 interceptor on client)
+      const refreshToken = await getRefreshToken();
+      if (!refreshToken) {
+        return null;
+      }
+
+      const lockKey = getRefreshLockKey(token, refreshToken);
+      const session = await getRefreshLock(lockKey).getOrRefresh(
+        () => performRefresh(refreshToken),
+      );
+
+      if (!session) {
+        return null;
+      }
+
+      await setAuthCookies(session.access_token, session.refresh_token);
+
+      try {
+        return await authApi.verify();
+      } catch {
+        return null;
+      }
+    }
   } catch (error) {
     if (error && typeof error === 'object' && 'digest' in error && error.digest === 'DYNAMIC_SERVER_USAGE') {
       throw error;
-    }
-    if (isUnauthorizedError(error)) {
-      return null;
     }
     logger.error('Failed to verify user:', { error });
     return null;

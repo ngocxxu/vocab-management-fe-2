@@ -1,25 +1,35 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useRef } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 import { useChat } from '@/providers/ChatProvider';
 import { MessageBubble } from './MessageBubble';
 import { ToolChip } from './ToolChip';
 
 export function MessageList() {
-  const { state, loadMoreHistory } = useChat();
+  const { state, loadMoreHistory, retryMessage } = useChat();
   const bottomRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const isLoadingHistoryRef = useRef(false);
+  const prevScrollHeightRef = useRef(0);
 
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  useLayoutEffect(() => {
+    if (isLoadingHistoryRef.current && containerRef.current) {
+      const newScrollHeight = containerRef.current.scrollHeight;
+      containerRef.current.scrollTop = newScrollHeight - prevScrollHeightRef.current;
+      isLoadingHistoryRef.current = false;
+    } else {
+      bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
   }, [state.messages.length]);
 
   const handleScroll = () => {
-    if (!containerRef.current) {
+    if (!containerRef.current || isLoadingHistoryRef.current) {
       return;
     }
     if (containerRef.current.scrollTop === 0 && state.nextCursor) {
+      prevScrollHeightRef.current = containerRef.current.scrollHeight;
+      isLoadingHistoryRef.current = true;
       loadMoreHistory();
     }
   };
@@ -31,7 +41,11 @@ export function MessageList() {
       className="flex flex-1 flex-col gap-3 overflow-y-auto py-4"
     >
       {state.messages.map(message => (
-        <MessageBubble key={message.id} message={message} />
+        <MessageBubble
+          key={message.id}
+          message={message}
+          onRetry={message.status === 'failed' ? () => retryMessage(message.id, message.content) : undefined}
+        />
       ))}
 
       {state.isQueued && (

@@ -6,11 +6,14 @@ import { io } from 'socket.io-client';
 import { toast } from 'sonner';
 import { getChatMessages, getChatUnreadCount, markChatRead } from '@/actions/chat';
 import { Env } from '@/libs/Env';
+import { refreshAccessTokenOnce } from '@/libs/auth-refresh-client';
 import { logger } from '@/libs/Logger';
 
 type ChatAction
   = { type: 'TOGGLE_OPEN'; open: boolean }
+    | { type: 'SEND_OPTIMISTIC'; content: string }
     | { type: 'MESSAGE_QUEUED'; messageId: string }
+    | { type: 'RETRY_MESSAGE'; messageId: string }
     | { type: 'AI_TOOL_USED'; toolActivity: TToolActivity }
     | { type: 'AI_CONFIRM_REQUIRED'; confirmRequest: TConfirmRequest }
     | { type: 'AI_DONE'; message: TMessage }
@@ -37,8 +40,32 @@ function chatReducer(state: TChatState, action: ChatAction): TChatState {
   switch (action.type) {
     case 'TOGGLE_OPEN':
       return { ...state, isOpen: action.open };
+    case 'SEND_OPTIMISTIC': {
+      const optimisticMsg: TMessage = {
+        id: `temp_${Date.now()}`,
+        role: 'USER',
+        content: action.content,
+        createdAt: new Date().toISOString(),
+        status: 'sending',
+      };
+      return { ...state, messages: [...state.messages, optimisticMsg] };
+    }
     case 'MESSAGE_QUEUED':
-      return { ...state, isQueued: true, pendingMessageId: action.messageId };
+      return {
+        ...state,
+        isQueued: true,
+        pendingMessageId: action.messageId,
+        messages: state.messages.map(msg =>
+          msg.status === 'sending' ? { ...msg, id: action.messageId, status: 'sent' } : msg,
+        ),
+      };
+    case 'RETRY_MESSAGE':
+      return {
+        ...state,
+        messages: state.messages.map(msg =>
+          msg.id === action.messageId ? { ...msg, status: 'sending' } : msg,
+        ),
+      };
     case 'AI_TOOL_USED':
       return { ...state, toolActivity: action.toolActivity };
     case 'AI_CONFIRM_REQUIRED':
@@ -52,7 +79,15 @@ function chatReducer(state: TChatState, action: ChatAction): TChatState {
         messages: [...state.messages, action.message],
       };
     case 'AI_ERROR':
-      return { ...state, isQueued: false, pendingMessageId: null, toolActivity: null };
+      return {
+        ...state,
+        isQueued: false,
+        pendingMessageId: null,
+        toolActivity: null,
+        messages: state.messages.map(msg =>
+          msg.status === 'sending' ? { ...msg, status: 'failed' } : msg,
+        ),
+      };
     case 'HISTORY_LOADED':
       return {
         ...state,
@@ -79,9 +114,23 @@ function chatReducer(state: TChatState, action: ChatAction): TChatState {
 
 const ChatContext = createContext<TChatContext | null>(null);
 
-export function ChatProvider({ children, initialUnreadCount = 0 }: { children: React.ReactNode; initialUnreadCount?: number }) {
-  const [state, dispatch] = useReducer(chatReducer, { ...initialState, unreadCount: initialUnreadCount });
+type ChatProviderProps = {
+  children: React.ReactNode;
+  initialUnreadCount?: number;
+  initialMessages?: TMessage[];
+  initialNextCursor?: string | null;
+};
+
+export function ChatProvider({ children, initialUnreadCount = 0, initialMessages, initialNextCursor }: ChatProviderProps) {
+  const [state, dispatch] = useReducer(chatReducer, {
+    ...initialState,
+    unreadCount: initialUnreadCount,
+    messages: initialMessages ?? [],
+    nextCursor: initialNextCursor ?? null,
+    historyLoaded: (initialMessages?.length ?? 0) > 0,
+  });
   const socketRef = useRef<ReturnType<typeof io> | null>(null);
+  const inputFocusedRef = useRef(false);
 
   const fetchUnreadCount = useCallback(async () => {
     try {
@@ -114,7 +163,7 @@ export function ChatProvider({ children, initialUnreadCount = 0 }: { children: R
       return;
     }
 
-    const socket = io(`${Env.NEXT_PUBLIC_SOCKET_URL}/chat`, {
+    const socket = io(`${Env.NEXT_PUBLIC_SOCKET_URL}/chat-bot`, {
       transports: ['websocket', 'polling'],
       autoConnect: true,
       reconnection: true,
@@ -134,6 +183,20 @@ export function ChatProvider({ children, initialUnreadCount = 0 }: { children: R
 
     socket.on('connect_error', (error) => {
       logger.error('Chat socket connection error:', { error });
+    });
+
+    socket.on('unauthorized', () => {
+      logger.warn('Chat socket: token expired, refreshing...');
+      refreshAccessTokenOnce()
+        .then((refreshed) => {
+          if (refreshed) {
+            socket.disconnect();
+            socket.connect();
+          }
+        })
+        .catch((error: unknown) => {
+          logger.error('Chat socket: failed to refresh token', { error });
+        });
     });
 
     socket.on('message_queued', ({ messageId }: { messageId: string }) => {
@@ -156,7 +219,14 @@ export function ChatProvider({ children, initialUnreadCount = 0 }: { children: R
         createdAt: new Date().toISOString(),
       };
       dispatch({ type: 'AI_DONE', message });
-      void fetchUnreadCount();
+      if (inputFocusedRef.current) {
+        dispatch({ type: 'UNREAD_CLEARED' });
+        markChatRead().catch((error: unknown) => {
+          logger.warn('Failed to mark chat as read:', { error });
+        });
+      } else {
+        void fetchUnreadCount();
+      }
     });
 
     socket.on('ai_error', ({ message: errMsg, retryable }: { message: string; retryable: boolean; code: string }) => {
@@ -166,11 +236,11 @@ export function ChatProvider({ children, initialUnreadCount = 0 }: { children: R
       });
     });
 
-    socket.on('history_loaded', ({ messages, nextCursor }: { messages: TMessage[]; nextCursor: string | null }) => {
-      dispatch({ type: 'HISTORY_LOADED', messages, nextCursor });
+    socket.on('history_loaded', ({ messages, nextCursor }: { messages: Array<Omit<TMessage, 'content'> & { message: string }>; nextCursor: string | null }) => {
+      const mapped: TMessage[] = messages.map(item => ({ ...item, content: item.message }));
+      dispatch({ type: 'HISTORY_LOADED', messages: mapped, nextCursor });
     });
 
-    // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
     socketRef.current = socket;
 
     return () => {
@@ -180,7 +250,13 @@ export function ChatProvider({ children, initialUnreadCount = 0 }: { children: R
   }, [fetchUnreadCount]);
 
   const sendMessage = useCallback((message: string) => {
+    dispatch({ type: 'SEND_OPTIMISTIC', content: message });
     socketRef.current?.emit('send_message', { message });
+  }, []);
+
+  const retryMessage = useCallback((messageId: string, content: string) => {
+    dispatch({ type: 'RETRY_MESSAGE', messageId });
+    socketRef.current?.emit('send_message', { message: content });
   }, []);
 
   const confirmResponse = useCallback((requestId: string, confirmed: boolean) => {
@@ -202,34 +278,46 @@ export function ChatProvider({ children, initialUnreadCount = 0 }: { children: R
   const toggleOpen = useCallback(async (open: boolean) => {
     dispatch({ type: 'TOGGLE_OPEN', open });
 
-    if (open) {
-      if (state.unreadCount > 0) {
-        dispatch({ type: 'UNREAD_CLEARED' });
-        markChatRead().catch((error: unknown) => {
-          logger.warn('Failed to mark chat as read:', { error });
-        });
-      }
+    if (!open) {
+      inputFocusedRef.current = false;
+    }
 
-      if (!state.historyLoaded) {
-        try {
-          const data = await getChatMessages();
-          dispatch({ type: 'HISTORY_FETCHED', messages: data.messages, nextCursor: data.nextCursor });
-        } catch (error) {
-          logger.error('Failed to load chat history:', { error });
-          dispatch({ type: 'HISTORY_FETCHED', messages: [], nextCursor: null });
-        }
+    if (open && !state.historyLoaded) {
+      try {
+        const data = await getChatMessages();
+        dispatch({ type: 'HISTORY_FETCHED', messages: data.messages, nextCursor: data.nextCursor });
+      } catch (error) {
+        logger.error('Failed to load chat history:', { error });
+        dispatch({ type: 'HISTORY_FETCHED', messages: [], nextCursor: null });
       }
     }
-  }, [state.historyLoaded, state.unreadCount]);
+  }, [state.historyLoaded]);
+
+  const onInputFocus = useCallback(() => {
+    inputFocusedRef.current = true;
+    if (state.unreadCount > 0) {
+      dispatch({ type: 'UNREAD_CLEARED' });
+      markChatRead().catch((error: unknown) => {
+        logger.warn('Failed to mark chat as read:', { error });
+      });
+    }
+  }, [state.unreadCount]);
+
+  const onInputBlur = useCallback(() => {
+    inputFocusedRef.current = false;
+  }, []);
 
   const contextValue = useMemo<TChatContext>(() => ({
     state,
     sendMessage,
+    retryMessage,
     confirmResponse,
     cancelGeneration,
     loadMoreHistory,
     toggleOpen,
-  }), [state, sendMessage, confirmResponse, cancelGeneration, loadMoreHistory, toggleOpen]);
+    onInputFocus,
+    onInputBlur,
+  }), [state, sendMessage, retryMessage, confirmResponse, cancelGeneration, loadMoreHistory, toggleOpen, onInputFocus, onInputBlur]);
 
   return (
     <ChatContext value={contextValue}>

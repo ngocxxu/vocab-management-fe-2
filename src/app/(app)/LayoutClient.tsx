@@ -2,6 +2,7 @@
 
 import type { ResponseAPI } from '@/types';
 import type { TUser } from '@/types/auth';
+import type { TMessage } from '@/types/chat';
 import type { TNotification, TUnreadCountResponse } from '@/types/notification';
 import type { TPlan } from '@/types/plan';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -19,6 +20,8 @@ type LayoutClientProps = {
   initialUnreadNotifications?: ResponseAPI<TNotification[]>;
   initialUnreadCount?: TUnreadCountResponse;
   initialChatUnreadCount?: number;
+  initialChatMessages?: TMessage[];
+  initialChatNextCursor?: string | null;
 };
 
 export function LayoutClient({
@@ -29,6 +32,8 @@ export function LayoutClient({
   initialUnreadNotifications,
   initialUnreadCount,
   initialChatUnreadCount,
+  initialChatMessages,
+  initialChatNextCursor,
 }: LayoutClientProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
@@ -148,7 +153,7 @@ export function LayoutClient({
           </div>
         </div>
       </div>
-      <ChatProvider initialUnreadCount={initialChatUnreadCount ?? 0}>
+      <ChatProvider initialUnreadCount={initialChatUnreadCount ?? 0} initialMessages={initialChatMessages} initialNextCursor={initialChatNextCursor}>
         <ChatBubble />
         <ChatPanel />
       </ChatProvider>

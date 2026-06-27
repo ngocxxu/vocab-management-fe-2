@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ArrowRight, Microphone2, StopCircle } from '@solar-icons/react/ssr';
 import { useChat } from '@/providers/ChatProvider';
 import { cn } from '@/libs/utils';
@@ -10,7 +10,7 @@ const MAX_CHARS = 300;
 const COUNTER_THRESHOLD = 250;
 
 export function ChatInput() {
-  const { sendMessage, cancelGeneration, state } = useChat();
+  const { sendMessage, cancelGeneration, state, onInputFocus, onInputBlur } = useChat();
   const [value, setValue] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -18,7 +18,7 @@ export function ChatInput() {
   const showCounter = value.length >= COUNTER_THRESHOLD;
 
   const handleTranscript = useCallback((text: string) => {
-    setValue(prev => {
+    setValue((prev) => {
       const joined = prev ? `${prev} ${text}` : text;
       return joined.slice(0, MAX_CHARS);
     });
@@ -26,6 +26,10 @@ export function ChatInput() {
   }, []);
 
   const { isRecording, isSupported, toggle: toggleMic } = useMic(handleTranscript);
+
+  useEffect(() => {
+    textareaRef.current?.focus();
+  }, []);
 
   const handleSend = () => {
     const trimmed = value.trim();
@@ -36,6 +40,7 @@ export function ChatInput() {
     setValue('');
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
+      textareaRef.current.focus();
     }
   };
 
@@ -44,6 +49,11 @@ export function ChatInput() {
       e.preventDefault();
       handleSend();
     }
+  };
+
+  const handleCancel = () => {
+    cancelGeneration();
+    textareaRef.current?.focus();
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -62,7 +72,9 @@ export function ChatInput() {
           value={value}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
-          disabled={state.isQueued}
+          onFocus={onInputFocus}
+          onBlur={onInputBlur}
+          readOnly={state.isQueued}
           placeholder="Type your message…"
           rows={1}
           maxLength={MAX_CHARS}
@@ -107,9 +119,9 @@ export function ChatInput() {
             ? (
                 <button
                   type="button"
-                  onClick={cancelGeneration}
+                  onClick={handleCancel}
                   aria-label="Cancel generation"
-                  className="flex size-8 items-center justify-center rounded-xl bg-muted text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="flex size-8 items-center justify-center rounded-xl bg-muted text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                 >
                   <StopCircle size={18} weight="BoldDuotone" />
                 </button>
@@ -120,7 +132,7 @@ export function ChatInput() {
                   onClick={handleSend}
                   disabled={!value.trim()}
                   aria-label="Send message"
-                  className="flex size-8 items-center justify-center rounded-xl bg-primary text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="flex size-8 items-center justify-center rounded-xl bg-primary text-primary-foreground transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:opacity-40"
                 >
                   <ArrowRight size={18} weight="Bold" />
                 </button>
