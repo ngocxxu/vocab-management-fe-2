@@ -22,7 +22,8 @@ type ChatAction
     | { type: 'HISTORY_FETCHED'; messages: TMessage[]; nextCursor: string | null }
     | { type: 'CONFIRM_CLEARED' }
     | { type: 'UNREAD_COUNT_LOADED'; unreadCount: number }
-    | { type: 'UNREAD_CLEARED' };
+    | { type: 'UNREAD_CLEARED' }
+    | { type: 'PREVIEW_DISMISSED' };
 
 const initialState: TChatState = {
   isOpen: false,
@@ -34,12 +35,13 @@ const initialState: TChatState = {
   nextCursor: null,
   historyLoaded: false,
   unreadCount: 0,
+  previewDismissed: false,
 };
 
 function chatReducer(state: TChatState, action: ChatAction): TChatState {
   switch (action.type) {
     case 'TOGGLE_OPEN':
-      return { ...state, isOpen: action.open };
+      return { ...state, isOpen: action.open, previewDismissed: action.open ? false : state.previewDismissed };
     case 'SEND_OPTIMISTIC': {
       const optimisticMsg: TMessage = {
         id: `temp_${Date.now()}`,
@@ -76,6 +78,7 @@ function chatReducer(state: TChatState, action: ChatAction): TChatState {
         isQueued: false,
         pendingMessageId: null,
         toolActivity: null,
+        previewDismissed: false,
         messages: [...state.messages, action.message],
       };
     case 'AI_ERROR':
@@ -107,6 +110,8 @@ function chatReducer(state: TChatState, action: ChatAction): TChatState {
       return { ...state, unreadCount: action.unreadCount };
     case 'UNREAD_CLEARED':
       return { ...state, unreadCount: 0 };
+    case 'PREVIEW_DISMISSED':
+      return { ...state, previewDismissed: true };
     default:
       return state;
   }
@@ -307,6 +312,10 @@ export function ChatProvider({ children, initialUnreadCount = 0, initialMessages
     inputFocusedRef.current = false;
   }, []);
 
+  const dismissPreview = useCallback(() => {
+    dispatch({ type: 'PREVIEW_DISMISSED' });
+  }, []);
+
   const contextValue = useMemo<TChatContext>(() => ({
     state,
     sendMessage,
@@ -317,7 +326,8 @@ export function ChatProvider({ children, initialUnreadCount = 0, initialMessages
     toggleOpen,
     onInputFocus,
     onInputBlur,
-  }), [state, sendMessage, retryMessage, confirmResponse, cancelGeneration, loadMoreHistory, toggleOpen, onInputFocus, onInputBlur]);
+    dismissPreview,
+  }), [state, sendMessage, retryMessage, confirmResponse, cancelGeneration, loadMoreHistory, toggleOpen, onInputFocus, onInputBlur, dismissPreview]);
 
   return (
     <ChatContext value={contextValue}>

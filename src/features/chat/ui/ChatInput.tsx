@@ -8,10 +8,14 @@ import { useMic } from '../hooks/useMic';
 
 const MAX_CHARS = 300;
 const COUNTER_THRESHOLD = 250;
+const DRAFT_KEY = 'chat-draft';
 
 export function ChatInput() {
   const { sendMessage, cancelGeneration, state, onInputFocus, onInputBlur } = useChat();
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState(() => {
+    if (typeof window === 'undefined') return '';
+    return localStorage.getItem(DRAFT_KEY) ?? '';
+  });
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const remaining = MAX_CHARS - value.length;
@@ -28,7 +32,11 @@ export function ChatInput() {
   const { isRecording, isSupported, toggle: toggleMic } = useMic(handleTranscript);
 
   useEffect(() => {
-    textareaRef.current?.focus();
+    const el = textareaRef.current;
+    if (!el) return;
+    el.focus();
+    const len = el.value.length;
+    el.setSelectionRange(len, len);
   }, []);
 
   const handleSend = () => {
@@ -38,6 +46,7 @@ export function ChatInput() {
     }
     sendMessage(trimmed);
     setValue('');
+    localStorage.removeItem(DRAFT_KEY);
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
       textareaRef.current.focus();
@@ -59,6 +68,7 @@ export function ChatInput() {
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const next = e.target.value.slice(0, MAX_CHARS);
     setValue(next);
+    localStorage.setItem(DRAFT_KEY, next);
     const el = e.target;
     el.style.height = 'auto';
     el.style.height = `${el.scrollHeight}px`;

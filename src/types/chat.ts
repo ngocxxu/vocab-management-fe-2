@@ -28,6 +28,7 @@ export type TChatState = {
   nextCursor: string | null;
   historyLoaded: boolean;
   unreadCount: number;
+  previewDismissed: boolean;
 };
 
 export type TChatContext = {
@@ -40,4 +41,5 @@ export type TChatContext = {
   toggleOpen: (open: boolean) => void;
   onInputFocus: () => void;
   onInputBlur: () => void;
+  dismissPreview: () => void;
 };
