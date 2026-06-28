@@ -168,40 +168,69 @@ export function ChatProvider({ children, initialUnreadCount = 0, initialMessages
       return;
     }
 
+    let isRefreshing = false;
+
     const socket = io(`${Env.NEXT_PUBLIC_SOCKET_URL}/chat-bot`, {
       transports: ['websocket', 'polling'],
       autoConnect: true,
       reconnection: true,
-      reconnectionAttempts: 5,
+      reconnectionAttempts: 10,
       reconnectionDelay: 1000,
+      reconnectionDelayMax: 10000,
       timeout: 10000,
       withCredentials: true,
     });
+
+    const handleAuthError = () => {
+      if (isRefreshing) {
+        return;
+      }
+      isRefreshing = true;
+      // Pause auto-reconnect to avoid retrying with stale token
+      socket.io.reconnection(false);
+      logger.warn('Chat socket: token expired, refreshing...');
+      refreshAccessTokenOnce()
+        .then((refreshed) => {
+          if (refreshed) {
+            socket.io.reconnection(true);
+            socket.connect();
+          } else {
+            logger.error('Chat socket: token refresh failed, cannot reconnect');
+          }
+        })
+        .catch((error: unknown) => {
+          logger.error('Chat socket: failed to refresh token', { error });
+        })
+        .finally(() => {
+          isRefreshing = false;
+        });
+    };
 
     socket.on('connect', () => {
       logger.debug('Connected to chat socket');
     });
 
-    socket.on('disconnect', () => {
-      logger.debug('Disconnected from chat socket');
+    socket.on('disconnect', (reason) => {
+      logger.debug('Disconnected from chat socket', { reason });
+      // 'io server disconnect' means server explicitly closed — must reconnect manually
+      if (reason === 'io server disconnect') {
+        socket.connect();
+      }
+      // All other reasons (transport close, ping timeout, etc.) handled by reconnection: true
     });
 
     socket.on('connect_error', (error) => {
-      logger.error('Chat socket connection error:', { error });
+      const msg = error.message?.toLowerCase() ?? '';
+      const isAuthError = msg.includes('expired') || msg.includes('invalid') || msg.includes('unauthorized') || msg.includes('auth rejected');
+      if (isAuthError) {
+        handleAuthError();
+      } else {
+        logger.error('Chat socket connection error:', { error });
+      }
     });
 
     socket.on('unauthorized', () => {
-      logger.warn('Chat socket: token expired, refreshing...');
-      refreshAccessTokenOnce()
-        .then((refreshed) => {
-          if (refreshed) {
-            socket.disconnect();
-            socket.connect();
-          }
-        })
-        .catch((error: unknown) => {
-          logger.error('Chat socket: failed to refresh token', { error });
-        });
+      handleAuthError();
     });
 
     socket.on('message_queued', ({ messageId }: { messageId: string }) => {
