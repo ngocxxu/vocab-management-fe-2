@@ -13,7 +13,9 @@ const DRAFT_KEY = 'chat-draft';
 export function ChatInput() {
   const { sendMessage, cancelGeneration, state, onInputFocus, onInputBlur } = useChat();
   const [value, setValue] = useState(() => {
-    if (typeof window === 'undefined') return '';
+    if (typeof window === 'undefined') {
+      return '';
+    }
     return localStorage.getItem(DRAFT_KEY) ?? '';
   });
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -33,7 +35,9 @@ export function ChatInput() {
 
   useEffect(() => {
     const el = textareaRef.current;
-    if (!el) return;
+    if (!el) {
+      return;
+    }
     el.focus();
     const len = el.value.length;
     el.setSelectionRange(len, len);
