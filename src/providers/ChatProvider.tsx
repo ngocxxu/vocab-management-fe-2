@@ -212,8 +212,8 @@ export function ChatProvider({ children, initialUnreadCount = 0, initialMessages
 
     socket.on('disconnect', (reason) => {
       logger.debug('Disconnected from chat socket', { reason });
-      // 'io server disconnect' means server explicitly closed — must reconnect manually
-      if (reason === 'io server disconnect') {
+      // but skip if auth refresh is in progress (handleAuthError will reconnect after refresh)
+      if (reason === 'io server disconnect' && !isRefreshing) {
         socket.connect();
       }
       // All other reasons (transport close, ping timeout, etc.) handled by reconnection: true
@@ -263,8 +263,12 @@ export function ChatProvider({ children, initialUnreadCount = 0, initialMessages
       }
     });
 
-    socket.on('ai_error', ({ message: errMsg, retryable }: { message: string; retryable: boolean; code: string }) => {
+    socket.on('ai_error', ({ message: errMsg, retryable, code }: { message: string; retryable: boolean; code: string }) => {
       dispatch({ type: 'AI_ERROR' });
+      if (code === 'AUTH_FAILED') {
+        handleAuthError();
+        return;
+      }
       toast.error(errMsg, {
         description: retryable ? 'You can try sending your message again.' : undefined,
       });

@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/ui/tooltip';
 import { useChat } from '@/providers/ChatProvider';
+import { formatMessageTime } from './MessageBubble';
 
 export function ChatBubble() {
   const { toggleOpen, dismissPreview, state } = useChat();
@@ -54,7 +55,11 @@ export function ChatBubble() {
             <p className="truncate text-sm font-medium text-foreground">
               {lastAssistantMsg.content}
             </p>
-            <p className="text-xs text-muted-foreground">BubbleBot • Just now</p>
+            <p className="text-xs text-muted-foreground">
+              BubbleBot
+              {' • '}
+              {formatMessageTime(lastAssistantMsg.createdAt)}
+            </p>
           </div>
         </div>
       )}

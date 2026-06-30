@@ -1,6 +1,7 @@
 'use client';
 
 import type { TToolActivity } from '@/types/chat';
+import { RefreshCircle } from '@solar-icons/react/ssr';
 
 type ToolChipProps = {
   toolActivity: TToolActivity;
@@ -9,9 +10,10 @@ type ToolChipProps = {
 export function ToolChip({ toolActivity }: ToolChipProps) {
   return (
     <div className="flex items-start gap-2 px-4">
-      <div className="size-7 shrink-0" />
-      <div className="flex items-center gap-2 rounded-full bg-muted px-3 py-1.5 text-xs text-muted-foreground">
-        <span className="size-3 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground" />
+      <div className="mt-1 flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+        <RefreshCircle size={14} weight="Bold" className="animate-spin" />
+      </div>
+      <div className="max-w-[75%] rounded-2xl rounded-tl-sm bg-muted px-3.5 py-2.5 text-xs leading-snug text-muted-foreground">
         {toolActivity.label}
       </div>
     </div>

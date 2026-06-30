@@ -21,7 +21,7 @@ export function MessageList() {
     } else {
       bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [state.messages.length]);
+  }, [state.messages.length, state.isQueued, state.toolActivity]);
 
   const handleScroll = () => {
     if (!containerRef.current || isLoadingHistoryRef.current) {
@@ -38,7 +38,7 @@ export function MessageList() {
     <div
       ref={containerRef}
       onScroll={handleScroll}
-      className="flex flex-1 flex-col gap-3 overflow-y-auto py-4"
+      className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto py-4"
     >
       {state.messages.map(message => (
         <MessageBubble

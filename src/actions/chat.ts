@@ -3,11 +3,14 @@
 import type { TMessage } from '@/types/chat';
 import { API_METHODS } from '@/utils/api-config';
 import { serverApi } from '@/utils/server-api';
-import { requireAuth } from './auth';
+import { requireAuth, verifyUser } from './auth';
 import { toActionError } from './utils';
 
 export async function getChatUnreadCount(): Promise<number> {
-  await requireAuth();
+  const user = await verifyUser();
+  if (!user) {
+    return 0;
+  }
   try {
     const { endpoint } = API_METHODS.chat.getUnreadCount();
     const data = await serverApi.get<{ unreadCount: number }>(endpoint);
