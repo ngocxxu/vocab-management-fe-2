@@ -6,6 +6,7 @@ import type {
   TOAuthSyncInput,
   TOAuthSyncResponse,
   TResendConfirmationData,
+  TSignUpResult,
   TVerifyOtpData,
 } from '@/types/auth';
 import axiosInstance from '@/libs/axios';
@@ -60,7 +61,7 @@ export const authApi = {
   },
   signup: (data: { email: string; password: string; firstName: string; lastName: string; phone: string; avatar: string; role: string }) => {
     const config = API_METHODS.auth.signup(data);
-    return ClientAPI.post<TAuthResponse>(config.endpoint, config.data);
+    return ClientAPI.post<TSignUpResult>(config.endpoint, config.data);
   },
   oauthSync: (data: TOAuthSyncInput) => {
     const config = API_METHODS.auth.oauthSync(data);

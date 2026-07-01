@@ -109,13 +109,19 @@ axiosInstance.interceptors.response.use(
       }
 
       const isClientError = status >= 400 && status < 500;
-      const logMethod = isClientError ? logger.warn : logger.error;
       const logLabel = isClientError ? 'Response Warning:' : 'Response Error:';
+      const log = (message: string, meta: Record<string, unknown>) => {
+        if (isClientError) {
+          logger.warn(message, meta);
+        } else {
+          logger.error(message, meta);
+        }
+      };
 
       if (Object.keys(errorInfo).length > 0) {
-        logMethod(logLabel, errorInfo);
+        log(logLabel, errorInfo);
       } else {
-        logMethod(`${logLabel} (empty response)`, {
+        log(`${logLabel} (empty response)`, {
           hasResponse: !!error.response,
           hasRequest: !!error.request,
           message: error.message,

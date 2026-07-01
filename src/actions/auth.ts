@@ -8,6 +8,7 @@ import type {
   TResetPasswordData,
   TSigninData,
   TSignupData,
+  TSignUpResult,
   TUser,
   TVerifyOtpData,
 } from '@/types/auth';
@@ -37,18 +38,20 @@ export async function signin(signinData: TSigninData): Promise<TAuthResponse> {
   }
 }
 
-export async function signup(signupData: TSignupData): Promise<TAuthResponse> {
+export async function signup(signupData: TSignupData): Promise<TSignUpResult> {
   try {
     const result = await authApi.signup(signupData);
 
-    // Set HttpOnly cookies with tokens from NestJS response
-    if (result.access_token && result.refresh_token) {
-      await setAuthCookies(result.access_token, result.refresh_token);
+    if (!result.session) {
+      return { user: null, message: result.message };
     }
+
+    // Set HttpOnly cookies with tokens from NestJS response
+    await setAuthCookies(result.session.access_token, result.session.refresh_token);
 
     // Return user info (without tokens)
     return {
-      user: result.user,
+      user: result.session.user,
       message: 'Signed up successfully',
     };
   } catch (error) {

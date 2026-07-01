@@ -1,4 +1,4 @@
-import type { TOAuthProvider, TSigninData, TSignupData } from '@/types/auth';
+import type { TOAuthProvider, TResendConfirmationData, TSigninData, TSignupData } from '@/types/auth';
 import { Env } from '@/libs/Env';
 import { supabase } from '@/libs/supabase';
 import { useCallback, useState } from 'react';
@@ -32,9 +32,19 @@ export function useAuthMutations() {
   const signup = useCallback(async (data: TSignupData) => {
     setErrorMessage('');
     try {
-      await authClient.signup(data);
+      return await authClient.signup(data);
     } catch (err) {
       setErrorMessage(getAuthErrorMessage(err, 'Failed to sign up. Please try again.'));
+      throw err;
+    }
+  }, []);
+
+  const resendConfirmation = useCallback(async (data: TResendConfirmationData) => {
+    setErrorMessage('');
+    try {
+      return await authClient.resendConfirmation(data);
+    } catch (err) {
+      setErrorMessage(getAuthErrorMessage(err, 'Failed to resend confirmation email. Please try again.'));
       throw err;
     }
   }, []);
@@ -70,6 +80,7 @@ export function useAuthMutations() {
     isOAuthLoading,
     signin,
     signup,
+    resendConfirmation,
     signInWithProvider,
   };
 }

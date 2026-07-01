@@ -8,7 +8,7 @@ import type {
   VocabTrainerQueryParams,
 } from './api-config';
 import type { ResponseAPI, TLanguage, TLanguageFolder, TUser } from '@/types';
-import type { TOAuthData, TOAuthResponse, TResendConfirmationData, TSessionDto, TVerifyOtpData } from '@/types/auth';
+import type { TOAuthData, TOAuthResponse, TResendConfirmationData, TSessionDto, TSignUpResponse, TVerifyOtpData } from '@/types/auth';
 import type {
   TDeleteNotificationResponse,
   TMarkAllAsReadResponse,
@@ -134,7 +134,7 @@ export const authApi = {
   },
   signup: (data: { email: string; password: string; firstName: string; lastName: string; phone: string; avatar: string; role: string }) => {
     const config = API_METHODS.auth.signup(data);
-    return serverApi.post<TSessionDto>(config.endpoint, config.data);
+    return serverApi.post<TSignUpResponse>(config.endpoint, config.data);
   },
   refresh: (data: { refreshToken: string }) => {
     const config = API_METHODS.auth.refresh(data);

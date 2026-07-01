@@ -245,11 +245,11 @@ export function ChatProvider({ children, initialUnreadCount = 0, initialMessages
       dispatch({ type: 'AI_CONFIRM_REQUIRED', confirmRequest });
     });
 
-    socket.on('ai_done', ({ content }: { content: string }) => {
+    socket.on('ai_done', ({ message: messageText }: { message: string }) => {
       const message: TMessage = {
         id: crypto.randomUUID(),
         role: 'ASSISTANT',
-        content,
+        content: messageText,
         createdAt: new Date().toISOString(),
       };
       dispatch({ type: 'AI_DONE', message });

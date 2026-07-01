@@ -52,6 +52,16 @@ export type TAuthResponse = {
   message?: string;
 };
 
+export type TSignUpResponse = {
+  session: TSessionDto | null;
+  message: string | null;
+};
+
+export type TSignUpResult = {
+  user: TUser | null;
+  message?: string | null;
+};
+
 export type TVerifyResponse = {
   user: TUser;
   isAuthenticated: boolean;

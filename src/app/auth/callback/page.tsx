@@ -67,8 +67,8 @@ function AuthCallbackContent() {
         const redirectTo = getSafeRedirectPath(searchParams.get('redirect'), '/dashboard');
         router.push(redirectTo);
       } catch (err) {
-        logger.error('OAuth callback error:', { error: err });
-        setError(err instanceof Error ? err.message : 'Failed to complete OAuth sign in');
+        logger.error('Auth callback error:', { error: err });
+        setError(err instanceof Error ? err.message : 'Failed to complete sign in');
         setIsLoading(false);
 
         timeoutId = setTimeout(() => {
