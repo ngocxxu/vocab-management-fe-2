@@ -44,7 +44,7 @@ export function MessageList() {
         <MessageBubble
           key={message.id}
           message={message}
-          onRetry={message.status === 'failed' ? () => retryMessage(message.id, message.content) : undefined}
+          onRetry={message.status === 'failed' ? () => retryMessage(message.id, message.message) : undefined}
         />
       ))}
 

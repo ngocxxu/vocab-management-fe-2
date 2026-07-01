@@ -1,7 +1,7 @@
 export type TMessage = {
   id: string;
   role: 'USER' | 'ASSISTANT';
-  content: string;
+  message: string;
   toolCalls?: unknown[];
   createdAt: string;
   status?: 'sending' | 'sent' | 'failed';
@@ -34,7 +34,7 @@ export type TChatState = {
 export type TChatContext = {
   state: TChatState;
   sendMessage: (message: string) => void;
-  retryMessage: (messageId: string, content: string) => void;
+  retryMessage: (messageId: string, message: string) => void;
   confirmResponse: (requestId: string, confirmed: boolean) => void;
   cancelGeneration: () => void;
   loadMoreHistory: () => void;

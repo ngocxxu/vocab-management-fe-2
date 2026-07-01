@@ -53,7 +53,7 @@ export function ChatBubble() {
           </div>
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-medium text-foreground">
-              {lastAssistantMsg.content}
+              {lastAssistantMsg.message}
             </p>
             <p className="text-xs text-muted-foreground">
               BubbleBot

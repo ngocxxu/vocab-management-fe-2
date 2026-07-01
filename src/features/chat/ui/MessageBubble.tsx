@@ -41,7 +41,7 @@ export function MessageBubble({ message, onRetry }: MessageBubbleProps) {
             isSending && 'opacity-60',
           )}
         >
-          {message.content}
+          {message.message}
         </div>
         <div className="mr-0.5 flex items-center gap-1.5">
           {timeLabel && !isFailed && (
@@ -89,7 +89,7 @@ export function MessageBubble({ message, onRetry }: MessageBubbleProps) {
           '[&_pre]:my-1 [&_pre]:max-w-full [&_pre]:overflow-x-auto [&_pre]:rounded [&_pre]:bg-background [&_pre]:p-2 [&_pre_code]:break-words [&_pre_code]:whitespace-pre',
         )}
         >
-          <ReactMarkdown>{message.content}</ReactMarkdown>
+          <ReactMarkdown>{message.message}</ReactMarkdown>
         </div>
         {timeLabel && (
           <time dateTime={message.createdAt} className="ml-0.5 text-[11px] text-muted-foreground">

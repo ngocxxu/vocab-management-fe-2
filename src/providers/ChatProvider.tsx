@@ -11,7 +11,7 @@ import { logger } from '@/libs/Logger';
 
 type ChatAction
   = { type: 'TOGGLE_OPEN'; open: boolean }
-    | { type: 'SEND_OPTIMISTIC'; content: string }
+    | { type: 'SEND_OPTIMISTIC'; message: string }
     | { type: 'MESSAGE_QUEUED'; messageId: string }
     | { type: 'RETRY_MESSAGE'; messageId: string }
     | { type: 'AI_TOOL_USED'; toolActivity: TToolActivity }
@@ -46,7 +46,7 @@ function chatReducer(state: TChatState, action: ChatAction): TChatState {
       const optimisticMsg: TMessage = {
         id: `temp_${Date.now()}`,
         role: 'USER',
-        content: action.content,
+        message: action.message,
         createdAt: new Date().toISOString(),
         status: 'sending',
       };
@@ -249,7 +249,7 @@ export function ChatProvider({ children, initialUnreadCount = 0, initialMessages
       const message: TMessage = {
         id: crypto.randomUUID(),
         role: 'ASSISTANT',
-        content: messageText,
+        message: messageText,
         createdAt: new Date().toISOString(),
       };
       dispatch({ type: 'AI_DONE', message });
@@ -274,9 +274,8 @@ export function ChatProvider({ children, initialUnreadCount = 0, initialMessages
       });
     });
 
-    socket.on('history_loaded', ({ messages, nextCursor }: { messages: Array<Omit<TMessage, 'content'> & { message: string }>; nextCursor: string | null }) => {
-      const mapped: TMessage[] = messages.map(item => ({ ...item, content: item.message }));
-      dispatch({ type: 'HISTORY_LOADED', messages: mapped, nextCursor });
+    socket.on('history_loaded', ({ messages, nextCursor }: { messages: TMessage[]; nextCursor: string | null }) => {
+      dispatch({ type: 'HISTORY_LOADED', messages, nextCursor });
     });
 
     socketRef.current = socket;
@@ -288,13 +287,13 @@ export function ChatProvider({ children, initialUnreadCount = 0, initialMessages
   }, [fetchUnreadCount]);
 
   const sendMessage = useCallback((message: string) => {
-    dispatch({ type: 'SEND_OPTIMISTIC', content: message });
+    dispatch({ type: 'SEND_OPTIMISTIC', message });
     socketRef.current?.emit('send_message', { message });
   }, []);
 
-  const retryMessage = useCallback((messageId: string, content: string) => {
+  const retryMessage = useCallback((messageId: string, message: string) => {
     dispatch({ type: 'RETRY_MESSAGE', messageId });
-    socketRef.current?.emit('send_message', { message: content });
+    socketRef.current?.emit('send_message', { message });
   }, []);
 
   const confirmResponse = useCallback((requestId: string, confirmed: boolean) => {
