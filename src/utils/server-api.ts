@@ -408,11 +408,11 @@ export const subjectsApi = {
     const config = API_METHODS.subjects.getById(id);
     return serverApi.get(config.endpoint);
   },
-  create: (subjectData: { name: string; order: number; targetLanguageCode: string }) => {
+  create: (subjectData: { name: string; order: number }) => {
     const config = API_METHODS.subjects.create(subjectData);
     return serverApi.post(config.endpoint, config.data);
   },
-  update: (id: string, subjectData: { name: string; order: number; targetLanguageCode?: string }) => {
+  update: (id: string, subjectData: { name: string; order: number }) => {
     const config = API_METHODS.subjects.update(id, subjectData);
     return serverApi.put(config.endpoint, config.data);
   },

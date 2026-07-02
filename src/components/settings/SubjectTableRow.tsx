@@ -59,17 +59,6 @@ export const SubjectTableRow: React.FC<SubjectTableRowProps> = ({ subject, index
         </div>
       </td>
       <td className="px-3 py-3 sm:px-6 sm:py-4">
-        {subject.targetLanguageCode
-          ? (
-              <Badge variant="outline" className="font-mono text-xs uppercase">
-                {subject.targetLanguageCode}
-              </Badge>
-            )
-          : (
-              <span className="text-sm text-muted-foreground">—</span>
-            )}
-      </td>
-      <td className="px-3 py-3 sm:px-6 sm:py-4">
         <Badge variant="secondary" className="font-normal">
           —
         </Badge>

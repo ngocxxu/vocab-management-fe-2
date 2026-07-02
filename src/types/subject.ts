@@ -2,7 +2,6 @@ export type TSubject = {
   id: string;
   name: string;
   order: number;
-  targetLanguageCode?: string;
   createdAt: string;
   updatedAt: string;
   userId: string;
@@ -10,13 +9,11 @@ export type TSubject = {
 
 export type TCreateSubject = {
   name: string;
-  targetLanguageCode: string;
 };
 
 export type TUpdateSubject = {
   name?: string;
   order?: number;
-  targetLanguageCode?: string;
 };
 
 export type TSubjectResponse = {
@@ -36,7 +33,6 @@ export type SubjectFormProps = {
   onSubmit: (data: TCreateSubject) => Promise<void>;
   onCancel: () => void;
   isLoading: boolean;
-  initialLanguagesData?: import('@/types').ResponseAPI<import('@/types').TLanguage[]>;
 };
 
 export type SubjectsPaginationProps = Readonly<{
@@ -50,7 +46,6 @@ export type SubjectsPaginationProps = Readonly<{
 
 export type SubjectSectionProps = {
   initialSubjectsData?: TSubjectResponse;
-  initialLanguagesData?: import('@/types').ResponseAPI<import('@/types').TLanguage[]>;
 };
 
 export type TSubjectGenerateResult = {

@@ -6,12 +6,12 @@ import { redirect } from 'next/navigation';
 export const dynamic = 'force-dynamic';
 
 export default async function SubjectsPage() {
-  const { initialSubjectsData, initialLanguagesData, error } = await getSubjectsPageData();
+  const { initialSubjectsData, error } = await getSubjectsPageData();
   if (isUnauthorizedError(error)) {
     redirect(getExpiredSessionRedirect('/subjects'));
   }
 
   return (
-    <SubjectSection initialSubjectsData={initialSubjectsData} initialLanguagesData={initialLanguagesData} />
+    <SubjectSection initialSubjectsData={initialSubjectsData} />
   );
 }

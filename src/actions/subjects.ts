@@ -12,7 +12,7 @@ export type DeleteSubjectResult
   = | { ok: true }
     | { ok: false; code: 'CONFLICT'; vocabularyCount?: number };
 
-export async function createSubject(subjectData: { name: string; targetLanguageCode: string }) {
+export async function createSubject(subjectData: { name: string }) {
   await requireAuth();
   try {
     const result = await subjectsApi.create({ ...subjectData, order: 0 });
@@ -24,7 +24,7 @@ export async function createSubject(subjectData: { name: string; targetLanguageC
   }
 }
 
-export async function updateSubject(id: string, subjectData: { name: string; order: number; targetLanguageCode?: string }) {
+export async function updateSubject(id: string, subjectData: { name: string; order: number }) {
   await requireAuth();
   try {
     const result = await subjectsApi.update(id, subjectData);
