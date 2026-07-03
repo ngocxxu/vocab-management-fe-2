@@ -218,6 +218,7 @@ const TextTargetsTable: React.FC<TextTargetsTableProps> = ({
       onSearchChangeAction={onSearchChange}
       showPagination={true}
       enableColumnResizing={true}
+      tableId="text-targets"
       manualPagination={true}
       manualSorting={true}
       manualFiltering={true}

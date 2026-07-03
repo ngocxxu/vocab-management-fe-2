@@ -96,10 +96,28 @@ type DataTableProps<TData extends { id: string }, TValue> = {
   isLoading?: boolean;
   skeletonRowCount?: number;
   enableColumnResizing?: boolean;
+  // Unique id for this table instance — when provided, column widths persist to localStorage
+  tableId?: string;
   // Controlled column visibility — when provided, DataTable uses these instead of internal state
   columnVisibility?: VisibilityState;
   onColumnVisibilityChange?: (vis: VisibilityState) => void;
 };
+
+const COLUMN_SIZING_STORAGE_PREFIX = 'data-table:column-sizing:';
+const DEFAULT_COLUMN_MIN_SIZE = 60;
+const DEFAULT_COLUMN_MAX_SIZE = 600;
+
+function readStoredColumnSizing(tableId: string | undefined): ColumnSizingState {
+  if (!tableId || typeof window === 'undefined') {
+    return {};
+  }
+  try {
+    const raw = window.localStorage.getItem(`${COLUMN_SIZING_STORAGE_PREFIX}${tableId}`);
+    return raw ? JSON.parse(raw) as ColumnSizingState : {};
+  } catch {
+    return {};
+  }
+}
 
 export function DataTable<TData extends { id: string }, TValue>({
   columns,
@@ -136,6 +154,7 @@ export function DataTable<TData extends { id: string }, TValue>({
   isLoading = false,
   skeletonRowCount,
   enableColumnResizing = false,
+  tableId,
   columnVisibility: controlledColumnVisibility,
   onColumnVisibilityChange: onControlledColumnVisibilityChange,
 }: Readonly<DataTableProps<TData, TValue>>) {
@@ -155,11 +174,18 @@ export function DataTable<TData extends { id: string }, TValue>({
   };
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [globalFilter, setGlobalFilter] = useState(searchValue);
-  const [columnSizing, setColumnSizing] = useState<ColumnSizingState>({});
+  const [columnSizing, setColumnSizing] = useState<ColumnSizingState>(() => readStoredColumnSizing(tableId));
 
   React.useEffect(() => {
     setGlobalFilter(searchValue);
   }, [searchValue]);
+
+  React.useEffect(() => {
+    if (!tableId || typeof window === 'undefined') {
+      return;
+    }
+    window.localStorage.setItem(`${COLUMN_SIZING_STORAGE_PREFIX}${tableId}`, JSON.stringify(columnSizing));
+  }, [tableId, columnSizing]);
 
   const memoizedColumns = useMemo(() => columns, [columns]);
 
@@ -184,7 +210,8 @@ export function DataTable<TData extends { id: string }, TValue>({
     getRowId: (row): string => row.id,
     columnResizeMode: enableColumnResizing ? 'onChange' : undefined,
     defaultColumn: {
-      minSize: 60,
+      minSize: DEFAULT_COLUMN_MIN_SIZE,
+      maxSize: DEFAULT_COLUMN_MAX_SIZE,
     },
     state: {
       sorting,
@@ -232,6 +259,18 @@ export function DataTable<TData extends { id: string }, TValue>({
       },
     },
   });
+
+  const isResizingColumn = table.getState().columnSizingInfo.isResizingColumn;
+  React.useEffect(() => {
+    if (!isResizingColumn || typeof document === 'undefined') {
+      return;
+    }
+    const previousCursor = document.body.style.cursor;
+    document.body.style.cursor = 'col-resize';
+    return () => {
+      document.body.style.cursor = previousCursor;
+    };
+  }, [isResizingColumn]);
 
   // Calculate total selected rows across all pages
   const selectedRowCount = Object.keys(rowSelection).length;
@@ -360,9 +399,16 @@ export function DataTable<TData extends { id: string }, TValue>({
           <div className="-mx-4 overflow-x-auto sm:mx-0">
             <div className="inline-block min-w-full align-middle sm:px-0">
               <table
-                style={enableColumnResizing ? { width: table.getTotalSize(), minWidth: '100%' } : undefined}
+                style={enableColumnResizing ? { width: table.getTotalSize(), minWidth: '100%', tableLayout: 'fixed' } : undefined}
                 className={enableColumnResizing ? '' : 'w-full'}
               >
+                {enableColumnResizing && (
+                  <colgroup>
+                    {table.getVisibleLeafColumns().map(column => (
+                      <col key={column.id} style={{ width: column.getSize() }} />
+                    ))}
+                  </colgroup>
+                )}
                 <thead>
                   {table.getHeaderGroups().map(headerGroup => (
                     <tr key={headerGroup.id} className={`border-b border-border ${headerClassName}`}>
@@ -424,7 +470,13 @@ export function DataTable<TData extends { id: string }, TValue>({
                                 e.stopPropagation();
                                 header.getResizeHandler()(e);
                               }}
+                              onDoubleClick={(e) => {
+                                e.stopPropagation();
+                                header.column.resetSize();
+                              }}
+                              style={{ touchAction: 'none' }}
                               className="group absolute top-0 right-0 flex h-full w-3 cursor-col-resize items-center justify-center select-none"
+                              title="Drag to resize, double-click to reset"
                               aria-hidden="true"
                             >
                               <div
