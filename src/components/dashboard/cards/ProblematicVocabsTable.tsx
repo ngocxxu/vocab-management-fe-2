@@ -56,7 +56,7 @@ export const ProblematicVocabsTable: React.FC<ProblematicVocabsTableProps> = ({ 
   return (
     <Card className="overflow-hidden border-0 bg-card shadow-sm">
       <CardHeader className="pb-4">
-        <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="flex flex-col items-start justify-between gap-4 sm:flex-row">
           <div className="min-w-0 flex-1">
             <CardTitle className="text-xl font-bold text-foreground">Top 10 Problematic Vocabs</CardTitle>
             <p className="text-sm text-muted-foreground">

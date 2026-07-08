@@ -28,7 +28,7 @@ const logoSrc = '/assets/logo/logo-light-mode.png';
 function LeftPanel() {
   return (
     <aside
-      className="relative flex min-w-0 flex-[0_0_45%] flex-col justify-between overflow-hidden px-8 py-10"
+      className="relative hidden min-w-0 flex-[0_0_45%] flex-col justify-between overflow-hidden px-8 py-10 lg:flex"
       style={{ backgroundColor: leftPanelBg }}
     >
       <div
@@ -127,7 +127,7 @@ function ForgotPasswordForm() {
         backgroundSize: '24px 24px',
       }}
     >
-      <div className="relative flex h-[1024px] w-[1280px] shrink-0 overflow-hidden rounded-2xl shadow-xl">
+      <div className="relative flex w-full max-w-[1280px] shrink-0 overflow-hidden rounded-2xl shadow-xl lg:h-[1024px]">
         <LeftPanel />
         <div className="relative flex min-w-0 flex-1 flex-col items-center justify-center overflow-auto px-8 py-10">
           <div className="mx-auto w-full max-w-md rounded-2xl bg-card px-8 py-10 shadow-xl">
