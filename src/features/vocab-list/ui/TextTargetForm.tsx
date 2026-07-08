@@ -2,6 +2,13 @@
 
 import type { TextTargetFormProps, WordTypeItem } from '@/types/vocab-list';
 import React from 'react';
+import { useFormContext } from 'react-hook-form';
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
@@ -24,20 +31,31 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
   onAddExample,
   onRemoveExample,
 }) => {
+  const form = useFormContext();
+
   return (
     <div className="space-y-6">
       <section>
         <div className="space-y-4">
-          <div>
-            <Label htmlFor={`textTarget-${targetIndex}`}>Target Text</Label>
-            <Input
-              id={`textTarget-${targetIndex}`}
-              placeholder="Enter target text..."
-              value={target.textTarget}
-              onChange={e => onInputChange('textTarget', e.target.value, targetIndex)}
-              className="mt-1 w-full"
-            />
-          </div>
+          <FormField
+            control={form.control}
+            name={`textTargets.${targetIndex}.textTarget`}
+            render={() => (
+              <FormItem>
+                <Label htmlFor={`textTarget-${targetIndex}`}>Target Text</Label>
+                <FormControl>
+                  <Input
+                    id={`textTarget-${targetIndex}`}
+                    placeholder="Enter target text..."
+                    value={target.textTarget}
+                    onChange={e => onInputChange('textTarget', e.target.value, targetIndex)}
+                    className="mt-1 w-full"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
               <Label htmlFor={`wordType-${targetIndex}`}>Word Type</Label>
