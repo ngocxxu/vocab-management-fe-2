@@ -8,6 +8,7 @@ import type {
   VocabTrainerQueryParams,
 } from './api-config';
 import type { ResponseAPI, TLanguage, TLanguageFolder, TUser } from '@/types';
+import type { TApiKey, TApiKeyResponse, TApiKeyScope, TCreateApiKeyResponse } from '@/types/api-key';
 import type { TOAuthData, TOAuthResponse, TResendConfirmationData, TSessionDto, TSignUpResponse, TVerifyOtpData } from '@/types/auth';
 import type {
   TDeleteNotificationResponse,
@@ -427,6 +428,22 @@ export const subjectsApi = {
   generate: (data: { textTarget: string; targetLanguageCode: string }): Promise<{ jobId: string }> => {
     const config = API_METHODS.subjects.generate(data);
     return serverApi.post(config.endpoint, config.data);
+  },
+};
+
+// API Keys API endpoints
+export const apiKeysApi = {
+  getAll: () => {
+    const config = API_METHODS.apiKeys.getAll();
+    return serverApi.get<TApiKeyResponse>(config.endpoint);
+  },
+  create: (apiKeyData: { name: string; scopes: TApiKeyScope[]; languageFolderId?: string }) => {
+    const config = API_METHODS.apiKeys.create(apiKeyData);
+    return serverApi.post<TCreateApiKeyResponse>(config.endpoint, config.data);
+  },
+  delete: (id: string) => {
+    const config = API_METHODS.apiKeys.delete(id);
+    return serverApi.delete<TApiKey>(config.endpoint);
   },
 };
 

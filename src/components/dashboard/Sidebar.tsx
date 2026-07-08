@@ -7,6 +7,7 @@ import {
   Bell,
   Bookmark,
   HomeSmile,
+  Key,
   Library,
   Power,
   SquareAcademicCap,
@@ -27,6 +28,7 @@ const settingsMenuItems: MenuItem[] = [
   { id: 'profile', path: '/profile', label: 'Profile', icon: <User size={20} weight="BoldDuotone" /> },
   { id: 'subjects', path: '/subjects', label: 'Subjects', icon: <Bookmark size={20} weight="BoldDuotone" /> },
   { id: 'notifications', path: '/notifications', label: 'Notifications', icon: <Bell size={20} weight="BoldDuotone" /> },
+  { id: 'api-keys', path: '/api-keys', label: 'API Keys', icon: <Key size={20} weight="BoldDuotone" /> },
 ];
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, isExpanded = true, user }) => {
@@ -46,11 +48,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, isExpanded = 
     return pathname === path || pathname.startsWith(`${path}/`);
   };
 
+  const visibleSettingsMenuItems = settingsMenuItems.filter(item => item.id !== 'api-keys' || user?.role !== 'GUEST');
+
   useEffect(() => {
-    for (const item of [...mainMenuItems, ...settingsMenuItems]) {
+    for (const item of [...mainMenuItems, ...visibleSettingsMenuItems]) {
       router.prefetch(item.path);
     }
-  }, [router]);
+  }, [router, visibleSettingsMenuItems]);
 
   const handleNav = () => {
     if (onClose && window.innerWidth < 768) {
@@ -122,7 +126,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, isExpanded = 
           {!collapsed && (
             <p className="px-4 text-xs font-medium tracking-wide text-muted-foreground uppercase">Settings</p>
           )}
-          {settingsMenuItems.map((item) => {
+          {visibleSettingsMenuItems.map((item) => {
             const isActive = isActivePath(item.path);
             return (
               <Button

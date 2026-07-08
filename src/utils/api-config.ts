@@ -119,6 +119,7 @@ export const API_ENDPOINTS = {
   wordTypes: '/word-types',
   languages: '/languages',
   languageFolders: '/language-folders',
+  apiKeys: '/api-keys',
   notifications: '/notifications',
   cloudinary: '/cloudinary',
   plans: '/plans',
@@ -236,6 +237,11 @@ export const API_METHODS = {
     delete: (id: string) => ({ endpoint: `${API_ENDPOINTS.subjects}/${id}` }),
     reorder: (subjects: { id: string; order: number }[]) => ({ endpoint: `${API_ENDPOINTS.subjects}/reorder`, data: subjects }),
     generate: (data: { textTarget: string; targetLanguageCode: string }) => ({ endpoint: `${API_ENDPOINTS.subjects}/generate`, data }),
+  },
+  apiKeys: {
+    getAll: () => ({ endpoint: API_ENDPOINTS.apiKeys }),
+    create: (apiKeyData: { name: string; scopes: string[]; languageFolderId?: string }) => ({ endpoint: API_ENDPOINTS.apiKeys, data: apiKeyData }),
+    delete: (id: string) => ({ endpoint: `${API_ENDPOINTS.apiKeys}/${id}` }),
   },
   wordTypes: {
     getAll: () => ({ endpoint: API_ENDPOINTS.wordTypes }),
