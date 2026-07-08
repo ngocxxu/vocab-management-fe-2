@@ -16,8 +16,8 @@ export async function getVocabTrainerPageData(resolvedParams: SearchParams) {
   const queryParams = {
     page: !Number.isNaN(rawPage) && rawPage > 0 ? rawPage : 1,
     pageSize: !Number.isNaN(rawPageSize) && rawPageSize > 0 ? rawPageSize : 10,
-    sortBy: typeof resolvedParams.sortBy === 'string' ? resolvedParams.sortBy : 'name',
-    sortOrder: (resolvedParams.sortOrder === 'desc' ? 'desc' : 'asc') as 'asc' | 'desc',
+    sortBy: typeof resolvedParams.sortBy === 'string' ? resolvedParams.sortBy : 'createdAt',
+    sortOrder: (resolvedParams.sortOrder === 'asc' ? 'asc' : 'desc') as 'asc' | 'desc',
     name,
     status,
     questionType,
