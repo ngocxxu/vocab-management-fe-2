@@ -56,8 +56,8 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
   const { pagination, handlers } = useApiPagination({
     page: 1,
     pageSize: 10,
-    sortBy: 'name',
-    sortOrder: 'asc',
+    sortBy: 'createdAt',
+    sortOrder: 'desc',
   });
 
   const searchParams = useSearchParams();
