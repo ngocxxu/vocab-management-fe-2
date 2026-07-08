@@ -1,15 +1,13 @@
 'use client';
 
-import type { TCreateTextTarget, TTextTarget, TUpdateTextTarget, TVocabGenerateTextTargetResult } from '@/types/vocab-list';
+import type { TCreateTextTarget, TTextTarget, TUpdateTextTarget } from '@/types/vocab-list';
 import type { TSubjectResponse } from '@/types/subject';
 import type { TWordTypeResponse } from '@/types/word-type';
 import { MagicStick, RefreshCircle } from '@solar-icons/react/ssr';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { generateTextTargetContent } from '@/actions/vocabs';
 import { createTextTarget, updateTextTarget } from '@/actions/text-targets';
-import { useSocket } from '@/hooks/useSocket';
-import { SOCKET_EVENTS } from '@/utils/socket-config';
+import { useAIGenerate } from '../hooks/useAIGenerate';
 import { Button } from '@/shared/ui/button';
 import {
   Dialog,
@@ -63,9 +61,6 @@ const defaultForm = (): FormState => ({
   vocabExamples: [{ id: generateId(), source: '', target: '' }],
 });
 
-const COOLDOWN_DURATION_MS = 60_000;
-const GLOBAL_STORAGE_KEY = 'play_button_last_click_global';
-
 const TextTargetDialog: React.FC<TextTargetDialogProps> = ({
   open,
   onOpenChange,
@@ -81,99 +76,37 @@ const TextTargetDialog: React.FC<TextTargetDialogProps> = ({
 }) => {
   const [form, setForm] = useState<FormState>(defaultForm());
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [currentJobId, setCurrentJobId] = useState<string | null>(null);
-  const [isCooldownActive, setIsCooldownActive] = useState(false);
-  const [cooldownRemaining, setCooldownRemaining] = useState(0);
-  const { socket, isConnected } = useSocket();
 
-  const checkCooldown = useCallback(() => {
-    try {
-      const lastClickTimeStr = localStorage.getItem(GLOBAL_STORAGE_KEY);
-      if (!lastClickTimeStr) {
-        setIsCooldownActive(false);
-        setCooldownRemaining(0);
-        return;
-      }
-      const lastClickTime = Number.parseInt(lastClickTimeStr, 10);
-      if (Number.isNaN(lastClickTime)) {
-        localStorage.removeItem(GLOBAL_STORAGE_KEY);
-        setIsCooldownActive(false);
-        setCooldownRemaining(0);
-        return;
-      }
-      const remaining = Math.ceil((COOLDOWN_DURATION_MS - (Date.now() - lastClickTime)) / 1000);
-      if (remaining > 0) {
-        setIsCooldownActive(true);
-        setCooldownRemaining(remaining);
-      } else {
-        setIsCooldownActive(false);
-        setCooldownRemaining(0);
-      }
-    } catch {
-      setIsCooldownActive(false);
-      setCooldownRemaining(0);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-    checkCooldown();
-    const interval = setInterval(checkCooldown, 1000);
-    return () => clearInterval(interval);
-  }, [open, checkCooldown]);
-
-  useEffect(() => {
-    if (!socket || !isConnected || !currentJobId) {
-      return;
-    }
-
-    const handler = (data: TVocabGenerateTextTargetResult) => {
-      if (String(data.jobId) !== String(currentJobId)) {
-        return;
-      }
-      const { result } = data;
-      setForm(prev => ({
-        ...prev,
-        textTarget: result.textTarget,
-        wordTypeId: result.wordTypeId || prev.wordTypeId,
-        explanationSource: result.explanationSource,
-        explanationTarget: result.explanationTarget,
-        vocabExamples: result.vocabExamples?.length
-          ? result.vocabExamples.map(e => ({ id: generateId(), source: e.source, target: e.target }))
-          : prev.vocabExamples,
-      }));
-      toast.success('AI generated content successfully');
-      try {
-        localStorage.setItem(GLOBAL_STORAGE_KEY, Date.now().toString());
-        checkCooldown();
-      } catch {}
-      setIsGenerating(false);
-      setCurrentJobId(null);
-    };
-
-    socket.on(SOCKET_EVENTS.VOCAB_GENERATE_TEXT_TARGET_RESULT, handler);
-    return () => {
-      socket.off(SOCKET_EVENTS.VOCAB_GENERATE_TEXT_TARGET_RESULT, handler);
-    };
-  }, [socket, isConnected, currentJobId, checkCooldown]);
-
-  const handleGenerateAI = async () => {
-    if (!textSource || !sourceLanguageCode || !targetLanguageCode) {
-      toast.error('Missing source text or language codes');
-      return;
-    }
-    setIsGenerating(true);
-    try {
-      const { jobId } = await generateTextTargetContent({ textSource, sourceLanguageCode, targetLanguageCode });
-      setCurrentJobId(String(jobId));
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to generate content');
-      setIsGenerating(false);
-    }
+  const updateField = <K extends keyof FormState>(field: K, value: FormState[K]) => {
+    setForm(prev => ({ ...prev, [field]: value }));
   };
+
+  const handleAddExample = () => {
+    setForm(prev => ({
+      ...prev,
+      vocabExamples: [...prev.vocabExamples, { id: generateId(), source: '', target: '' }],
+    }));
+  };
+
+  const handleExampleChange = (exampleIndex: number, field: 'source' | 'target', value: string) => {
+    setForm(prev => ({
+      ...prev,
+      vocabExamples: prev.vocabExamples.map((ex, i) =>
+        i === exampleIndex ? { ...ex, [field]: value } : ex,
+      ),
+    }));
+  };
+
+  const { isGenerating, isCooldownActive, cooldownRemaining, handleGenerateAI } = useAIGenerate({
+    textSource: textSource ?? '',
+    sourceLanguageCode: sourceLanguageCode ?? '',
+    targetLanguageCode: targetLanguageCode ?? '',
+    targetIndex: 0,
+    hasExamples: form.vocabExamples.length > 0,
+    onInputChange: (field, value) => updateField(field as keyof FormState, value),
+    onExampleChange: (exampleIndex, field, value) => handleExampleChange(exampleIndex, field, value),
+    onAddExample: () => handleAddExample(),
+  });
 
   const wordTypes = initialWordTypesData?.items || [];
   const subjects = initialSubjectsData?.items || [];
@@ -241,30 +174,10 @@ const TextTargetDialog: React.FC<TextTargetDialogProps> = ({
     }
   };
 
-  const updateField = <K extends keyof FormState>(field: K, value: FormState[K]) => {
-    setForm(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleAddExample = () => {
-    setForm(prev => ({
-      ...prev,
-      vocabExamples: [...prev.vocabExamples, { id: generateId(), source: '', target: '' }],
-    }));
-  };
-
   const handleRemoveExample = (index: number) => {
     setForm(prev => ({
       ...prev,
       vocabExamples: prev.vocabExamples.filter((_, i) => i !== index),
-    }));
-  };
-
-  const handleExampleChange = (exampleIndex: number, field: 'source' | 'target', value: string) => {
-    setForm(prev => ({
-      ...prev,
-      vocabExamples: prev.vocabExamples.map((ex, i) =>
-        i === exampleIndex ? { ...ex, [field]: value } : ex,
-      ),
     }));
   };
 

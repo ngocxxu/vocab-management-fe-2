@@ -2,10 +2,10 @@
 
 import type { SubjectsSectionProps } from '@/types/vocab-list';
 import type { TSubjectGenerateResult } from '@/types/subject';
+import { MagicStick, RefreshCircle } from '@solar-icons/react/ssr';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { generateSubjectSuggestions } from '@/actions/subjects';
-import { SUGGEST_BUTTON_STORAGE_KEY } from '../constants/textTarget';
 import { useTextTargetCooldown } from '../hooks/useTextTargetCooldown';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
@@ -44,7 +44,7 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = React.memo(({
   const [currentJobId, setCurrentJobId] = useState<string | null>(null);
   const [pendingNewOptions, setPendingNewOptions] = useState<PendingNewOption[]>([]);
   const { socket, isConnected } = useSocket();
-  const { isCooldownActive, cooldownRemaining, markUsed } = useTextTargetCooldown(SUGGEST_BUTTON_STORAGE_KEY);
+  const { isCooldownActive, cooldownRemaining, markUsed } = useTextTargetCooldown();
 
   const subjectIdsPath = `textTargets.${targetIndex}.subjectIds` as const;
   const pendingPath = `textTargets.${targetIndex}.pendingSubjectNames` as const;
@@ -190,10 +190,28 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = React.memo(({
           className="h-7 gap-1.5 text-xs"
         >
           {suggestState === 'suggesting'
-            ? '✦ Suggesting...'
+            ? (
+                <>
+                  <RefreshCircle size={12} weight="BoldDuotone" className="animate-spin" />
+                  Suggesting...
+                </>
+              )
             : isCooldownActive
-              ? `✦ Wait ${cooldownRemaining}s`
-              : '✦ Suggest'}
+              ? (
+                  <>
+                    <RefreshCircle size={12} weight="BoldDuotone" />
+                    Wait
+                    {' '}
+                    {cooldownRemaining}
+                    s
+                  </>
+                )
+              : (
+                  <>
+                    <MagicStick size={12} weight="BoldDuotone" />
+                    Suggest
+                  </>
+                )}
         </Button>
       </div>
 
