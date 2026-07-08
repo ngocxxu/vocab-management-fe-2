@@ -52,8 +52,8 @@ function ExamplesCell({ examples }: { examples: TTextTarget['vocabExamples'] }) 
   return (
     <div className="flex min-w-0 items-start gap-2">
       <div className="min-w-0 border-l-2 border-primary pl-2">
-        <p className="truncate text-xs font-medium text-foreground">{first.source}</p>
-        <p className="truncate text-xs text-muted-foreground italic">{first.target}</p>
+        <p className="text-xs font-medium break-words text-foreground">{first.source}</p>
+        <p className="text-xs break-words text-muted-foreground italic">{first.target}</p>
       </div>
       {examples.length > 1 && (
         <span className="shrink-0 text-muted-foreground">⋮</span>
@@ -105,7 +105,7 @@ const TextTargetsTable: React.FC<TextTargetsTableProps> = ({
       accessorKey: 'textTarget',
       header: 'Text Target',
       cell: ({ row }) => (
-        <span className="text-sm font-semibold text-foreground">{row.original.textTarget}</span>
+        <span className="text-sm font-semibold break-words text-foreground">{row.original.textTarget}</span>
       ),
       enableSorting: true,
       size: 180,
@@ -138,7 +138,7 @@ const TextTargetsTable: React.FC<TextTargetsTableProps> = ({
       accessorKey: 'explanationSource',
       header: 'Explanation (Source)',
       cell: ({ row }) => (
-        <span className="text-sm text-foreground">{row.original.explanationSource || '—'}</span>
+        <span className="text-sm break-words text-foreground">{row.original.explanationSource || '—'}</span>
       ),
       enableSorting: false,
       size: 200,
@@ -147,7 +147,7 @@ const TextTargetsTable: React.FC<TextTargetsTableProps> = ({
       accessorKey: 'explanationTarget',
       header: 'Explanation (Target)',
       cell: ({ row }) => (
-        <span className="text-sm text-muted-foreground italic">{row.original.explanationTarget || '—'}</span>
+        <span className="text-sm break-words text-muted-foreground italic">{row.original.explanationTarget || '—'}</span>
       ),
       enableSorting: false,
       size: 200,
