@@ -13,8 +13,8 @@ export default async function NotificationsPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-foreground">Notifications</h1>
+      <div className="container mx-auto px-4 py-4 sm:py-8">
+        <h1 className="text-2xl font-bold text-foreground sm:text-3xl">Notifications</h1>
         <p className="mt-2 text-muted-foreground">
           Stay updated with your learning progress and achievements.
         </p>

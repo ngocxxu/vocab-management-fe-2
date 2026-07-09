@@ -7,7 +7,7 @@ import type { TNotification, TUnreadCountResponse } from '@/types/notification';
 import type { TPlan } from '@/types/plan';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { getLayoutHeaderData } from '@/actions/layout-header';
-import { Header, Sidebar } from '@/components/dashboard';
+import { Header, MobileBottomNav, Sidebar } from '@/components/dashboard';
 import { logger } from '@/libs/Logger';
 import { SocketProvider } from '@/providers/SocketProvider';
 import { ChatBubble, ChatPanel, ChatProvider } from '@/features/chat';
@@ -148,10 +148,11 @@ export function LayoutClient({
             error={headerDataError}
             onNotificationsChanged={() => refreshHeaderData(true)}
           />
-          <div className="flex-1 overflow-auto bg-background">
+          <div className="flex-1 overflow-auto bg-background pb-16 md:pb-0">
             {children}
           </div>
         </div>
+        <MobileBottomNav user={currentUser} />
       </div>
       <ChatProvider initialUnreadCount={initialChatUnreadCount ?? 0} initialMessages={initialChatMessages} initialNextCursor={initialChatNextCursor}>
         <ChatBubble />

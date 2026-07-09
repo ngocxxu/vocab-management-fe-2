@@ -87,7 +87,7 @@ export const Header: React.FC<HeaderProps> = ({
           <Button
             variant="ghost"
             size="icon"
-            className="h-10 w-10 flex-shrink-0 rounded-xl hover:bg-accent"
+            className="hidden h-10 w-10 flex-shrink-0 rounded-xl hover:bg-accent md:inline-flex"
             onClick={onSidebarToggle}
             title={isSidebarExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
           >

@@ -232,8 +232,8 @@ const FlipCardExam: React.FC<FlipCardExamProps> = ({ trainerId, examData }) => {
   }
 
   return (
-    <div className="min-h-screen bg-background px-4 py-8 sm:px-6">
-      <div className="mx-auto max-w-6xl space-y-8">
+    <div className="min-h-screen bg-background px-4 py-4 sm:px-6 sm:py-8">
+      <div className="mx-auto max-w-6xl space-y-5 sm:space-y-8">
         <VocabExamHeader
           trainerName={trainerName || 'FlipCard Exam'}
           currentQuestion={currentCardIndex + 1}

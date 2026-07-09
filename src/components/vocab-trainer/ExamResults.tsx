@@ -88,8 +88,8 @@ const ExamResults: React.FC<ExamResultsProps> = ({
   const avgPerQuestionText = formatAvgPerQuestion(timeElapsed, totalQuestions);
 
   return (
-    <div className="min-h-screen bg-background px-4 py-8 sm:px-6">
-      <div className="mx-auto max-w-6xl space-y-8">
+    <div className="min-h-screen bg-background px-4 py-4 sm:px-6 sm:py-8">
+      <div className="mx-auto max-w-6xl space-y-5 sm:space-y-8">
         <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <Button
             type="button"

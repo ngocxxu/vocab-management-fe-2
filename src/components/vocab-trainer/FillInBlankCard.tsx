@@ -47,14 +47,14 @@ const FillInBlankCard: React.FC<FillInBlankCardProps> = ({
   );
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8">
-      <div className="space-y-6 text-center">
+    <div className="mx-auto max-w-6xl space-y-5 sm:space-y-8">
+      <div className="space-y-3 text-center sm:space-y-6">
         <div className="inline-flex rounded-full bg-accent px-4 py-1.5 text-sm font-bold text-primary">
           • QUESTION
           {' '}
           {questionNumber}
         </div>
-        <h2 className="text-xl leading-relaxed font-bold text-foreground sm:text-2xl lg:text-3xl">
+        <h2 className="text-lg leading-relaxed font-bold text-foreground sm:text-2xl lg:text-3xl">
           {questionContent}
         </h2>
       </div>

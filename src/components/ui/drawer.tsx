@@ -8,22 +8,27 @@ const Drawer = Dialog;
 const DrawerTrigger = DialogTrigger;
 const DrawerClose = DialogClose;
 
-const DrawerContent = ({ ref, className, children, ...props }: React.ComponentPropsWithoutRef<typeof DialogContent> & { ref?: React.RefObject<React.ElementRef<typeof DialogContent> | null> }) => (
+type DrawerSide = 'right' | 'bottom';
+
+const drawerSideClasses: Record<DrawerSide, string> = {
+  right: 'top-0 right-0 bottom-0 left-auto translate-x-0 translate-y-0 h-full w-3/4 max-w-md border-l rounded-l-lg rounded-r-none data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right',
+  bottom: 'top-auto right-0 bottom-0 left-0 translate-x-0 translate-y-0 max-h-[85vh] w-full border-t rounded-t-2xl rounded-b-none pb-[env(safe-area-inset-bottom)] data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom',
+};
+
+const DrawerContent = ({ ref, className, children, side = 'right', ...props }: React.ComponentPropsWithoutRef<typeof DialogContent> & { ref?: React.RefObject<React.ElementRef<typeof DialogContent> | null>; side?: DrawerSide }) => (
   <DialogContent
     ref={ref}
     className={cn(
-      'fixed inset-y-0 right-0 h-full w-3/4 max-w-md',
-      'border-l border-border',
-      'rounded-l-lg rounded-r-none',
+      'fixed border-border',
       'p-0',
       'data-[state=open]:animate-in data-[state=closed]:animate-out',
-      'data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right',
       'duration-300',
+      drawerSideClasses[side],
       className,
     )}
     {...props}
   >
-    <div className="flex h-full flex-col">
+    <div className="flex max-h-full flex-col overflow-y-auto">
       {children}
     </div>
   </DialogContent>
