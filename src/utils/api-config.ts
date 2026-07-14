@@ -176,13 +176,14 @@ export const API_METHODS = {
       const queryString = buildQueryString(params);
       return { endpoint: `${API_ENDPOINTS.vocabs}/statistics/progress?${queryString}` };
     },
-    getStatisticsProblematic: (params?: { status?: 'critical' | 'warning' | 'all'; limit?: number; page?: number }) => {
-      if (!params || (!params.status && !params.limit && !params.page)) {
+    getStatisticsProblematic: (params?: { status?: 'critical' | 'warning' | 'all'; limit?: number; page?: number; sourceLanguageCode?: string }) => {
+      if (!params || (!params.status && !params.limit && !params.page && !params.sourceLanguageCode)) {
         return { endpoint: `${API_ENDPOINTS.vocabs}/statistics/problematic` };
       }
       const queryString = buildQueryString(params);
       return { endpoint: `${API_ENDPOINTS.vocabs}/statistics/problematic?${queryString}` };
     },
+    getStatisticsProblematicLanguages: () => ({ endpoint: `${API_ENDPOINTS.vocabs}/statistics/problematic/languages` }),
     getStatisticsDistribution: () => ({ endpoint: `${API_ENDPOINTS.vocabs}/statistics/distribution` }),
     getStatisticsDashboard: (params?: {
       include?: string[];

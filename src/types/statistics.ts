@@ -48,6 +48,14 @@ export type TMasteryDistribution = {
   count: number;
 };
 
+export type TProblematicLanguage = {
+  sourceLanguageCode: string;
+  sourceLanguageName: string | null;
+  criticalCount: number;
+  warningCount: number;
+  total: number;
+};
+
 export type TDashboardStatistics = {
   summary?: TMasterySummary;
   subjects?: TMasteryBySubject[];

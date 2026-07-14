@@ -132,12 +132,13 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
     }
 
     problematicPresetConsumedRef.current = true;
+    const sourceLanguageCode = searchParams.get('sourceLanguageCode') ?? undefined;
     router.replace('/vocab-trainer');
 
     let cancelled = false;
 
     (async () => {
-      const result = await getProblematicVocabIdsForPractice();
+      const result = await getProblematicVocabIdsForPractice(sourceLanguageCode);
       if (cancelled) {
         return;
       }
@@ -152,8 +153,12 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
         return;
       }
 
+      const practiceName = sourceLanguageCode
+        ? `Problematic ${sourceLanguageCode.toUpperCase()} words practice`
+        : 'Problematic words practice';
+
       form.setValue('vocabAssignmentIds', result, { shouldDirty: true, shouldValidate: true });
-      form.setValue('name', 'Problematic words practice', { shouldDirty: true });
+      form.setValue('name', practiceName, { shouldDirty: true });
       form.clearErrors('vocabAssignmentIds');
       setCreateDialogOpen(true);
     })();

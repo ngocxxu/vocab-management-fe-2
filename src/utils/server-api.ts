@@ -324,9 +324,13 @@ export const statisticsApi = {
     const config = API_METHODS.vocabs.getStatisticsProgress(params);
     return serverApi.get<import('@/types/statistics').ProgressOverTime[]>(config.endpoint);
   },
-  getProblematic: async (params?: { status?: 'critical' | 'warning' | 'all'; limit?: number; page?: number }) => {
+  getProblematic: async (params?: { status?: 'critical' | 'warning' | 'all'; limit?: number; page?: number; sourceLanguageCode?: string }) => {
     const config = API_METHODS.vocabs.getStatisticsProblematic(params);
     return serverApi.get<import('@/types/statistics').TopProblematicVocab[]>(config.endpoint);
+  },
+  getProblematicLanguages: async () => {
+    const config = API_METHODS.vocabs.getStatisticsProblematicLanguages();
+    return serverApi.get<import('@/types/statistics').TProblematicLanguage[]>(config.endpoint);
   },
   getDistribution: async () => {
     const config = API_METHODS.vocabs.getStatisticsDistribution();

@@ -4,22 +4,15 @@ import { MAX_PROBLEMATIC_PRACTICE_LIMIT } from '@/constants/statistics';
 import { statisticsApi } from '@/utils/server-api';
 import { requireAuth } from './auth';
 
-export async function getProblematicVocabIdsForPractice(): Promise<string[] | { error: string }> {
+export async function getProblematicVocabIdsForPractice(sourceLanguageCode?: string): Promise<string[] | { error: string }> {
   try {
     await requireAuth();
 
-    const summary = await statisticsApi.getSummary();
-    const totalNeedReview = summary.criticalCount + summary.warningCount;
-
-    if (totalNeedReview === 0) {
-      return [];
-    }
-
-    const limit = Math.min(totalNeedReview, MAX_PROBLEMATIC_PRACTICE_LIMIT);
     const problematic = await statisticsApi.getProblematic({
       status: 'all',
-      limit,
+      limit: MAX_PROBLEMATIC_PRACTICE_LIMIT,
       page: 1,
+      sourceLanguageCode,
     });
 
     return (problematic ?? []).map(item => item.vocabId);

@@ -23,9 +23,10 @@ import { SOCKET_EVENTS } from '@/utils/socket-config';
 
 type SuggestState = 'idle' | 'suggesting' | 'done';
 
-type PendingNewOption = { tempId: string; name: string };
-
-const genTempId = () => `pending-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+// ponytail: pending (not-yet-created) subjects are encoded in the MultiSelect as
+// `new:${name}` so the visible chip, the pill highlight, and form `pendingSubjectNames`
+// all derive from one source (the name). No regenerating temp ids to drift out of sync.
+const NEW_PREFIX = 'new:';
 
 const SubjectsSection: React.FC<SubjectsSectionProps> = React.memo(({
   targetId,
@@ -42,7 +43,6 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = React.memo(({
   const [suggestState, setSuggestState] = useState<SuggestState>('idle');
   const [aiSuggestions, setAiSuggestions] = useState<TSubjectGenerateResult['result'] | null>(null);
   const [currentJobId, setCurrentJobId] = useState<string | null>(null);
-  const [pendingNewOptions, setPendingNewOptions] = useState<PendingNewOption[]>([]);
   const { socket, isConnected } = useSocket();
   const { isCooldownActive, cooldownRemaining, markUsed } = useTextTargetCooldown();
 
@@ -52,36 +52,20 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = React.memo(({
   const currentSubjectIds: string[] = form.watch(subjectIdsPath) ?? subjectIds ?? [];
   const currentPendingNames: string[] = form.watch(pendingPath) ?? [];
 
-  const activePendingTempIds = useMemo(
-    () => pendingNewOptions.filter(p => currentPendingNames.includes(p.name)).map(p => p.tempId),
-    [pendingNewOptions, currentPendingNames],
-  );
-
   const multiSelectValue = useMemo(
-    () => [...currentSubjectIds, ...activePendingTempIds],
-    [currentSubjectIds, activePendingTempIds],
-  );
-
-  const pendingTempIdSet = useMemo(
-    () => new Set(pendingNewOptions.map(p => p.tempId)),
-    [pendingNewOptions],
+    () => [...currentSubjectIds, ...currentPendingNames.map(n => `${NEW_PREFIX}${n}`)],
+    [currentSubjectIds, currentPendingNames],
   );
 
   const allOptions = useMemo(() => [
     ...subjects.map(s => ({ value: s.id, label: s.name })),
-    ...pendingNewOptions.map(p => ({ value: p.tempId, label: p.name })),
-  ], [subjects, pendingNewOptions]);
+    ...currentPendingNames.map(n => ({ value: `${NEW_PREFIX}${n}`, label: n })),
+  ], [subjects, currentPendingNames]);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsMounted(true), 0);
     return () => clearTimeout(timer);
   }, []);
-
-  useEffect(() => {
-    if (!aiSuggestions) {
-      setPendingNewOptions([]);
-    }
-  }, [aiSuggestions]);
 
   useEffect(() => {
     if (!socket || !isConnected || !currentJobId) {
@@ -116,20 +100,18 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = React.memo(({
   }, [textTarget, targetLanguageCode, markUsed]);
 
   const handleMultiSelectChange = useCallback((newValues: string[]) => {
-    const newRealIds = newValues.filter(v => !pendingTempIdSet.has(v));
-    const newTempIds = new Set(newValues.filter(v => pendingTempIdSet.has(v)));
+    const newRealIds = newValues.filter(v => !v.startsWith(NEW_PREFIX));
+    const newPendingNames = newValues
+      .filter(v => v.startsWith(NEW_PREFIX))
+      .map(v => v.slice(NEW_PREFIX.length));
 
     form.setValue(subjectIdsPath, newRealIds, { shouldDirty: true });
+    form.setValue(pendingPath, newPendingNames, { shouldDirty: true });
     form.clearErrors(subjectIdsPath);
-    if (newRealIds.length > 0) {
+    if (newRealIds.length > 0 || newPendingNames.length > 0) {
       void form.trigger(subjectIdsPath);
     }
-
-    const newPendingNames = pendingNewOptions
-      .filter(p => newTempIds.has(p.tempId))
-      .map(p => p.name);
-    form.setValue(pendingPath, newPendingNames, { shouldDirty: true });
-  }, [form, subjectIdsPath, pendingPath, pendingTempIdSet, pendingNewOptions]);
+  }, [form, subjectIdsPath, pendingPath]);
 
   const toggleExistingSubject = useCallback((id: string) => {
     const current = form.getValues(subjectIdsPath) as string[];
@@ -146,12 +128,6 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = React.memo(({
     if (pending.includes(name)) {
       form.setValue(pendingPath, pending.filter(n => n !== name), { shouldDirty: true });
     } else {
-      setPendingNewOptions((prev) => {
-        if (prev.find(p => p.name === name)) {
-          return prev;
-        }
-        return [...prev, { tempId: genTempId(), name }];
-      });
       form.setValue(pendingPath, [...pending, name], { shouldDirty: true });
       form.clearErrors(subjectIdsPath);
     }

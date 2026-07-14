@@ -141,8 +141,8 @@ export type DistributionChartProps = {
 };
 
 export type ProblematicVocabsTableProps = {
-  data: import('@/types/statistics').TopProblematicVocab[];
-  totalNeedReview: number;
+  languages: import('@/types/statistics').TProblematicLanguage[];
+  itemsByLang: Record<string, import('@/types/statistics').TopProblematicVocab[]>;
 };
 
 export type AnswerDistributionCardProps = {
