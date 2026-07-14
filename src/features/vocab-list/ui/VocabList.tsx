@@ -404,7 +404,14 @@ const VocabList: React.FC<VocabListProps> = ({
       const isValid = await form.trigger();
 
       if (!isValid) {
-        // Form validation failed, errors will be displayed automatically
+        const targetErrors = form.formState.errors.textTargets;
+        const badIndex = Array.isArray(targetErrors) ? targetErrors.findIndex(Boolean) : -1;
+        if (badIndex >= 0) {
+          setActiveTab(badIndex.toString());
+        }
+        toast.error('Please fix the highlighted fields', {
+          description: badIndex >= 0 ? `Check tab ${badIndex + 1} — each target needs a subject.` : undefined,
+        });
         return;
       }
 
