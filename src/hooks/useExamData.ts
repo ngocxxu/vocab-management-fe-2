@@ -177,8 +177,10 @@ export const useExamData = ({
     };
 
     socket.on(SOCKET_EVENTS.MULTIPLE_CHOICE_GENERATION_PROGRESS, handleProgress);
+    socket.on(SOCKET_EVENTS.FILL_IN_BLANK_CHOICE_GENERATION_PROGRESS, handleProgress);
     return () => {
       socket.off(SOCKET_EVENTS.MULTIPLE_CHOICE_GENERATION_PROGRESS, handleProgress);
+      socket.off(SOCKET_EVENTS.FILL_IN_BLANK_CHOICE_GENERATION_PROGRESS, handleProgress);
     };
   }, [socket, isConnected, status, examData]);
 

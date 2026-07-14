@@ -18,6 +18,7 @@ import { submitExam } from '@/actions/vocab-trainers';
 import { ExamErrorState } from '@/shared/ui/shared';
 import { Alert, AlertDescription } from '@/shared/ui/alert';
 import { Button } from '@/shared/ui/button';
+import { getExamUrl } from '@/constants/vocab-trainer';
 import { markExamCooldownNow } from '@/utils/exam-cooldown';
 import ExamResults from './ExamResults';
 import QuestionCard from './QuestionCard';
@@ -132,7 +133,7 @@ const VocabExam: React.FC<VocabExamProps> = ({ trainerId, examData }) => {
         selectedAnswers={selectedAnswers}
         timeElapsed={timeElapsed}
         onBackToTrainers={handleBackToTrainers}
-        onRetryExam={() => router.push(`/vocab-trainer/${trainerId}/exam/multiple-choice`)}
+        onRetryExam={() => router.push(getExamUrl(trainerId, examData.questionType ?? EQuestionType.MULTIPLE_CHOICE))}
         questionType={examData.questionType ?? EQuestionType.MULTIPLE_CHOICE}
       />
     );
