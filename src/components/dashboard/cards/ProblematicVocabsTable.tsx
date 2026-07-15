@@ -91,7 +91,7 @@ export function ProblematicVocabsTable({ languages, itemsByLang }: ProblematicVo
           </TabsList>
         </Tabs>
       </CardHeader>
-      <CardContent className="p-0">
+      <CardContent className="">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
