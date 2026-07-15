@@ -82,9 +82,9 @@ export function ProblematicVocabsTable({ languages, itemsByLang }: ProblematicVo
           )}
         </div>
         <Tabs value={activeCodeSafe} onValueChange={setActiveCode} className="mt-4 w-full">
-          <TabsList className="flex w-full flex-wrap justify-start">
+          <TabsList variant="underline">
             {languages.map(language => (
-              <TabsTrigger key={language.sourceLanguageCode} value={language.sourceLanguageCode}>
+              <TabsTrigger key={language.sourceLanguageCode} value={language.sourceLanguageCode} variant="underline">
                 {languageLabel(language)}
               </TabsTrigger>
             ))}

@@ -129,16 +129,12 @@ const TextTargetTabs: React.FC<TextTargetTabsProps> = ({
       </div>
 
       <Tabs value={activeTab} onValueChange={onActiveTabChange} className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList>
           {textTargets.map((_target, idx) => (
             <TabsTrigger
               key={_target.id}
               value={idx.toString()}
-              className={cn(
-                'relative flex flex-shrink-0 items-center justify-between',
-                activeTab === idx.toString() ? 'bg-background text-foreground shadow-sm' : '',
-              )}
-              onClick={() => onActiveTabChange(idx.toString())}
+              className="relative"
             >
               <p className="text-sm">
                 Vocab
@@ -172,7 +168,7 @@ const TextTargetTabs: React.FC<TextTargetTabsProps> = ({
           <TabsContent
             key={target.id}
             value={idx.toString()}
-            className={cn('space-y-4', activeTab === idx.toString() ? 'block' : 'hidden')}
+            className="space-y-4"
           >
             <TextTargetForm
               targetIndex={idx}
