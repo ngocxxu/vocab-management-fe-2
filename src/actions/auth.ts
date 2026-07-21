@@ -177,6 +177,23 @@ async function verifyUserImpl(): Promise<TUser | null> {
 
 export const verifyUser = cache(verifyUserImpl);
 
+export async function deleteAccount(): Promise<{ message: string }> {
+  await requireAuth();
+
+  const accessToken = await getAccessToken();
+  const refreshToken = await getRefreshToken();
+
+  try {
+    await authApi.deleteAccount();
+    return { message: 'Account deleted successfully' };
+  } catch (error) {
+    throw toActionError(error, 'Failed to delete account');
+  } finally {
+    invalidateRefreshLock(accessToken, refreshToken);
+    await clearAuthCookies();
+  }
+}
+
 export async function requireAuth(): Promise<TUser> {
   const user = await verifyUser();
   if (!user) {

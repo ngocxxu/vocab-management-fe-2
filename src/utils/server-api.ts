@@ -145,6 +145,10 @@ export const authApi = {
     const config = API_METHODS.auth.signout();
     return serverApi.post<{ message: string }>(config.endpoint, {});
   },
+  deleteAccount: () => {
+    const config = API_METHODS.auth.deleteAccount();
+    return serverApi.delete<TUser>(config.endpoint);
+  },
   resetPassword: (data: { email: string }) => {
     const config = API_METHODS.auth.resetPassword(data);
     return serverApi.post<{ message: string }>(config.endpoint, config.data);

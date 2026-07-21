@@ -17,13 +17,17 @@ import {
   User,
 } from '@solar-icons/react/ssr';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
+import { deleteAccount } from '@/actions/auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/libs/utils';
+import { DeleteAccountDialog } from '@/shared/ui/DeleteAccountDialog';
 
 type ProfileSectionProps = {
   currentUser?: TUser | null;
@@ -36,11 +40,14 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
   currentPlan,
   onProfileChangeAction,
 }) => {
+  const router = useRouter();
   const user = currentUser ?? null;
   const isLoading = false;
   const isError = false;
   const [isEditing, setIsEditing] = useState(false);
   const [twoFaEnabled, setTwoFaEnabled] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
   const [formData, setFormData] = useState<TUserProfile>({
     id: '',
     email: '',
@@ -101,6 +108,20 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
   const handleEditClick = () => {
     setIsEditing(true);
     setFormData(profile);
+  };
+
+  const handleDeleteAccount = async () => {
+    setIsDeletingAccount(true);
+    try {
+      await deleteAccount();
+      setIsDeleteDialogOpen(false);
+      toast.success('Account deleted');
+      router.push('/signin');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to delete account');
+    } finally {
+      setIsDeletingAccount(false);
+    }
   };
 
   if (isLoading) {
@@ -423,7 +444,7 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
       </div>
 
       <Card className="overflow-hidden border-destructive/50 bg-destructive/5 shadow-sm">
-        <CardContent className="p-6">
+        <CardContent className="p-6 py-0">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-lg font-semibold text-destructive">Delete Account</h2>
@@ -431,12 +452,19 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
                 Permanently remove your account and all associated data. This action cannot be undone.
               </p>
             </div>
-            <Button variant="destructive" className="shrink-0">
+            <Button variant="destructive" className="shrink-0" onClick={() => setIsDeleteDialogOpen(true)}>
               Delete Permanently
             </Button>
           </div>
         </CardContent>
       </Card>
+
+      <DeleteAccountDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        onConfirm={handleDeleteAccount}
+        isDeleting={isDeletingAccount}
+      />
     </div>
   );
 };
