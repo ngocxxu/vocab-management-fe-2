@@ -1,6 +1,7 @@
 import type { EQuestionType } from '@/enum/vocab-trainer';
 import type { GenerateUploadSignatureInput } from '@/types/cloudinary';
 import type {
+  TChangePasswordData,
   TOAuthData,
   TOAuthSyncInput,
   TResendConfirmationData,
@@ -107,6 +108,7 @@ export const API_ENDPOINTS = {
     signout: '/auth/signout',
     deleteAccount: '/users/me',
     resetPassword: '/auth/reset-password',
+    changePassword: '/auth/change-password',
     verify: '/auth/verify',
     oauth: '/auth/oauth',
     oauthSync: '/auth/oauth/sync',
@@ -138,6 +140,7 @@ export const API_METHODS = {
     signout: () => ({ endpoint: API_ENDPOINTS.auth.signout }),
     deleteAccount: () => ({ endpoint: API_ENDPOINTS.auth.deleteAccount }),
     resetPassword: (data: { email: string }) => ({ endpoint: API_ENDPOINTS.auth.resetPassword, data }),
+    changePassword: (data: TChangePasswordData) => ({ endpoint: API_ENDPOINTS.auth.changePassword, data }),
     verify: () => ({ endpoint: API_ENDPOINTS.auth.verify }),
     oauth: (data: TOAuthData) => ({ endpoint: API_ENDPOINTS.auth.oauth, data }),
     oauthSync: (data: TOAuthSyncInput) => ({ endpoint: API_ENDPOINTS.auth.oauthSync, data }),

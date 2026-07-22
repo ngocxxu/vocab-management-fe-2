@@ -27,6 +27,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/libs/utils';
+import { ChangePasswordDialog } from '@/shared/ui/ChangePasswordDialog';
 import { DeleteAccountDialog } from '@/shared/ui/DeleteAccountDialog';
 
 type ProfileSectionProps = {
@@ -48,6 +49,7 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
   const [twoFaEnabled, setTwoFaEnabled] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeletingAccount, setIsDeletingAccount] = useState(false);
+  const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
   const [formData, setFormData] = useState<TUserProfile>({
     id: '',
     email: '',
@@ -376,11 +378,17 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
                     <LockPassword size={20} weight="BoldDuotone" className="text-muted-foreground" />
                   </div>
                   <div>
-                    <p className="font-medium text-foreground">Change Password</p>
-                    <p className="text-sm text-muted-foreground">Last changed 2 months ago</p>
+                    <p className="font-medium text-foreground">
+                      {user?.hasPassword ? 'Change Password' : 'Set Password'}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {user?.hasPassword
+                        ? 'Update the password used to sign in.'
+                        : 'Add a password so you can also sign in with email and password.'}
+                    </p>
                   </div>
                 </div>
-                <Button variant="link" className="text-primary">
+                <Button variant="link" className="text-primary" onClick={() => setIsPasswordDialogOpen(true)}>
                   Update
                 </Button>
               </div>
@@ -464,6 +472,12 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
         onOpenChange={setIsDeleteDialogOpen}
         onConfirm={handleDeleteAccount}
         isDeleting={isDeletingAccount}
+      />
+
+      <ChangePasswordDialog
+        open={isPasswordDialogOpen}
+        onOpenChange={setIsPasswordDialogOpen}
+        hasPassword={user?.hasPassword ?? false}
       />
     </div>
   );

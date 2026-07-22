@@ -3,6 +3,7 @@
 import { cache } from 'react';
 import type {
   TAuthResponse,
+  TChangePasswordData,
   TRefreshData,
   TResendConfirmationData,
   TResetPasswordData,
@@ -191,6 +192,47 @@ export async function deleteAccount(): Promise<{ message: string }> {
   } finally {
     invalidateRefreshLock(accessToken, refreshToken);
     await clearAuthCookies();
+  }
+}
+
+export async function changePassword(data: TChangePasswordData): Promise<{ message: string }> {
+  await requireAuth();
+
+  try {
+    const result = await authApi.changePassword(data);
+    // Supabase revokes every existing session (including this one) when a password changes.
+    // The backend signs back in with the new password — adopt that fresh session so the user stays logged in.
+    await setAuthCookies(result.session.access_token, result.session.refresh_token);
+    return { message: result.message };
+  } catch (error) {
+    if (!isUnauthorizedError(error)) {
+      throw toActionError(error, 'Failed to update password');
+    }
+
+    // Access token expired between page load and submit — refresh and retry once (mirrors verifyUserImpl).
+    const token = await getAccessToken();
+    const refreshToken = await getRefreshToken();
+    if (!refreshToken) {
+      throw toActionError(error, 'Failed to update password');
+    }
+
+    const lockKey = getRefreshLockKey(token, refreshToken);
+    const session = await getRefreshLock(lockKey).getOrRefresh(
+      () => performRefresh(refreshToken),
+    );
+    if (!session) {
+      throw toActionError(error, 'Failed to update password');
+    }
+
+    await setAuthCookies(session.access_token, session.refresh_token);
+
+    try {
+      const result = await authApi.changePassword(data);
+      await setAuthCookies(result.session.access_token, result.session.refresh_token);
+      return { message: result.message };
+    } catch (retryError) {
+      throw toActionError(retryError, 'Failed to update password');
+    }
   }
 }
 

@@ -9,7 +9,7 @@ import type {
 } from './api-config';
 import type { ResponseAPI, TLanguage, TLanguageFolder, TUser } from '@/types';
 import type { TApiKey, TApiKeyResponse, TApiKeyScope, TCreateApiKeyResponse } from '@/types/api-key';
-import type { TOAuthData, TOAuthResponse, TResendConfirmationData, TSessionDto, TSignUpResponse, TVerifyOtpData } from '@/types/auth';
+import type { TChangePasswordData, TOAuthData, TOAuthResponse, TResendConfirmationData, TSessionDto, TSignUpResponse, TVerifyOtpData } from '@/types/auth';
 import type {
   TDeleteNotificationResponse,
   TMarkAllAsReadResponse,
@@ -152,6 +152,10 @@ export const authApi = {
   resetPassword: (data: { email: string }) => {
     const config = API_METHODS.auth.resetPassword(data);
     return serverApi.post<{ message: string }>(config.endpoint, config.data);
+  },
+  changePassword: (data: TChangePasswordData) => {
+    const config = API_METHODS.auth.changePassword(data);
+    return serverApi.post<{ message: string; session: TSessionDto }>(config.endpoint, config.data);
   },
   verify: () => {
     const config = API_METHODS.auth.verify();

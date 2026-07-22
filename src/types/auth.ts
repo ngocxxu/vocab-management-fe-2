@@ -8,8 +8,14 @@ export type TUser = {
   updatedAt: string;
   isActive: boolean;
   supabaseUserId: string;
+  hasPassword: boolean;
   avatar?: string;
   phone?: string;
+};
+
+export type TChangePasswordData = {
+  currentPassword?: string;
+  newPassword: string;
 };
 
 export type TSigninData = {
