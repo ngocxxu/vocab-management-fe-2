@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import type {
   TRelatedWordAutocompleteItem,
   TRelatedWordItem,
@@ -249,6 +250,21 @@ export type ExpandedRowContentProps = {
   onEdit?: (vocab: TVocab, textTargetIndex?: number) => void;
   onLinkedWordClick?: (word: string) => void;
   onAddFreeTextWord?: (word: string) => void;
+  // Feed view: header content rendered above the details card (title, speak, actions).
+  headerContent?: ReactNode;
+};
+
+export type TVocabViewMode = 'collapse' | 'table' | 'feed';
+
+// Table view: 1 row per textTarget, with vocab-level fields (textSource, related words) grouped for rowSpan merging.
+// `textTarget` is null when a vocab has no textTargets (edge case) — the vocab still gets 1 placeholder row.
+export type TFlatVocabRow = {
+  id: string;
+  vocab: TVocab;
+  textTarget: TTextTarget | null;
+  textTargetIndex: number;
+  isGroupStart: boolean;
+  groupSize: number;
 };
 
 export type SubjectsSectionProps = {

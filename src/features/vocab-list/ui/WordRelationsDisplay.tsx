@@ -9,29 +9,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/shared/ui/tooltip';
+import { flattenRelatedWords } from '../utils/flattenRelatedWords';
 
 type WordRelationsDisplayProps = {
   relatedWords: TRelatedWordItem[] | TRelatedWordsGroupedResponse | undefined;
   onLinkedWordClick: (word: string) => void;
   onAddFreeTextWord: (word: string) => void;
 };
-
-function flattenRelatedWords(
-  relatedWords: TRelatedWordItem[] | TRelatedWordsGroupedResponse,
-): TRelatedWordItem[] {
-  if (Array.isArray(relatedWords)) {
-    return relatedWords;
-  }
-  const seen = new Set<string>();
-  const result: TRelatedWordItem[] = [];
-  for (const item of [...relatedWords.synonyms, ...relatedWords.antonyms, ...relatedWords.related]) {
-    if (!seen.has(item.id)) {
-      seen.add(item.id);
-      result.push(item);
-    }
-  }
-  return result;
-}
 
 function RelationLetterBadges({ item }: { item: TRelatedWordItem }) {
   const badges: { letter: string; className: string }[] = [];

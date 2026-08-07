@@ -101,6 +101,13 @@ type DataTableProps<TData extends { id: string }, TValue> = {
   // Controlled column visibility — when provided, DataTable uses these instead of internal state
   columnVisibility?: VisibilityState;
   onColumnVisibilityChange?: (vis: VisibilityState) => void;
+  // Override the entire <tbody> content (used by alternate views, e.g. flattened/grouped rows). Falls back to default row rendering when omitted.
+  renderBody?: (table: TanStackTable<TData>) => React.ReactNode;
+  // Hide the <thead> — used by views that don't need column headers (e.g. a feed/card layout).
+  hideHeader?: boolean;
+  // Override the "Showing X of Y" count — needed when `data` isn't 1:1 with the paginated entity
+  // (e.g. `data` is flattened/exploded rows while `totalItems` counts the original entities).
+  displayCount?: number;
 };
 
 const COLUMN_SIZING_STORAGE_PREFIX = 'data-table:column-sizing:';
@@ -157,6 +164,9 @@ export function DataTable<TData extends { id: string }, TValue>({
   tableId,
   columnVisibility: controlledColumnVisibility,
   onColumnVisibilityChange: onControlledColumnVisibilityChange,
+  renderBody,
+  hideHeader = false,
+  displayCount,
 }: Readonly<DataTableProps<TData, TValue>>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -409,90 +419,92 @@ export function DataTable<TData extends { id: string }, TValue>({
                     ))}
                   </colgroup>
                 )}
-                <thead>
-                  {table.getHeaderGroups().map(headerGroup => (
-                    <tr key={headerGroup.id} className={`border-b border-border ${headerClassName}`}>
-                      {headerGroup.headers.map(header => (
-                        <th
-                          key={`${header.id}-${header.column.id}`}
-                          className={`relative bg-muted/30 px-3 py-3 text-left text-xs font-semibold text-muted-foreground sm:px-6 sm:py-4 sm:text-sm ${headerClassName}`}
-                          style={{ width: enableColumnResizing ? header.getSize() : (header.getSize() !== 150 ? header.getSize() : undefined) }}
-                        >
-                          {header.isPlaceholder
-                            ? null
-                            : (
-                                <div
-                                  className={`w-full cursor-pointer p-0 text-left font-semibold text-muted-foreground select-none ${
-                                    header.column.getCanSort()
-                                      ? 'hover:text-foreground'
-                                      : 'cursor-default'
-                                  }`}
-                                  onClick={header.column.getCanSort() ? header.column.getToggleSortingHandler() : undefined}
-                                  onKeyDown={(e) => {
-                                    if (e.key === 'Enter' || e.key === ' ') {
-                                      e.preventDefault();
-                                      const handler = header.column.getToggleSortingHandler();
-                                      if (handler) {
-                                        handler(e);
+                {!hideHeader && (
+                  <thead>
+                    {table.getHeaderGroups().map(headerGroup => (
+                      <tr key={headerGroup.id} className={`border-b border-border ${headerClassName}`}>
+                        {headerGroup.headers.map(header => (
+                          <th
+                            key={`${header.id}-${header.column.id}`}
+                            className={`relative bg-muted/30 px-3 py-3 text-left text-xs font-semibold text-muted-foreground sm:px-6 sm:py-4 sm:text-sm ${headerClassName}`}
+                            style={{ width: enableColumnResizing ? header.getSize() : (header.getSize() !== 150 ? header.getSize() : undefined) }}
+                          >
+                            {header.isPlaceholder
+                              ? null
+                              : (
+                                  <div
+                                    className={`w-full cursor-pointer p-0 text-left font-semibold text-muted-foreground select-none ${
+                                      header.column.getCanSort()
+                                        ? 'hover:text-foreground'
+                                        : 'cursor-default'
+                                    }`}
+                                    onClick={header.column.getCanSort() ? header.column.getToggleSortingHandler() : undefined}
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        const handler = header.column.getToggleSortingHandler();
+                                        if (handler) {
+                                          handler(e);
+                                        }
                                       }
+                                    }}
+                                    role={header.column.getCanSort() ? 'button' : undefined}
+                                    tabIndex={header.column.getCanSort() ? 0 : undefined}
+                                    title={
+                                      header.column.getCanSort()
+                                        ? header.column.getNextSortingOrder() === 'asc'
+                                          ? 'Sort ascending'
+                                          : header.column.getNextSortingOrder() === 'desc'
+                                            ? 'Sort descending'
+                                            : 'Clear sort'
+                                        : undefined
                                     }
-                                  }}
-                                  role={header.column.getCanSort() ? 'button' : undefined}
-                                  tabIndex={header.column.getCanSort() ? 0 : undefined}
-                                  title={
-                                    header.column.getCanSort()
-                                      ? header.column.getNextSortingOrder() === 'asc'
-                                        ? 'Sort ascending'
-                                        : header.column.getNextSortingOrder() === 'desc'
-                                          ? 'Sort descending'
-                                          : 'Clear sort'
-                                      : undefined
-                                  }
-                                >
-                                  {flexRender(header.column.columnDef.header, header.getContext())}
-                                  {header.column.getCanSort() && (
-                                    <span className="ml-2 inline-block">
-                                      {{
-                                        asc: <AltArrowUp size={16} weight="BoldDuotone" />,
-                                        desc: <AltArrowDown size={16} weight="BoldDuotone" />,
-                                      }[header.column.getIsSorted() as string] ?? <SortVertical size={16} weight="BoldDuotone" />}
-                                    </span>
-                                  )}
-                                </div>
-                              )}
-                          {enableColumnResizing && header.column.getCanResize() && (
-                            <div
-                              onMouseDown={(e) => {
-                                e.stopPropagation();
-                                header.getResizeHandler()(e);
-                              }}
-                              onTouchStart={(e) => {
-                                e.stopPropagation();
-                                header.getResizeHandler()(e);
-                              }}
-                              onDoubleClick={(e) => {
-                                e.stopPropagation();
-                                header.column.resetSize();
-                              }}
-                              style={{ touchAction: 'none' }}
-                              className="group absolute top-0 right-0 flex h-full w-3 cursor-col-resize items-center justify-center select-none"
-                              title="Drag to resize, double-click to reset"
-                              aria-hidden="true"
-                            >
+                                  >
+                                    {flexRender(header.column.columnDef.header, header.getContext())}
+                                    {header.column.getCanSort() && (
+                                      <span className="ml-2 inline-block">
+                                        {{
+                                          asc: <AltArrowUp size={16} weight="BoldDuotone" />,
+                                          desc: <AltArrowDown size={16} weight="BoldDuotone" />,
+                                        }[header.column.getIsSorted() as string] ?? <SortVertical size={16} weight="BoldDuotone" />}
+                                      </span>
+                                    )}
+                                  </div>
+                                )}
+                            {enableColumnResizing && header.column.getCanResize() && (
                               <div
-                                className={`h-4 w-0.5 rounded-full transition-all ${
-                                  header.column.getIsResizing()
-                                    ? 'h-full w-1 bg-primary'
-                                    : 'bg-border group-hover:h-full group-hover:w-1 group-hover:bg-primary/60'
-                                }`}
-                              />
-                            </div>
-                          )}
-                        </th>
-                      ))}
-                    </tr>
-                  ))}
-                </thead>
+                                onMouseDown={(e) => {
+                                  e.stopPropagation();
+                                  header.getResizeHandler()(e);
+                                }}
+                                onTouchStart={(e) => {
+                                  e.stopPropagation();
+                                  header.getResizeHandler()(e);
+                                }}
+                                onDoubleClick={(e) => {
+                                  e.stopPropagation();
+                                  header.column.resetSize();
+                                }}
+                                style={{ touchAction: 'none' }}
+                                className="group absolute top-0 right-0 flex h-full w-3 cursor-col-resize items-center justify-center select-none"
+                                title="Drag to resize, double-click to reset"
+                                aria-hidden="true"
+                              >
+                                <div
+                                  className={`h-4 w-0.5 rounded-full transition-all ${
+                                    header.column.getIsResizing()
+                                      ? 'h-full w-1 bg-primary'
+                                      : 'bg-border group-hover:h-full group-hover:w-1 group-hover:bg-primary/60'
+                                  }`}
+                                />
+                              </div>
+                            )}
+                          </th>
+                        ))}
+                      </tr>
+                    ))}
+                  </thead>
+                )}
                 <tbody>
                   {isLoading
                     ? (
@@ -508,56 +520,58 @@ export function DataTable<TData extends { id: string }, TValue>({
                           </tr>
                         ))
                       )
-                    : table.getRowModel().rows.length === 0
-                      ? (
-                          <tr className={`border-b border-border ${rowClassName}`}>
-                            <td className={`px-3 py-4 text-xs text-muted-foreground sm:px-6 sm:py-6 sm:text-sm ${cellClassName}`} colSpan={memoizedColumns.length}>
-                              No results
-                            </td>
-                          </tr>
-                        )
-                      : (
-                          table.getRowModel().rows.map((row) => {
-                            const rowId = row.original.id;
-                            const isExpanded = expandedState[rowId];
-                            return (
-                              <React.Fragment key={`${rowId}-${isExpanded ? 'expanded' : 'collapsed'}`}>
-                                <tr
-                                  className={`cursor-pointer border-b border-border transition-colors duration-200 hover:bg-muted/30 ${
-                                    isExpanded ? 'bg-muted/30' : ''
-                                  } ${rowClassName}`}
-                                  onClick={(e) => {
-                                    const target = e.target as HTMLElement;
-                                    if (target.closest('input[type="checkbox"], button, [role="button"], [data-no-expand]')) {
-                                      return;
-                                    }
+                    : renderBody
+                      ? renderBody(table)
+                      : table.getRowModel().rows.length === 0
+                        ? (
+                            <tr className={`border-b border-border ${rowClassName}`}>
+                              <td className={`px-3 py-4 text-xs text-muted-foreground sm:px-6 sm:py-6 sm:text-sm ${cellClassName}`} colSpan={memoizedColumns.length}>
+                                No results
+                              </td>
+                            </tr>
+                          )
+                        : (
+                            table.getRowModel().rows.map((row) => {
+                              const rowId = row.original.id;
+                              const isExpanded = expandedState[rowId];
+                              return (
+                                <React.Fragment key={`${rowId}-${isExpanded ? 'expanded' : 'collapsed'}`}>
+                                  <tr
+                                    className={`cursor-pointer border-b border-border transition-colors duration-200 hover:bg-muted/30 ${
+                                      isExpanded ? 'bg-muted/30' : ''
+                                    } ${rowClassName}`}
+                                    onClick={(e) => {
+                                      const target = e.target as HTMLElement;
+                                      if (target.closest('input[type="checkbox"], button, [role="button"], [data-no-expand]')) {
+                                        return;
+                                      }
 
-                                    if (onRowClick) {
-                                      onRowClick(row.original);
-                                      return;
-                                    }
+                                      if (onRowClick) {
+                                        onRowClick(row.original);
+                                        return;
+                                      }
 
-                                    if (renderExpandedRow && onExpandedChange) {
-                                      onExpandedChange({
-                                        ...expandedState,
-                                        [rowId]: !expandedState[rowId],
-                                      });
-                                    }
-                                  }}
-                                >
-                                  {row.getVisibleCells().map(cell => (
-                                    <td key={`${cell.id}-${cell.column.id}`} className={`px-3 py-3 sm:px-6 sm:py-4 ${cellClassName}`}>
-                                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                    </td>
-                                  ))}
-                                </tr>
-                                {renderExpandedRow && expandedState[row.original.id] && (
-                                  renderExpandedRow(row)
-                                )}
-                              </React.Fragment>
-                            );
-                          })
-                        )}
+                                      if (renderExpandedRow && onExpandedChange) {
+                                        onExpandedChange({
+                                          ...expandedState,
+                                          [rowId]: !expandedState[rowId],
+                                        });
+                                      }
+                                    }}
+                                  >
+                                    {row.getVisibleCells().map(cell => (
+                                      <td key={`${cell.id}-${cell.column.id}`} className={`px-3 py-3 sm:px-6 sm:py-4 ${cellClassName}`}>
+                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                      </td>
+                                    ))}
+                                  </tr>
+                                  {renderExpandedRow && expandedState[row.original.id] && (
+                                    renderExpandedRow(row)
+                                  )}
+                                </React.Fragment>
+                              );
+                            })
+                          )}
                 </tbody>
               </table>
             </div>
@@ -572,7 +586,7 @@ export function DataTable<TData extends { id: string }, TValue>({
             <div className="text-xs text-muted-foreground sm:text-sm">
               Showing
               {' '}
-              {manualPagination ? data.length : table.getFilteredRowModel().rows.length}
+              {displayCount ?? (manualPagination ? data.length : table.getFilteredRowModel().rows.length)}
               {' '}
               of
               {' '}

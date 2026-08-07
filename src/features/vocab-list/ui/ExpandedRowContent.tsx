@@ -41,6 +41,7 @@ const ExpandedRowContent: React.FC<ExpandedRowContentProps> = ({
   onEdit,
   onLinkedWordClick,
   onAddFreeTextWord,
+  headerContent,
 }) => {
   const { speak, cancel, voices } = useSpeechSynthesis();
 
@@ -60,6 +61,7 @@ const ExpandedRowContent: React.FC<ExpandedRowContentProps> = ({
       <td colSpan={columnsCount} className="p-4">
         <div className="space-y-4 pr-4">
           <div className="rounded-lg bg-card p-4 shadow-sm">
+            {headerContent && <div className="mb-4">{headerContent}</div>}
             <div className={`grid gap-4 ${vocab.textTargets.length >= 2 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
               {vocab.textTargets.map((target: TVocab['textTargets'][number], index: number) => {
                 const subjects = target.textTargetSubjects

@@ -4,6 +4,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import type {
   TCreateVocab,
   TVocab,
+  TVocabViewMode,
   VocabListProps,
 } from '@/types/vocab-list';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -22,6 +23,7 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 import {
   createVocab,
+  deleteVocab,
   deleteVocabsBulk,
   getVocabsForSelection,
   updateVocab,
@@ -40,7 +42,10 @@ import AddVocabDialog from './AddVocabDialog';
 import ExpandedRowContent from './ExpandedRowContent';
 import ImportVocabDialog from './ImportVocabDialog';
 import MasteryScoreCell from './MasteryScoreCell';
+import VocabFeedView from './VocabFeedView';
 import VocabListHeader from './VocabListHeader';
+import VocabTableView from './VocabTableView';
+import VocabViewSwitcher from './VocabViewSwitcher';
 import { useWordRelations } from '../hooks/useWordRelations';
 
 // Utility function to generate unique IDs
@@ -118,6 +123,8 @@ const VocabList: React.FC<VocabListProps> = ({
   const subjectIdsParam = searchParams.get('subjectIds');
   const openAdd = searchParams.get('openAdd') || '';
   const selectedSubjectIds = subjectIdsParam ? subjectIdsParam.split(',') : [];
+  const viewParam = searchParams.get('view');
+  const view: TVocabViewMode = viewParam === 'table' || viewParam === 'feed' ? viewParam : 'collapse';
 
   const totalItems = initialVocabsData?.totalItems || 0;
   const totalPages = initialVocabsData?.totalPages || 0;
@@ -358,6 +365,26 @@ const VocabList: React.FC<VocabListProps> = ({
   const handleLinkedWordClick = useCallback((word: string) => {
     handleSearchChange(word);
   }, [handleSearchChange]);
+
+  const handleViewChange = useCallback((nextView: TVocabViewMode) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (nextView === 'collapse') {
+      params.delete('view');
+    } else {
+      params.set('view', nextView);
+    }
+    router.push(`?${params.toString()}`);
+  }, [router, searchParams]);
+
+  const handleDeleteVocab = useCallback(async (id: string) => {
+    await deleteVocab(id);
+  }, []);
+
+  const handleDeleteSuccess = useCallback(() => {
+    startTransition(() => {
+      router.refresh();
+    });
+  }, [router]);
 
   const handleAddFreeTextWord = useCallback((word: string) => {
     form.reset({
@@ -604,10 +631,7 @@ const VocabList: React.FC<VocabListProps> = ({
           <DeleteActionButton
             itemId={_row.original.id}
             itemName="vocabulary item"
-            onDelete={async (id: string) => {
-              const { deleteVocab } = await import('@/actions/vocabs');
-              await deleteVocab(id);
-            }}
+            onDelete={handleDeleteVocab}
             onSuccess={() => {
               startTransition(() => {
                 router.refresh();
@@ -622,7 +646,7 @@ const VocabList: React.FC<VocabListProps> = ({
       enableHiding: false,
       size: 50,
     },
-  ], [expanded, handleEdit, handleSpeakTextSource, router, startTransition]);
+  ], [expanded, handleDeleteVocab, handleEdit, handleSpeakTextSource, router, startTransition]);
 
   return (
     <Form {...form}>
@@ -654,6 +678,8 @@ const VocabList: React.FC<VocabListProps> = ({
             subjectIds: selectedSubjectIds.length > 0 ? selectedSubjectIds : undefined,
           }}
         />
+
+        <VocabViewSwitcher value={view} onChange={handleViewChange} />
 
         {isError && (
           <ErrorState message="Could not load the vocabulary list. Try adjusting filters or refresh the page." />
@@ -703,7 +729,7 @@ const VocabList: React.FC<VocabListProps> = ({
               onCancel={() => bulkDelete.reset()}
             />
 
-            {!vocabListLoadFailed && (
+            {!vocabListLoadFailed && view === 'collapse' && (
               <DataTable
                 columns={columns}
                 data={data}
@@ -741,6 +767,50 @@ const VocabList: React.FC<VocabListProps> = ({
                 onSortingChange={handleSort}
                 onPageSizeChange={handlers.handlePageSizeChange}
                 onBulkDelete={bulkDelete.handleBulkDelete}
+              />
+            )}
+
+            {!vocabListLoadFailed && view === 'table' && (
+              <VocabTableView
+                vocabs={data}
+                searchValue={textSource}
+                onSearchChangeAction={handleSearchChange}
+                pageSize={pagination.pageSize}
+                isLoading={isLoading}
+                pageCount={totalPages}
+                currentPage={currentPage}
+                totalItems={totalItems}
+                onPageChange={handlePageChange}
+                onSortingChange={handleSort}
+                onPageSizeChange={handlers.handlePageSizeChange}
+                onSpeak={handleSpeakTextSource}
+                onEdit={handleEdit}
+                onDeleteVocab={handleDeleteVocab}
+                onDeleteSuccess={handleDeleteSuccess}
+                onView={vocab => router.push(`/vocab-list/${vocab.id}`)}
+              />
+            )}
+
+            {!vocabListLoadFailed && view === 'feed' && (
+              <VocabFeedView
+                vocabs={data}
+                searchValue={textSource}
+                onSearchChangeAction={handleSearchChange}
+                pageSize={pagination.pageSize}
+                isLoading={isLoading}
+                pageCount={totalPages}
+                currentPage={currentPage}
+                totalItems={totalItems}
+                onPageChange={handlePageChange}
+                onSortingChange={handleSort}
+                onPageSizeChange={handlers.handlePageSizeChange}
+                onSpeak={handleSpeakTextSource}
+                onEdit={handleEdit}
+                onDeleteVocab={handleDeleteVocab}
+                onDeleteSuccess={handleDeleteSuccess}
+                onView={vocab => router.push(`/vocab-list/${vocab.id}`)}
+                onLinkedWordClick={handleLinkedWordClick}
+                onAddFreeTextWord={handleAddFreeTextWord}
               />
             )}
           </>
