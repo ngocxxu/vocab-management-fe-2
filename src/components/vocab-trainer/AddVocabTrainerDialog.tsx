@@ -106,6 +106,7 @@ const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({
               {open && (
                 <VocabSelectionForm
                   selectedIds={formData.vocabAssignmentIds}
+                  selectedVocabById={selectedVocabById}
                   initialLanguagesData={initialLanguagesData}
                   open={open}
                   cachedLanguageFolders={cachedLanguageFolders}

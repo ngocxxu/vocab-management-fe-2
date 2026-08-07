@@ -301,11 +301,35 @@ export type QuickFilter = 'all' | 'recent' | 'difficult' | 'unstarted';
 
 export type VocabSelectionFormProps = {
   selectedIds: string[];
+  selectedVocabById?: Record<string, TVocab>;
   initialLanguagesData?: ResponseAPI<TLanguage[]>;
   open?: boolean;
   cachedLanguageFolders?: TVocabSelectionFolderArray;
   onLanguageFoldersLoaded?: (folders: TVocabSelectionFolderArray) => void;
   editMode?: boolean;
+};
+
+export type VocabSelectionScopeProps = {
+  sourceLanguageCode: string;
+  targetLanguageCode: string;
+  languages: TLanguage[];
+  onScopeChange: (sourceLanguageCode: string, targetLanguageCode: string) => void;
+  outOfScopeCount: number;
+  onRemoveOutOfScope: () => void;
+};
+
+export type VocabSelectionFiltersProps = {
+  globalFilter: string;
+  onGlobalFilterChange: (value: string) => void;
+  languageFolderId: string;
+  onLanguageFolderChange: (value: string) => void;
+  languageFolders: TVocabSelectionFolderArray;
+  quickFilter: QuickFilter;
+  onQuickFilterChange: (id: QuickFilter) => void;
+  randomCount: number;
+  onRandomCountChange: (count: number) => void;
+  onRandomize: () => void;
+  isRandomizeDisabled: boolean;
 };
 
 export type VocabTrainerLayoutProps = {

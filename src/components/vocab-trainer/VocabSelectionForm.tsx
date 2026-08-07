@@ -5,8 +5,8 @@ import type { VocabFilters } from '@/hooks';
 import type { TVocabSelectionFolderArray } from '@/types/vocab-selection';
 import type { QuickFilter, VocabSelectionFormProps } from '@/types/vocab-trainer';
 import type { TVocab } from '@/types/vocab-list';
-import { Folder, Magnifer, Shuffle } from '@solar-icons/react/ssr';
-import React, { useCallback, useMemo, useState } from 'react';
+import type { TLanguage } from '@/types/language';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import {
   FormControl,
@@ -15,32 +15,50 @@ import {
   FormLabel,
   FormMessage,
 } from '@/shared/ui/form';
-import { Button } from '@/shared/ui/button';
 import { Checkbox } from '@/shared/ui/checkbox';
-import { Input } from '@/shared/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { DataTable } from '@/shared/ui/table';
 import { useLocalPagination, useVocabSelection } from '@/hooks';
 import { getRandomVocabsForSelection } from '@/actions';
 import { cn } from '@/libs/utils';
+import { folderMatchesScope, getLastTrainerScope, isAllScope, scopeParam, setLastTrainerScope } from '@/utils/trainer-scope';
 import { getMasteryColors, getMasteryDisplay, getMasteryStatus } from '@/utils/vocab-mastery';
+import VocabSelectionFilters from './VocabSelectionFilters';
+import VocabSelectionScope from './VocabSelectionScope';
 
 const EMPTY_CACHED_FOLDERS: TVocabSelectionFolderArray = [];
+const EMPTY_SELECTED_VOCAB_BY_ID: Record<string, TVocab> = {};
 
-const QUICK_FILTERS: { id: QuickFilter; label: string }[] = [
-  { id: 'all', label: 'All Words' },
-  { id: 'recent', label: 'Recently Added' },
-  { id: 'difficult', label: 'Difficult' },
-  { id: 'unstarted', label: 'Unstarted' },
-];
+function buildInitialFilters(editMode: boolean, languages: TLanguage[]): VocabFilters {
+  if (editMode) {
+    return { globalFilter: '', sourceLanguageCode: 'ALL', targetLanguageCode: 'ALL', languageFolderId: 'ALL' };
+  }
+  const lastScope = getLastTrainerScope();
+  const validCodes = new Set(languages.map(l => l.code));
+  const sourceLanguageCode = lastScope?.sourceLanguageCode && validCodes.has(lastScope.sourceLanguageCode)
+    ? lastScope.sourceLanguageCode
+    : 'ALL';
+  const targetLanguageCode = lastScope?.targetLanguageCode && validCodes.has(lastScope.targetLanguageCode)
+    ? lastScope.targetLanguageCode
+    : 'ALL';
+  return {
+    globalFilter: '',
+    sourceLanguageCode,
+    targetLanguageCode,
+    languageFolderId: 'ALL',
+  };
+}
 
 const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
   selectedIds,
+  selectedVocabById = EMPTY_SELECTED_VOCAB_BY_ID,
   open = true,
   cachedLanguageFolders = EMPTY_CACHED_FOLDERS,
   onLanguageFoldersLoaded,
+  initialLanguagesData,
+  editMode = false,
 }) => {
   const form = useFormContext();
+  const languages = useMemo(() => initialLanguagesData?.items || [], [initialLanguagesData]);
   const [quickFilter, setQuickFilter] = useState<QuickFilter>('all');
   const [randomCount, setRandomCount] = useState<number>(10);
   const [isRandomizing, setIsRandomizing] = useState(false);
@@ -49,21 +67,78 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
 
   const { pagination, handlers } = localPagination;
 
-  const [filters, setFilters] = useState<VocabFilters>({
-    globalFilter: '',
-    sourceLanguageCode: 'ALL',
-    targetLanguageCode: 'ALL',
-    languageFolderId: 'ALL',
-  });
+  const [filters, setFilters] = useState<VocabFilters>(() => buildInitialFilters(editMode, languages));
+  // Edit mode starts scope at ALL/ALL until derived below; skip fetching with that
+  // throwaway scope so we don't fire the query twice (once unscoped, once scoped).
+  const [scopeReady, setScopeReady] = useState(() => !editMode || selectedIds.length === 0);
+
+  const scopeDerivedRef = useRef(false);
+  useEffect(() => {
+    if (!editMode || scopeDerivedRef.current || selectedIds.length === 0) {
+      return;
+    }
+    const vocabs = selectedIds.map(id => selectedVocabById[id]).filter((v): v is TVocab => Boolean(v));
+    if (vocabs.length === 0) {
+      // Wait for at least one selected vocab to hydrate. Do not require every id to
+      // resolve — a deleted vocab would otherwise block derivation forever.
+      return;
+    }
+    scopeDerivedRef.current = true;
+
+    const counts = new Map<string, { sourceLanguageCode: string; targetLanguageCode: string; count: number }>();
+    vocabs.forEach((v) => {
+      const key = `${v.sourceLanguageCode}::${v.targetLanguageCode}`;
+      const entry = counts.get(key);
+      if (entry) {
+        entry.count += 1;
+      } else {
+        counts.set(key, { sourceLanguageCode: v.sourceLanguageCode, targetLanguageCode: v.targetLanguageCode, count: 1 });
+      }
+    });
+
+    let majority: { sourceLanguageCode: string; targetLanguageCode: string; count: number } | undefined;
+    counts.forEach((entry) => {
+      if (!majority || entry.count > majority.count) {
+        majority = entry;
+      }
+    });
+
+    if (majority) {
+      setFilters(prev => ({ ...prev, sourceLanguageCode: majority!.sourceLanguageCode, targetLanguageCode: majority!.targetLanguageCode }));
+    }
+    setScopeReady(true);
+  }, [editMode, selectedIds, selectedVocabById]);
 
   const { vocabs, languageFolders, totalItems, totalPages, currentPage, isLoading } = useVocabSelection({
-    open,
+    open: open && scopeReady,
     pagination,
     filters,
     quickFilter,
     cachedLanguageFolders,
     onLanguageFoldersLoaded,
   });
+
+  const scopedLanguageFolders = useMemo(() => {
+    if (isAllScope(filters.sourceLanguageCode, filters.targetLanguageCode)) {
+      return languageFolders;
+    }
+    return languageFolders.filter(f => folderMatchesScope(f, filters.sourceLanguageCode, filters.targetLanguageCode));
+  }, [languageFolders, filters.sourceLanguageCode, filters.targetLanguageCode]);
+
+  const outOfScopeIds = useMemo(() => {
+    if (isAllScope(filters.sourceLanguageCode, filters.targetLanguageCode)) {
+      return [];
+    }
+    return selectedIds.filter((id) => {
+      const vocab = selectedVocabById[id];
+      if (!vocab) {
+        return false;
+      }
+      const mismatchSource = filters.sourceLanguageCode !== 'ALL' && vocab.sourceLanguageCode !== filters.sourceLanguageCode;
+      const mismatchTarget = filters.targetLanguageCode !== 'ALL' && vocab.targetLanguageCode !== filters.targetLanguageCode;
+      return mismatchSource || mismatchTarget;
+    });
+  }, [selectedIds, selectedVocabById, filters.sourceLanguageCode, filters.targetLanguageCode]);
 
   const data = useMemo<TVocab[]>(() => vocabs, [vocabs]);
 
@@ -84,6 +159,35 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
     handlers.handlePageChange(1);
   }, [handlers]);
 
+  const handleScopeChange = useCallback((sourceLanguageCode: string, targetLanguageCode: string) => {
+    setFilters((prev) => {
+      // languageFolders may still be [] while the folders fetch is in flight — don't
+      // punish an in-flight load by resetting a folder that would otherwise be valid.
+      const stillValidFolder = prev.languageFolderId === 'ALL' || languageFolders.length === 0 || languageFolders.some(f =>
+        f.id === prev.languageFolderId && folderMatchesScope(f, sourceLanguageCode, targetLanguageCode));
+      return {
+        ...prev,
+        sourceLanguageCode,
+        targetLanguageCode,
+        languageFolderId: stillValidFolder ? prev.languageFolderId : 'ALL',
+      };
+    });
+    handlers.handlePageChange(1);
+    if (!isAllScope(sourceLanguageCode, targetLanguageCode)) {
+      setLastTrainerScope({ sourceLanguageCode, targetLanguageCode });
+    }
+  }, [handlers, languageFolders]);
+
+  const handleRemoveOutOfScope = useCallback(() => {
+    if (outOfScopeIds.length === 0) {
+      return;
+    }
+    const outOfScopeSet = new Set(outOfScopeIds);
+    const current = (form.getValues('vocabAssignmentIds') as string[]) || [];
+    form.setValue('vocabAssignmentIds', current.filter(id => !outOfScopeSet.has(id)));
+    form.clearErrors('vocabAssignmentIds');
+  }, [outOfScopeIds, form]);
+
   const handleQuickFilter = useCallback((id: QuickFilter) => {
     setQuickFilter(id);
     handlers.handlePageChange(1);
@@ -97,7 +201,9 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
     try {
       const result = await getRandomVocabsForSelection({
         count: randomCount,
-        languageFolderId: filters.languageFolderId !== 'ALL' ? filters.languageFolderId : undefined,
+        languageFolderId: scopeParam(filters.languageFolderId),
+        sourceLanguageCode: scopeParam(filters.sourceLanguageCode),
+        targetLanguageCode: scopeParam(filters.targetLanguageCode),
       });
       if (!Array.isArray(result)) {
         return;
@@ -108,7 +214,7 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
     } finally {
       setIsRandomizing(false);
     }
-  }, [filters.languageFolderId, form, handlers, isLoading, isRandomizing, randomCount]);
+  }, [filters.languageFolderId, filters.sourceLanguageCode, filters.targetLanguageCode, form, handlers, isLoading, isRandomizing, randomCount]);
 
   const columns = useMemo<ColumnDef<TVocab>[]>(() => [
     {
@@ -202,102 +308,28 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-        <div className="relative flex-1">
-          <Magnifer
-            size={18}
-            weight="BoldDuotone"
-            className="absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground"
-          />
-          <Input
-            placeholder="Search across all folders..."
-            value={filters.globalFilter}
-            onChange={e => handleFilterChange('globalFilter', e.target.value)}
-            className="pl-9"
-          />
-        </div>
-        <Select
-          value={filters.languageFolderId}
-          onValueChange={value => handleFilterChange('languageFolderId', value)}
-        >
-          <SelectTrigger className="w-full sm:w-[180px]">
-            <Folder size={16} weight="BoldDuotone" className="mr-2 shrink-0" />
-            <span className="flex-1 text-left">
-              Folder:
-              {' '}
-              <SelectValue placeholder="All" />
-            </span>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="ALL">All</SelectItem>
-            {languageFolders?.map(f => (
-              <SelectItem key={f.id} value={f.id}>{f.name}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      <VocabSelectionScope
+        sourceLanguageCode={filters.sourceLanguageCode}
+        targetLanguageCode={filters.targetLanguageCode}
+        languages={languages}
+        onScopeChange={handleScopeChange}
+        outOfScopeCount={outOfScopeIds.length}
+        onRemoveOutOfScope={handleRemoveOutOfScope}
+      />
 
-      <div className="space-y-2">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-            Quick filters
-          </p>
-
-          <div className="flex h-9 w-full items-center rounded-md border border-input bg-background shadow-xs sm:w-auto">
-            <div className="flex min-w-0 flex-1 items-center justify-center pr-1 pl-2 sm:flex-none">
-              <span className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Count</span>
-              <input
-                type="number"
-                inputMode="numeric"
-                min={1}
-                aria-label="Random vocabulary count"
-                value={randomCount}
-                onChange={(e) => {
-                  const next = Number(e.target.value);
-                  setRandomCount(Number.isFinite(next) ? Math.max(1, next) : 1);
-                }}
-                className={cn(
-                  'h-8 w-10 border-0 bg-none p-0 text-center text-sm font-semibold text-foreground shadow-none outline-none',
-                  'focus-visible:ring-0 disabled:pointer-events-none disabled:opacity-50',
-                )}
-              />
-            </div>
-
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={handleRandomize}
-              disabled={isLoading || isRandomizing}
-              className={cn(
-                'h-8 shrink-0 rounded-md bg-primary/15 text-sm font-medium text-primary hover:text-primary hover:bg-primary/25',
-                'disabled:opacity-50 sm:min-w-[132px]',
-              )}
-            >
-              <span className="flex size-5 items-center justify-center rounded-sm bg-background/15">
-                <Shuffle size={14} weight="BoldDuotone" />
-              </span>
-              Randomize
-            </Button>
-          </div>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {QUICK_FILTERS.map(({ id, label }) => (
-            <button
-              key={id}
-              type="button"
-              onClick={() => handleQuickFilter(id)}
-              className={cn(
-                'rounded-full px-4 py-2 text-sm font-medium transition-colors',
-                quickFilter === id
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-accent text-accent-foreground hover:bg-accent hover:text-accent-foreground',
-              )}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-      </div>
+      <VocabSelectionFilters
+        globalFilter={filters.globalFilter}
+        onGlobalFilterChange={value => handleFilterChange('globalFilter', value)}
+        languageFolderId={filters.languageFolderId}
+        onLanguageFolderChange={value => handleFilterChange('languageFolderId', value)}
+        languageFolders={scopedLanguageFolders}
+        quickFilter={quickFilter}
+        onQuickFilterChange={handleQuickFilter}
+        randomCount={randomCount}
+        onRandomCountChange={setRandomCount}
+        onRandomize={handleRandomize}
+        isRandomizeDisabled={isLoading || isRandomizing}
+      />
 
       <FormField
         control={form.control}

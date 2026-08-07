@@ -180,6 +180,8 @@ export async function getRandomVocabsForSelection(
     const result = await vocabApi.random({
       count,
       languageFolderId: params.languageFolderId || undefined,
+      sourceLanguageCode: params.sourceLanguageCode || undefined,
+      targetLanguageCode: params.targetLanguageCode || undefined,
     });
 
     if (Array.isArray(result)) {

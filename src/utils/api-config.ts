@@ -44,6 +44,8 @@ export type VocabConflictBySubjectParams = {
 export type RandomVocabQueryParams = {
   count: number;
   languageFolderId?: string;
+  sourceLanguageCode?: string;
+  targetLanguageCode?: string;
 };
 
 export type TextTargetQueryParams = {
