@@ -557,6 +557,10 @@ export default function ConflictVocabulariesContent({
                       maxCount={5}
                       className="w-full"
                       resetOnDefaultValueChange
+                      // ponytail: nested inside a modal Dialog, whose react-remove-scroll
+                      // lock blocks wheel events on portaled content. modal popover pushes
+                      // its own scroll lock so the list scrolls.
+                      modalPopover
                     />
                   </div>
 

@@ -4,7 +4,7 @@ import type { SubjectsSectionProps } from '@/types/vocab-list';
 import type { TSubjectGenerateResult } from '@/types/subject';
 import { MagicStick, RefreshCircle } from '@solar-icons/react/ssr';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { generateSubjectSuggestions } from '@/actions/subjects';
 import { useTextTargetCooldown } from '../hooks/useTextTargetCooldown';
 import { Badge } from '@/shared/ui/badge';
@@ -49,8 +49,10 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = React.memo(({
   const subjectIdsPath = `textTargets.${targetIndex}.subjectIds` as const;
   const pendingPath = `textTargets.${targetIndex}.pendingSubjectNames` as const;
 
-  const currentSubjectIds: string[] = form.watch(subjectIdsPath) ?? subjectIds ?? [];
-  const currentPendingNames: string[] = form.watch(pendingPath) ?? [];
+  const watchedSubjectIds: string[] | undefined = useWatch({ control: form.control, name: subjectIdsPath });
+  const watchedPendingNames: string[] | undefined = useWatch({ control: form.control, name: pendingPath });
+  const currentSubjectIds: string[] = watchedSubjectIds ?? subjectIds ?? [];
+  const currentPendingNames: string[] = watchedPendingNames ?? [];
 
   const multiSelectValue = useMemo(
     () => [...currentSubjectIds, ...currentPendingNames.map(n => `${NEW_PREFIX}${n}`)],
@@ -209,6 +211,10 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = React.memo(({
                 disabled={subjectsLoading}
                 className="w-full"
                 resetOnDefaultValueChange={true}
+                // ponytail: nested inside a modal Dialog, whose react-remove-scroll
+                // lock blocks wheel events on portaled content. modal popover pushes
+                // its own scroll lock so the list scrolls.
+                modalPopover
               />
             </FormControl>
             <FormMessage />
