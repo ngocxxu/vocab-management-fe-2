@@ -92,17 +92,6 @@ export type HeaderProps = {
   onNotificationsChanged?: () => Promise<void> | void;
 };
 
-export type ProgressChartTooltipPayload = {
-  date: string;
-  averageMastery: number;
-  [key: string]: unknown;
-};
-
-export type ProgressChartTooltipProps = {
-  active?: boolean;
-  payload?: Array<{ payload: ProgressChartTooltipPayload; [key: string]: unknown }>;
-};
-
 export type ProgressChartProps = {
   data: import('@/types/statistics').ProgressOverTime[];
 };
@@ -127,13 +116,6 @@ export type SummaryStatsCardProps = {
 
 export type SubjectMasteryChartProps = {
   data: import('@/types/statistics').MasteryBySubject[];
-};
-
-export type DistributionChartTooltipPayload = { name: string; count: number };
-
-export type DistributionChartTooltipProps = {
-  active?: boolean;
-  payload?: Array<{ payload: DistributionChartTooltipPayload }>;
 };
 
 export type DistributionChartProps = {

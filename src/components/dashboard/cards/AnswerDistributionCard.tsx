@@ -1,37 +1,19 @@
 'use client';
 
-import React from 'react';
-import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-
 import type { AnswerDistributionCardProps } from '@/types';
+import { defineChart } from '@tanstack/charts';
+import { polar, radialArc } from '@tanstack/charts/polar';
+import { tooltip } from '@tanstack/charts/tooltip';
+import { Chart } from '@tanstack/react-charts/tooltip';
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { renderChartTooltipBody } from '@/features/dashboard/ui/ChartTooltipBody';
 
 const CORRECT_COLOR = 'var(--success)';
 const INCORRECT_COLOR = 'var(--destructive)';
+const PAD_ANGLE_RADIANS = 0.02;
 
-type TAnswerDistributionTooltipProps = {
-  active?: boolean;
-  payload?: Array<{ payload: { name: string; value: number } }>;
-};
-
-const AnswerDistributionTooltip = ({ active, payload }: TAnswerDistributionTooltipProps) => {
-  if (!active || !payload?.length || !payload[0]) {
-    return null;
-  }
-
-  const { name, value } = payload[0].payload;
-
-  return (
-    <div className="rounded-lg border border-border bg-card px-3 py-2 shadow-lg">
-      <p className="font-medium text-foreground">{name}</p>
-      <p className="text-sm text-muted-foreground">
-        Answers:
-        {' '}
-        <span className="font-medium text-foreground">{value}</span>
-      </p>
-    </div>
-  );
-};
+type TDonutSlice = { name: string; value: number; color: string };
 
 export const AnswerDistributionCard: React.FC<AnswerDistributionCardProps> = ({ data }) => {
   const total = data.totalCorrect + data.totalIncorrect;
@@ -39,10 +21,48 @@ export const AnswerDistributionCard: React.FC<AnswerDistributionCardProps> = ({ 
   const correctPct = total > 0 ? ((data.totalCorrect / total) * 100).toFixed(1) : '0.0';
   const incorrectPct = total > 0 ? ((data.totalIncorrect / total) * 100).toFixed(1) : '0.0';
 
-  const donutData = [
+  const donutData: TDonutSlice[] = [
     { name: 'Correct', value: data.totalCorrect, color: CORRECT_COLOR },
     { name: 'Incorrect', value: data.totalIncorrect, color: INCORRECT_COLOR },
   ];
+
+  const cumulativeAngle = (index: number): number => {
+    if (total <= 0) {
+      return 0;
+    }
+    const cumulativeValue = donutData.slice(0, index).reduce((sum, slice) => sum + slice.value, 0);
+    return (cumulativeValue / total) * 2 * Math.PI;
+  };
+
+  const answerDistributionChart = defineChart({
+    marks: [
+      polar({
+        marks: [
+          radialArc(donutData, {
+            startAngle: (_datum, index) => cumulativeAngle(index),
+            endAngle: (datum, index) => cumulativeAngle(index) + (total > 0 ? (datum.value / total) * 2 * Math.PI : 0),
+            padAngle: () => PAD_ANGLE_RADIANS,
+            innerRadius: 92,
+            outerRadius: 136,
+            fill: d => d.color,
+          }),
+        ],
+      }),
+    ],
+    tooltip: {
+      use: tooltip,
+      content: (points) => {
+        const point = points[0];
+        if (!point) {
+          return { rows: [] };
+        }
+        return {
+          title: point.datum.name,
+          rows: [{ label: 'Answers', value: String(point.datum.value) }],
+        };
+      },
+    },
+  });
 
   return (
     <Card className="flex h-full flex-col overflow-visible border-0 bg-card shadow-sm">
@@ -52,25 +72,12 @@ export const AnswerDistributionCard: React.FC<AnswerDistributionCardProps> = ({ 
       <CardContent className="p-6">
         <div className="flex flex-col items-center">
           <div className="relative h-[320px] w-full">
-            <ResponsiveContainer width="100%" height={320}>
-              <PieChart>
-                <Pie
-                  data={donutData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={92}
-                  outerRadius={136}
-                  paddingAngle={2}
-                  dataKey="value"
-                  nameKey="name"
-                >
-                  {donutData.map(entry => (
-                    <Cell key={entry.name} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip content={<AnswerDistributionTooltip />} wrapperStyle={{ zIndex: 10 }} />
-              </PieChart>
-            </ResponsiveContainer>
+            <Chart
+              definition={answerDistributionChart}
+              height={320}
+              ariaLabel="Correct versus incorrect answer distribution"
+              renderTooltipBody={renderChartTooltipBody}
+            />
             <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
               <span className="text-2xl font-bold text-foreground">
                 {successPct}
