@@ -75,7 +75,9 @@ const sentryOptions: Sentry.NodeOptions | Sentry.EdgeOptions = {
   spotlight: process.env.NODE_ENV === 'development',
 
   integrations: [
-    Sentry.consoleLoggingIntegration(),
+    // `log` / `info` / `debug` are where developers interpolate whole objects,
+    // and those objects are the ones carrying request bodies and user records.
+    Sentry.consoleLoggingIntegration({ levels: ['warn', 'error'] }),
   ],
 
   // Never send request headers or the user's IP address.

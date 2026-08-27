@@ -32,7 +32,9 @@ Sentry.init({
   // Add optional integrations for additional features
   integrations: [
     Sentry.replayIntegration(),
-    Sentry.consoleLoggingIntegration(),
+    // `log` / `info` / `debug` are where developers interpolate whole objects,
+    // and those objects are the ones carrying request bodies and user records.
+    Sentry.consoleLoggingIntegration({ levels: ['warn', 'error'] }),
   ],
 
   // Never send request headers or the user's IP address.
