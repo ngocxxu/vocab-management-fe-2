@@ -4,7 +4,24 @@ import { refreshAccessTokenOnce } from '@/libs/auth-refresh-client';
 import { API_ENDPOINTS } from '@/utils/api-config';
 import { getIsSigningOut, handleTokenExpiration } from '@/utils/auth-utils';
 import { Env } from './Env';
-import { logger } from './Logger';
+import { getLogger } from '@logtape/logtape';
+import './Logger';
+
+/**
+ * Category ['app', 'http'].
+ *
+ * Logger.ts's Sentry sink skips this category on purpose: these interceptors
+ * fire on EVERY failed request, so one backend outage would become thousands
+ * of billed Sentry events with no spike protection behind them. The failures
+ * stay visible in Sentry Logs and, server-side, via onRequestError.
+ *
+ * Resolved via getLogger() rather than `appLogger.getChild()` because
+ * Logger.ts imports THIS module for its Better Stack sink. Reading Logger.ts's
+ * `logger` binding at module scope would touch it before initialisation and
+ * throw a TDZ ReferenceError during the build. The bare side-effect import
+ * above keeps configure() ordering intact without binding to any export.
+ */
+const logger = getLogger(['app', 'http']);
 
 // Create axios instance with default configuration
 // Use relative paths to call Next.js API routes instead of backend directly
