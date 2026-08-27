@@ -45,8 +45,12 @@ if (process.env.ANALYZE === 'true') {
   configWithPlugins = withBundleAnalyzer()(configWithPlugins);
 }
 
-// Conditionally enable Sentry configuration
-if (!process.env.NEXT_PUBLIC_SENTRY_DISABLED) {
+// Conditionally enable Sentry configuration.
+// Gated on the positive switch, not on an inverted disable flag: the previous
+// `!process.env.NEXT_PUBLIC_SENTRY_DISABLED` check meant `=false` and `=0` both
+// disabled capture. Inlined rather than imported from @/libs/sentry-config
+// because the path alias does not resolve in the next.config build context.
+if (process.env.NEXT_PUBLIC_SENTRY_ENABLED === 'true') {
   configWithPlugins = withSentryConfig(configWithPlugins, {
     // For all available options, see:
     // https://www.npmjs.com/package/@sentry/webpack-plugin#options
