@@ -22,6 +22,24 @@ export type TSentryResolution = {
   readonly dsn: string;
 };
 
+/**
+ * The deployment label events are tagged with.
+ *
+ * Falls back to NODE_ENV, but is deliberately a separate variable: NODE_ENV is
+ * a build mode, not a deployment identity. The Docker image hardcodes it to
+ * `production`, so staging and production built from one image would otherwise
+ * report as the same environment and Sentry would merge their issues.
+ *
+ * An unset Docker ARG arrives as an empty string, so this uses `||` rather than
+ * `??` — empty must fall through to NODE_ENV, not win.
+ */
+export function resolveSentryEnvironment(
+  value: string | undefined,
+  nodeEnv: string | undefined,
+): string {
+  return value?.trim() || nodeEnv || 'unknown';
+}
+
 /** Only the exact string 'true'. No truthiness, no `!== 'false'`. */
 export function isSentrySwitchOn(value: string | undefined): boolean {
   return value === 'true';

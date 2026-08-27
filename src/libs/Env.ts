@@ -23,6 +23,8 @@ export const Env = createEnv({
     NEXT_PUBLIC_SENTRY_ENABLED: z.enum(['true', 'false']).optional(),
     // Says WHERE events go. Never whether — that is the switch above.
     NEXT_PUBLIC_SENTRY_DSN: z.string().optional(),
+    // Deployment label. A label, never a control. Falls back to NODE_ENV.
+    NEXT_PUBLIC_SENTRY_ENVIRONMENT: z.string().optional(),
   },
   shared: {
     NODE_ENV: z.enum(['test', 'development', 'production']).optional(),
@@ -44,5 +46,6 @@ export const Env = createEnv({
     SENTRY_ENABLED: process.env.SENTRY_ENABLED,
     NEXT_PUBLIC_SENTRY_ENABLED: process.env.NEXT_PUBLIC_SENTRY_ENABLED,
     NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
+    NEXT_PUBLIC_SENTRY_ENVIRONMENT: process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT,
   },
 });

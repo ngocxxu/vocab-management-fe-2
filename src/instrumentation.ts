@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/nextjs';
 
 import { version } from '../package.json';
-import { resolveSentry } from '@/libs/sentry-config';
+import { resolveSentry, resolveSentryEnvironment } from '@/libs/sentry-config';
 import { toPathname } from '@/libs/sentry-scrub';
 
 /**
@@ -64,9 +64,10 @@ const sentryOptions: Sentry.NodeOptions | Sentry.EdgeOptions = {
   // scope behaviour is identical whether or not we are sending.
   enabled: active,
 
-  // NODE_ENV is the only signal available today. If staging and production ever
-  // ship from the same build, this needs a dedicated variable to tell them apart.
-  environment: process.env.NODE_ENV,
+  environment: resolveSentryEnvironment(
+    process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT,
+    process.env.NODE_ENV,
+  ),
   release: `vocab-management-fe@${version}`,
 
   // Spotlight is a local development overlay and has nothing to do with whether
