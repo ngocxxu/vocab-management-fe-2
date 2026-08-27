@@ -34,8 +34,8 @@ Sentry.init({
     Sentry.consoleLoggingIntegration(),
   ],
 
-  // Adds request headers and IP for users, for more info visit
-  sendDefaultPii: true,
+  // Never send request headers or the user's IP address.
+  sendDefaultPii: false,
 
   // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
   tracesSampleRate: 1,
