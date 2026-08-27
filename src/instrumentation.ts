@@ -83,8 +83,9 @@ const sentryOptions: Sentry.NodeOptions | Sentry.EdgeOptions = {
   // Never send request headers or the user's IP address.
   sendDefaultPii: false,
 
-  // Adjust this value in production, or use tracesSampler for greater control
-  tracesSampleRate: 1,
+  // Off while on the Sentry free plan: tracing competes with error capture for
+  // a quota that has no spike protection behind it.
+  tracesSampleRate: 0,
 
   // Enable logs to be sent to Sentry
   _experiments: { enableLogs: true },

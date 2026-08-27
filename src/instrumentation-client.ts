@@ -29,9 +29,7 @@ Sentry.init({
   environment: process.env.NODE_ENV,
   release: `vocab-management-fe@${version}`,
 
-  // Add optional integrations for additional features
   integrations: [
-    Sentry.replayIntegration(),
     // `log` / `info` / `debug` are where developers interpolate whole objects,
     // and those objects are the ones carrying request bodies and user records.
     Sentry.consoleLoggingIntegration({ levels: ['warn', 'error'] }),
@@ -40,14 +38,12 @@ Sentry.init({
   // Never send request headers or the user's IP address.
   sendDefaultPii: false,
 
-  // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
-  tracesSampleRate: 1,
+  // Off while on the Sentry free plan: tracing competes with error capture for
+  // a quota that has no spike protection behind it.
+  tracesSampleRate: 0,
 
-  // Define how likely Replay events are sampled.
-  replaysSessionSampleRate: 0.1,
-
-  // Define how likely Replay events are sampled when an error occurs.
-  replaysOnErrorSampleRate: 1.0,
+  // Session replay is removed entirely. The free plan allows 50 replays a
+  // month, which is not a number any triage workflow can be built on.
 
   // Enable logs to be sent to Sentry
   _experiments: { enableLogs: true },
