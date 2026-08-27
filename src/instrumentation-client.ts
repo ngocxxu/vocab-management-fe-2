@@ -6,6 +6,7 @@ import * as Spotlight from '@spotlightjs/spotlight';
 
 import { version } from '../package.json';
 import { resolveSentry } from '@/libs/sentry-config';
+import { toOriginAndPathname } from '@/libs/sentry-scrub';
 
 /**
  * NEXT_PUBLIC_SENTRY_ENABLED is the only switch that can reach the browser —
@@ -51,6 +52,40 @@ Sentry.init({
 
   // Setting this option to true will print useful information to the console while you're setting up Sentry.
   debug: false,
+
+  beforeBreadcrumb(breadcrumb) {
+    // `ui.input` captures values typed into forms. `console` duplicates what
+    // the console integration already forwards, at every level.
+    if (breadcrumb.category === 'ui.input' || breadcrumb.category === 'console') {
+      return null;
+    }
+
+    if (typeof breadcrumb.data?.url === 'string') {
+      breadcrumb.data.url = toOriginAndPathname(breadcrumb.data.url);
+    }
+
+    return breadcrumb;
+  },
+
+  beforeSend(event) {
+    // Identity never leaves the browser, independent of sendDefaultPii.
+    delete event.user;
+
+    event.tags = { ...event.tags, runtime: 'browser' };
+    event.contexts = {
+      ...event.contexts,
+      // Concrete path for debugging. Deliberately a context and not a tag:
+      // per-record paths as tags would exhaust the cardinality budget and
+      // fragment issue grouping.
+      request: { pathname: window.location.pathname },
+    };
+
+    if (event.request?.url) {
+      event.request.url = toOriginAndPathname(event.request.url);
+    }
+
+    return event;
+  },
 });
 
 // Local development overlay. Deliberately independent of the capture switch.
