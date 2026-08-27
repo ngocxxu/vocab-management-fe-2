@@ -2,6 +2,7 @@ import * as Sentry from '@sentry/nextjs';
 
 import { version } from '../package.json';
 import { resolveSentry } from '@/libs/sentry-config';
+import { toPathname } from '@/libs/sentry-scrub';
 
 /**
  * Server and edge runtime Sentry setup.
@@ -15,6 +16,45 @@ const { active } = resolveSentry(
   process.env.NEXT_PUBLIC_SENTRY_DSN,
   'server',
 );
+
+/**
+ * Rebuild the outgoing event from named fields only. Anything not listed is
+ * dropped.
+ *
+ * This is an allowlist and not a denylist on purpose: a denylist silently leaks
+ * whatever field the next SDK version starts attaching.
+ */
+function applyAllowlist(event: Sentry.ErrorEvent): Sentry.ErrorEvent {
+  const pathname = toPathname(event.request?.url);
+
+  return {
+    // Required discriminant on ErrorEvent (always undefined); carried through
+    // so the rebuilt object stays a valid ErrorEvent rather than a cast lie.
+    type: event.type,
+    event_id: event.event_id,
+    timestamp: event.timestamp,
+    platform: event.platform,
+    level: event.level,
+    environment: event.environment,
+    release: event.release,
+    server_name: event.server_name,
+    transaction: event.transaction,
+    fingerprint: event.fingerprint,
+    exception: event.exception,
+    tags: { ...event.tags, runtime: 'server' },
+    contexts: {
+      runtime: event.contexts?.runtime,
+      // A context, not a tag: per-record paths would exhaust the tag
+      // cardinality budget and fragment issue grouping.
+      request: pathname ? { pathname } : undefined,
+    },
+    request: event.request?.method ? { method: event.request.method } : undefined,
+    sdk: event.sdk,
+  } as Sentry.ErrorEvent;
+}
+
+/** Guards against an error thrown inside the capture path looping forever. */
+let capturing = false;
 
 const sentryOptions: Sentry.NodeOptions | Sentry.EdgeOptions = {
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
@@ -49,6 +89,23 @@ const sentryOptions: Sentry.NodeOptions | Sentry.EdgeOptions = {
 
   // Setting this option to true will print useful information to the console while you're setting up Sentry.
   debug: false,
+
+  beforeSend(event) {
+    if (!active) {
+      return null;
+    }
+
+    if (capturing) {
+      return null;
+    }
+
+    capturing = true;
+    try {
+      return applyAllowlist(event);
+    } finally {
+      capturing = false;
+    }
+  },
 };
 
 export async function register() {
