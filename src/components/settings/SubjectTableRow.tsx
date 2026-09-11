@@ -60,7 +60,7 @@ export const SubjectTableRow: React.FC<SubjectTableRowProps> = ({ subject, index
       </td>
       <td className="px-3 py-3 sm:px-6 sm:py-4">
         <Badge variant="secondary" className="font-normal">
-          —
+          {subject.vocabCount ?? '—'}
         </Badge>
       </td>
       <td className="px-3 py-3 text-sm text-muted-foreground sm:px-6 sm:py-4">

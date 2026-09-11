@@ -5,6 +5,7 @@ export type TSubject = {
   createdAt: string;
   updatedAt: string;
   userId: string;
+  vocabCount?: number;
 };
 
 export type TCreateSubject = {
