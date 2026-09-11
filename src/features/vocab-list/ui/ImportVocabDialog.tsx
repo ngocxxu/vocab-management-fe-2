@@ -268,7 +268,7 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
       </Dialog>
 
       <AlertDialog open={showErrorDialog} onOpenChange={setShowErrorDialog}>
-        <AlertDialogContent className="max-w-4xl">
+        <AlertDialogContent className="max-w-[95vw] sm:max-w-4xl">
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
               <DangerCircle size={20} weight="BoldDuotone" className="text-destructive" />
@@ -314,7 +314,13 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
                 <div>
                   <h4 className="mb-2 font-medium">Error Details:</h4>
                   <div className="max-h-60 overflow-auto rounded-lg border">
-                    <table className="w-full">
+                    <table className="w-full table-fixed">
+                      <colgroup>
+                        <col className="w-[8%]" />
+                        <col className="w-[32%]" />
+                        <col className="w-[42%]" />
+                        <col className="w-[18%]" />
+                      </colgroup>
                       <thead>
                         <tr className="border-b bg-muted/30">
                           <th className="px-4 py-2 text-left text-sm font-medium text-muted-foreground">Row</th>
@@ -333,8 +339,8 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
                           return (
                             <tr key={`${error.row}-${index}`} className="border-b hover:bg-muted/20">
                               <td className="px-4 py-2 font-medium">{error.row}</td>
-                              <td className="px-4 py-2 text-destructive">{error.error}</td>
-                              <td className="max-w-xs px-4 py-2">
+                              <td className="px-4 py-2 break-words text-destructive">{error.error}</td>
+                              <td className="px-4 py-2 break-words">
                                 {Object.entries(error.data).map(([key, value]) => (
                                   <div key={key} className="text-xs">
                                     <span className="font-medium">
