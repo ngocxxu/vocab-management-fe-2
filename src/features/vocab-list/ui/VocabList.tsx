@@ -126,7 +126,7 @@ const VocabList: React.FC<VocabListProps> = ({
   const openAdd = searchParams.get('openAdd') || '';
   const selectedSubjectIds = subjectIdsParam ? subjectIdsParam.split(',') : [];
   const viewParam = searchParams.get('view');
-  const view: TVocabViewMode = viewParam === 'table' || viewParam === 'feed' ? viewParam : 'collapse';
+  const view: TVocabViewMode = viewParam === 'collapse' || viewParam === 'feed' ? viewParam : 'table';
 
   const totalItems = initialVocabsData?.totalItems || 0;
   const totalPages = initialVocabsData?.totalPages || 0;
@@ -370,7 +370,7 @@ const VocabList: React.FC<VocabListProps> = ({
 
   const handleViewChange = useCallback((nextView: TVocabViewMode) => {
     const params = new URLSearchParams(searchParams.toString());
-    if (nextView === 'collapse') {
+    if (nextView === 'table') {
       params.delete('view');
     } else {
       params.set('view', nextView);

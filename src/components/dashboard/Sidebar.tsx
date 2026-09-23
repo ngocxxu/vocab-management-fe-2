@@ -73,7 +73,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, isExpanded = 
       } ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
     >
       <div className="flex-shrink-0 p-4">
-        <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'}`}>
+        <Link
+          href="/dashboard"
+          onClick={handleNav}
+          className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'}`}
+        >
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl">
             <Image
               src={logoSrc}
@@ -91,7 +95,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, isExpanded = 
               </span>
             </div>
           )}
-        </div>
+        </Link>
       </div>
 
       <div className={`flex-1 space-y-6 overflow-y-auto transition-all duration-300 ${collapsed ? 'space-y-2 p-3' : 'p-6'}`}>

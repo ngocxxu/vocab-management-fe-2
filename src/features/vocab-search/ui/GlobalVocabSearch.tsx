@@ -1,7 +1,7 @@
 'use client';
 
 import type { TVocabSearchGroup } from '@/types/vocab-search';
-import { CloseCircle, Magnifer } from '@solar-icons/react/ssr';
+import { CloseCircle, Magnifer, RefreshCircle } from '@solar-icons/react/ssr';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState, useTransition } from 'react';
@@ -131,8 +131,10 @@ const GlobalVocabSearch: React.FC<GlobalVocabSearchProps> = ({ initialQuery, ini
         </p>
       </div>
 
-      <div className="relative flex items-center rounded-full border border-border bg-muted">
-        <Magnifer size={18} weight="BoldDuotone" className="ml-4 shrink-0 text-muted-foreground" />
+      <div className="relative flex items-center rounded-full border border-border bg-muted transition-shadow focus-within:ring-2 focus-within:ring-primary/30">
+        {isPending
+          ? <RefreshCircle size={18} weight="BoldDuotone" className="ml-4 shrink-0 animate-spin text-primary" />
+          : <Magnifer size={18} weight="BoldDuotone" className="ml-4 shrink-0 text-muted-foreground" />}
         <Input
           value={input}
           onChange={event => setInput(event.target.value)}
@@ -153,8 +155,20 @@ const GlobalVocabSearch: React.FC<GlobalVocabSearchProps> = ({ initialQuery, ini
         )}
       </div>
 
-      {/* Debounce itself is silent by design (no flicker while typing); this covers only the gap after it settles, while the new URL is loading. */}
-      {isPending && <p className="text-sm text-muted-foreground">Searching…</p>}
+      {/* Debounce itself is silent by design (no flicker while typing); this covers only the gap after it settles, while the new URL is loading. Skeletons echo GroupSection's shape so results don't jump on arrival. */}
+      {isPending && (
+        <div className="flex flex-col gap-4">
+          {[0, 1].map(key => (
+            <div key={key} className="animate-pulse rounded-xl border border-border bg-card p-4">
+              <div className="mb-3 h-4 w-32 rounded bg-muted" />
+              <div className="space-y-2">
+                <div className="h-4 w-3/4 rounded bg-muted" />
+                <div className="h-4 w-1/2 rounded bg-muted" />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {!isPending && isTooShort && (
         <p className="text-sm text-muted-foreground">
@@ -181,7 +195,7 @@ const GlobalVocabSearch: React.FC<GlobalVocabSearchProps> = ({ initialQuery, ini
       )}
 
       {!isPending && initialGroups.length > 0 && (
-        <div className="flex flex-col gap-4">
+        <div className="flex animate-in flex-col gap-4 fade-in-0 duration-300">
           {initialGroups.map(group => (
             <GroupSection key={group.languageFolderId} group={group} query={initialQuery.trim()} />
           ))}

@@ -11,8 +11,8 @@ type VocabViewSwitcherProps = {
 };
 
 const VIEW_OPTIONS: Array<{ value: TVocabViewMode; label: string; icon: React.ReactNode }> = [
-  { value: 'collapse', label: 'Collapse', icon: <ListDown size={16} weight="BoldDuotone" /> },
   { value: 'table', label: 'Table', icon: <Widget5 size={16} weight="BoldDuotone" /> },
+  { value: 'collapse', label: 'Collapse', icon: <ListDown size={16} weight="BoldDuotone" /> },
   { value: 'feed', label: 'Feed', icon: <Gallery size={16} weight="BoldDuotone" /> },
 ];
 
