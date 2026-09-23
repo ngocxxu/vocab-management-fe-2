@@ -1,7 +1,7 @@
 'use client';
 
 import type { FillInBlankCardProps } from '@/types/vocab-trainer';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { Input } from '@/components/ui/input';
 
 function parseContentWithQuotedHighlight(content: string): React.ReactNode {
@@ -30,14 +30,9 @@ const FillInBlankCard: React.FC<FillInBlankCardProps> = ({
   onAnswerSelect,
   handleKeyDown,
 }) => {
-  const [answer, setAnswer] = useState(selectedAnswer || '');
-
-  useEffect(() => {
-    setAnswer(selectedAnswer || '');
-  }, [selectedAnswer]);
+  const answer = selectedAnswer || '';
 
   const handleInputChange = (value: string) => {
-    setAnswer(value);
     onAnswerSelect(value);
   };
 
