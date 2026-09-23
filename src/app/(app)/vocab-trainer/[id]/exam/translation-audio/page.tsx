@@ -2,7 +2,7 @@
 
 import type { TQuestionAPI } from '@/types/vocab-trainer';
 import { useParams, useRouter } from 'next/navigation';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { toast } from 'sonner';
 import { LoadingComponent } from '@/shared/ui/shared';
 import TranslationAudioExam from '@/components/vocab-trainer/TranslationAudioExam';
@@ -31,15 +31,6 @@ const TranslationAudioExamPage: React.FC = () => {
       router.push('/vocab-trainer');
     },
   });
-
-  useEffect(() => {
-    return () => {
-      if (trainerId) {
-        const storageKey = `exam_data_${trainerId}`;
-        localStorage.removeItem(storageKey);
-      }
-    };
-  }, [trainerId]);
 
   if (isError) {
     return null;

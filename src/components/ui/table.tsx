@@ -34,10 +34,20 @@ import React, { useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { PAGE_SIZE_OPTIONS } from '@/constants/pagination';
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { Button } from './button';
 import { Skeleton } from './skeleton';
 
 const DEFAULT_EXPANDED_STATE = {};
+
+/**
+ * How long typing must pause before the search reaches the parent.
+ *
+ * Every consumer of `onSearchChangeAction` turns it into real work — VocabList
+ * rewrites the URL, which refetches the page server-side — so firing per
+ * keystroke cost one full round trip per character ("cat" = 3 requests).
+ */
+const SEARCH_DEBOUNCE_MS = 1000;
 const DEFAULT_VISIBLE_PAGE_COUNT = 5;
 const EXPANDED_VISIBLE_PAGE_COUNT = 9;
 const EXPANDED_WINDOW_TRIGGER_PAGE = 5;
@@ -190,6 +200,18 @@ export function DataTable<TData extends { id: string }, TValue>({
     setGlobalFilter(searchValue);
   }, [searchValue]);
 
+  const debouncedGlobalFilter = useDebouncedValue(globalFilter, SEARCH_DEBOUNCE_MS);
+
+  React.useEffect(() => {
+    // Equal means this value came FROM the parent (or was already sent), so
+    // re-sending it would loop. Only a value the user typed here differs.
+    // This also covers the first render, where both start from `searchValue`.
+    if (debouncedGlobalFilter === searchValue) {
+      return;
+    }
+    onSearchChangeAction?.(debouncedGlobalFilter);
+  }, [debouncedGlobalFilter, searchValue, onSearchChangeAction]);
+
   React.useEffect(() => {
     if (!tableId || typeof window === 'undefined') {
       return;
@@ -240,10 +262,9 @@ export function DataTable<TData extends { id: string }, TValue>({
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
-    onGlobalFilterChange: (value) => {
-      setGlobalFilter(value);
-      onSearchChangeAction?.(value);
-    },
+    // Only the local input state updates per keystroke. Telling the parent is
+    // debounced below — see SEARCH_DEBOUNCE_MS.
+    onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: manualSorting ? undefined : getSortedRowModel(),
     getFilteredRowModel: manualFiltering ? undefined : getFilteredRowModel(),

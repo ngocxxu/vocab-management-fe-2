@@ -35,6 +35,7 @@ import { Checkbox } from '@/shared/ui/checkbox';
 import { Form } from '@/shared/ui/form';
 import { DataTable } from '@/shared/ui/table';
 import { useApiPagination, useBulkDelete, useDialogState } from '@/hooks';
+import { SemanticSuggestions } from '@/features/vocab-search';
 
 import { selectVoiceByCode } from '@/utils/textToSpeech';
 
@@ -86,6 +87,7 @@ const VocabList: React.FC<VocabListProps> = ({
   initialSubjectsData,
   initialLanguagesData,
   initialWordTypesData,
+  initialSemanticSuggestions,
   currentUser,
   vocabListLoadFailed = false,
 }) => {
@@ -811,6 +813,21 @@ const VocabList: React.FC<VocabListProps> = ({
                 onView={vocab => router.push(`/vocab-list/${vocab.id}`)}
                 onLinkedWordClick={handleLinkedWordClick}
                 onAddFreeTextWord={handleAddFreeTextWord}
+              />
+            )}
+
+            {/*
+              Mounted once for all three views rather than inside each — the
+              section is view-independent. `initialSemanticSuggestions` was
+              fetched server-side (getVocabListPageData), keyed off the same
+              debounced `textSource` URL param the table itself uses — this
+              component has no fetch of its own.
+            */}
+            {!vocabListLoadFailed && initialSemanticSuggestions !== undefined && (
+              <SemanticSuggestions
+                vocabs={initialSemanticSuggestions}
+                excludeIds={data.map(vocab => vocab.id)}
+                query={textSource}
               />
             )}
           </>

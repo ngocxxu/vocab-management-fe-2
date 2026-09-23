@@ -19,6 +19,7 @@ export default async function VocabListPage({ searchParams }: PageProps) {
     initialSubjectsData,
     initialLanguagesData,
     initialWordTypesData,
+    initialSemanticSuggestions,
     currentUser,
     vocabListLoadFailed,
     errors,
@@ -52,6 +53,7 @@ export default async function VocabListPage({ searchParams }: PageProps) {
       initialSubjectsData={initialSubjectsData}
       initialLanguagesData={initialLanguagesData}
       initialWordTypesData={initialWordTypesData}
+      initialSemanticSuggestions={initialSemanticSuggestions}
       currentUser={currentUser}
       vocabListLoadFailed={vocabListLoadFailed}
     />

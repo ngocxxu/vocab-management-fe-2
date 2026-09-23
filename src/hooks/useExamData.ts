@@ -71,6 +71,15 @@ export const useExamData = ({
     trainerIdRef.current = trainerId;
   }, [trainerId]);
 
+  // Clear cached exam data for this trainer when the consumer unmounts
+  useEffect(() => {
+    return () => {
+      if (trainerId) {
+        localStorage.removeItem(getStorageKey(trainerId));
+      }
+    };
+  }, [trainerId]);
+
   const loadExamData = useCallback(async () => {
     if (!trainerId) {
       return;
@@ -122,6 +131,7 @@ export const useExamData = ({
         }
       } catch (err) {
         logger.error('Fetch error:', { error: err, trainerId });
+        localStorage.removeItem(getStorageKey(trainerId));
         setError(err);
         setStatus('failed');
         latestActions.current.onErrorAction?.(err);

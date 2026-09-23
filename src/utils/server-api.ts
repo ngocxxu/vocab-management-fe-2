@@ -22,6 +22,7 @@ import type {
 import type { TSubjectResponse } from '@/types/subject';
 import type { TVocabConflictListResponse } from '@/types/vocab-conflict';
 import type { TBulkVocabUpdateItem, TCreateTextTarget, TCreateVocab, TTextTarget, TUpdateTextTarget, TVocab } from '@/types/vocab-list';
+import type { TSemanticSearchGroupedParams, TSemanticSearchParams, TVocabSearchGroup } from '@/types/vocab-search';
 import type { TCreateVocabTrainer, TFormTestVocabTrainerUnion, TVocabTrainer } from '@/types/vocab-trainer';
 import type { TWordTypeResponse } from '@/types/word-type';
 import { Env } from '@/libs/Env';
@@ -193,6 +194,16 @@ export const vocabApi = {
     const config = API_METHODS.vocabs.random(params);
     // Backend might return either a raw list or a paginated shape.
     return serverApi.get<ResponseAPI<TVocab[]> | TVocab[]>(config.endpoint);
+  },
+  // Called from Server Components, same as everything else here — not from
+  // the browser, so no proxy route or CORS is needed for these two.
+  searchSemantic: (params: TSemanticSearchParams) => {
+    const config = API_METHODS.vocabs.searchSemantic(params);
+    return serverApi.get<TVocab[]>(config.endpoint);
+  },
+  searchSemanticGrouped: (params: TSemanticSearchGroupedParams) => {
+    const config = API_METHODS.vocabs.searchSemanticGrouped(params);
+    return serverApi.get<TVocabSearchGroup[]>(config.endpoint);
   },
   getById: (id: string) => {
     const config = API_METHODS.vocabs.getById(id);

@@ -12,6 +12,7 @@ import type {
   TUpdateNotificationStatusInput,
 } from '@/types/notification';
 import type { TBulkVocabUpdateItem, TCreateTextTarget, TCreateVocab, TUpdateTextTarget } from '@/types/vocab-list';
+import type { TSemanticSearchGroupedParams, TSemanticSearchParams } from '@/types/vocab-search';
 import type {
   TCreateVocabTrainer,
   TFormTestVocabTrainerUnion,
@@ -159,6 +160,15 @@ export const API_METHODS = {
       return { endpoint: `${API_ENDPOINTS.vocabs}?${queryString}` };
     },
     getById: (id: string) => ({ endpoint: `${API_ENDPOINTS.vocabs}/${id}` }),
+    // Two routes, not one with a flag: the flat one returns TVocab[], the grouped
+    // one returns TVocabSearchGroup[]. Separate endpoints keep each response a
+    // single shape instead of a union every caller has to narrow.
+    searchSemantic: (params: TSemanticSearchParams) => ({
+      endpoint: `${API_ENDPOINTS.vocabs}/search/semantic?${buildQueryString(params)}`,
+    }),
+    searchSemanticGrouped: (params: TSemanticSearchGroupedParams) => ({
+      endpoint: `${API_ENDPOINTS.vocabs}/search/semantic/grouped?${buildQueryString(params)}`,
+    }),
     create: (vocabData: TCreateVocab) => ({ endpoint: API_ENDPOINTS.vocabs, data: vocabData }),
     update: (id: string, vocabData: Partial<TCreateVocab>) => ({ endpoint: `${API_ENDPOINTS.vocabs}/${id}`, data: vocabData }),
     delete: (id: string) => ({ endpoint: `${API_ENDPOINTS.vocabs}/${id}` }),

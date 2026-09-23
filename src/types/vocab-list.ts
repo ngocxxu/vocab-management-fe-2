@@ -286,6 +286,12 @@ export type VocabListLayoutProps = {
   initialWordTypesData?: import('@/types/word-type').TWordTypeResponse;
   currentUser?: import('@/types/auth').TUser | null;
   vocabListLoadFailed?: boolean;
+  /**
+   * Fetched server-side, alongside the main vocab list — semantic search runs
+   * from the Server Component, same as everything else on this page, not from
+   * the browser (there's no client route to the backend for it).
+   */
+  initialSemanticSuggestions?: TVocab[];
 };
 
 export type VocabListContentProps = VocabListLayoutProps;

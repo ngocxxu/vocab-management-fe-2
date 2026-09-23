@@ -9,6 +9,7 @@ const VocabListLayout: React.FC<VocabListLayoutProps> = ({
   initialSubjectsData,
   initialLanguagesData,
   initialWordTypesData,
+  initialSemanticSuggestions,
   currentUser,
   vocabListLoadFailed,
 }) => {
@@ -30,6 +31,7 @@ const VocabListLayout: React.FC<VocabListLayoutProps> = ({
         initialSubjectsData={initialSubjectsData}
         initialLanguagesData={initialLanguagesData}
         initialWordTypesData={initialWordTypesData}
+        initialSemanticSuggestions={initialSemanticSuggestions}
         currentUser={currentUser}
         vocabListLoadFailed={vocabListLoadFailed}
       />

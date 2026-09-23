@@ -1,6 +1,7 @@
 export * from './useApiPagination';
 export * from './useAuth';
 export * from './useBulkDelete';
+export * from './useDebouncedValue';
 export * from './useDialogState';
 export * from './useExamData';
 export { useLocalPagination } from './useLocalPagination';

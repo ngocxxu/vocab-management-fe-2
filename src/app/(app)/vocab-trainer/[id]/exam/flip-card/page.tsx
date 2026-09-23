@@ -2,7 +2,7 @@
 
 import type { TQuestionAPI } from '@/types/vocab-trainer';
 import { useParams, useRouter } from 'next/navigation';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { toast } from 'sonner';
 import { LoadingComponent } from '@/shared/ui/shared';
 import { Alert, AlertDescription } from '@/shared/ui/alert';
@@ -33,15 +33,6 @@ const FlipCardExamPage: React.FC = () => {
       });
     },
   });
-
-  useEffect(() => {
-    return () => {
-      if (trainerId) {
-        const storageKey = `exam_data_${trainerId}`;
-        localStorage.removeItem(storageKey);
-      }
-    };
-  }, [trainerId]);
 
   const handleBackToTrainers = () => {
     router.push('/vocab-trainer');

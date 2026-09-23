@@ -45,8 +45,16 @@ export const Header: React.FC<HeaderProps> = ({
   const { theme, toggleTheme, mounted } = useTheme();
   const router = useRouter();
   const [commandOpen, setCommandOpen] = useState(false);
+  const [commandQuery, setCommandQuery] = useState('');
 
   const openCommand = useCallback(() => setCommandOpen(true), []);
+
+  /** Closing before navigating stops the palette reopening over the new page. */
+  const runCommand = useCallback((path: string) => {
+    setCommandOpen(false);
+    setCommandQuery('');
+    router.push(path);
+  }, [router]);
 
   useEffect(() => {
     router.prefetch('/dashboard');
@@ -191,13 +199,32 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
       <CommandDialog open={commandOpen} onOpenChange={setCommandOpen} title="Search" description="Search words, lists, or tags.">
-        <CommandInput placeholder="Search words, lists, or tags..." />
+        <CommandInput
+          placeholder="Search words, lists, or tags..."
+          value={commandQuery}
+          onValueChange={setCommandQuery}
+        />
         <CommandList>
           <CommandEmpty>No results.</CommandEmpty>
+          {/*
+            Deliberately a link to the search page, not a live search here: this
+            component is mounted on every screen, so searching inline would fire
+            an embedding call from the app shell on every keystroke.
+          */}
+          {commandQuery.trim().length > 0 && (
+            <CommandGroup heading="Search">
+              <CommandItem
+                value={`search-${commandQuery}`}
+                onSelect={() => runCommand(`/search?q=${encodeURIComponent(commandQuery.trim())}`)}
+              >
+                {`Search "${commandQuery.trim()}" across all vocab`}
+              </CommandItem>
+            </CommandGroup>
+          )}
           <CommandGroup heading="Suggestions">
-            <CommandItem onSelect={() => router.push('/dashboard')}>Dashboard</CommandItem>
-            <CommandItem onSelect={() => router.push('/library')}>Library</CommandItem>
-            <CommandItem onSelect={() => router.push('/vocab-trainer')}>Vocab Trainer</CommandItem>
+            <CommandItem onSelect={() => runCommand('/dashboard')}>Dashboard</CommandItem>
+            <CommandItem onSelect={() => runCommand('/library')}>Library</CommandItem>
+            <CommandItem onSelect={() => runCommand('/vocab-trainer')}>Vocab Trainer</CommandItem>
           </CommandGroup>
         </CommandList>
       </CommandDialog>
