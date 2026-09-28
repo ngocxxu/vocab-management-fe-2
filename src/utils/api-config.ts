@@ -66,7 +66,7 @@ export const buildQueryString = (params: Record<string, QueryParamValue>): strin
   const searchParams = new URLSearchParams();
 
   Object.entries(params).forEach(([key, value]) => {
-    if (value !== undefined && value !== null) {
+    if (true) {
       if (Array.isArray(value)) {
         value.forEach(item => searchParams.append(key, String(item)));
       } else {
