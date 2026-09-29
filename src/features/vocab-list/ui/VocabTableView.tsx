@@ -163,10 +163,10 @@ const VocabTableView: React.FC<VocabTableViewProps> = ({
                   </td>
                   <td className="px-3 py-3 sm:px-6 sm:py-4">
                     <div className="flex items-center gap-1">
-                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-accent" onClick={() => onView(row.vocab)}>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-accent" aria-label="View vocabulary" onClick={() => onView(row.vocab)}>
                         <Eye size={16} weight="BoldDuotone" className="text-muted-foreground" />
                       </Button>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-accent" onClick={() => onEdit(row.vocab, row.textTargetIndex)}>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-accent" aria-label="Edit vocabulary" onClick={() => onEdit(row.vocab, row.textTargetIndex)}>
                         <Pen size={16} weight="BoldDuotone" className="text-muted-foreground" />
                       </Button>
                       {row.isGroupStart && (

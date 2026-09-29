@@ -2,6 +2,7 @@ import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import antfu from '@antfu/eslint-config';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
+import playwright from 'eslint-plugin-playwright';
 import tailwind from 'eslint-plugin-tailwindcss';
 
 export default antfu(
@@ -155,4 +156,6 @@ export default antfu(
       ],
     },
   },
+  // --- E2E (Playwright) ---
+  { ...playwright.configs['flat/recommended'], files: ['e2e/**'] },
 );
