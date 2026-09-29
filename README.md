@@ -221,11 +221,13 @@ export async function createVocab(vocabData: TCreateVocab) {
 
 ## Testing
 
-- **No test suite currently exists** in this repo (test files excluded in `tsconfig.json`)
-- Type checking serves as primary safety: `npm run check:types` (`tsc --noEmit`)
-- Dead code detection: `npm run check:deps` (Knip)
-- Lint checks on pre-commit (Lefthook)
-- Playwright config exists (`playwright-report/`, `test-results/`) but no active test files
+- **Unit tests** (Vitest): `pnpm test` (also `pnpm test:watch`, `pnpm test:coverage`). Colocated as `src/**/*.test.ts`. The default environment is `node`; add `// @vitest-environment jsdom` as the first line for browser globals. They run in CI before a release (`.github/workflows/deploy.yml`) and on `git push` (Lefthook `pre-push`).
+- **E2E tests** (Playwright): `pnpm test:e2e` (`pnpm test:e2e:ui` for the UI). Specs live in `e2e/`. Local only: not run in CI or in hooks.
+  - They run against the real backend (`../vocab-management-be-2`, override with `E2E_BE_DIR`) and a local Supabase, isolated from dev: frontend `:3101`, backend `:3100`, database `vocab_e2e`, Redis db 1. Playwright starts both servers, and the backend database is reset and seeded on every run.
+  - One-time setup: copy `.env.e2e.example` to `.env.e2e` in both repos and fill them in (`supabase status -o env` in the backend repo gives the Supabase keys).
+  - Before each session: in the backend repo run `docker compose up -d postgres redis` and `supabase start`, and stop the frontend `pnpm dev` (two `next dev` in one folder conflict). `e2e/preflight.mjs` fails fast if a service is down.
+  - `e2e/auth.setup.ts` signs up a unique user per run (`e2e+<id>@example.com`; the backend `IsEmail()` rejects `.local`) and saves its session for the other specs. `auth.spec.ts` uses a second user, because signing out revokes that user's sessions on the backend.
+- Type checking: `pnpm check:types` (`tsc --noEmit`). Dead code detection: `pnpm check:deps` (Knip; it has known pre-existing findings). Lint and types run on pre-commit (Lefthook).
 
 ---
 

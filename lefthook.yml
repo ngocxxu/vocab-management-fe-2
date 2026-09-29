@@ -15,3 +15,9 @@ pre-commit:
       glob: '*.{ts,tsx}'
       run: sh -c 'if ! command -v node >/dev/null 2>&1; then for node_dir in "$HOME"/.nvm/versions/node/*/bin; do if [ -x "$node_dir/node" ]; then PATH="$node_dir:$PATH"; export PATH; break; fi; done; fi; npm run check:types'
       priority: 2
+
+# Run unit tests before pushing
+pre-push:
+  commands:
+    unit-tests:
+      run: sh -c 'if ! command -v node >/dev/null 2>&1; then for node_dir in "$HOME"/.nvm/versions/node/*/bin; do if [ -x "$node_dir/node" ]; then PATH="$node_dir:$PATH"; export PATH; break; fi; done; fi; npm test'

@@ -48,6 +48,7 @@ const DeleteActionButton: React.FC<DeleteActionButtonProps> = ({
           variant="ghost"
           size="icon"
           className="h-8 w-8 rounded-lg hover:bg-destructive/10"
+          aria-label={`Delete ${itemName}`}
         >
           <TrashBin2 size={16} weight="BoldDuotone" className="text-destructive" />
         </Button>
