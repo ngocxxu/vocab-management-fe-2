@@ -182,12 +182,12 @@ function SignInForm() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-foreground uppercase">Email Address</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Letter size={18} weight="BoldDuotone" className="absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground" />
+                      <div className="relative">
+                        <Letter size={18} weight="BoldDuotone" className="absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground" />
+                        <FormControl>
                           <Input type="email" placeholder="name@company.com" className="h-11 pl-10" {...field} />
-                        </div>
-                      </FormControl>
+                        </FormControl>
+                      </div>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -204,20 +204,20 @@ function SignInForm() {
                           Forgot password?
                         </Link>
                       </div>
-                      <FormControl>
-                        <div className="relative">
-                          <LockPassword size={18} weight="BoldDuotone" className="absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground" />
+                      <div className="relative">
+                        <LockPassword size={18} weight="BoldDuotone" className="absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground" />
+                        <FormControl>
                           <Input type={showPassword ? 'text' : 'password'} placeholder="••••••••" className="h-11 pr-10 pl-10" {...field} />
-                          <button
-                            type="button"
-                            className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                            onClick={() => setShowPassword(v => !v)}
-                            aria-label={showPassword ? 'Hide password' : 'Show password'}
-                          >
-                            <EyeIcon open={showPassword} />
-                          </button>
-                        </div>
-                      </FormControl>
+                        </FormControl>
+                        <button
+                          type="button"
+                          className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                          onClick={() => setShowPassword(v => !v)}
+                          aria-label={showPassword ? 'Hide password' : 'Show password'}
+                        >
+                          <EyeIcon open={showPassword} />
+                        </button>
+                      </div>
                       <FormMessage />
                     </FormItem>
                   )}

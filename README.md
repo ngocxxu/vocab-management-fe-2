@@ -227,7 +227,6 @@ export async function createVocab(vocabData: TCreateVocab) {
   - One-time setup: copy `.env.e2e.example` to `.env.e2e` in both repos and fill them in (`supabase status -o env` in the backend repo gives the Supabase keys).
   - Before each session: in the backend repo run `docker compose up -d postgres redis` and `supabase start`, and stop the frontend `pnpm dev` (two `next dev` in one folder conflict). `e2e/preflight.mjs` fails fast if a service is down.
   - `e2e/auth.setup.ts` signs up a unique user per run (`e2e+<id>@example.com`; the backend `IsEmail()` rejects `.local`) and saves its session for the other specs. `auth.spec.ts` uses a second user, because signing out revokes that user's sessions on the backend.
-  - Email and password inputs are located by placeholder: their label is not linked to the input.
 - Type checking: `pnpm check:types` (`tsc --noEmit`). Dead code detection: `pnpm check:deps` (Knip; it has known pre-existing findings). Lint and types run on pre-commit (Lefthook).
 
 ---

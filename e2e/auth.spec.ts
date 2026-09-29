@@ -22,8 +22,8 @@ test('redirects a logged out visit to /dashboard to the signin page', async ({ p
 test('shows an error and stays on signin for a wrong password', async ({ page }) => {
   await page.goto('/signin');
 
-  await page.getByPlaceholder('name@company.com').fill(AUTH_SPEC_USER.email);
-  await page.getByPlaceholder('••••••••').fill('not-the-password');
+  await page.getByLabel('Email Address').fill(AUTH_SPEC_USER.email);
+  await page.getByLabel('Password', { exact: true }).fill('not-the-password');
   await page.getByRole('button', { name: /Sign In to Dashboard/ }).click();
 
   await expect(page.locator(FORM_ALERT)).toBeVisible();
@@ -33,8 +33,8 @@ test('shows an error and stays on signin for a wrong password', async ({ page })
 test('signs in, reaches the dashboard, then signs out', async ({ page }) => {
   await page.goto('/signin');
 
-  await page.getByPlaceholder('name@company.com').fill(AUTH_SPEC_USER.email);
-  await page.getByPlaceholder('••••••••').fill(AUTH_SPEC_USER.password);
+  await page.getByLabel('Email Address').fill(AUTH_SPEC_USER.email);
+  await page.getByLabel('Password', { exact: true }).fill(AUTH_SPEC_USER.password);
   await page.getByRole('button', { name: /Sign In to Dashboard/ }).click();
   await page.waitForURL('**/dashboard**');
 
