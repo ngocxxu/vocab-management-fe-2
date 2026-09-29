@@ -7,7 +7,6 @@ const config: KnipConfig = {
     'src/libs/I18n.ts',
     'src/types/I18n.ts',
     'src/utils/Helpers.ts',
-    'tests/**/*.ts',
   ],
   // Dependencies to ignore during analysis
   ignoreDependencies: [
@@ -19,6 +18,11 @@ const config: KnipConfig = {
   ignoreBinaries: [
     'production', // False positive raised with dotenv-cli
   ],
+  // Playwright loads these through playwright.config.ts (testMatch regex, webServer command),
+  // which knip cannot follow.
+  playwright: {
+    entry: ['e2e/**/*.setup.ts', 'e2e/preflight.mjs'],
+  },
   compilers: {
     css: (text: string) => [...text.matchAll(/(?<=@)import[^;]+/g)].join('\n'),
   },
