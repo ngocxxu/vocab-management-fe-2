@@ -102,6 +102,8 @@ jobs:
 
           # The backend checks these at boot but E2E never uses them. The repo is public, so they
           # are throwaway values made here, not secrets.
+          # Qdrant and every AI provider key must also be present: without them the backend dies
+          # at boot with a bare "Maximum call stack size exceeded" (any value works).
           FCM_KEY=$(openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 2>/dev/null | awk 'NF {printf "%s\\n",$0;}')
 
           printf '%s\n' \
@@ -133,6 +135,14 @@ jobs:
             "FCM_PRIVATE_KEY=$FCM_KEY" \
             "CLOUDINARY_URL=cloudinary://e2e-key:e2e-secret@e2e-cloud" \
             "RESEND_API_KEY=re_e2e_fake_key" \
+            "QDRANT_URL=http://localhost:6333" \
+            "QDRANT_API_KEY=e2e-dummy" \
+            "GEMINI_API_KEY=e2e-dummy" \
+            "GROQ_API_KEY=e2e-dummy" \
+            "OPENROUTER_API_KEY=e2e-dummy" \
+            "OMNIROUTE_API_KEY=e2e-dummy" \
+            "CLOUDFLARE_AI_API_KEY=e2e-dummy" \
+            "CLOUDFLARE_ACCOUNT_ID=e2e-dummy" \
             > be/.env.e2e
 
           sed "s|^NEXT_PUBLIC_SUPABASE_ANON_KEY=.*|NEXT_PUBLIC_SUPABASE_ANON_KEY=$ANON|" \
