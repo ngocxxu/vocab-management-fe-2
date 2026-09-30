@@ -1,0 +1,189 @@
+name: E2E
+
+# Full-stack Playwright suite: this frontend + the real NestJS backend + a local Supabase.
+# Not part of the release pipeline (deploy.yml) and never blocks a push or merge.
+on:
+  schedule:
+    - cron: '0 20 * * *' # 03:00 Vietnam time (UTC+7)
+  workflow_dispatch:
+    inputs:
+      backend_ref:
+        description: Branch, tag or SHA of vocab-management-be-2 to test against
+        default: main
+  # TEMPORARY: lets the workflow run from its branch while it is being tuned. Remove before merging.
+  push:
+    branches:
+      - ci/e2e-workflow
+
+permissions:
+  contents: read
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      BACKEND_REF: ${{ inputs.backend_ref || 'main' }}
+      # Postgres/Redis come from the backend's own docker-compose.yml (admin/admin defaults).
+      # Supabase services E2E never touches (sign up / sign in only need db, auth and the gateway).
+      SUPABASE_EXCLUDE: studio,edge-runtime,logflare,vector,imgproxy,mailpit,realtime,storage-api,postgrest,postgres-meta
+
+    steps:
+      - name: Checkout frontend
+        uses: actions/checkout@v4
+        with:
+          path: fe
+
+      - name: Checkout backend
+        uses: actions/checkout@v4
+        with:
+          repository: ngocxxu/vocab-management-be-2
+          ref: ${{ env.BACKEND_REF }}
+          path: be
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22' # pnpm 11 needs Node >= 22.13
+          cache: pnpm
+          cache-dependency-path: fe/pnpm-lock.yaml
+
+      - name: Install frontend dependencies
+        working-directory: fe
+        run: pnpm install --frozen-lockfile
+
+      - name: Install backend dependencies
+        working-directory: be
+        env:
+          HUSKY: '0'
+        # The backend pins pnpm@10.0.0 (packageManager); install it the way it is developed.
+        run: npx -y pnpm@10.0.0 install --frozen-lockfile
+
+      - name: Install Playwright browser
+        working-directory: fe
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Start Postgres and Redis
+        working-directory: be
+        run: |
+          docker compose up -d postgres redis
+          for i in $(seq 1 30); do
+            docker exec postgres_container pg_isready -U admin -d postgres && exit 0
+            sleep 2
+          done
+          echo "Postgres did not become ready" >&2
+          exit 1
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: 2.118.0
+
+      - name: Start local Supabase
+        working-directory: be
+        run: supabase start -x "$SUPABASE_EXCLUDE"
+
+      - name: Write E2E env files
+        run: |
+          STATUS=$(cd be && supabase status -o env 2>/dev/null)
+          ANON=$(echo "$STATUS" | grep '^ANON_KEY=' | cut -d= -f2- | tr -d '"')
+          SERVICE=$(echo "$STATUS" | grep '^SERVICE_ROLE_KEY=' | cut -d= -f2- | tr -d '"')
+          [ -n "$ANON" ] || { echo "Supabase ANON_KEY missing" >&2; exit 1; }
+          [ -n "$SERVICE" ] || { echo "Supabase SERVICE_ROLE_KEY missing" >&2; exit 1; }
+
+          # The backend checks these at boot but E2E never uses them. The repo is public, so they
+          # are throwaway values made here, not secrets.
+          FCM_KEY=$(openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 2>/dev/null | awk 'NF {printf "%s\\n",$0;}')
+
+          printf '%s\n' \
+            "NODE_ENV=development" \
+            "API_PORT=3100" \
+            "API_PREFIX=/api/v1" \
+            "API_CORS_ORIGINS=" \
+            "APP_URL=http://localhost:3101" \
+            "FRONTEND_URL=http://localhost:3101" \
+            "PASSENGERS_ALLOWED=yes" \
+            "SWAGGER_ENABLE=0" \
+            "SWAGGER_PREFIX=/docs" \
+            "SWAGGER_USER=e2e" \
+            "SWAGGER_PASSWORD=e2e" \
+            "HEALTH_TOKEN=" \
+            "SENTRY_ENABLED=false" \
+            "DATABASE_URL=postgresql://admin:admin@localhost:5433/vocab_e2e" \
+            "REDIS_URL=redis://localhost:6379/1" \
+            "SUPABASE_URL=http://127.0.0.1:54321" \
+            "SUPABASE_KEY=$ANON" \
+            "SUPABASE_SERVICE_ROLE_KEY=$SERVICE" \
+            "VOCAB_EMBEDDING_ENABLED=false" \
+            "REMINDER_POLLER_ENABLED=false" \
+            "REMINDER_RECONCILIATION_ENABLED=false" \
+            "JWT_SECRET=e2e-fake-jwt-secret-not-used-by-normal-requests" \
+            "JWT_ISSUER=IssuerApplication" \
+            "FCM_PROJECT_ID=e2e-project" \
+            "FCM_CLIENT_EMAIL=e2e@e2e-project.iam.gserviceaccount.com" \
+            "FCM_PRIVATE_KEY=$FCM_KEY" \
+            "CLOUDINARY_URL=cloudinary://e2e-key:e2e-secret@e2e-cloud" \
+            "RESEND_API_KEY=re_e2e_fake_key" \
+            > be/.env.e2e
+
+          sed "s|^NEXT_PUBLIC_SUPABASE_ANON_KEY=.*|NEXT_PUBLIC_SUPABASE_ANON_KEY=$ANON|" \
+            fe/.env.e2e.example > fe/.env.e2e
+
+      - name: Run E2E tests
+        working-directory: fe
+        env:
+          E2E_BE_DIR: ${{ github.workspace }}/be
+        run: pnpm test:e2e
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-report
+          path: |
+            fe/playwright-report
+            fe/test-results
+          retention-days: 7
+          if-no-files-found: ignore
+
+      - name: Notify Discord Failure
+        if: failure()
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: |
+          [ -n "$DISCORD_WEBHOOK" ] || exit 0
+          TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%S.000Z)
+          URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          jq -n \
+            --arg title "E2E Failed" \
+            --arg desc "E2E suite failed (${{ github.event_name }}) on **${{ github.ref_name }}**." \
+            --arg sha "${{ github.sha }}" \
+            --arg backend "$BACKEND_REF" \
+            --arg url "$URL" \
+            --arg timestamp "$TIMESTAMP" \
+            '{
+              username: "GitHub CI Monitor",
+              embeds: [{
+                title: $title,
+                url: $url,
+                color: 15158332,
+                timestamp: $timestamp,
+                description: $desc,
+                fields: [
+                  { name: "Frontend", value: ("`" + $sha[0:7] + "`"), inline: true },
+                  { name: "Backend ref", value: $backend, inline: true },
+                  { name: "View Logs", value: ("[Click Here](" + $url + ")"), inline: true }
+                ],
+                footer: { text: "Report artifact kept 7 days" }
+              }]
+            }' | curl -sf -H "Content-Type: application/json" -d @- "$DISCORD_WEBHOOK"
