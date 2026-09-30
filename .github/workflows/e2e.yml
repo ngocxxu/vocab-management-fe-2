@@ -138,11 +138,27 @@ jobs:
           sed "s|^NEXT_PUBLIC_SUPABASE_ANON_KEY=.*|NEXT_PUBLIC_SUPABASE_ANON_KEY=$ANON|" \
             fe/.env.e2e.example > fe/.env.e2e
 
+          # TEMPORARY DEBUG: the backend logs its fatal boot error through Winston and then calls
+          # process.exit(1) right away, so the message is lost. Delay exit so it can flush.
+          printf '%s\n' \
+            "const orig = process.exit.bind(process);" \
+            "process.exit = (c) => { console.error('[debug] process.exit called with', c); setTimeout(() => orig(c), 2000); };" \
+            > "$RUNNER_TEMP/exit-delay.js"
+
       - name: Run E2E tests
         working-directory: fe
         env:
           E2E_BE_DIR: ${{ github.workspace }}/be
+          NODE_OPTIONS: --require=${{ runner.temp }}/exit-delay.js # TEMPORARY DEBUG
         run: pnpm test:e2e
+
+      - name: Diagnose failure # TEMPORARY DEBUG
+        if: failure()
+        run: |
+          free -m
+          sudo dmesg 2>/dev/null | grep -iE "out of memory|killed process" | tail -5 || true
+          docker ps -a --format "table {{.Names}}\t{{.Status}}"
+          docker stats --no-stream --format "table {{.Name}}\t{{.MemUsage}}" || true
 
       - name: Upload Playwright report
         if: failure()
