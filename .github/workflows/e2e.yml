@@ -10,10 +10,6 @@ on:
       backend_ref:
         description: Branch, tag or SHA of vocab-management-be-2 to test against
         default: main
-  # TEMPORARY: lets the workflow run from its branch while it is being tuned. Remove before merging.
-  push:
-    branches:
-      - ci/e2e-workflow
 
 permissions:
   contents: read
