@@ -64,9 +64,28 @@ jobs:
         # The backend pins pnpm@10.0.0 (packageManager); install it the way it is developed.
         run: npx -y pnpm@10.0.0 install --frozen-lockfile
 
-      - name: Install Playwright browser
+      - name: Get Playwright version
+        id: playwright
+        working-directory: fe
+        run: echo "version=$(pnpm exec playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright browser
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
+
+      # The browser download is cached; the OS libraries it needs are not, so they install either way.
+      - name: Install Playwright browser and OS dependencies
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         working-directory: fe
         run: pnpm exec playwright install --with-deps chromium
+
+      - name: Install Playwright OS dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        working-directory: fe
+        run: pnpm exec playwright install-deps chromium
 
       - name: Start Postgres and Redis
         working-directory: be
