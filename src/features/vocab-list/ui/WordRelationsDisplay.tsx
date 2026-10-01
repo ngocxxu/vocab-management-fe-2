@@ -1,6 +1,7 @@
 'use client';
 
 import type { TRelatedWordItem, TRelatedWordsGroupedResponse } from '@/types/vocab-related-word';
+import Link from 'next/link';
 import React from 'react';
 import { AddSquare } from '@solar-icons/react/ssr';
 import {
@@ -13,7 +14,6 @@ import { flattenRelatedWords } from '../utils/flattenRelatedWords';
 
 type WordRelationsDisplayProps = {
   relatedWords: TRelatedWordItem[] | TRelatedWordsGroupedResponse | undefined;
-  onLinkedWordClick: (word: string) => void;
   onAddFreeTextWord: (word: string) => void;
 };
 
@@ -47,7 +47,6 @@ function RelationLetterBadges({ item }: { item: TRelatedWordItem }) {
 
 const WordRelationsDisplay: React.FC<WordRelationsDisplayProps> = ({
   relatedWords,
-  onLinkedWordClick,
   onAddFreeTextWord,
 }) => {
   if (!relatedWords) {
@@ -69,15 +68,14 @@ const WordRelationsDisplay: React.FC<WordRelationsDisplayProps> = ({
           {items.map(item =>
             item.linkedVocabId
               ? (
-                  <button
+                  <Link
                     key={item.id}
-                    type="button"
-                    onClick={() => onLinkedWordClick(item.word)}
+                    href={`/vocab-list/${item.linkedVocabId}`}
                     className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-primary/50 bg-primary/10 px-3 py-1 text-sm font-medium text-primary transition-colors hover:bg-primary/20"
                   >
                     {item.word}
                     <RelationLetterBadges item={item} />
-                  </button>
+                  </Link>
                 )
               : (
                   <Tooltip key={item.id}>

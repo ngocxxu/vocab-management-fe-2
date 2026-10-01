@@ -130,10 +130,6 @@ const TextTargetsContent: React.FC<TextTargetsContentProps> = ({
     });
   };
 
-  const handleLinkedWordClick = useCallback((word: string) => {
-    router.push(`/vocab-list?textSource=${encodeURIComponent(word)}&sourceLanguageCode=${vocab.sourceLanguageCode}&targetLanguageCode=${vocab.targetLanguageCode}`);
-  }, [router]);
-
   const handleAddFreeTextWord = useCallback((word: string) => {
     router.push(`/vocab-list?openAdd=${encodeURIComponent(word)}&sourceLanguageCode=${vocab.sourceLanguageCode}&targetLanguageCode=${vocab.targetLanguageCode}`);
   }, [router]);
@@ -253,7 +249,6 @@ const TextTargetsContent: React.FC<TextTargetsContentProps> = ({
           <div className="mt-6 rounded-lg border border-border bg-card p-4 pt-0 shadow-sm">
             <WordRelationsDisplay
               relatedWords={vocab.relatedWords}
-              onLinkedWordClick={handleLinkedWordClick}
               onAddFreeTextWord={handleAddFreeTextWord}
             />
           </div>

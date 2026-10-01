@@ -248,7 +248,6 @@ export type ExpandedRowContentProps = {
   showExamples?: boolean;
   onCollapse?: () => void;
   onEdit?: (vocab: TVocab, textTargetIndex?: number) => void;
-  onLinkedWordClick?: (word: string) => void;
   onAddFreeTextWord?: (word: string) => void;
   // Feed view: header content rendered above the details card (title, speak, actions).
   headerContent?: ReactNode;

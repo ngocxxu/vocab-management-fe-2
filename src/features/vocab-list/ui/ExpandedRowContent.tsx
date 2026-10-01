@@ -39,7 +39,6 @@ const ExpandedRowContent: React.FC<ExpandedRowContentProps> = ({
   showSubjects = true,
   onCollapse,
   onEdit,
-  onLinkedWordClick,
   onAddFreeTextWord,
   headerContent,
 }) => {
@@ -152,10 +151,9 @@ const ExpandedRowContent: React.FC<ExpandedRowContentProps> = ({
               })}
             </div>
 
-            {vocab.relatedWords && onLinkedWordClick && onAddFreeTextWord && (
+            {vocab.relatedWords && onAddFreeTextWord && (
               <WordRelationsDisplay
                 relatedWords={vocab.relatedWords}
-                onLinkedWordClick={onLinkedWordClick}
                 onAddFreeTextWord={onAddFreeTextWord}
               />
             )}

@@ -4,7 +4,7 @@ name: E2E
 # Not part of the release pipeline (deploy.yml) and never blocks a push or merge.
 on:
   schedule:
-    - cron: '0 20 * * *' # 03:00 Vietnam time (UTC+7)
+    - cron: '0 20 */3 * *' # 03:00 Vietnam time, every 3rd day of the month
   workflow_dispatch:
     inputs:
       backend_ref:

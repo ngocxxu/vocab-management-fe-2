@@ -4,6 +4,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import type { TExamples, TFlatVocabRow, TVocab } from '@/types/vocab-list';
 import type { TRelatedWordItem } from '@/types/vocab-related-word';
 import { Eye, Pen, VolumeLoud } from '@solar-icons/react/ssr';
+import Link from 'next/link';
 import React, { useMemo } from 'react';
 import { DeleteActionButton } from '@/shared/ui/shared';
 import { Button } from '@/shared/ui/button';
@@ -30,7 +31,15 @@ type VocabTableViewProps = {
   onView: (vocab: TVocab) => void;
 };
 
-function RelatedWordsGroup({ label, words }: { label: string; words: TRelatedWordItem[] }) {
+type TRelationTone = 'synonym' | 'antonym' | 'related';
+
+const LINKED_CHIP_TONE: Record<TRelationTone, string> = {
+  synonym: 'bg-success/10 text-success hover:bg-success/20',
+  antonym: 'bg-destructive/10 text-destructive hover:bg-destructive/20',
+  related: 'bg-primary/10 text-primary hover:bg-primary/20',
+};
+
+function RelatedWordsGroup({ label, tone, words }: { label: string; tone: TRelationTone; words: TRelatedWordItem[] }) {
   if (words.length === 0) {
     return null;
   }
@@ -38,14 +47,28 @@ function RelatedWordsGroup({ label, words }: { label: string; words: TRelatedWor
     <div className="mt-2">
       <p className="text-[10px] font-medium tracking-wide text-muted-foreground uppercase">{label}</p>
       <div className="mt-1 flex flex-wrap gap-1">
-        {words.map(w => (
-          <span
-            key={w.id}
-            className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground"
-          >
-            {w.word}
-          </span>
-        ))}
+        {words.map(w =>
+          w.linkedVocabId
+            ? (
+                <Link
+                  key={w.id}
+                  href={`/vocab-list/${w.linkedVocabId}`}
+                  className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium transition-colors ${LINKED_CHIP_TONE[tone]}`}
+                >
+                  {w.word}
+                </Link>
+              )
+            : (
+                <span
+                  key={w.id}
+                  aria-disabled="true"
+                  title="This word is not yet in your list"
+                  className="inline-flex cursor-not-allowed items-center rounded-full border border-dashed border-muted-foreground/30 bg-muted/40 px-2 py-0.5 text-xs text-muted-foreground"
+                >
+                  {w.word}
+                </span>
+              ),
+        )}
       </div>
     </div>
   );
@@ -134,9 +157,9 @@ const VocabTableView: React.FC<VocabTableViewProps> = ({
                             <VolumeLoud size={16} weight="BoldDuotone" className="text-muted-foreground" />
                           </Button>
                         </div>
-                        <RelatedWordsGroup label="Synonyms" words={relations.synonyms} />
-                        <RelatedWordsGroup label="Related" words={relations.related} />
-                        <RelatedWordsGroup label="Antonyms" words={relations.antonyms} />
+                        <RelatedWordsGroup label="Synonyms" tone="synonym" words={relations.synonyms} />
+                        <RelatedWordsGroup label="Related" tone="related" words={relations.related} />
+                        <RelatedWordsGroup label="Antonyms" tone="antonym" words={relations.antonyms} />
                       </td>
                     </>
                   )}

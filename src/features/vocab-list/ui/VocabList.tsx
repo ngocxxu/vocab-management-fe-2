@@ -364,10 +364,6 @@ const VocabList: React.FC<VocabListProps> = ({
     router.push(`?${params.toString()}`);
   }, [router, searchParams]);
 
-  const handleLinkedWordClick = useCallback((word: string) => {
-    handleSearchChange(word);
-  }, [handleSearchChange]);
-
   const handleViewChange = useCallback((nextView: TVocabViewMode) => {
     const params = new URLSearchParams(searchParams.toString());
     if (nextView === 'table') {
@@ -755,7 +751,6 @@ const VocabList: React.FC<VocabListProps> = ({
                     columnsCount={columns.length}
                     onCollapse={() => setExpanded(prev => ({ ...prev, [row.original.id]: false }))}
                     onEdit={handleEdit}
-                    onLinkedWordClick={handleLinkedWordClick}
                     onAddFreeTextWord={handleAddFreeTextWord}
                   />
                 )}
@@ -811,7 +806,6 @@ const VocabList: React.FC<VocabListProps> = ({
                 onDeleteVocab={handleDeleteVocab}
                 onDeleteSuccess={handleDeleteSuccess}
                 onView={vocab => router.push(`/vocab-list/${vocab.id}`)}
-                onLinkedWordClick={handleLinkedWordClick}
                 onAddFreeTextWord={handleAddFreeTextWord}
               />
             )}

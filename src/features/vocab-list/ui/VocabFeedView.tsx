@@ -26,7 +26,6 @@ type VocabFeedViewProps = {
   onDeleteVocab: (id: string) => Promise<void>;
   onDeleteSuccess: () => void;
   onView: (vocab: TVocab) => void;
-  onLinkedWordClick: (word: string) => void;
   onAddFreeTextWord: (word: string) => void;
 };
 
@@ -50,7 +49,6 @@ const VocabFeedView: React.FC<VocabFeedViewProps> = ({
   onDeleteVocab,
   onDeleteSuccess,
   onView,
-  onLinkedWordClick,
   onAddFreeTextWord,
 }) => {
   return (
@@ -90,7 +88,6 @@ const VocabFeedView: React.FC<VocabFeedViewProps> = ({
                 vocab={vocab}
                 columnsCount={1}
                 onEdit={onEdit}
-                onLinkedWordClick={onLinkedWordClick}
                 onAddFreeTextWord={onAddFreeTextWord}
                 headerContent={(
                   <div className="flex items-center justify-between gap-2">
