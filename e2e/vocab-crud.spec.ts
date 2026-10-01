@@ -53,9 +53,13 @@ test.beforeAll(async ({ playwright }) => {
 test('creates a vocab', async ({ page }) => {
   await page.goto(listUrl());
 
-  await page.getByRole('button', { name: /Add Vocab/ }).click();
   const dialog = page.getByRole('dialog');
-  await expect(dialog.getByText('Add New Vocabulary')).toBeVisible();
+  // On a cold dev server the page is server-rendered before React hydrates, and a click in
+  // that gap does nothing. Retry the click until the dialog actually opens.
+  await expect(async () => {
+    await page.getByRole('button', { name: /Add Vocab/ }).click();
+    await expect(dialog.getByText('Add New Vocabulary')).toBeVisible({ timeout: 3_000 });
+  }).toPass({ timeout: 30_000 });
 
   await dialog.getByPlaceholder('Enter source text').fill(WORD);
   // Always fill the target text: an empty one makes the backend queue an AI translation job.
