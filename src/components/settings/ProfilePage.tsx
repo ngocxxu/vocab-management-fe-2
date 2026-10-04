@@ -3,9 +3,11 @@
 import type { TUser } from '@/types/auth';
 import type { TPlan } from '@/types/plan';
 import type { TSettings } from '@/types/settings';
+import type { TSrsSettings } from '@/types/srs-settings';
 import React, { useState } from 'react';
 import { ProfileSection } from './ProfileSection';
 import { SettingsPageShell } from './SettingsPageShell';
+import { SrsDefaultsSection } from './SrsDefaultsSection';
 
 const defaultSettings: TSettings = {
   profile: {
@@ -40,9 +42,10 @@ const defaultSettings: TSettings = {
 type ProfilePageProps = {
   currentUser?: TUser | null;
   currentPlan?: TPlan | null;
+  srsSettings?: TSrsSettings | null;
 };
 
-export const ProfilePage: React.FC<ProfilePageProps> = ({ currentUser, currentPlan }) => {
+export const ProfilePage: React.FC<ProfilePageProps> = ({ currentUser, currentPlan, srsSettings }) => {
   const [_settings, setSettings] = useState<TSettings>(defaultSettings);
 
   const handleProfileChangeAction = (profile: Partial<TSettings['profile']>) => {
@@ -62,6 +65,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ currentUser, currentPl
         currentPlan={currentPlan}
         onProfileChangeAction={handleProfileChangeAction}
       />
+      {srsSettings && <SrsDefaultsSection settings={srsSettings} />}
     </SettingsPageShell>
   );
 };

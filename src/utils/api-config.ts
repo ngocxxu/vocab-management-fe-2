@@ -11,6 +11,7 @@ import type {
   TNotificationInput,
   TUpdateNotificationStatusInput,
 } from '@/types/notification';
+import type { TUpdateSrsSettings } from '@/types/srs-settings';
 import type { TBulkVocabUpdateItem, TCreateTextTarget, TCreateVocab, TUpdateTextTarget } from '@/types/vocab-list';
 import type { TSemanticSearchGroupedParams, TSemanticSearchParams } from '@/types/vocab-search';
 import type {
@@ -126,6 +127,7 @@ export const API_ENDPOINTS = {
   languages: '/languages',
   languageFolders: '/language-folders',
   apiKeys: '/api-keys',
+  srsSettings: '/srs-settings',
   notifications: '/notifications',
   cloudinary: '/cloudinary',
   plans: '/plans',
@@ -260,6 +262,10 @@ export const API_METHODS = {
     getAll: () => ({ endpoint: API_ENDPOINTS.apiKeys }),
     create: (apiKeyData: { name: string; scopes: string[]; languageFolderId?: string }) => ({ endpoint: API_ENDPOINTS.apiKeys, data: apiKeyData }),
     delete: (id: string) => ({ endpoint: `${API_ENDPOINTS.apiKeys}/${id}` }),
+  },
+  srsSettings: {
+    get: () => ({ endpoint: API_ENDPOINTS.srsSettings }),
+    update: (data: TUpdateSrsSettings) => ({ endpoint: API_ENDPOINTS.srsSettings, data }),
   },
   wordTypes: {
     getAll: () => ({ endpoint: API_ENDPOINTS.wordTypes }),

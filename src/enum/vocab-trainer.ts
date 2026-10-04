@@ -14,6 +14,11 @@ export enum EQuestionType {
   TRANSLATION_AUDIO = 'TRANSLATION_AUDIO',
 }
 
+export enum EFsrsDirection {
+  SOURCE_TO_TARGET = 'SOURCE_TO_TARGET',
+  TARGET_TO_SOURCE = 'TARGET_TO_SOURCE',
+}
+
 export enum EVocabTrainerStatus {
   PENDING = 'PENDING',
   PASSED = 'PASSED',

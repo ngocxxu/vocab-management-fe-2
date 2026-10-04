@@ -19,6 +19,7 @@ import type {
   TUnreadCountResponse,
   TUpdateNotificationStatusInput,
 } from '@/types/notification';
+import type { TSrsSettings, TUpdateSrsSettings } from '@/types/srs-settings';
 import type { TSubjectResponse } from '@/types/subject';
 import type { TVocabConflictListResponse } from '@/types/vocab-conflict';
 import type { TBulkVocabUpdateItem, TCreateTextTarget, TCreateVocab, TTextTarget, TUpdateTextTarget, TVocab } from '@/types/vocab-list';
@@ -451,6 +452,18 @@ export const subjectsApi = {
   generate: (data: { textTarget: string; targetLanguageCode: string }): Promise<{ jobId: string }> => {
     const config = API_METHODS.subjects.generate(data);
     return serverApi.post(config.endpoint, config.data);
+  },
+};
+
+// Spaced repetition (FSRS) defaults and timezone of the current user
+export const srsSettingsApi = {
+  get: () => {
+    const config = API_METHODS.srsSettings.get();
+    return serverApi.get<TSrsSettings>(config.endpoint);
+  },
+  update: (data: TUpdateSrsSettings) => {
+    const config = API_METHODS.srsSettings.update(data);
+    return serverApi.put<TSrsSettings>(config.endpoint, config.data);
   },
 };
 
