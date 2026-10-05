@@ -9,6 +9,8 @@ import { getVocabsByIds } from '@/actions';
 import type {
   AddVocabTrainerDialogProps,
 } from '@/types/vocab-trainer';
+import { ETrainerMode } from '@/enum/vocab-trainer';
+import FsrsSettingsFields from './FsrsSettingsFields';
 import TrainerBasicInfoForm from './TrainerBasicInfoForm';
 import VocabSelectionForm from './VocabSelectionForm';
 
@@ -26,6 +28,7 @@ const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({
   onLanguageFoldersLoaded,
   editingItem: _editingItem,
   userRole,
+  srsDefaults,
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedVocabById, setSelectedVocabById] = useState<Record<string, TVocab>>({});
@@ -85,6 +88,16 @@ const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({
     });
   }, [formData.vocabAssignmentIds, selectedVocabById]);
 
+  // A word without a translation gets no card; words that are not loaded yet are not counted as missing.
+  const wordsWithoutTranslation = useMemo(
+    () => (formData.vocabAssignmentIds || [])
+      .flatMap((id) => {
+        const vocab = selectedVocabById[id];
+        return vocab && vocab.textTargets.length === 0 ? [vocab.textSource] : [];
+      }),
+    [formData.vocabAssignmentIds, selectedVocabById],
+  );
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[700px] lg:max-w-[950px] xl:max-w-[1100px] 2xl:max-w-[1300px]">
@@ -99,8 +112,14 @@ const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({
           </DialogHeader>
           <div className="grid grid-cols-1 gap-6 p-6 pb-0 lg:grid-cols-[minmax(0,380px)_1fr]">
             <div className="space-y-6">
-              <TrainerBasicInfoForm userRole={userRole} selectedWords={selectedWordBadges} />
-
+              <TrainerBasicInfoForm userRole={userRole} selectedWords={selectedWordBadges} editMode={editMode} srsDefaults={srsDefaults} />
+              {formData.mode === ETrainerMode.FSRS && (
+                <FsrsSettingsFields
+                  editMode={editMode}
+                  wordCount={selectedWordBadges.length}
+                  wordsWithoutTranslation={wordsWithoutTranslation}
+                />
+              )}
             </div>
             <div className="min-w-0">
               {open && (

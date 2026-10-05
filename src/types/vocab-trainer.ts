@@ -1,6 +1,7 @@
 import type React from 'react';
 import type { ResponseAPI, TLanguage, TOption } from '.';
 import type { EFsrsDirection, EFsrsRating, EFsrsState, EQuestionType, ETrainerMode, EVocabTrainerType } from '../enum/vocab-trainer';
+import type { TSrsDefaults } from './srs-settings';
 import type { TVocab } from './vocab-list';
 import type { TVocabSelectionFolderArray } from './vocab-selection';
 
@@ -303,10 +304,18 @@ export type ExamResultsProps = {
 
 export type VocabTrainerFormData = {
   name: string;
+  mode: ETrainerMode;
   questionType: EQuestionType;
   setCountTime: number;
   reminderDisabled: boolean;
   vocabAssignmentIds: string[];
+  fsrsDirections: EFsrsDirection[];
+  fsrsDesiredRetention: number;
+  fsrsMaximumInterval: number;
+  /** null = unlimited. */
+  fsrsNewPerDay: number | null;
+  /** `YYYY-MM-DD`, empty = no deadline. */
+  fsrsEndsAt: string;
 };
 
 export type AddVocabTrainerDialogProps = {
@@ -321,6 +330,8 @@ export type AddVocabTrainerDialogProps = {
   cachedLanguageFolders?: TVocabSelectionFolderArray;
   onLanguageFoldersLoaded?: (folders: TVocabSelectionFolderArray) => void;
   userRole?: string;
+  /** What a new spaced repetition trainer starts from. */
+  srsDefaults?: TSrsDefaults;
 };
 
 export type QuickFilter = 'all' | 'recent' | 'difficult' | 'unstarted';
