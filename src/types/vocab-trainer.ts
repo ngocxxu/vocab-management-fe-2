@@ -399,6 +399,8 @@ export type VocabTrainerContentProps = {
 export type ExamLauncherProps = {
   trainerId: string;
   questionType: EQuestionType;
+  /** A spaced repetition trainer opens its review session instead of an exam. */
+  mode?: ETrainerMode;
 };
 
 export type VocabTrainerListProps = {
@@ -408,14 +410,14 @@ export type VocabTrainerListProps = {
   loadError?: string;
 };
 
-type TFsrsPreviewButton = {
+export type TFsrsPreviewButton = {
   /** When the card comes back if this button is pressed. */
   due: string;
   scheduledDays: number;
 };
 
 /** One card of a review session. `direction` decides which side is the question. */
-type TFsrsQueueItem = {
+export type TFsrsQueueItem = {
   cardId: string;
   vocabId: string;
   direction: EFsrsDirection;
@@ -457,7 +459,7 @@ export type TFsrsReviewSummary = {
   estimatedDaysToClearBacklog: number;
 };
 
-type TFsrsAnswerDiffSegment = { type: 'same' | 'missing' | 'extra'; text: string };
+export type TFsrsAnswerDiffSegment = { type: 'same' | 'missing' | 'extra'; text: string };
 
 /** Result of comparing a typed answer; nothing is recorded. */
 export type TFsrsAnswerCheck = {
@@ -524,4 +526,10 @@ export type TFsrsReviewStats = {
   trueRetention: { value: number | null; reviews: number; windowDays: number };
   stabilityBuckets: TFsrsStabilityBucket[];
   leechCards: TFsrsLeechCard[];
+};
+
+/** A card that was rated in this session. */
+export type TFsrsReviewResult = {
+  item: TFsrsQueueItem;
+  rating: EFsrsRating;
 };

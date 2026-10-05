@@ -459,6 +459,7 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
           <ExamLauncher
             trainerId={_row.original.id}
             questionType={_row.original.questionType}
+            mode={_row.original.mode}
           />
           <Button
             variant="ghost"

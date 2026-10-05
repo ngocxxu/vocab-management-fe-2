@@ -6,15 +6,17 @@ import React, { useEffect, useReducer } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { getExamUrl } from '@/constants/vocab-trainer';
-import { EQuestionType } from '@/enum/vocab-trainer';
+import { EQuestionType, ETrainerMode } from '@/enum/vocab-trainer';
 import type { ExamLauncherProps } from '@/types/vocab-trainer';
 import { getExamCooldownRemainingSeconds, markExamCooldownNow } from '@/utils/exam-cooldown';
 
-const ExamLauncher: React.FC<ExamLauncherProps> = ({ trainerId, questionType }) => {
+const ExamLauncher: React.FC<ExamLauncherProps> = ({ trainerId, questionType, mode }) => {
   const router = useRouter();
   const [, forceTick] = useReducer((value: number) => value + 1, 0);
 
-  const isFlipCard = questionType === EQuestionType.FLIP_CARD;
+  // Reviews are short and meant to be done every day, so neither flip cards nor spaced repetition wait for the exam cooldown.
+  const isFsrs = mode === ETrainerMode.FSRS;
+  const isFlipCard = isFsrs || questionType === EQuestionType.FLIP_CARD;
   const isDisabled = !isFlipCard && getExamCooldownRemainingSeconds() > 0;
 
   useEffect(() => {
@@ -37,8 +39,7 @@ const ExamLauncher: React.FC<ExamLauncherProps> = ({ trainerId, questionType }) 
       forceTick();
     }
 
-    const examUrl = getExamUrl(trainerId, questionType);
-    router.push(examUrl);
+    router.push(isFsrs ? `/vocab-trainer/${trainerId}/review` : getExamUrl(trainerId, questionType));
   };
 
   return (
@@ -57,7 +58,7 @@ const ExamLauncher: React.FC<ExamLauncherProps> = ({ trainerId, questionType }) 
         </span>
       </TooltipTrigger>
       <TooltipContent side="bottom" align="center">
-        {isDisabled ? 'Please wait before starting another exam' : 'Start exam'}
+        {isDisabled ? 'Please wait before starting another exam' : isFsrs ? 'Start review' : 'Start exam'}
       </TooltipContent>
     </Tooltip>
   );
