@@ -8,7 +8,6 @@ import type {
   TFsrsAnswerOutcome,
   TFsrsQueueParams,
   TFsrsReviewQueue,
-  TFsrsReviewStats,
   TFsrsReviewSummary,
   TQuestionAPI,
   TUpdateFsrsSettings,
@@ -162,17 +161,6 @@ export async function getReviewSummary(id: string): Promise<TFsrsReviewSummary> 
     return await vocabTrainerApi.getReviewSummary(id);
   } catch (error) {
     throw toActionError(error, 'Failed to load the review summary');
-  }
-}
-
-export async function getReviewStats(id: string): Promise<TFsrsReviewStats> {
-  await requireAuth();
-  assertTrainerId(id);
-
-  try {
-    return await vocabTrainerApi.getReviewStats(id);
-  } catch (error) {
-    throw toActionError(error, 'Failed to load the review statistics');
   }
 }
 

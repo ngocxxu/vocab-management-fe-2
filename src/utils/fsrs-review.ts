@@ -74,3 +74,37 @@ export function countRatings(results: readonly TFsrsReviewResult[]): Record<EFsr
 export function missedItems(results: readonly TFsrsReviewResult[]): TFsrsQueueItem[] {
   return results.filter(({ rating }) => rating === EFsrsRating.AGAIN).map(({ item }) => item);
 }
+
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+/** Whole days from `now` to the deadline, rounded up; 0 or less once it has passed. */
+export function daysUntilEnd(endsAt: string, now: Date): number {
+  return Math.ceil((new Date(endsAt).getTime() - now.getTime()) / MS_PER_DAY);
+}
+
+/** A cycle with a deadline that has passed is over; without a deadline it never ends. */
+export function isCycleEnded(endsAt: string | null | undefined, now: Date): boolean {
+  return Boolean(endsAt) && new Date(endsAt as string).getTime() <= now.getTime();
+}
+
+export function formatDeadline(endsAt: string, now: Date): string {
+  if (isCycleEnded(endsAt, now)) {
+    return 'Cycle ended';
+  }
+  const days = daysUntilEnd(endsAt, now);
+
+  return days <= 1 ? 'Ends today' : `${days} days left`;
+}
+
+/** "Oct 07" for `2026-10-07`, read from the text so the timezone cannot move the day. */
+export function formatShortDate(date: string): string {
+  const [, month, day] = date.split('-');
+  const name = MONTH_NAMES[Number(month) - 1];
+
+  return name && day ? `${name} ${day}` : date;
+}
+
+export function formatPercent(value: number | null): string {
+  return value === null ? '—' : `${Math.round(value * 100)}%`;
+}

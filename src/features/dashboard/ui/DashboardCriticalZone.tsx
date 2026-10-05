@@ -1,3 +1,4 @@
+import { FsrsSummaryCard } from '../components/FsrsSummaryCard';
 import { KpiGrid } from '../components/KpiGrid';
 import { SectionLabel } from '../components/SectionLabel';
 import { getDashboardCriticalData } from '../services/server/getDashboardCriticalData';
@@ -25,6 +26,7 @@ export async function DashboardCriticalZone() {
 
         <SectionLabel>Overview</SectionLabel>
         <KpiGrid summary={summary} />
+        <FsrsSummaryCard summary={summary} />
       </>
     );
   } catch (error) {

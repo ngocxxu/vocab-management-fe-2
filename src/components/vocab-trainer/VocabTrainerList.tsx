@@ -27,6 +27,8 @@ import { useApiPagination, useBulkDelete, useDialogState } from '@/hooks';
 import { getExamCooldownRemainingSeconds } from '@/utils/exam-cooldown';
 import AddVocabTrainerDialog from './AddVocabTrainerDialog';
 import ExamLauncher from './ExamLauncher';
+import FsrsTrainerActions from './FsrsTrainerActions';
+import FsrsTrainerStatus from './FsrsTrainerStatus';
 import VocabTrainerHeader from './VocabTrainerHeader';
 
 type FormData = TTrainerFormData;
@@ -384,8 +386,9 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
       header: 'Name',
       cell: ({ row }) => {
         return (
-          <div className="flex items-center space-x-3">
+          <div>
             <div className="font-semibold text-foreground">{row.original.name}</div>
+            {row.original.mode === ETrainerMode.FSRS && <FsrsTrainerStatus trainer={row.original} />}
           </div>
         );
       },
@@ -397,6 +400,10 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
       accessorKey: 'status',
       header: 'Status',
       cell: ({ row }) => {
+        // Pass or fail and the six passes belong to Classic; a spaced repetition trainer never "passes".
+        if (row.original.mode === ETrainerMode.FSRS) {
+          return <Badge className="bg-primary/15 text-primary">Spaced repetition</Badge>;
+        }
         const status = row.original.status;
         const passCount = row.original.reminderRepeat;
         const displayStatus = status === 'PASSED'
@@ -456,11 +463,9 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
       header: '',
       cell: ({ row: _row }) => (
         <div className="flex items-center space-x-2">
-          <ExamLauncher
-            trainerId={_row.original.id}
-            questionType={_row.original.questionType}
-            mode={_row.original.mode}
-          />
+          {_row.original.mode === ETrainerMode.FSRS
+            ? <FsrsTrainerActions trainer={_row.original} onExtend={handleEdit} />
+            : <ExamLauncher trainerId={_row.original.id} questionType={_row.original.questionType} />}
           <Button
             variant="ghost"
             size="icon"

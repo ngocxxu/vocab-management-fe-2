@@ -4,10 +4,15 @@ import { EFsrsDirection, EFsrsRating, EFsrsState } from '@/enum/vocab-trainer';
 import {
   clampDuration,
   countRatings,
+  daysUntilEnd,
   directionLabel,
   estimateMinutes,
+  formatDeadline,
   formatInterval,
+  formatPercent,
+  formatShortDate,
   isBacklog,
+  isCycleEnded,
   missedItems,
   ratingForKey,
 } from './fsrs-review';
@@ -84,5 +89,32 @@ describe('results', () => {
 
   it('keeps only the cards answered Again for the retry round, in order', () => {
     expect(missedItems(results).map(i => i.cardId)).toEqual(['a', 'c']);
+  });
+});
+
+describe('deadline', () => {
+  const now = new Date('2026-10-04T10:00:00.000Z');
+
+  it('counts the days left, rounded up', () => {
+    expect(daysUntilEnd('2026-10-09T09:00:00.000Z', now)).toBe(5);
+    expect(daysUntilEnd('2026-10-09T11:00:00.000Z', now)).toBe(6);
+  });
+
+  it('is over once the deadline has passed, and never over without one', () => {
+    expect([isCycleEnded('2026-10-04T09:59:59.000Z', now), isCycleEnded('2026-10-04T10:00:01.000Z', now), isCycleEnded(null, now)]).toEqual([true, false, false]);
+  });
+
+  it('says how long is left in plain words', () => {
+    expect(['2026-10-04T09:00:00.000Z', '2026-10-04T20:00:00.000Z', '2026-10-09T09:00:00.000Z'].map(date => formatDeadline(date, now))).toEqual(['Cycle ended', 'Ends today', '5 days left']);
+  });
+});
+
+describe('formatting', () => {
+  it('shows a short date without moving the day', () => {
+    expect([formatShortDate('2026-10-07'), formatShortDate('2026-01-01'), formatShortDate('nope')]).toEqual(['Oct 07', 'Jan 01', 'nope']);
+  });
+
+  it('shows a share as a percentage, or a dash without data', () => {
+    expect([formatPercent(0.9), formatPercent(0.876), formatPercent(null)]).toEqual(['90%', '88%', '—']);
   });
 });
