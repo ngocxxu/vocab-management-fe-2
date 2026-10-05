@@ -17,6 +17,9 @@ import type { TSemanticSearchGroupedParams, TSemanticSearchParams } from '@/type
 import type {
   TCreateVocabTrainer,
   TFormTestVocabTrainerUnion,
+  TFsrsAnswerInput,
+  TFsrsQueueParams,
+  TUpdateFsrsSettings,
 } from '@/types/vocab-trainer';
 
 // Query parameters types
@@ -248,6 +251,15 @@ export const API_METHODS = {
     getExam: (id: string) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}/exam` }),
     submitExam: (id: string, testData: TFormTestVocabTrainerUnion) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}/exam`, data: testData }),
     deleteBulk: (ids: string[]) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/bulk/delete`, data: { ids } }),
+    updateFsrsSettings: (id: string, settings: TUpdateFsrsSettings) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}`, data: settings }),
+    getReviewQueue: (id: string, params?: TFsrsQueueParams) => {
+      const queryString = params ? buildQueryString(params) : '';
+      return { endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}/review-queue${queryString ? `?${queryString}` : ''}` };
+    },
+    getReviewSummary: (id: string) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}/review-summary` }),
+    getReviewStats: (id: string) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}/review-stats` }),
+    submitReviewAnswer: (id: string, answer: TFsrsAnswerInput) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}/review-answer`, data: answer }),
+    checkReviewAnswer: (id: string, cardId: string, answer: string) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}/review-check`, data: { cardId, answer } }),
   },
   subjects: {
     getAll: () => ({ endpoint: API_ENDPOINTS.subjects }),

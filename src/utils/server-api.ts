@@ -24,7 +24,19 @@ import type { TSubjectResponse } from '@/types/subject';
 import type { TVocabConflictListResponse } from '@/types/vocab-conflict';
 import type { TBulkVocabUpdateItem, TCreateTextTarget, TCreateVocab, TTextTarget, TUpdateTextTarget, TVocab } from '@/types/vocab-list';
 import type { TSemanticSearchGroupedParams, TSemanticSearchParams, TVocabSearchGroup } from '@/types/vocab-search';
-import type { TCreateVocabTrainer, TFormTestVocabTrainerUnion, TVocabTrainer } from '@/types/vocab-trainer';
+import type {
+  TCreateVocabTrainer,
+  TFormTestVocabTrainerUnion,
+  TFsrsAnswerCheck,
+  TFsrsAnswerInput,
+  TFsrsAnswerResult,
+  TFsrsQueueParams,
+  TFsrsReviewQueue,
+  TFsrsReviewStats,
+  TFsrsReviewSummary,
+  TUpdateFsrsSettings,
+  TVocabTrainer,
+} from '@/types/vocab-trainer';
 import type { TWordTypeResponse } from '@/types/word-type';
 import { Env } from '@/libs/Env';
 import { BackendRequestError } from '@/utils/backend-request-error';
@@ -420,6 +432,30 @@ export const vocabTrainerApi = {
   deleteBulk: (ids: string[]) => {
     const config = API_METHODS.vocabTrainers.deleteBulk(ids);
     return serverApi.post(config.endpoint, config.data);
+  },
+  updateFsrsSettings: (id: string, settings: TUpdateFsrsSettings) => {
+    const config = API_METHODS.vocabTrainers.updateFsrsSettings(id, settings);
+    return serverApi.patch<TVocabTrainer>(config.endpoint, config.data);
+  },
+  getReviewQueue: (id: string, params?: TFsrsQueueParams) => {
+    const config = API_METHODS.vocabTrainers.getReviewQueue(id, params);
+    return serverApi.get<TFsrsReviewQueue>(config.endpoint);
+  },
+  getReviewSummary: (id: string) => {
+    const config = API_METHODS.vocabTrainers.getReviewSummary(id);
+    return serverApi.get<TFsrsReviewSummary>(config.endpoint);
+  },
+  getReviewStats: (id: string) => {
+    const config = API_METHODS.vocabTrainers.getReviewStats(id);
+    return serverApi.get<TFsrsReviewStats>(config.endpoint);
+  },
+  submitReviewAnswer: (id: string, answer: TFsrsAnswerInput) => {
+    const config = API_METHODS.vocabTrainers.submitReviewAnswer(id, answer);
+    return serverApi.post<TFsrsAnswerResult>(config.endpoint, config.data);
+  },
+  checkReviewAnswer: (id: string, cardId: string, answer: string) => {
+    const config = API_METHODS.vocabTrainers.checkReviewAnswer(id, cardId, answer);
+    return serverApi.post<TFsrsAnswerCheck>(config.endpoint, config.data);
   },
 };
 
