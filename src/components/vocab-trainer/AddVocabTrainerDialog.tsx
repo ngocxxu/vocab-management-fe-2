@@ -10,6 +10,8 @@ import type {
   AddVocabTrainerDialogProps,
 } from '@/types/vocab-trainer';
 import { ETrainerMode } from '@/enum/vocab-trainer';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/shared/ui/alert-dialog';
+import { removedVocabIds } from '@/utils/trainer-word-removal';
 import FsrsSettingsFields from './FsrsSettingsFields';
 import TrainerBasicInfoForm from './TrainerBasicInfoForm';
 import VocabSelectionForm from './VocabSelectionForm';
@@ -26,20 +28,39 @@ const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({
   initialLanguagesData,
   cachedLanguageFolders = EMPTY_CACHED_LANGUAGE_FOLDERS,
   onLanguageFoldersLoaded,
-  editingItem: _editingItem,
+  editingItem,
   userRole,
   srsDefaults,
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedVocabById, setSelectedVocabById] = useState<Record<string, TVocab>>({});
+  const [removalConfirmOpen, setRemovalConfirmOpen] = useState(false);
 
-  const handleSubmit = async () => {
+  // Only an FSRS trainer keeps a schedule per word, so only there does removing a word cost something.
+  const removedCount = editMode && editingItem?.mode === ETrainerMode.FSRS
+    ? removedVocabIds(editingItem.vocabAssignments.map(assignment => assignment.vocabId), formData.vocabAssignmentIds || []).length
+    : 0;
+
+  const submit = async () => {
     setIsSubmitting(true);
     try {
       await onSubmit();
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleSubmit = async () => {
+    if (removedCount > 0) {
+      setRemovalConfirmOpen(true);
+      return;
+    }
+    await submit();
+  };
+
+  const handleConfirmRemoval = async () => {
+    setRemovalConfirmOpen(false);
+    await submit();
   };
 
   const handleOpenChange = (newOpen: boolean) => {
@@ -163,6 +184,23 @@ const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({
           </DialogFooter>
         </div>
       </DialogContent>
+      <AlertDialog open={removalConfirmOpen} onOpenChange={setRemovalConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {removedCount === 1 ? '1 word' : `${removedCount} words`}
+              {' will lose their review schedule'}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Removing a word deletes its review schedule in this trainer. Its review history is kept. Adding the word back later starts it as new.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => void handleConfirmRemoval()}>Remove and update</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 };
