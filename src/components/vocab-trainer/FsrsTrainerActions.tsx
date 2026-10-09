@@ -14,16 +14,23 @@ type FsrsTrainerActionsProps = Readonly<{
   trainer: TVocabTrainer;
   /** Opens the edit dialog, where the deadline can be moved. */
   onExtend: (trainer: TVocabTrainer) => void;
+  /** Opens the dialog that starts a new cycle from this trainer. */
+  onStartNewCycle: (trainer: TVocabTrainer) => void;
 }>;
 
-/** Review, or Extend once the cycle has ended, and the Stats page. */
-const FsrsTrainerActions: React.FC<FsrsTrainerActionsProps> = ({ trainer, onExtend }) => {
+/** Review, or Extend and New cycle once the cycle has ended, and the Stats page. */
+const FsrsTrainerActions: React.FC<FsrsTrainerActionsProps> = ({ trainer, onExtend, onStartNewCycle }) => {
   const ended = isCycleEnded(trainer.fsrsEndsAt, new Date());
 
   return (
     <>
       {ended
-        ? <Button type="button" variant="outline" size="sm" className="h-8 rounded-lg" onClick={() => onExtend(trainer)}>Extend</Button>
+        ? (
+            <>
+              <Button type="button" variant="outline" size="sm" className="h-8 rounded-lg" onClick={() => onExtend(trainer)}>Extend</Button>
+              <Button type="button" size="sm" className="h-8 rounded-lg" onClick={() => onStartNewCycle(trainer)}>New cycle</Button>
+            </>
+          )
         : <ExamLauncher trainerId={trainer.id} questionType={trainer.questionType} mode={ETrainerMode.FSRS} />}
       <Tooltip>
         <TooltipTrigger asChild>

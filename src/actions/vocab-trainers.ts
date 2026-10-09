@@ -1,6 +1,7 @@
 'use server';
 
 import type {
+  TCloneVocabTrainer,
   TCreateVocabTrainer,
   TFormTestVocabTrainerUnion,
   TFsrsAnswerCheck,
@@ -121,6 +122,23 @@ const HTTP_CONFLICT = 409;
 function assertTrainerId(id: string) {
   if (!id || typeof id !== 'string') {
     throw new Error('Trainer ID is required');
+  }
+}
+
+/** Starts a new cycle: a new FSRS trainer with the same words, directions and settings. The original is not changed. */
+export async function cloneVocabTrainer(id: string, data: TCloneVocabTrainer): Promise<TVocabTrainer> {
+  await requireAuth();
+  assertTrainerId(id);
+  if (!data || typeof data.name !== 'string' || data.name.trim() === '') {
+    throw new Error('A name for the new cycle is required');
+  }
+
+  try {
+    const result = await vocabTrainerApi.clone(id, data);
+    revalidatePath('/vocab-trainer');
+    return result;
+  } catch (error) {
+    throw toActionError(error, 'Failed to start a new cycle');
   }
 }
 

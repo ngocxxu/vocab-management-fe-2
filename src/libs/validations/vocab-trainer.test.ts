@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { EFsrsDirection, EQuestionType, ETrainerMode } from '@/enum/vocab-trainer';
 import {
   countCards,
+  createCloneFormSchema,
   createTrainerFormSchema,
   dateInputToEndsAt,
   endsAtToDateInput,
@@ -100,5 +101,31 @@ describe('deadline conversion', () => {
   it('maps no deadline both ways', () => {
     expect(dateInputToEndsAt('')).toBeNull();
     expect(endsAtToDateInput(null)).toBe('');
+  });
+});
+
+describe('createCloneFormSchema', () => {
+  const messagesOf = (form: object) => {
+    const result = createCloneFormSchema({ now: NOW }).safeParse(form);
+
+    return result.success ? [] : result.error.issues.map(issue => `${issue.path.join('.')}: ${issue.message}`);
+  };
+
+  it('accepts a name with or without a deadline', () => {
+    expect([messagesOf({ name: 'Round 2', endsAt: '' }), messagesOf({ name: 'Round 2', endsAt: '2026-12-01' })]).toEqual([[], []]);
+  });
+
+  it('needs a name and keeps it short', () => {
+    expect(messagesOf({ name: '   ', endsAt: '' })).toEqual(['name: Name is required']);
+    expect(messagesOf({ name: 'x'.repeat(201), endsAt: '' })).toEqual(['name: Use at most 200 characters']);
+  });
+
+  it('refuses a deadline in the past but allows today', () => {
+    expect(messagesOf({ name: 'Round 2', endsAt: '2026-10-03' })).toEqual(['endsAt: The deadline cannot be in the past']);
+    expect(messagesOf({ name: 'Round 2', endsAt: '2026-10-04' })).toEqual([]);
+  });
+
+  it('refuses a date that does not exist', () => {
+    expect(messagesOf({ name: 'Round 2', endsAt: '2026-02-31' })).toEqual(['endsAt: Pick a valid date']);
   });
 });

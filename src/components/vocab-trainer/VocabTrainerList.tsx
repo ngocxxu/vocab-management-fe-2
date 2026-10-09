@@ -26,6 +26,7 @@ import { createTrainerFormSchema, dateInputToEndsAt, endsAtToDateInput, FSRS_MAX
 import { useApiPagination, useBulkDelete, useDialogState } from '@/hooks';
 import { getExamCooldownRemainingSeconds } from '@/utils/exam-cooldown';
 import AddVocabTrainerDialog from './AddVocabTrainerDialog';
+import CloneTrainerDialog from './CloneTrainerDialog';
 import ExamLauncher from './ExamLauncher';
 import FsrsTrainerActions from './FsrsTrainerActions';
 import FsrsTrainerStatus from './FsrsTrainerStatus';
@@ -95,6 +96,8 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
   }, []);
 
   const [srsDefaults, setSrsDefaults] = useState<TSrsDefaults | undefined>();
+  // The trainer whose ended cycle a new one is being started from.
+  const [cloneTarget, setCloneTarget] = useState<TVocabTrainer | null>(null);
   // A deadline that is kept as it is stays valid after it has passed, so an ended trainer can still be renamed.
   const [originalEndsAt, setOriginalEndsAt] = useState('');
   const schemaRef = useRef(createTrainerFormSchema());
@@ -464,7 +467,7 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
       cell: ({ row: _row }) => (
         <div className="flex items-center space-x-2">
           {_row.original.mode === ETrainerMode.FSRS
-            ? <FsrsTrainerActions trainer={_row.original} onExtend={handleEdit} />
+            ? <FsrsTrainerActions trainer={_row.original} onExtend={handleEdit} onStartNewCycle={setCloneTarget} />
             : <ExamLauncher trainerId={_row.original.id} questionType={_row.original.questionType} />}
           <Button
             variant="ghost"
@@ -532,6 +535,18 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
               onLanguageFoldersLoaded={setCachedLanguageFolders}
               userRole={user?.role}
               srsDefaults={srsDefaults}
+            />
+
+            <CloneTrainerDialog
+              trainer={cloneTarget}
+              onClose={() => setCloneTarget(null)}
+              onCloned={() => {
+                setCloneTarget(null);
+                handlers.setPage(1);
+                startTransition(() => {
+                  router.refresh();
+                });
+              }}
             />
 
             <BulkDeleteDialog

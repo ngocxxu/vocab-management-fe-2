@@ -15,6 +15,7 @@ import type { TUpdateSrsSettings } from '@/types/srs-settings';
 import type { TBulkVocabUpdateItem, TCreateTextTarget, TCreateVocab, TUpdateTextTarget } from '@/types/vocab-list';
 import type { TSemanticSearchGroupedParams, TSemanticSearchParams } from '@/types/vocab-search';
 import type {
+  TCloneVocabTrainer,
   TCreateVocabTrainer,
   TFormTestVocabTrainerUnion,
   TFsrsAnswerInput,
@@ -251,6 +252,7 @@ export const API_METHODS = {
     getExam: (id: string) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}/exam` }),
     submitExam: (id: string, testData: TFormTestVocabTrainerUnion) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}/exam`, data: testData }),
     deleteBulk: (ids: string[]) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/bulk/delete`, data: { ids } }),
+    clone: (id: string, data: TCloneVocabTrainer) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}/clone`, data }),
     updateFsrsSettings: (id: string, settings: TUpdateFsrsSettings) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}`, data: settings }),
     getReviewQueue: (id: string, params?: TFsrsQueueParams) => {
       const queryString = params ? buildQueryString(params) : '';

@@ -4,6 +4,8 @@ import { SRS_MAX_RETENTION, SRS_MIN_RETENTION } from './srs-settings';
 
 // Same bounds as the backend; the backend checks them again.
 export const FSRS_MAX_INTERVAL_DAYS = 36500;
+/** The backend limit of a trainer name when starting a new cycle. */
+const MAX_TRAINER_NAME_LENGTH = 200;
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const DATE_INPUT = /^(\d{4})-(\d{2})-(\d{2})$/;
@@ -131,5 +133,20 @@ export function createTrainerFormSchema({ originalEndsAt = '', now = new Date() 
       }
     });
 }
+
+/** The form that starts a new cycle: the name of the new trainer and an optional deadline (`YYYY-MM-DD`). */
+export function createCloneFormSchema({ now = new Date() }: { now?: Date } = {}) {
+  const today = toDateInput(now);
+
+  return z.object({
+    name: z.string().trim().min(1, 'Name is required').max(MAX_TRAINER_NAME_LENGTH, `Use at most ${MAX_TRAINER_NAME_LENGTH} characters`),
+    endsAt: z
+      .string()
+      .refine(value => value === '' || parseDateInput(value) !== null, 'Pick a valid date')
+      .refine(value => value === '' || parseDateInput(value) === null || value >= today, 'The deadline cannot be in the past'),
+  });
+}
+
+export type TCloneFormData = z.infer<ReturnType<typeof createCloneFormSchema>>;
 
 export type TTrainerFormData = z.infer<ReturnType<typeof createTrainerFormSchema>>;

@@ -138,6 +138,13 @@ export type TCreateVocabTrainer = {
   fsrsEndsAt?: string | null;
 };
 
+/** Starts a new cycle from an FSRS trainer: the words, directions and settings are copied by the backend. */
+export type TCloneVocabTrainer = {
+  name: string;
+  /** End of the new cycle (ISO date); null or missing = no end. */
+  endsAt?: string | null;
+};
+
 /** What can change on an FSRS trainer after creation; mode and directions are fixed. Only the fields that are sent change. */
 export type TUpdateFsrsSettings = {
   desiredRetention?: number;

@@ -25,6 +25,7 @@ import type { TVocabConflictListResponse } from '@/types/vocab-conflict';
 import type { TBulkVocabUpdateItem, TCreateTextTarget, TCreateVocab, TTextTarget, TUpdateTextTarget, TVocab } from '@/types/vocab-list';
 import type { TSemanticSearchGroupedParams, TSemanticSearchParams, TVocabSearchGroup } from '@/types/vocab-search';
 import type {
+  TCloneVocabTrainer,
   TCreateVocabTrainer,
   TFormTestVocabTrainerUnion,
   TFsrsAnswerCheck,
@@ -432,6 +433,10 @@ export const vocabTrainerApi = {
   deleteBulk: (ids: string[]) => {
     const config = API_METHODS.vocabTrainers.deleteBulk(ids);
     return serverApi.post(config.endpoint, config.data);
+  },
+  clone: (id: string, data: TCloneVocabTrainer) => {
+    const config = API_METHODS.vocabTrainers.clone(id, data);
+    return serverApi.post<TVocabTrainer>(config.endpoint, config.data);
   },
   updateFsrsSettings: (id: string, settings: TUpdateFsrsSettings) => {
     const config = API_METHODS.vocabTrainers.updateFsrsSettings(id, settings);
