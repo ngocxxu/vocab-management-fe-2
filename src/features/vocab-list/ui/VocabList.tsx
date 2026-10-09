@@ -28,6 +28,7 @@ import {
   getVocabsForSelection,
   updateVocab,
 } from '@/actions/vocabs';
+import type { TVocabInUse } from '@/types/vocab-conflict';
 import { isQuotaError, QUOTA_ERROR_MESSAGE } from '@/utils/quota-error';
 import { BulkDeleteDialog, DeleteActionButton, ErrorState } from '@/shared/ui/shared';
 import { Button } from '@/shared/ui/button';
@@ -40,6 +41,7 @@ import { SemanticSuggestions } from '@/features/vocab-search';
 import { selectVoiceByCode } from '@/utils/textToSpeech';
 
 import AddVocabDialog from './AddVocabDialog';
+import VocabDeleteConflictDialog from './VocabDeleteConflictDialog';
 import ExpandedRowContent from './ExpandedRowContent';
 import ImportVocabDialog from './ImportVocabDialog';
 import MasteryScoreCell from './MasteryScoreCell';
@@ -199,10 +201,22 @@ const VocabList: React.FC<VocabListProps> = ({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [openAdd]);
 
+  const [conflictState, setConflictState] = useState<{ conflict: TVocabInUse; vocabIds: string[] } | null>(null);
+
+  const handleConflictDialogOpenChange = useCallback((open: boolean) => {
+    if (!open) {
+      setConflictState(null);
+    }
+  }, []);
+
   const bulkDelete = useBulkDelete({
     deleteMutation: async (ids: string[]) => {
-      await deleteVocabsBulk(ids);
-      return { success: true };
+      const result = await deleteVocabsBulk(ids);
+      if (result.ok) {
+        return { success: true };
+      }
+      setConflictState({ conflict: result.conflict, vocabIds: ids });
+      return { success: false };
     },
     onSuccess: () => {
       startTransition(() => {
@@ -375,7 +389,13 @@ const VocabList: React.FC<VocabListProps> = ({
   }, [router, searchParams]);
 
   const handleDeleteVocab = useCallback(async (id: string) => {
-    await deleteVocab(id);
+    const result = await deleteVocab(id);
+    if (result.ok) {
+      return;
+    }
+    setConflictState({ conflict: result.conflict, vocabIds: [id] });
+    // `false` tells the delete button the word was not deleted, so it shows no success message.
+    return false;
   }, []);
 
   const handleDeleteSuccess = useCallback(() => {
@@ -708,6 +728,12 @@ const VocabList: React.FC<VocabListProps> = ({
               userRole={user?.role}
             />
 
+            <VocabDeleteConflictDialog
+              open={conflictState !== null}
+              onOpenChange={handleConflictDialogOpenChange}
+              conflict={conflictState?.conflict ?? null}
+              vocabIds={conflictState?.vocabIds ?? []}
+            />
             <ImportVocabDialog
               open={importDialogOpen}
               onOpenChange={setImportDialogOpen}

@@ -11,6 +11,7 @@ import React, { useCallback, useMemo, useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { bulkUpdateVocabs, deleteVocab, deleteVocabsBulk, getVocabsByIds, updateVocab } from '@/actions/vocabs';
 import { cn } from '@/libs/utils';
+import { vocabInUseText } from '@/utils/vocab-in-use';
 import { buildVocabUpdateForSubjectReassign } from '@/utils/build-vocab-reassign-update';
 import {
   Breadcrumb,
@@ -153,10 +154,18 @@ export default function ConflictVocabulariesContent({
     [router, searchParams],
   );
 
+  // This page keeps the toast: a word that is still in a trainer is reported, not sent to the resolve page.
+  const handleDeleteVocab = useCallback(async (id: string) => {
+    const result = await deleteVocab(id);
+    if (!result.ok) {
+      throw new Error(vocabInUseText(result.conflict));
+    }
+  }, []);
+
   const bulkDelete = useBulkDelete({
     deleteMutation: async (ids: string[]) => {
-      await deleteVocabsBulk(ids);
-      return { success: true };
+      const result = await deleteVocabsBulk(ids);
+      return result.ok ? { success: true } : { success: false, error: vocabInUseText(result.conflict) };
     },
     onSuccess: () => {
       startTransition(() => router.refresh());
@@ -377,14 +386,14 @@ export default function ConflictVocabulariesContent({
           <DeleteActionButton
             itemId={row.original.id}
             itemName={row.original.textSource}
-            onDelete={deleteVocab}
+            onDelete={handleDeleteVocab}
             onSuccess={() => startTransition(() => router.refresh())}
           />
         ),
         enableSorting: false,
       },
     ],
-    [reassignOptions, rowBusyId, handleRowReassign, handleEditNavigate, startTransition],
+    [reassignOptions, rowBusyId, handleRowReassign, handleEditNavigate, handleDeleteVocab, startTransition, router],
   );
 
   const filterTrigger = (

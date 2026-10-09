@@ -142,6 +142,26 @@ export async function cloneVocabTrainer(id: string, data: TCloneVocabTrainer): P
   }
 }
 
+/**
+ * Removes one word from a trainer; the word itself stays. For an FSRS trainer its cards go and its review history is kept.
+ */
+export async function removeVocabFromTrainer(trainerId: string, vocabId: string): Promise<TVocabTrainer> {
+  await requireAuth();
+  assertTrainerId(trainerId);
+  if (!vocabId || typeof vocabId !== 'string') {
+    throw new Error('Vocab ID is required');
+  }
+
+  try {
+    const result = await vocabTrainerApi.removeVocab(trainerId, vocabId);
+    revalidatePath('/vocab-trainer');
+    revalidatePath('/vocab-list');
+    return result;
+  } catch (error) {
+    throw toActionError(error, 'Failed to remove the word from the trainer');
+  }
+}
+
 /** Changes the settings of an FSRS trainer. Mode and directions cannot change after creation. */
 export async function updateFsrsSettings(id: string, settings: TUpdateFsrsSettings): Promise<TVocabTrainer> {
   await requireAuth();

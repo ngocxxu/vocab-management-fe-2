@@ -131,7 +131,35 @@ test('the stats page of the trainer renders', async ({ page }) => {
   await expect(page.getByText('Unable to load these statistics')).toHaveCount(0);
 });
 
-// Not covered yet (ticket 14 is not in the code, and a backend way to end a cycle is missing):
-// - deleting a vocab that is in a trainer shows the conflict message (ticket 14)
+test('deleting a vocab that is in trainers opens the resolve page, and it can be removed from them and deleted', async ({ page }) => {
+  const word = `${WORDS[0]}-${RUN_ID}`;
+  const typedName = `Typed ${RUN_ID}`;
+  const listUrl = `/vocab-list?languageFolderId=${folderId}&sourceLanguageCode=en&targetLanguageCode=vi`;
+  await page.goto(listUrl);
+
+  await page.getByRole('row').filter({ hasText: word }).getByRole('button', { name: 'Delete vocabulary item' }).click();
+  await page.getByRole('alertdialog').getByRole('button', { name: 'Delete' }).click();
+
+  const dialog = page.getByRole('dialog');
+  await expect(dialog.getByText('Cannot Delete Vocabulary')).toBeVisible();
+  await dialog.getByRole('button', { name: 'View trainers' }).click();
+
+  await page.waitForURL('**/vocab-list/trainer-conflicts**');
+  await expect(page.getByText(word, { exact: true })).toBeVisible();
+
+  for (const name of [trainerName, typedName]) {
+    await page.getByRole('listitem').filter({ hasText: name }).getByRole('button', { name: 'Remove from trainer' }).click();
+    await page.getByRole('alertdialog').getByRole('button', { name: 'Remove' }).click();
+    await expect(page.getByText(`Removed from ${name}`)).toBeVisible();
+  }
+
+  await page.getByRole('button', { name: 'Delete vocabulary' }).click();
+  await expect(page.getByText(`${word} deleted`)).toBeVisible();
+
+  await page.goto(listUrl);
+  await expect(page.getByRole('row').filter({ hasText: word })).toHaveCount(0);
+});
+
+// Not covered yet (a backend way to end a cycle is missing):
 // - an ended cycle shows Extend and New cycle, and a large backlog limits the session
 // - the reminder email arrives the next morning (manual checklist)

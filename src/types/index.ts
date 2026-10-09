@@ -165,7 +165,7 @@ export type ErrorStateProps = {
 export type DeleteActionButtonProps = {
   itemId: string;
   itemName: string;
-  onDelete: (id: string) => Promise<void>;
+  onDelete: (id: string) => Promise<void | false>;
   onSuccess?: () => void | Promise<void>;
   successMessage?: string;
   errorMessage?: string;

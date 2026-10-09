@@ -21,7 +21,7 @@ import type {
 } from '@/types/notification';
 import type { TSrsSettings, TUpdateSrsSettings } from '@/types/srs-settings';
 import type { TSubjectResponse } from '@/types/subject';
-import type { TVocabConflictListResponse } from '@/types/vocab-conflict';
+import type { TVocabConflictListResponse, TVocabTrainerConflict } from '@/types/vocab-conflict';
 import type { TBulkVocabUpdateItem, TCreateTextTarget, TCreateVocab, TTextTarget, TUpdateTextTarget, TVocab } from '@/types/vocab-list';
 import type { TSemanticSearchGroupedParams, TSemanticSearchParams, TVocabSearchGroup } from '@/types/vocab-search';
 import type {
@@ -203,6 +203,10 @@ export const vocabApi = {
   getConflictBySubject: (params: VocabConflictBySubjectParams) => {
     const config = API_METHODS.vocabs.conflictBySubject(params);
     return serverApi.get<TVocabConflictListResponse>(config.endpoint);
+  },
+  getConflictByTrainer: (vocabIds: string[]) => {
+    const config = API_METHODS.vocabs.conflictByTrainer(vocabIds);
+    return serverApi.get<TVocabTrainerConflict[]>(config.endpoint);
   },
   random: (params: RandomVocabQueryParams) => {
     const config = API_METHODS.vocabs.random(params);
@@ -437,6 +441,10 @@ export const vocabTrainerApi = {
   clone: (id: string, data: TCloneVocabTrainer) => {
     const config = API_METHODS.vocabTrainers.clone(id, data);
     return serverApi.post<TVocabTrainer>(config.endpoint, config.data);
+  },
+  removeVocab: (id: string, vocabId: string) => {
+    const config = API_METHODS.vocabTrainers.removeVocab(id, vocabId);
+    return serverApi.delete<TVocabTrainer>(config.endpoint);
   },
   updateFsrsSettings: (id: string, settings: TUpdateFsrsSettings) => {
     const config = API_METHODS.vocabTrainers.updateFsrsSettings(id, settings);

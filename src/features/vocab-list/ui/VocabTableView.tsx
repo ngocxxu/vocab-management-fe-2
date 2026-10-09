@@ -26,7 +26,7 @@ type VocabTableViewProps = {
   onPageSizeChange: (pageSize: number) => void;
   onSpeak: (vocab: TVocab) => void;
   onEdit: (vocab: TVocab, textTargetIndex?: number) => void;
-  onDeleteVocab: (id: string) => Promise<void>;
+  onDeleteVocab: (id: string) => Promise<void | false>;
   onDeleteSuccess: () => void;
   onView: (vocab: TVocab) => void;
 };

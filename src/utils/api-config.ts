@@ -235,6 +235,10 @@ export const API_METHODS = {
       const queryString = buildQueryString(params);
       return { endpoint: `${API_ENDPOINTS.vocabs}/conflict/by-subject?${queryString}` };
     },
+    conflictByTrainer: (vocabIds: string[]) => {
+      const queryString = buildQueryString({ vocabIds: vocabIds.join(',') });
+      return { endpoint: `${API_ENDPOINTS.vocabs}/conflict/by-trainer?${queryString}` };
+    },
   },
   vocabTrainers: {
     getAll: (params?: VocabTrainerQueryParams) => {
@@ -253,6 +257,7 @@ export const API_METHODS = {
     submitExam: (id: string, testData: TFormTestVocabTrainerUnion) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}/exam`, data: testData }),
     deleteBulk: (ids: string[]) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/bulk/delete`, data: { ids } }),
     clone: (id: string, data: TCloneVocabTrainer) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}/clone`, data }),
+    removeVocab: (id: string, vocabId: string) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}/vocabs/${vocabId}` }),
     updateFsrsSettings: (id: string, settings: TUpdateFsrsSettings) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}`, data: settings }),
     getReviewQueue: (id: string, params?: TFsrsQueueParams) => {
       const queryString = params ? buildQueryString(params) : '';

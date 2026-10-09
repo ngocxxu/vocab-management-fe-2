@@ -42,9 +42,16 @@ export const useBulkDelete = (options: UseBulkDeleteOptions): UseBulkDeleteRetur
 
   const confirmBulkDelete = useCallback(async () => {
     try {
-      await deleteMutation(selectedIds);
+      const result = await deleteMutation(selectedIds);
       setBulkDeleteDialogOpen(false);
       setSelectedIds([]);
+      if (!result.success) {
+        // Nothing was deleted; the caller decides what the user sees (a message, or a dialog it already opened).
+        if (result.error) {
+          toast.error(result.error);
+        }
+        return;
+      }
       await onSuccess?.();
       const displayName = selectedIds.length === 1 ? itemName : (itemNamePlural || `${itemName}s`);
       toast.success(`${displayName} deleted successfully!`);
