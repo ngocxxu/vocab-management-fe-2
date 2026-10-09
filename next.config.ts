@@ -14,6 +14,8 @@ const baseConfig: NextConfig = {
   trailingSlash: false,
   // Enable standalone output for Docker
   output: 'standalone',
+  // E2E runs its own dev server with a separate build dir so it does not collide with a running `pnpm dev`.
+  distDir: process.env.E2E_DIST_DIR || '.next',
   // Fix ENOENT error when copying traced files in Docker
   outputFileTracingRoot: path.join(__dirname, './'),
   outputFileTracingIncludes: {

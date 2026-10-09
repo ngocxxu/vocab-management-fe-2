@@ -29,7 +29,8 @@ export default defineConfig({
       stdout: 'pipe',
     },
     {
-      command: 'pnpm exec dotenv -e .env.e2e -- next dev --turbopack --port 3101',
+      // Own build dir, so a `pnpm dev` already running in this folder does not hold the lock.
+      command: 'E2E_DIST_DIR=.next-e2e pnpm exec dotenv -e .env.e2e -- next dev --turbopack --port 3101',
       url: 'http://localhost:3101/signin',
       reuseExistingServer: true,
       timeout: 180_000,
