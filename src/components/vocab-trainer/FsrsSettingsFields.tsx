@@ -21,12 +21,15 @@ type FsrsSettingsFieldsProps = Readonly<{
   wordsWithoutTranslation: string[];
 }>;
 
+type FsrsCardCountProps = Pick<FsrsSettingsFieldsProps, 'wordCount' | 'wordsWithoutTranslation'>;
+
 const DIRECTION_OPTIONS = [
   { value: EFsrsDirection.SOURCE_TO_TARGET, title: 'Recognise', example: 'apple → quả táo', hint: 'See the word, know the meaning' },
   { value: EFsrsDirection.TARGET_TO_SOURCE, title: 'Recall', example: 'quả táo → apple', hint: 'See the meaning, produce the word' },
 ];
 
 const MAX_LISTED_WORDS = 5;
+const ADVANCED_FIELDS = ['fsrsDesiredRetention', 'fsrsNewPerDay', 'fsrsMaximumInterval'] as const;
 
 function retentionHint(retention: number): string {
   if (retention >= 0.95) {
@@ -38,13 +41,45 @@ function retentionHint(retention: number): string {
   return 'Fewer reviews, but you will forget more words.';
 }
 
-const FsrsSettingsFields: React.FC<FsrsSettingsFieldsProps> = ({ editMode, wordCount, wordsWithoutTranslation }) => {
+/** Cards the trainer will create: words with a translation × directions. */
+function useCardCount({ wordCount, wordsWithoutTranslation }: FsrsCardCountProps) {
   const form = useFormContext();
   const directions = form.watch('fsrsDirections') as EFsrsDirection[];
-  const endsAt = form.watch('fsrsEndsAt') as string;
   const cardWords = wordCount - wordsWithoutTranslation.length;
-  const cards = countCards(cardWords, directions.length);
+  return { directions, cardWords, cards: countCards(cardWords, directions.length) };
+}
+
+/** Footer summary: stays visible while the form scrolls. */
+export const FsrsCardSummary: React.FC<FsrsCardCountProps> = (props) => {
+  const { directions, cardWords, cards } = useCardCount(props);
+
+  return (
+    <p className="text-sm text-muted-foreground">
+      {cardWords}
+      {' '}
+      {cardWords === 1 ? 'word' : 'words'}
+      {' × '}
+      {directions.length}
+      {' '}
+      {directions.length === 1 ? 'direction' : 'directions'}
+      {' = '}
+      <span className="font-semibold text-foreground">
+        {cards}
+        {' '}
+        {cards === 1 ? 'question' : 'questions'}
+      </span>
+      {' to learn'}
+    </p>
+  );
+};
+
+const FsrsSettingsFields: React.FC<FsrsSettingsFieldsProps> = ({ editMode, wordCount, wordsWithoutTranslation }) => {
+  const form = useFormContext();
+  const endsAt = form.watch('fsrsEndsAt') as string;
+  const { directions, cards } = useCardCount({ wordCount, wordsWithoutTranslation });
   const suggestion = suggestNewPerDay(cards, endsAt, new Date());
+  // Advanced is collapsed by default; open it when one of its fields fails validation so the error is not hidden.
+  const advancedHasError = ADVANCED_FIELDS.some(name => Boolean(form.formState.errors[name]));
 
   const toggleDirection = (direction: EFsrsDirection) => {
     const next = directions.includes(direction) ? directions.filter(d => d !== direction) : [...directions, direction];
@@ -107,24 +142,7 @@ const FsrsSettingsFields: React.FC<FsrsSettingsFieldsProps> = ({ editMode, wordC
                 );
               })}
             </div>
-            <p className="mt-2 text-sm text-muted-foreground">
-              {cardWords}
-              {' '}
-              {cardWords === 1 ? 'word' : 'words'}
-              {' × '}
-              {directions.length}
-              {' '}
-              {directions.length === 1 ? 'direction' : 'directions'}
-              {' = '}
-              <span className="font-semibold text-foreground">
-                {cards}
-                {' '}
-                {cards === 1 ? 'question' : 'questions'}
-              </span>
-              {' to learn'}
-              {directions.length > 1 && ', about twice the reviews'}
-            </p>
-            <p className="text-xs text-muted-foreground">
+            <p className="mt-2 text-xs text-muted-foreground">
               Each word is asked once per direction, then comes back on a schedule until you know it. Over time you will see more questions than this.
             </p>
             {editMode && (
@@ -133,42 +151,6 @@ const FsrsSettingsFields: React.FC<FsrsSettingsFieldsProps> = ({ editMode, wordC
                 Directions are fixed after the trainer is created.
               </p>
             )}
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="fsrsDesiredRetention"
-        render={({ field }) => (
-          <FormItem>
-            <div className="flex items-center justify-between gap-3">
-              <FormLabel>Desired retention</FormLabel>
-              <span className="inline-flex rounded-full bg-primary/15 px-3 py-1 text-sm font-medium text-primary">
-                {Math.round(field.value * 100)}
-                %
-              </span>
-            </div>
-            <FormControl>
-              <Slider
-                min={Math.round(SRS_MIN_RETENTION * 100)}
-                max={Math.round(SRS_MAX_RETENTION * 100)}
-                step={1}
-                value={[Math.round(field.value * 100)]}
-                onValueChange={value => field.onChange((value[0] ?? 90) / 100)}
-                aria-label="Desired retention"
-              />
-            </FormControl>
-            <p className="text-sm text-muted-foreground">
-              About
-              {' '}
-              {formatRecallPerTen(field.value)}
-              {' '}
-              of 10 words still remembered when they come back.
-              {' '}
-              {retentionHint(field.value)}
-            </p>
             <FormMessage />
           </FormItem>
         )}
@@ -193,62 +175,98 @@ const FsrsSettingsFields: React.FC<FsrsSettingsFieldsProps> = ({ editMode, wordC
         )}
       />
 
-      <FormField
-        control={form.control}
-        name="fsrsNewPerDay"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>
-              New questions per day
-              {' '}
-              <span className="font-normal text-muted-foreground">(empty = no limit)</span>
-            </FormLabel>
-            <FormControl>
-              <Input
-                type="number"
-                inputMode="numeric"
-                min={1}
-                className="mt-1"
-                placeholder="No limit"
-                value={field.value ?? ''}
-                onChange={event => field.onChange(event.target.value === '' ? null : Number(event.target.value))}
-              />
-            </FormControl>
-            {suggestion !== null && field.value !== suggestion && (
-              <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-                <span>
-                  {suggestion}
-                  {' '}
-                  new
-                  {' '}
-                  {suggestion === 1 ? 'question' : 'questions'}
-                  {' '}
-                  a day brings all
-                  {' '}
-                  {cards}
-                  {' '}
-                  in before the deadline.
-                </span>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => form.setValue('fsrsNewPerDay', suggestion, { shouldDirty: true, shouldValidate: true })}
-                >
-                  Use
-                  {' '}
-                  {suggestion}
-                </Button>
-              </div>
-            )}
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <details className="rounded-xl border border-border bg-card p-3">
+      <details className="rounded-xl border border-border bg-card p-3" open={advancedHasError || undefined}>
         <summary className="cursor-pointer text-sm font-medium text-foreground">Advanced</summary>
-        <div className="mt-3">
+        <div className="mt-4 space-y-5">
+          <FormField
+            control={form.control}
+            name="fsrsDesiredRetention"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex items-center justify-between gap-3">
+                  <FormLabel>Desired retention</FormLabel>
+                  <span className="inline-flex rounded-full bg-primary/15 px-3 py-1 text-sm font-medium text-primary">
+                    {Math.round(field.value * 100)}
+                    %
+                  </span>
+                </div>
+                <FormControl>
+                  <Slider
+                    min={Math.round(SRS_MIN_RETENTION * 100)}
+                    max={Math.round(SRS_MAX_RETENTION * 100)}
+                    step={1}
+                    value={[Math.round(field.value * 100)]}
+                    onValueChange={value => field.onChange((value[0] ?? 90) / 100)}
+                    aria-label="Desired retention"
+                  />
+                </FormControl>
+                <p className="text-sm text-muted-foreground">
+                  About
+                  {' '}
+                  {formatRecallPerTen(field.value)}
+                  {' '}
+                  of 10 words still remembered when they come back.
+                  {' '}
+                  {retentionHint(field.value)}
+                </p>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="fsrsNewPerDay"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  New questions per day
+                  {' '}
+                  <span className="font-normal text-muted-foreground">(empty = no limit)</span>
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    inputMode="numeric"
+                    min={1}
+                    className="mt-1"
+                    placeholder="No limit"
+                    value={field.value ?? ''}
+                    onChange={event => field.onChange(event.target.value === '' ? null : Number(event.target.value))}
+                  />
+                </FormControl>
+                {suggestion !== null && field.value !== suggestion && (
+                  <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+                    <span>
+                      {suggestion}
+                      {' '}
+                      new
+                      {' '}
+                      {suggestion === 1 ? 'question' : 'questions'}
+                      {' '}
+                      a day brings all
+                      {' '}
+                      {cards}
+                      {' '}
+                      in before the deadline.
+                    </span>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => form.setValue('fsrsNewPerDay', suggestion, { shouldDirty: true, shouldValidate: true })}
+                    >
+                      Use
+                      {' '}
+                      {suggestion}
+                    </Button>
+                  </div>
+                )}
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <FormField
             control={form.control}
             name="fsrsMaximumInterval"

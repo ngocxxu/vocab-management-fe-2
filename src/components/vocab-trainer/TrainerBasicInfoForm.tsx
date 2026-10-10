@@ -12,7 +12,6 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Slider } from '@/components/ui/slider';
 import { UserRole } from '@/constants/auth';
 import { QUESTION_TYPE_OPTIONS } from '@/constants/vocab-trainer';
 import { EQuestionType, ETrainerMode } from '@/enum/vocab-trainer';
@@ -192,40 +191,6 @@ const TrainerBasicInfoForm: React.FC<TrainerBasicInfoFormProps> = ({ userRole, s
           )}
         />
 
-        {!isFsrs && (
-          <FormField
-            control={form.control}
-            name="setCountTime"
-            render={({ field }) => {
-              const minutes = Math.floor(field.value / 60);
-              const label = minutes === 1 ? '1 minute' : `${minutes} minutes`;
-              return (
-                <FormItem>
-                  <FormLabel>Time Limit</FormLabel>
-                  <div className="mt-1 flex flex-col gap-2">
-                    <span className="inline-flex w-fit rounded-full bg-primary/15 px-3 py-1 text-sm font-medium text-primary">
-                      {label}
-                    </span>
-                    <FormControl>
-                      <Slider
-                        min={60}
-                        max={1800}
-                        step={60}
-                        value={[field.value]}
-                        onValueChange={(value) => {
-                          field.onChange(value[0]);
-                          form.clearErrors('setCountTime');
-                        }}
-                      />
-                    </FormControl>
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
-        )}
-
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-3">
             <FormLabel className="tracking-wide">
@@ -239,19 +204,13 @@ const TrainerBasicInfoForm: React.FC<TrainerBasicInfoFormProps> = ({ userRole, s
           </div>
           {selectedWords.length === 0
             ? (
-                <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-border bg-card px-6 py-10 text-center">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted">
-                    <Archive weight="BoldDuotone" size={32} className="text-muted-foreground" />
-                  </div>
-                  <div className="mt-4 space-y-1 text-sm text-muted-foreground">
-                    <p className="font-medium text-foreground">No words selected yet.</p>
-                    <p>Pick some from the list to start</p>
-                    <p>training.</p>
-                  </div>
+                <div className="flex items-center gap-2 rounded-xl border border-dashed border-border px-3 py-2.5 text-sm text-muted-foreground">
+                  <Archive weight="BoldDuotone" size={16} className="shrink-0" />
+                  <span>Pick words from the list to start training.</span>
                 </div>
               )
             : (
-                <div className="flex flex-wrap gap-2">
+                <div className="flex max-h-[104px] flex-wrap gap-2 overflow-y-auto pr-1">
                   {selectedWords.slice(0, MAX_VISIBLE_SELECTED_WORDS).map(({ id, label }) => (
                     <span
                       key={id}
