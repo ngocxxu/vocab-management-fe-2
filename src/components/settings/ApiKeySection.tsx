@@ -3,6 +3,7 @@
 import type { ApiKeySectionProps, TCreateApiKey } from '@/types/api-key';
 import { AddCircle } from '@solar-icons/react/ssr';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import React, { useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { createApiKey, deleteApiKey } from '@/actions/api-keys';
@@ -15,6 +16,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 export const ApiKeySection: React.FC<ApiKeySectionProps> = ({ initialApiKeysData }) => {
+  const t = useTranslations('settings.apiKeys');
+  const tErrors = useTranslations('errors');
   const apiKeys = initialApiKeysData?.items || [];
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -28,10 +31,10 @@ export const ApiKeySection: React.FC<ApiKeySectionProps> = ({ initialApiKeysData
       const result = await createApiKey(data);
       setIsCreateDialogOpen(false);
       setRevealedKey(result.key);
-      toast.success('API key created');
+      toast.success(t('createdToast'));
       startTransition(() => router.refresh());
     } catch (error) {
-      toast.error('Failed to create API key');
+      toast.error(tErrors('createAPIKey'));
       console.error('Create API key error:', error);
     } finally {
       setIsSubmitting(false);
@@ -41,10 +44,10 @@ export const ApiKeySection: React.FC<ApiKeySectionProps> = ({ initialApiKeysData
   const handleDelete = async (id: string) => {
     try {
       await deleteApiKey(id);
-      toast.success('API key deleted');
+      toast.success(t('deletedToast'));
       startTransition(() => router.refresh());
     } catch (error) {
-      toast.error('Failed to delete API key');
+      toast.error(tErrors('deleteAPIKey'));
       console.error('Delete API key error:', error);
     }
   };
@@ -54,12 +57,12 @@ export const ApiKeySection: React.FC<ApiKeySectionProps> = ({ initialApiKeysData
       <DialogTrigger asChild>
         <Button>
           <AddCircle size={16} weight="BoldDuotone" className="mr-2" />
-          Create API Key
+          {t('create')}
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create API Key</DialogTitle>
+          <DialogTitle>{t('create')}</DialogTitle>
         </DialogHeader>
         <ApiKeyForm
           onSubmit={handleCreate}
@@ -72,19 +75,19 @@ export const ApiKeySection: React.FC<ApiKeySectionProps> = ({ initialApiKeysData
 
   return (
     <SettingsPageShell
-      title="API Keys"
-      description="Personal API keys for automations like the iOS quick-add Shortcut. Each key is scoped to one action and one folder."
+      title={t('title')}
+      description={t('description')}
       headerAction={headerAction}
     >
       {apiKeys.length === 0
         ? (
             <Card>
               <CardContent className="py-12 text-center">
-                <h4 className="mb-2 text-lg font-medium text-foreground">No API keys yet</h4>
-                <p className="mb-4 text-muted-foreground">Create one to connect an iOS Shortcut or other automation.</p>
+                <h4 className="mb-2 text-lg font-medium text-foreground">{t('emptyTitle')}</h4>
+                <p className="mb-4 text-muted-foreground">{t('emptyDescription')}</p>
                 <Button onClick={() => setIsCreateDialogOpen(true)}>
                   <AddCircle size={16} weight="BoldDuotone" className="mr-2" />
-                  Create API Key
+                  {t('create')}
                 </Button>
               </CardContent>
             </Card>
@@ -96,12 +99,12 @@ export const ApiKeySection: React.FC<ApiKeySectionProps> = ({ initialApiKeysData
                   <table className="w-full">
                     <thead>
                       <tr className="border-b border-border">
-                        <th className="bg-muted/30 px-3 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:px-6 sm:py-4">Key</th>
-                        <th className="bg-muted/30 px-3 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:px-6 sm:py-4">Permissions</th>
-                        <th className="bg-muted/30 px-3 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:px-6 sm:py-4">Folder</th>
-                        <th className="bg-muted/30 px-3 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:px-6 sm:py-4">Created</th>
-                        <th className="bg-muted/30 px-3 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:px-6 sm:py-4">Last Used</th>
-                        <th className="bg-muted/30 px-3 py-3 text-right text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:px-6 sm:py-4">Actions</th>
+                        <th className="bg-muted/30 px-3 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:px-6 sm:py-4">{t('colKey')}</th>
+                        <th className="bg-muted/30 px-3 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:px-6 sm:py-4">{t('colPermissions')}</th>
+                        <th className="bg-muted/30 px-3 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:px-6 sm:py-4">{t('colFolder')}</th>
+                        <th className="bg-muted/30 px-3 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:px-6 sm:py-4">{t('colCreated')}</th>
+                        <th className="bg-muted/30 px-3 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:px-6 sm:py-4">{t('colLastUsed')}</th>
+                        <th className="bg-muted/30 px-3 py-3 text-right text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:px-6 sm:py-4">{t('colActions')}</th>
                       </tr>
                     </thead>
                     <tbody>

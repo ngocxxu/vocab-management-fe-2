@@ -80,7 +80,8 @@
     "fetchVocabularies": "Failed to fetch vocabularies",
     "randomizeVocabularies": "Failed to randomize vocabularies",
     "fetchVocabulariesByIds": "Failed to fetch vocabularies by ids",
-    "fetchLanguageFolders": "Failed to fetch language folders"
+    "fetchLanguageFolders": "Failed to fetch language folders",
+    "loadLanguageFolders": "Failed to load language folders"
   },
   "validation": {
     "emailRequired": "Email is required",
@@ -114,7 +115,9 @@
     "retentionOutOfRange": "Retention must be between 70% and 97%",
     "maximumIntervalOutOfRange": "Enter a whole number of days from 1 to 36500",
     "checkValues": "Check the values and try again",
-    "invalidForm": "Invalid form data"
+    "invalidForm": "Invalid form data",
+    "newPasswordRequired": "New password is required",
+    "currentPasswordRequired": "Current password is required"
   },
   "questionTypes": {
     "multipleChoice": "Multiple Choice",
@@ -257,6 +260,154 @@
     },
     "errors": {
       "loadNotifications": "Unable to load notifications"
+    }
+  },
+  "settings": {
+    "nav": {
+      "account": "Account",
+      "spacedRepetition": "Spaced repetition",
+      "security": "Security",
+      "plan": "Plan",
+      "danger": "Delete account"
+    },
+    "tabsLabel": "Profile sections",
+    "profile": {
+      "title": "Profile",
+      "description": "Manage your personal information, spaced repetition defaults and account.",
+      "unsavedChanges": "unsaved changes"
+    },
+    "identity": {
+      "yourName": "Your name",
+      "photoAlt": "Profile",
+      "detailsTitle": "Account details",
+      "detailsUnavailable": "Editing your details is not available yet.",
+      "viewDetails": "View details",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email",
+      "phone": "Phone number",
+      "close": "Close"
+    },
+    "security": {
+      "title": "Security",
+      "description": "How you sign in and how your account is protected.",
+      "passwordLabel": "Password",
+      "setPasswordLabel": "Set a password",
+      "updateHint": "Update the password you use to sign in.",
+      "addHint": "Add a password so you can also sign in with email and password.",
+      "changePassword": "Change password",
+      "setPassword": "Set password",
+      "twoFactor": "Two-factor authentication",
+      "twoFactorHint": "Ask for a verification code when you sign in. Coming soon."
+    },
+    "plan": {
+      "title": "Plan",
+      "description": "Your subscription and what it includes.",
+      "manage": "Manage subscription",
+      "unlimited": "Unlimited",
+      "vocabsPerDay": "Vocabs per day",
+      "languageFolders": "Language folders",
+      "subjects": "Subjects"
+    },
+    "danger": {
+      "title": "Delete account",
+      "description": "Permanently remove your account and all associated data. This cannot be undone.",
+      "button": "Delete Permanently",
+      "deleted": "Account deleted"
+    },
+    "deleteAccount": {
+      "title": "Delete your account?",
+      "description": "This will permanently remove your account and all associated data. This action cannot be undone.",
+      "typeToConfirm": "Type <em>{word}</em> to confirm.",
+      "cancel": "Cancel",
+      "deleting": "Deleting...",
+      "confirm": "Delete Permanently"
+    },
+    "password": {
+      "changeTitle": "Change Password",
+      "setTitle": "Set Password",
+      "changeDescription": "Enter your current password and choose a new one.",
+      "setDescription": "Add a password to your account so you can also sign in with email and password.",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmNewPassword": "Confirm New Password",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "update": "Update Password",
+      "set": "Set Password",
+      "changedToast": "Password changed successfully",
+      "setToast": "Password set successfully"
+    },
+    "srs": {
+      "title": "Spaced repetition",
+      "description": "Only for spaced repetition trainers. Classic trainers have no defaults here: you set their question type and time limit when you create them.",
+      "newTrainersTitle": "New trainers",
+      "newTrainersDescription": "Starting values for spaced repetition trainers you create. Trainers you already have are not changed.",
+      "targetRecall": "Target recall",
+      "recallSentence": "At {percent}%, you will recall about {recall} of every 10 words when they come up for review. A higher target means more reviews.",
+      "directions": "Directions to learn",
+      "directionsDescription": "Each direction is reviewed on its own. The directions of a trainer cannot be changed after it is created.",
+      "questionType": "Question type",
+      "emailReminders": "Email reminders",
+      "emailRemindersDescription": "One email per trainer per day, skipped when nothing is due. It stops after 3 emails without a review.",
+      "emailReminderLabel": "Email me when cards are due",
+      "allTrainersTitle": "All spaced repetition trainers",
+      "allTrainersDescription": "Applies to every spaced repetition trainer as soon as you save.",
+      "timezone": "Timezone",
+      "timezoneHint": "Your review day starts at 04:00 in this timezone, so studying after midnight still counts for the day before.",
+      "timezoneDetected": " Detected from your browser: save to keep it.",
+      "selectTimezone": "Select a timezone",
+      "unsaved": "You have unsaved changes",
+      "saveFootnote": "Timezone applies to all trainers. Other settings apply to new trainers.",
+      "discard": "Discard",
+      "saving": "Saving...",
+      "save": "Save changes",
+      "savedToast": "Spaced repetition defaults saved"
+    },
+    "apiKeys": {
+      "title": "API Keys",
+      "description": "Personal API keys for automations like the iOS quick-add Shortcut. Each key is scoped to one action and one folder.",
+      "create": "Create API Key",
+      "emptyTitle": "No API keys yet",
+      "emptyDescription": "Create one to connect an iOS Shortcut or other automation.",
+      "colKey": "Key",
+      "colPermissions": "Permissions",
+      "colFolder": "Folder",
+      "colCreated": "Created",
+      "colLastUsed": "Last Used",
+      "colActions": "Actions",
+      "never": "Never",
+      "quickAdd": "Quick-add vocab",
+      "deleteLabel": "Delete API key",
+      "deleteTitle": "Delete API Key",
+      "deleteDescription": "Are you sure you want to delete \"{name}\"? Anything using this key (e.g. an iOS Shortcut) will stop working immediately. This cannot be undone.",
+      "delete": "Delete",
+      "createdToast": "API key created",
+      "deletedToast": "API key deleted",
+      "copiedToast": "Copied to clipboard",
+      "revealTitle": "Copy your API key now",
+      "revealDescription": "This is the only time the full key is shown. Store it somewhere safe — you won’t be able to view it again after closing this dialog.",
+      "copyAria": "Copy API key",
+      "revealDone": "Done",
+      "revealCopyFirst": "Copy it first",
+      "keyName": "Key Name",
+      "keyNamePlaceholder": "e.g. iOS Shortcut",
+      "permissions": "Permissions",
+      "quickAddHint": "Lets this key create new vocab entries in one folder — nothing else.",
+      "targetFolder": "Target Folder",
+      "loadingFolders": "Loading folders...",
+      "noFolder": "You don’t have a language folder yet — quick-add needs one to know what folder and language pair to file words into.",
+      "goToLibrary": "Go to Library",
+      "refresh": "Refresh",
+      "selectFolder": "Select a folder",
+      "creating": "Creating...",
+      "createSubmit": "Create",
+      "nameRequired": "Name is required",
+      "selectPermission": "Select at least one permission",
+      "selectFolderRequired": "Select a language folder for quick-add",
+      "cancel": "Cancel"
     }
   }
 }

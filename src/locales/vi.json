@@ -80,7 +80,8 @@
     "fetchVocabularies": "Không thể tải từ vựng",
     "randomizeVocabularies": "Không thể xáo trộn từ vựng",
     "fetchVocabulariesByIds": "Không thể tải từ vựng theo mã",
-    "fetchLanguageFolders": "Không thể tải thư mục ngôn ngữ"
+    "fetchLanguageFolders": "Không thể tải thư mục ngôn ngữ",
+    "loadLanguageFolders": "Không thể tải thư mục ngôn ngữ"
   },
   "validation": {
     "emailRequired": "Email là bắt buộc",
@@ -114,7 +115,9 @@
     "retentionOutOfRange": "Tỷ lệ ghi nhớ phải từ 70% đến 97%",
     "maximumIntervalOutOfRange": "Nhập số ngày nguyên từ 1 đến 36500",
     "checkValues": "Kiểm tra lại các giá trị rồi thử lại",
-    "invalidForm": "Dữ liệu biểu mẫu không hợp lệ"
+    "invalidForm": "Dữ liệu biểu mẫu không hợp lệ",
+    "newPasswordRequired": "Mật khẩu mới là bắt buộc",
+    "currentPasswordRequired": "Mật khẩu hiện tại là bắt buộc"
   },
   "questionTypes": {
     "multipleChoice": "Trắc nghiệm",
@@ -257,6 +260,154 @@
     },
     "errors": {
       "loadNotifications": "Không tải được thông báo"
+    }
+  },
+  "settings": {
+    "nav": {
+      "account": "Tài khoản",
+      "spacedRepetition": "Lặp lại ngắt quãng",
+      "security": "Bảo mật",
+      "plan": "Gói dịch vụ",
+      "danger": "Xóa tài khoản"
+    },
+    "tabsLabel": "Các mục hồ sơ",
+    "profile": {
+      "title": "Hồ sơ",
+      "description": "Quản lý thông tin cá nhân, mặc định lặp lại ngắt quãng và tài khoản.",
+      "unsavedChanges": "có thay đổi chưa lưu"
+    },
+    "identity": {
+      "yourName": "Tên của bạn",
+      "photoAlt": "Hồ sơ",
+      "detailsTitle": "Chi tiết tài khoản",
+      "detailsUnavailable": "Chưa hỗ trợ chỉnh sửa thông tin.",
+      "viewDetails": "Xem chi tiết",
+      "firstName": "Tên",
+      "lastName": "Họ",
+      "email": "Email",
+      "phone": "Số điện thoại",
+      "close": "Đóng"
+    },
+    "security": {
+      "title": "Bảo mật",
+      "description": "Cách bạn đăng nhập và cách tài khoản được bảo vệ.",
+      "passwordLabel": "Mật khẩu",
+      "setPasswordLabel": "Đặt mật khẩu",
+      "updateHint": "Cập nhật mật khẩu bạn dùng để đăng nhập.",
+      "addHint": "Thêm mật khẩu để bạn cũng có thể đăng nhập bằng email và mật khẩu.",
+      "changePassword": "Đổi mật khẩu",
+      "setPassword": "Đặt mật khẩu",
+      "twoFactor": "Xác thực hai lớp",
+      "twoFactorHint": "Yêu cầu mã xác minh khi bạn đăng nhập. Sắp ra mắt."
+    },
+    "plan": {
+      "title": "Gói dịch vụ",
+      "description": "Gói đăng ký của bạn và những gì được bao gồm.",
+      "manage": "Quản lý gói đăng ký",
+      "unlimited": "Không giới hạn",
+      "vocabsPerDay": "Số từ mỗi ngày",
+      "languageFolders": "Thư mục ngôn ngữ",
+      "subjects": "Chủ đề"
+    },
+    "danger": {
+      "title": "Xóa tài khoản",
+      "description": "Xóa vĩnh viễn tài khoản và mọi dữ liệu liên quan. Không thể hoàn tác.",
+      "button": "Xóa vĩnh viễn",
+      "deleted": "Đã xóa tài khoản"
+    },
+    "deleteAccount": {
+      "title": "Xóa tài khoản của bạn?",
+      "description": "Thao tác này sẽ xóa vĩnh viễn tài khoản và mọi dữ liệu liên quan. Không thể hoàn tác.",
+      "typeToConfirm": "Gõ <em>{word}</em> để xác nhận.",
+      "cancel": "Hủy",
+      "deleting": "Đang xóa...",
+      "confirm": "Xóa vĩnh viễn"
+    },
+    "password": {
+      "changeTitle": "Đổi mật khẩu",
+      "setTitle": "Đặt mật khẩu",
+      "changeDescription": "Nhập mật khẩu hiện tại và chọn mật khẩu mới.",
+      "setDescription": "Thêm mật khẩu cho tài khoản để bạn cũng có thể đăng nhập bằng email và mật khẩu.",
+      "currentPassword": "Mật khẩu hiện tại",
+      "newPassword": "Mật khẩu mới",
+      "confirmNewPassword": "Xác nhận mật khẩu mới",
+      "showPassword": "Hiện mật khẩu",
+      "hidePassword": "Ẩn mật khẩu",
+      "cancel": "Hủy",
+      "saving": "Đang lưu...",
+      "update": "Cập nhật mật khẩu",
+      "set": "Đặt mật khẩu",
+      "changedToast": "Đổi mật khẩu thành công",
+      "setToast": "Đặt mật khẩu thành công"
+    },
+    "srs": {
+      "title": "Lặp lại ngắt quãng",
+      "description": "Chỉ dành cho luyện từ lặp lại ngắt quãng. Luyện từ cổ điển không có mặc định ở đây: bạn chọn loại câu hỏi và thời gian khi tạo chúng.",
+      "newTrainersTitle": "Luyện từ mới",
+      "newTrainersDescription": "Giá trị ban đầu cho các luyện từ lặp lại ngắt quãng bạn tạo. Các luyện từ đã có không thay đổi.",
+      "targetRecall": "Tỷ lệ nhớ mục tiêu",
+      "recallSentence": "Ở mức {percent}%, bạn sẽ nhớ khoảng {recall} trong mỗi 10 từ khi đến lượt ôn. Mục tiêu càng cao thì càng nhiều lượt ôn.",
+      "directions": "Chiều học",
+      "directionsDescription": "Mỗi chiều được ôn riêng. Chiều của một luyện từ không thể đổi sau khi tạo.",
+      "questionType": "Loại câu hỏi",
+      "emailReminders": "Nhắc qua email",
+      "emailRemindersDescription": "Mỗi luyện từ gửi tối đa một email mỗi ngày, bỏ qua khi không có thẻ đến hạn. Ngừng sau 3 email mà không ôn.",
+      "emailReminderLabel": "Gửi email khi có thẻ đến hạn",
+      "allTrainersTitle": "Tất cả luyện từ lặp lại ngắt quãng",
+      "allTrainersDescription": "Áp dụng cho mọi luyện từ lặp lại ngắt quãng ngay khi bạn lưu.",
+      "timezone": "Múi giờ",
+      "timezoneHint": "Ngày ôn của bạn bắt đầu lúc 04:00 theo múi giờ này, nên học sau nửa đêm vẫn tính cho ngày trước.",
+      "timezoneDetected": " Được phát hiện từ trình duyệt: lưu để giữ lại.",
+      "selectTimezone": "Chọn múi giờ",
+      "unsaved": "Bạn có thay đổi chưa lưu",
+      "saveFootnote": "Múi giờ áp dụng cho mọi luyện từ. Các cài đặt khác áp dụng cho luyện từ mới.",
+      "discard": "Hủy thay đổi",
+      "saving": "Đang lưu...",
+      "save": "Lưu thay đổi",
+      "savedToast": "Đã lưu mặc định lặp lại ngắt quãng"
+    },
+    "apiKeys": {
+      "title": "Khóa API",
+      "description": "Khóa API cá nhân cho các tự động hóa như lối tắt thêm nhanh trên iOS. Mỗi khóa chỉ dùng cho một hành động và một thư mục.",
+      "create": "Tạo khóa API",
+      "emptyTitle": "Chưa có khóa API nào",
+      "emptyDescription": "Tạo một khóa để kết nối lối tắt iOS hoặc tự động hóa khác.",
+      "colKey": "Khóa",
+      "colPermissions": "Quyền",
+      "colFolder": "Thư mục",
+      "colCreated": "Ngày tạo",
+      "colLastUsed": "Dùng lần cuối",
+      "colActions": "Thao tác",
+      "never": "Chưa dùng",
+      "quickAdd": "Thêm từ nhanh",
+      "deleteLabel": "Xóa khóa API",
+      "deleteTitle": "Xóa khóa API",
+      "deleteDescription": "Bạn có chắc muốn xóa \"{name}\"? Mọi thứ đang dùng khóa này (ví dụ lối tắt iOS) sẽ ngừng hoạt động ngay. Không thể hoàn tác.",
+      "delete": "Xóa",
+      "createdToast": "Đã tạo khóa API",
+      "deletedToast": "Đã xóa khóa API",
+      "copiedToast": "Đã sao chép",
+      "revealTitle": "Sao chép khóa API của bạn ngay",
+      "revealDescription": "Đây là lần duy nhất khóa đầy đủ được hiển thị. Hãy lưu ở nơi an toàn — bạn sẽ không xem lại được sau khi đóng hộp thoại này.",
+      "copyAria": "Sao chép khóa API",
+      "revealDone": "Xong",
+      "revealCopyFirst": "Sao chép trước",
+      "keyName": "Tên khóa",
+      "keyNamePlaceholder": "ví dụ: Lối tắt iOS",
+      "permissions": "Quyền",
+      "quickAddHint": "Cho phép khóa này tạo từ mới trong một thư mục — không làm gì khác.",
+      "targetFolder": "Thư mục đích",
+      "loadingFolders": "Đang tải thư mục...",
+      "noFolder": "Bạn chưa có thư mục ngôn ngữ nào — thêm nhanh cần một thư mục để biết lưu từ vào cặp ngôn ngữ nào.",
+      "goToLibrary": "Đến Thư viện",
+      "refresh": "Làm mới",
+      "selectFolder": "Chọn thư mục",
+      "creating": "Đang tạo...",
+      "createSubmit": "Tạo",
+      "nameRequired": "Cần nhập tên",
+      "selectPermission": "Chọn ít nhất một quyền",
+      "selectFolderRequired": "Chọn thư mục ngôn ngữ để thêm nhanh",
+      "cancel": "Hủy"
     }
   }
 }

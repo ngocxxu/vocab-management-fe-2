@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,6 +15,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
+// The user must type this English word exactly; only the text around it is translated.
 const CONFIRM_WORD = 'delete';
 
 type DeleteAccountDialogProps = {
@@ -29,6 +31,7 @@ export const DeleteAccountDialog: React.FC<DeleteAccountDialogProps> = ({
   onConfirm,
   isDeleting = false,
 }) => {
+  const t = useTranslations('settings.deleteAccount');
   const [confirmText, setConfirmText] = useState('');
   const isMatch = confirmText.trim().toLowerCase() === CONFIRM_WORD;
 
@@ -51,38 +54,37 @@ export const DeleteAccountDialog: React.FC<DeleteAccountDialogProps> = ({
     <AlertDialog open={open} onOpenChange={handleOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete your account?</AlertDialogTitle>
+          <AlertDialogTitle>{t('title')}</AlertDialogTitle>
           <AlertDialogDescription>
-            This will permanently remove your account and all associated data. This action cannot be undone.
+            {t('description')}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <div className="space-y-2">
           <Label htmlFor="delete-confirm-input" className="text-sm text-muted-foreground">
-            Type
-            {' '}
-            <span className="font-semibold text-foreground">delete</span>
-            {' '}
-            to confirm.
+            {t.rich('typeToConfirm', {
+              word: CONFIRM_WORD,
+              em: chunks => <span className="font-semibold text-foreground">{chunks}</span>,
+            })}
           </Label>
           <Input
             id="delete-confirm-input"
             value={confirmText}
             onChange={e => setConfirmText(e.target.value)}
-            placeholder="delete"
+            placeholder={CONFIRM_WORD}
             autoComplete="off"
             className="border-input"
           />
         </div>
         <AlertDialogFooter>
           <AlertDialogCancel disabled={isDeleting}>
-            Cancel
+            {t('cancel')}
           </AlertDialogCancel>
           <AlertDialogAction
             disabled={!isMatch || isDeleting}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             onClick={handleConfirm}
           >
-            {isDeleting ? 'Deleting...' : 'Delete Permanently'}
+            {isDeleting ? t('deleting') : t('confirm')}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

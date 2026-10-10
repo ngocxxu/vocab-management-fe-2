@@ -3,6 +3,7 @@
 import type { TUser } from '@/types/auth';
 import type { TPlan } from '@/types/plan';
 import type { TSrsSettings } from '@/types/srs-settings';
+import { useTranslations } from 'next-intl';
 import React, { useEffect, useMemo, useState } from 'react';
 import { cn } from '@/libs/utils';
 import { ProfileDangerZone } from './ProfileDangerZone';
@@ -19,12 +20,13 @@ type ProfilePageProps = {
 };
 
 // The order is the order of the tabs. Spaced repetition comes right after the account, because it is what people come back for.
+// labelKey is a translation key under `settings.nav`.
 const NAV_ITEMS = [
-  { id: 'account', label: 'Account' },
-  { id: 'spaced-repetition', label: 'Spaced repetition' },
-  { id: 'security', label: 'Security' },
-  { id: 'plan', label: 'Plan' },
-  { id: 'danger', label: 'Delete account' },
+  { id: 'account', labelKey: 'account' },
+  { id: 'spaced-repetition', labelKey: 'spacedRepetition' },
+  { id: 'security', labelKey: 'security' },
+  { id: 'plan', labelKey: 'plan' },
+  { id: 'danger', labelKey: 'danger' },
 ] as const;
 
 type TabId = (typeof NAV_ITEMS)[number]['id'];
@@ -32,6 +34,7 @@ type TabId = (typeof NAV_ITEMS)[number]['id'];
 const TAB_PREFIX = 'tab-';
 
 export const ProfilePage: React.FC<ProfilePageProps> = ({ currentUser, currentPlan, srsSettings }) => {
+  const t = useTranslations('settings');
   // The spaced repetition tab only exists when its settings loaded.
   const tabs = useMemo(() => NAV_ITEMS.filter(item => item.id !== 'spaced-repetition' || Boolean(srsSettings)), [srsSettings]);
   const [selected, setSelected] = useState<TabId>('account');
@@ -74,11 +77,11 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ currentUser, currentPl
 
   return (
     <SettingsPageShell
-      title="Profile"
-      description="Manage your personal information, spaced repetition defaults and account."
+      title={t('profile.title')}
+      description={t('profile.description')}
     >
       <div className="grid gap-8 lg:grid-cols-[13rem_minmax(0,1fr)]">
-        <div role="tablist" aria-label="Profile sections" aria-orientation="vertical" className="lg:sticky lg:top-8 lg:self-start">
+        <div role="tablist" aria-label={t('tabsLabel')} aria-orientation="vertical" className="lg:sticky lg:top-8 lg:self-start">
           <div className="-mx-1 flex gap-1 overflow-x-auto px-1 lg:mx-0 lg:flex-col lg:overflow-visible lg:px-0">
             {tabs.map((tab, index) => {
               const isSelected = current === tab.id;
@@ -100,9 +103,9 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ currentUser, currentPl
                       : 'text-muted-foreground hover:bg-muted hover:text-foreground',
                   )}
                 >
-                  {tab.label}
+                  {t(`nav.${tab.labelKey}`)}
                   {tab.id === 'spaced-repetition' && isSrsDirty && (
-                    <span aria-label="unsaved changes" className="h-2 w-2 rounded-full bg-primary" />
+                    <span aria-label={t('profile.unsavedChanges')} className="h-2 w-2 rounded-full bg-primary" />
                   )}
                 </button>
               );

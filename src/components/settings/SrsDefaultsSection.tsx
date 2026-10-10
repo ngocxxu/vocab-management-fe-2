@@ -44,6 +44,8 @@ const readServerTimezone = (): string => '';
 
 export const SrsDefaultsSection: React.FC<SrsDefaultsSectionProps> = ({ settings, onDirtyChange }) => {
   const t = useTranslations();
+  const tSrs = useTranslations('settings.srs');
+  const tErrors = useTranslations('errors');
   const [saved, setSaved] = useState(settings);
   const [defaults, setDefaults] = useState<TSrsDefaults>(settings.defaults);
   // null until the user picks one: until then the timezone is the saved one, or the browser's the first time.
@@ -96,9 +98,9 @@ export const SrsDefaultsSection: React.FC<SrsDefaultsSectionProps> = ({ settings
       setSaved(result);
       setDefaults(result.defaults);
       setChosenTimezone(null);
-      toast.success('Spaced repetition defaults saved');
+      toast.success(tSrs('savedToast'));
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to save spaced repetition settings');
+      toast.error(error instanceof Error ? error.message : tErrors('saveSpacedRepetitionSettings'));
     } finally {
       setIsSaving(false);
     }
@@ -110,18 +112,18 @@ export const SrsDefaultsSection: React.FC<SrsDefaultsSectionProps> = ({ settings
         <div className="sticky bottom-4 z-10 mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-card p-3 shadow-lg">
           <div>
             <p className={parsed.success ? 'text-sm text-foreground' : 'text-sm text-destructive'}>
-              {parsed.success ? 'You have unsaved changes' : toDisplayMessage(parsed.error.issues[0]?.message ?? 'validation.checkValues', t)}
+              {parsed.success ? tSrs('unsaved') : toDisplayMessage(parsed.error.issues[0]?.message ?? 'validation.checkValues', t)}
             </p>
             {parsed.success && (
-              <p className="text-xs text-muted-foreground">Timezone applies to all trainers. Other settings apply to new trainers.</p>
+              <p className="text-xs text-muted-foreground">{tSrs('saveFootnote')}</p>
             )}
           </div>
           <div className="flex gap-2">
             <Button type="button" variant="ghost" onClick={discardChanges} disabled={isSaving}>
-              Discard
+              {tSrs('discard')}
             </Button>
             <Button type="submit" disabled={isSaving || !parsed.success}>
-              {isSaving ? 'Saving...' : 'Save changes'}
+              {isSaving ? tSrs('saving') : tSrs('save')}
             </Button>
           </div>
         </div>
@@ -132,29 +134,18 @@ export const SrsDefaultsSection: React.FC<SrsDefaultsSectionProps> = ({ settings
     <form onSubmit={handleSave}>
       <SettingsSection
         id="spaced-repetition"
-        title="Spaced repetition"
-        description="Only for spaced repetition trainers. Classic trainers have no defaults here: you set their question type and time limit when you create them."
+        title={tSrs('title')}
+        description={tSrs('description')}
         footer={saveBar}
       >
         <SettingsGroup
-          title="New trainers"
-          description="Starting values for spaced repetition trainers you create. Trainers you already have are not changed."
+          title={tSrs('newTrainersTitle')}
+          description={tSrs('newTrainersDescription')}
         >
           <SettingRow
-            label="Target recall"
+            label={tSrs('targetRecall')}
             htmlFor="srs-retention"
-            description={(
-              <>
-                At
-                {' '}
-                {retentionPercent}
-                %, you will recall about
-                {' '}
-                {formatRecallPerTen(defaults.desiredRetention)}
-                {' '}
-                of every 10 words when they come up for review. A higher target means more reviews.
-              </>
-            )}
+            description={tSrs('recallSentence', { percent: retentionPercent, recall: formatRecallPerTen(defaults.desiredRetention) })}
           >
             <div className="space-y-2">
               <p className="text-right text-sm font-semibold text-foreground">
@@ -168,14 +159,14 @@ export const SrsDefaultsSection: React.FC<SrsDefaultsSectionProps> = ({ settings
                 step={1}
                 value={[retentionPercent]}
                 onValueChange={([value]) => setDefaults({ ...defaults, desiredRetention: (value ?? retentionPercent) / PERCENT })}
-                aria-label="Target recall"
+                aria-label={tSrs('targetRecall')}
               />
             </div>
           </SettingRow>
 
           <SettingRow
-            label="Directions to learn"
-            description="Each direction is reviewed on its own. The directions of a trainer cannot be changed after it is created."
+            label={tSrs('directions')}
+            description={tSrs('directionsDescription')}
           >
             <div className="space-y-3">
               {DIRECTION_OPTIONS.map(option => (
@@ -194,7 +185,7 @@ export const SrsDefaultsSection: React.FC<SrsDefaultsSectionProps> = ({ settings
             </div>
           </SettingRow>
 
-          <SettingRow label="Question type" htmlFor="srs-question-type">
+          <SettingRow label={tSrs('questionType')} htmlFor="srs-question-type">
             <Select value={defaults.questionType} onValueChange={value => setDefaults({ ...defaults, questionType: value as TSrsQuestionType })}>
               <SelectTrigger id="srs-question-type" className="w-full">
                 <SelectValue />
@@ -208,8 +199,8 @@ export const SrsDefaultsSection: React.FC<SrsDefaultsSectionProps> = ({ settings
           </SettingRow>
 
           <SettingRow
-            label="Email reminders"
-            description="One email per trainer per day, skipped when nothing is due. It stops after 3 emails without a review."
+            label={tSrs('emailReminders')}
+            description={tSrs('emailRemindersDescription')}
           >
             <div className="flex items-start gap-2">
               <Checkbox
@@ -217,28 +208,28 @@ export const SrsDefaultsSection: React.FC<SrsDefaultsSectionProps> = ({ settings
                 checked={defaults.reminderEnabled}
                 onCheckedChange={checked => setDefaults({ ...defaults, reminderEnabled: checked === true })}
               />
-              <Label htmlFor="srs-reminder" className="font-normal">Email me when cards are due</Label>
+              <Label htmlFor="srs-reminder" className="font-normal">{tSrs('emailReminderLabel')}</Label>
             </div>
           </SettingRow>
         </SettingsGroup>
 
         <SettingsGroup
-          title="All spaced repetition trainers"
-          description="Applies to every spaced repetition trainer as soon as you save."
+          title={tSrs('allTrainersTitle')}
+          description={tSrs('allTrainersDescription')}
         >
           <SettingRow
-            label="Timezone"
+            label={tSrs('timezone')}
             htmlFor="srs-timezone"
             description={(
               <>
-                Your review day starts at 04:00 in this timezone, so studying after midnight still counts for the day before.
-                {isTimezoneFromBrowser && ' Detected from your browser: save to keep it.'}
+                {tSrs('timezoneHint')}
+                {isTimezoneFromBrowser && tSrs('timezoneDetected')}
               </>
             )}
           >
             <Select value={timezone} onValueChange={handleTimezoneChange}>
               <SelectTrigger id="srs-timezone" className="w-full">
-                <SelectValue placeholder="Select a timezone" />
+                <SelectValue placeholder={tSrs('selectTimezone')} />
               </SelectTrigger>
               <SelectContent>
                 {timezones.map(zone => (
