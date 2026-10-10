@@ -113,6 +113,16 @@ export const useExamData = ({
         setError(null);
 
         const data = await getExam(trainerId);
+
+        if (!data) {
+          localStorage.removeItem(getStorageKey(trainerId));
+          const notFound = new Error('This trainer no longer exists');
+          setError(notFound);
+          setStatus('failed');
+          latestActions.current.onErrorAction?.(notFound);
+          return;
+        }
+
         setExamData(data);
 
         // Case A: ready immediately

@@ -85,7 +85,10 @@ export async function deleteVocabTrainersBulk(ids: string[]): Promise<{ success:
   }
 }
 
-export async function getExam(id: string): Promise<TQuestionAPI> {
+// Returns null when the trainer no longer exists (deleted, or a stale link/notification).
+// A thrown error would have its message masked by Next in production, so callers
+// could not tell this apart from a real failure.
+export async function getExam(id: string): Promise<TQuestionAPI | null> {
   await requireAuth();
   if (!id || typeof id !== 'string') {
     throw new Error('Trainer ID is required');
@@ -95,6 +98,9 @@ export async function getExam(id: string): Promise<TQuestionAPI> {
     const result = await vocabTrainerApi.getExam(id);
     return result as TQuestionAPI;
   } catch (error) {
+    if (error instanceof BackendRequestError && error.statusCode === 404) {
+      return null;
+    }
     throw toActionError(error, 'Failed to fetch exam');
   }
 }

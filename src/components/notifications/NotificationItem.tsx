@@ -72,7 +72,9 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
       const examData = await getExam(trainerId);
 
       if (!examData) {
-        throw new Error('No exam data received');
+        toast.error('This trainer no longer exists');
+        setIsLoadingExam(false);
+        return;
       }
 
       const storageKey = `exam_data_${trainerId}`;
