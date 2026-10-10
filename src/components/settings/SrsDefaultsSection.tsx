@@ -1,21 +1,23 @@
 'use client';
 
 import type { TSrsDefaults, TSrsQuestionType, TSrsSettings } from '@/types/srs-settings';
-import React, { useMemo, useState, useSyncExternalStore } from 'react';
+import React, { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import { toast } from 'sonner';
 import { updateSrsSettings } from '@/actions/srs-settings';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Slider } from '@/components/ui/slider';
 import { FSRS_QUESTION_TYPE_OPTIONS } from '@/constants/vocab-trainer';
 import { EFsrsDirection } from '@/enum/vocab-trainer';
 import { formatRecallPerTen, SRS_MAX_RETENTION, SRS_MIN_RETENTION, srsSettingsFormSchema } from '@/libs/validations/srs-settings';
-import { Button } from '@/shared/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
-import { Checkbox } from '@/shared/ui/checkbox';
-import { Label } from '@/shared/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
-import { Slider } from '@/shared/ui/slider';
+import { SettingRow, SettingsSection } from './SettingsSection';
 
 type SrsDefaultsSectionProps = {
   settings: TSrsSettings;
+  /** Lets the page mark the Learning tab while there are unsaved changes. */
+  onDirtyChange?: (isDirty: boolean) => void;
 };
 
 const DIRECTION_OPTIONS: { value: EFsrsDirection; label: string; hint: string }[] = [
@@ -37,7 +39,7 @@ const readBrowserTimezone = (): string => Intl.DateTimeFormat().resolvedOptions(
 // On the server there is no browser timezone: the snapshot is empty there, so the first render matches the server's.
 const readServerTimezone = (): string => '';
 
-export const SrsDefaultsSection: React.FC<SrsDefaultsSectionProps> = ({ settings }) => {
+export const SrsDefaultsSection: React.FC<SrsDefaultsSectionProps> = ({ settings, onDirtyChange }) => {
   const [saved, setSaved] = useState(settings);
   const [defaults, setDefaults] = useState<TSrsDefaults>(settings.defaults);
   // null until the user picks one: until then the timezone is the saved one, or the browser's the first time.
@@ -51,6 +53,11 @@ export const SrsDefaultsSection: React.FC<SrsDefaultsSectionProps> = ({ settings
   const timezones = useMemo(() => listTimezones(timezone), [timezone]);
   const parsed = srsSettingsFormSchema.safeParse({ ...defaults, timezone });
   const isDirty = JSON.stringify(defaults) !== JSON.stringify(saved.defaults) || (timezone !== '' && timezone !== saved.timezone);
+  const retentionPercent = Math.round(defaults.desiredRetention * PERCENT);
+
+  useEffect(() => {
+    onDirtyChange?.(isDirty);
+  }, [isDirty, onDirtyChange]);
 
   // Radix reports '' when the value it is given is not an option yet (the first render, before the browser timezone is read).
   const handleTimezoneChange = (value: string) => {
@@ -65,6 +72,11 @@ export const SrsDefaultsSection: React.FC<SrsDefaultsSectionProps> = ({ settings
       return;
     }
     setDefaults({ ...defaults, directions: next });
+  };
+
+  const discardChanges = () => {
+    setDefaults(saved.defaults);
+    setChosenTimezone(null);
   };
 
   const handleSave = async (event: React.FormEvent) => {
@@ -88,26 +100,54 @@ export const SrsDefaultsSection: React.FC<SrsDefaultsSectionProps> = ({ settings
     }
   };
 
-  const retentionPercent = Math.round(defaults.desiredRetention * PERCENT);
+  // Shown only while there are unsaved changes; it stays at the bottom of the section while the page scrolls.
+  const saveBar = isDirty
+    ? (
+        <div className="sticky bottom-4 z-10 mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-card p-3 shadow-lg">
+          <p className={parsed.success ? 'text-sm text-foreground' : 'text-sm text-destructive'}>
+            {parsed.success ? 'You have unsaved changes' : parsed.error.issues[0]?.message}
+          </p>
+          <div className="flex gap-2">
+            <Button type="button" variant="ghost" onClick={discardChanges} disabled={isSaving}>
+              Discard
+            </Button>
+            <Button type="submit" disabled={isSaving || !parsed.success}>
+              {isSaving ? 'Saving...' : 'Save defaults'}
+            </Button>
+          </div>
+        </div>
+      )
+    : null;
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Spaced repetition defaults</CardTitle>
-        <CardDescription>
-          New spaced repetition trainers start from these values. Trainers you already have are not changed.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSave} className="space-y-6">
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="srs-retention" className="text-sm font-medium text-foreground">Target recall</Label>
-              <span className="text-sm font-semibold text-foreground">
-                {retentionPercent}
-                %
-              </span>
-            </div>
+    <form onSubmit={handleSave}>
+      <SettingsSection
+        id="learning"
+        title="Learning defaults"
+        description="New spaced repetition trainers start from these values. Trainers you already have are not changed."
+        footer={saveBar}
+      >
+        <SettingRow
+          label="Target recall"
+          htmlFor="srs-retention"
+          description={(
+            <>
+              At
+              {' '}
+              {retentionPercent}
+              %, you will recall about
+              {' '}
+              {formatRecallPerTen(defaults.desiredRetention)}
+              {' '}
+              of every 10 words when they come up for review. A higher target means more reviews.
+            </>
+          )}
+        >
+          <div className="space-y-2">
+            <p className="text-right text-sm font-semibold text-foreground">
+              {retentionPercent}
+              %
+            </p>
             <Slider
               id="srs-retention"
               min={Math.round(SRS_MIN_RETENTION * PERCENT)}
@@ -117,20 +157,14 @@ export const SrsDefaultsSection: React.FC<SrsDefaultsSectionProps> = ({ settings
               onValueChange={([value]) => setDefaults({ ...defaults, desiredRetention: (value ?? retentionPercent) / PERCENT })}
               aria-label="Target recall"
             />
-            <p className="text-xs text-muted-foreground">
-              At
-              {' '}
-              {retentionPercent}
-              %, you will recall about
-              {' '}
-              {formatRecallPerTen(defaults.desiredRetention)}
-              {' '}
-              of every 10 words when they come up for review. A higher target means more reviews.
-            </p>
           </div>
+        </SettingRow>
 
-          <fieldset className="space-y-3">
-            <legend className="text-sm font-medium text-foreground">Directions</legend>
+        <SettingRow
+          label="Directions"
+          description="Each direction is reviewed on its own. The directions of a trainer cannot be changed after it is created."
+        >
+          <div className="space-y-3">
             {DIRECTION_OPTIONS.map(option => (
               <div key={option.value} className="flex items-start gap-2">
                 <Checkbox
@@ -144,66 +178,58 @@ export const SrsDefaultsSection: React.FC<SrsDefaultsSectionProps> = ({ settings
                 </Label>
               </div>
             ))}
-            <p className="text-xs text-muted-foreground">
-              Each direction is reviewed on its own, because remembering a word does not mean remembering its meaning the other way round.
-              The directions of a trainer cannot be changed after it is created.
-            </p>
-          </fieldset>
-
-          <div className="space-y-2">
-            <Label htmlFor="srs-question-type" className="text-sm font-medium text-foreground">Question type</Label>
-            <Select value={defaults.questionType} onValueChange={value => setDefaults({ ...defaults, questionType: value as TSrsQuestionType })}>
-              <SelectTrigger id="srs-question-type" className="w-full sm:w-72">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {FSRS_QUESTION_TYPE_OPTIONS.map(option => (
-                  <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
           </div>
+        </SettingRow>
 
+        <SettingRow label="Question type" htmlFor="srs-question-type">
+          <Select value={defaults.questionType} onValueChange={value => setDefaults({ ...defaults, questionType: value as TSrsQuestionType })}>
+            <SelectTrigger id="srs-question-type" className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {FSRS_QUESTION_TYPE_OPTIONS.map(option => (
+                <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </SettingRow>
+
+        <SettingRow
+          label="Email reminders"
+          description="One email per trainer per day, skipped when nothing is due. It stops after 3 emails without a review."
+        >
           <div className="flex items-start gap-2">
             <Checkbox
               id="srs-reminder"
               checked={defaults.reminderEnabled}
               onCheckedChange={checked => setDefaults({ ...defaults, reminderEnabled: checked === true })}
             />
-            <Label htmlFor="srs-reminder" className="flex-col items-start gap-0.5 font-normal">
-              Email me when cards are due
-              <span className="block text-xs text-muted-foreground">
-                One email per trainer per day, skipped when nothing is due. It stops after 3 emails without a review.
-              </span>
-            </Label>
+            <Label htmlFor="srs-reminder" className="font-normal">Email me when cards are due</Label>
           </div>
+        </SettingRow>
 
-          <div className="space-y-2">
-            <Label htmlFor="srs-timezone" className="text-sm font-medium text-foreground">Timezone</Label>
-            <Select value={timezone} onValueChange={handleTimezoneChange}>
-              <SelectTrigger id="srs-timezone" className="w-full sm:w-72">
-                <SelectValue placeholder="Select a timezone" />
-              </SelectTrigger>
-              <SelectContent>
-                {timezones.map(zone => (
-                  <SelectItem key={zone} value={zone}>{zone}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <p className="text-xs text-muted-foreground">
+        <SettingRow
+          label="Timezone"
+          htmlFor="srs-timezone"
+          description={(
+            <>
               Your review day starts at 04:00 in this timezone, so studying after midnight still counts for the day before.
               {isTimezoneFromBrowser && ' Detected from your browser: save to keep it.'}
-            </p>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Button type="submit" disabled={isSaving || !isDirty || !parsed.success}>
-              {isSaving ? 'Saving...' : 'Save defaults'}
-            </Button>
-            {!parsed.success && <p className="text-xs text-destructive">{parsed.error.issues[0]?.message}</p>}
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+            </>
+          )}
+        >
+          <Select value={timezone} onValueChange={handleTimezoneChange}>
+            <SelectTrigger id="srs-timezone" className="w-full">
+              <SelectValue placeholder="Select a timezone" />
+            </SelectTrigger>
+            <SelectContent>
+              {timezones.map(zone => (
+                <SelectItem key={zone} value={zone}>{zone}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </SettingRow>
+      </SettingsSection>
+    </form>
   );
 };
