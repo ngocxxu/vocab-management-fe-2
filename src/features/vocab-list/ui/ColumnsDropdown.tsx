@@ -44,7 +44,7 @@ export function ColumnsDropdown({ columnVisibility, onColumnVisibilityChange }: 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="h-10 border-border bg-card/80 backdrop-blur-sm">
+        <Button variant="outline" className="h-10 bg-card/80 backdrop-blur-sm">
           <SidebarMinimalistic size={16} weight="BoldDuotone" className="mr-2" />
           <span className="hidden sm:inline">Columns</span>
         </Button>

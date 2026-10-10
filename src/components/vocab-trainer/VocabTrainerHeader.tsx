@@ -10,6 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 const VocabTrainerHeader: React.FC<VocabTrainerHeaderProps> = ({
   totalCount,
   onAddTrainer,
+  isCreateDisabled = false,
   statusOptions,
   selectedStatuses,
   onStatusFilterChange,
@@ -100,6 +101,7 @@ const VocabTrainerHeader: React.FC<VocabTrainerHeaderProps> = ({
         </Popover>
         <Button
           onClick={onAddTrainer}
+          disabled={isCreateDisabled}
           className="bg-primary text-primary-foreground shadow-lg hover:bg-primary/90"
         >
           <AddCircle size={16} weight="BoldDuotone" className="mr-2" />

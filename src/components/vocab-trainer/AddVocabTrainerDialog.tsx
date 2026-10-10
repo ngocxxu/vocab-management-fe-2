@@ -9,6 +9,11 @@ import { getVocabsByIds } from '@/actions';
 import type {
   AddVocabTrainerDialogProps,
 } from '@/types/vocab-trainer';
+import { ETrainerMode } from '@/enum/vocab-trainer';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/shared/ui/alert-dialog';
+import { removedVocabIds } from '@/utils/trainer-word-removal';
+import ClassicSettingsFields, { ClassicCardSummary } from './ClassicSettingsFields';
+import FsrsSettingsFields, { FsrsCardSummary } from './FsrsSettingsFields';
 import TrainerBasicInfoForm from './TrainerBasicInfoForm';
 import VocabSelectionForm from './VocabSelectionForm';
 
@@ -24,19 +29,39 @@ const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({
   initialLanguagesData,
   cachedLanguageFolders = EMPTY_CACHED_LANGUAGE_FOLDERS,
   onLanguageFoldersLoaded,
-  editingItem: _editingItem,
+  editingItem,
   userRole,
+  srsDefaults,
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedVocabById, setSelectedVocabById] = useState<Record<string, TVocab>>({});
+  const [removalConfirmOpen, setRemovalConfirmOpen] = useState(false);
 
-  const handleSubmit = async () => {
+  // Only an FSRS trainer keeps a schedule per word, so only there does removing a word cost something.
+  const removedCount = editMode && editingItem?.mode === ETrainerMode.FSRS
+    ? removedVocabIds(editingItem.vocabAssignments.map(assignment => assignment.vocabId), formData.vocabAssignmentIds || []).length
+    : 0;
+
+  const submit = async () => {
     setIsSubmitting(true);
     try {
       await onSubmit();
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleSubmit = async () => {
+    if (removedCount > 0) {
+      setRemovalConfirmOpen(true);
+      return;
+    }
+    await submit();
+  };
+
+  const handleConfirmRemoval = async () => {
+    setRemovalConfirmOpen(false);
+    await submit();
   };
 
   const handleOpenChange = (newOpen: boolean) => {
@@ -85,38 +110,66 @@ const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({
     });
   }, [formData.vocabAssignmentIds, selectedVocabById]);
 
+  // A word without a translation gets no card; words that are not loaded yet are not counted as missing.
+  const wordsWithoutTranslation = useMemo(
+    () => (formData.vocabAssignmentIds || [])
+      .flatMap((id) => {
+        const vocab = selectedVocabById[id];
+        return vocab && vocab.textTargets.length === 0 ? [vocab.textSource] : [];
+      }),
+    [formData.vocabAssignmentIds, selectedVocabById],
+  );
+
+  const isFsrs = formData.mode === ETrainerMode.FSRS;
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[700px] lg:max-w-[950px] xl:max-w-[1100px] 2xl:max-w-[1300px]">
-        <div className="mx-auto w-full">
-          <DialogHeader>
-            <DialogTitle>{editMode ? 'Edit Vocab Trainer' : 'Create New Vocab Trainer'}</DialogTitle>
-            <DialogDescription>
-              {editMode
-                ? 'Update the details for your vocabulary trainer'
-                : 'Configure your session and select words to practice.'}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid grid-cols-1 gap-6 p-6 pb-0 lg:grid-cols-[minmax(0,380px)_1fr]">
-            <div className="space-y-6">
-              <TrainerBasicInfoForm userRole={userRole} selectedWords={selectedWordBadges} />
+      {/* Only the body scrolls. Header and footer are separate rows, so the footer never sits on top of scrolled content. */}
+      <DialogContent className="flex max-h-[90vh] flex-col gap-0 overflow-hidden p-0 sm:max-w-[700px] lg:max-w-[950px] xl:max-w-[1100px] 2xl:max-w-[1300px]">
+        <DialogHeader className="shrink-0 border-b px-6 pt-6 pr-12 pb-4">
+          <DialogTitle>{editMode ? 'Edit Vocab Trainer' : 'Create New Vocab Trainer'}</DialogTitle>
+          <DialogDescription>
+            {editMode
+              ? 'Update the details for your vocabulary trainer'
+              : 'Configure your session and select words to practice.'}
+          </DialogDescription>
+        </DialogHeader>
 
-            </div>
-            <div className="min-w-0">
-              {open && (
-                <VocabSelectionForm
-                  selectedIds={formData.vocabAssignmentIds}
-                  selectedVocabById={selectedVocabById}
-                  initialLanguagesData={initialLanguagesData}
-                  open={open}
-                  cachedLanguageFolders={cachedLanguageFolders}
-                  onLanguageFoldersLoaded={onLanguageFoldersLoaded}
-                  editMode={editMode}
-                />
-              )}
-            </div>
+        <div className="grid min-h-0 flex-1 grid-cols-1 gap-6 overflow-y-auto p-6 lg:grid-cols-[minmax(0,380px)_1fr]">
+          <div className="space-y-6">
+            <TrainerBasicInfoForm userRole={userRole} selectedWords={selectedWordBadges} editMode={editMode} srsDefaults={srsDefaults} />
           </div>
-          <DialogFooter className="mt-2 flex flex-row justify-end gap-2 border-t pt-4 sm:justify-end">
+          <div className="min-w-0 space-y-6">
+            {open && (
+              <VocabSelectionForm
+                selectedIds={formData.vocabAssignmentIds}
+                selectedVocabById={selectedVocabById}
+                initialLanguagesData={initialLanguagesData}
+                open={open}
+                cachedLanguageFolders={cachedLanguageFolders}
+                onLanguageFoldersLoaded={onLanguageFoldersLoaded}
+                editMode={editMode}
+              />
+            )}
+            {isFsrs
+              ? (
+                  <FsrsSettingsFields
+                    editMode={editMode}
+                    wordCount={selectedWordBadges.length}
+                    wordsWithoutTranslation={wordsWithoutTranslation}
+                  />
+                )
+              : <ClassicSettingsFields />}
+          </div>
+        </div>
+
+        <DialogFooter className="shrink-0 flex-row flex-wrap items-center justify-between gap-3 border-t bg-card px-6 py-4 shadow-[0_-8px_16px_-12px_rgb(0_0_0/0.25)] sm:justify-between">
+          <div className="min-w-0 flex-1">
+            {isFsrs
+              ? <FsrsCardSummary wordCount={selectedWordBadges.length} wordsWithoutTranslation={wordsWithoutTranslation} />
+              : <ClassicCardSummary wordCount={selectedWordBadges.length} />}
+          </div>
+          <div className="flex gap-2">
             <DialogClose asChild>
               <Button variant="outline" disabled={isSubmitting}>
                 Cancel
@@ -141,9 +194,26 @@ const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({
                       'Create Trainer'
                     )}
             </Button>
-          </DialogFooter>
-        </div>
+          </div>
+        </DialogFooter>
       </DialogContent>
+      <AlertDialog open={removalConfirmOpen} onOpenChange={setRemovalConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {removedCount === 1 ? '1 word' : `${removedCount} words`}
+              {' will lose their review schedule'}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Removing a word deletes its review schedule in this trainer. Its review history is kept. Adding the word back later starts it as new.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => void handleConfirmRemoval()}>Remove and update</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 };

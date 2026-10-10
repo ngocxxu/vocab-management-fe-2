@@ -15,6 +15,10 @@ export type TMasterySummary = {
   lastPracticeAt: string | null;
   criticalCount: number;
   warningCount: number;
+  /** Spaced repetition questions due today across the active trainers; not part of the mastery score. */
+  fsrsDueToday: number;
+  /** Spaced repetition questions the user has mastered. */
+  fsrsMastered: number;
   trends: TMasterySummaryTrends;
 };
 

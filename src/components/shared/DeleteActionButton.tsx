@@ -28,7 +28,11 @@ const DeleteActionButton: React.FC<DeleteActionButtonProps> = ({
 }) => {
   const handleDelete = async () => {
     try {
-      await onDelete(itemId);
+      // `false` means the item was not deleted and the caller already told the user why (e.g. a conflict dialog).
+      const handled = await onDelete(itemId);
+      if (handled === false) {
+        return;
+      }
       await onSuccess?.();
       toast.success(successMessage || `${itemName} deleted successfully!`);
     } catch (error) {

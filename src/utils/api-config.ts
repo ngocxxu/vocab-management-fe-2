@@ -11,11 +11,16 @@ import type {
   TNotificationInput,
   TUpdateNotificationStatusInput,
 } from '@/types/notification';
+import type { TUpdateSrsSettings } from '@/types/srs-settings';
 import type { TBulkVocabUpdateItem, TCreateTextTarget, TCreateVocab, TUpdateTextTarget } from '@/types/vocab-list';
 import type { TSemanticSearchGroupedParams, TSemanticSearchParams } from '@/types/vocab-search';
 import type {
+  TCloneVocabTrainer,
   TCreateVocabTrainer,
   TFormTestVocabTrainerUnion,
+  TFsrsAnswerInput,
+  TFsrsQueueParams,
+  TUpdateFsrsSettings,
 } from '@/types/vocab-trainer';
 
 // Query parameters types
@@ -126,6 +131,7 @@ export const API_ENDPOINTS = {
   languages: '/languages',
   languageFolders: '/language-folders',
   apiKeys: '/api-keys',
+  srsSettings: '/srs-settings',
   notifications: '/notifications',
   cloudinary: '/cloudinary',
   plans: '/plans',
@@ -229,6 +235,10 @@ export const API_METHODS = {
       const queryString = buildQueryString(params);
       return { endpoint: `${API_ENDPOINTS.vocabs}/conflict/by-subject?${queryString}` };
     },
+    conflictByTrainer: (vocabIds: string[]) => {
+      const queryString = buildQueryString({ vocabIds: vocabIds.join(',') });
+      return { endpoint: `${API_ENDPOINTS.vocabs}/conflict/by-trainer?${queryString}` };
+    },
   },
   vocabTrainers: {
     getAll: (params?: VocabTrainerQueryParams) => {
@@ -246,6 +256,17 @@ export const API_METHODS = {
     getExam: (id: string) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}/exam` }),
     submitExam: (id: string, testData: TFormTestVocabTrainerUnion) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}/exam`, data: testData }),
     deleteBulk: (ids: string[]) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/bulk/delete`, data: { ids } }),
+    clone: (id: string, data: TCloneVocabTrainer) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}/clone`, data }),
+    removeVocab: (id: string, vocabId: string) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}/vocabs/${vocabId}` }),
+    updateFsrsSettings: (id: string, settings: TUpdateFsrsSettings) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}`, data: settings }),
+    getReviewQueue: (id: string, params?: TFsrsQueueParams) => {
+      const queryString = params ? buildQueryString(params) : '';
+      return { endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}/review-queue${queryString ? `?${queryString}` : ''}` };
+    },
+    getReviewSummary: (id: string) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}/review-summary` }),
+    getReviewStats: (id: string) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}/review-stats` }),
+    submitReviewAnswer: (id: string, answer: TFsrsAnswerInput) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}/review-answer`, data: answer }),
+    checkReviewAnswer: (id: string, cardId: string, answer: string) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}/review-check`, data: { cardId, answer } }),
   },
   subjects: {
     getAll: () => ({ endpoint: API_ENDPOINTS.subjects }),
@@ -260,6 +281,10 @@ export const API_METHODS = {
     getAll: () => ({ endpoint: API_ENDPOINTS.apiKeys }),
     create: (apiKeyData: { name: string; scopes: string[]; languageFolderId?: string }) => ({ endpoint: API_ENDPOINTS.apiKeys, data: apiKeyData }),
     delete: (id: string) => ({ endpoint: `${API_ENDPOINTS.apiKeys}/${id}` }),
+  },
+  srsSettings: {
+    get: () => ({ endpoint: API_ENDPOINTS.srsSettings }),
+    update: (data: TUpdateSrsSettings) => ({ endpoint: API_ENDPOINTS.srsSettings, data }),
   },
   wordTypes: {
     getAll: () => ({ endpoint: API_ENDPOINTS.wordTypes }),

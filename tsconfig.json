@@ -83,7 +83,9 @@
     ".next/types/**/*.ts",
     "**/*.mts",
     "src/constants/v",
-    ".next/dev/types/**/*.ts"
+    ".next/dev/types/**/*.ts",
+    ".next-e2e/types/**/*.ts",
+    ".next-e2e/dev/types/**/*.ts"
   ],
   // Files to include/exclude from the project
   "exclude": [

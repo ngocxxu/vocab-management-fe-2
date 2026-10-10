@@ -12,23 +12,33 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Slider } from '@/components/ui/slider';
 import { UserRole } from '@/constants/auth';
-import { QUESTION_TYPE_OPTIONS } from '@/constants/vocab-trainer';
-import { EQuestionType } from '@/enum/vocab-trainer';
+import { FSRS_QUESTION_TYPE_OPTIONS, QUESTION_TYPE_OPTIONS } from '@/constants/vocab-trainer';
+import { EQuestionType, ETrainerMode } from '@/enum/vocab-trainer';
 import { cn } from '@/libs/utils';
+import { isFsrsQuestionType } from '@/libs/validations/vocab-trainer';
+import type { TSrsDefaults } from '@/types/srs-settings';
 import { UpsellModal } from '@/components/premium/UpsellModal';
 
 type TrainerBasicInfoFormProps = Readonly<{
   userRole?: string;
   selectedWords?: Array<{ id: string; label?: string }>;
+  /** The mode of an existing trainer cannot change. */
+  editMode?: boolean;
+  srsDefaults?: TSrsDefaults;
 }>;
+
+const MODE_OPTIONS = [
+  { value: ETrainerMode.CLASSIC, title: 'Classic', hint: 'A timed test of the words you pick, every time.' },
+  { value: ETrainerMode.FSRS, title: 'Spaced repetition', hint: 'Short daily reviews; each word returns just before you would forget it.' },
+];
 
 const MAX_VISIBLE_SELECTED_WORDS = 20;
 const EMPTY_SELECTED_WORDS: TrainerBasicInfoFormProps['selectedWords'] = [];
 
-const TrainerBasicInfoForm: React.FC<TrainerBasicInfoFormProps> = ({ userRole, selectedWords = EMPTY_SELECTED_WORDS }) => {
+const TrainerBasicInfoForm: React.FC<TrainerBasicInfoFormProps> = ({ userRole, selectedWords = EMPTY_SELECTED_WORDS, editMode = false, srsDefaults }) => {
   const form = useFormContext();
+  const isFsrs = form.watch('mode') === ETrainerMode.FSRS;
   const [upsellOpen, setUpsellOpen] = useState(false);
   const isGuest = userRole === UserRole.GUEST;
   const reminderLabelId = React.useId();
@@ -41,6 +51,24 @@ const TrainerBasicInfoForm: React.FC<TrainerBasicInfoFormProps> = ({ userRole, s
       form.clearErrors('vocabAssignmentIds');
     }
   };
+
+  const changeMode = (mode: ETrainerMode) => {
+    if (editMode || mode === form.getValues('mode')) {
+      return;
+    }
+    form.setValue('mode', mode, { shouldDirty: true });
+    if (mode === ETrainerMode.FSRS) {
+      if (!isFsrsQuestionType(form.getValues('questionType') as EQuestionType)) {
+        form.setValue('questionType', srsDefaults?.questionType ?? EQuestionType.FLIP_CARD, { shouldDirty: true });
+      }
+      if (srsDefaults) {
+        form.setValue('reminderDisabled', !srsDefaults.reminderEnabled, { shouldDirty: true });
+      }
+    }
+    form.clearErrors();
+  };
+
+  const questionTypeOptions = isFsrs ? FSRS_QUESTION_TYPE_OPTIONS : QUESTION_TYPE_OPTIONS;
 
   return (
     <div className="space-y-4">
@@ -72,6 +100,43 @@ const TrainerBasicInfoForm: React.FC<TrainerBasicInfoFormProps> = ({ userRole, s
 
         <FormField
           control={form.control}
+          name="mode"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Learning Mode</FormLabel>
+              <div className="mt-1 grid grid-cols-1 gap-2 sm:grid-cols-2" role="radiogroup" aria-label="Learning mode">
+                {MODE_OPTIONS.map(option => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    role="radio"
+                    aria-checked={field.value === option.value}
+                    disabled={editMode}
+                    onClick={() => changeMode(option.value)}
+                    className={cn(
+                      'rounded-xl border p-3 text-left transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-not-allowed',
+                      field.value === option.value ? 'border-primary bg-primary/10' : 'border-border bg-card hover:bg-muted',
+                      editMode && field.value !== option.value && 'opacity-50',
+                    )}
+                  >
+                    <span className="block text-sm font-semibold text-foreground">{option.title}</span>
+                    <span className="mt-1 block text-xs text-muted-foreground">{option.hint}</span>
+                  </button>
+                ))}
+              </div>
+              {editMode && (
+                <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <Lock size={12} weight="BoldDuotone" />
+                  The mode is fixed after the trainer is created.
+                </p>
+              )}
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
           name="questionType"
           render={({ field }) => (
             <FormItem>
@@ -93,7 +158,7 @@ const TrainerBasicInfoForm: React.FC<TrainerBasicInfoFormProps> = ({ userRole, s
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {QUESTION_TYPE_OPTIONS.map(option => (
+                  {questionTypeOptions.map(option => (
                     <SelectItem key={option.value} value={option.value}>
                       {option.value === EQuestionType.TRANSLATION_AUDIO && isGuest
                         ? (
@@ -121,38 +186,6 @@ const TrainerBasicInfoForm: React.FC<TrainerBasicInfoFormProps> = ({ userRole, s
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="setCountTime"
-          render={({ field }) => {
-            const minutes = Math.floor(field.value / 60);
-            const label = minutes === 1 ? '1 minute' : `${minutes} minutes`;
-            return (
-              <FormItem>
-                <FormLabel>Time Limit</FormLabel>
-                <div className="mt-1 flex flex-col gap-2">
-                  <span className="inline-flex w-fit rounded-full bg-primary/15 px-3 py-1 text-sm font-medium text-primary">
-                    {label}
-                  </span>
-                  <FormControl>
-                    <Slider
-                      min={60}
-                      max={1800}
-                      step={60}
-                      value={[field.value]}
-                      onValueChange={(value) => {
-                        field.onChange(value[0]);
-                        form.clearErrors('setCountTime');
-                      }}
-                    />
-                  </FormControl>
-                </div>
-                <FormMessage />
-              </FormItem>
-            );
-          }}
-        />
-
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-3">
             <FormLabel className="tracking-wide">
@@ -166,19 +199,13 @@ const TrainerBasicInfoForm: React.FC<TrainerBasicInfoFormProps> = ({ userRole, s
           </div>
           {selectedWords.length === 0
             ? (
-                <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-border bg-card px-6 py-10 text-center">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted">
-                    <Archive weight="BoldDuotone" size={32} className="text-muted-foreground" />
-                  </div>
-                  <div className="mt-4 space-y-1 text-sm text-muted-foreground">
-                    <p className="font-medium text-foreground">No words selected yet.</p>
-                    <p>Pick some from the list to start</p>
-                    <p>training.</p>
-                  </div>
+                <div className="flex items-center gap-2 rounded-xl border border-dashed border-border px-3 py-2.5 text-sm text-muted-foreground">
+                  <Archive weight="BoldDuotone" size={16} className="shrink-0" />
+                  <span>Pick words from the list to start training.</span>
                 </div>
               )
             : (
-                <div className="flex flex-wrap gap-2">
+                <div className="flex max-h-[104px] flex-wrap gap-2 overflow-y-auto pr-1">
                   {selectedWords.slice(0, MAX_VISIBLE_SELECTED_WORDS).map(({ id, label }) => (
                     <span
                       key={id}

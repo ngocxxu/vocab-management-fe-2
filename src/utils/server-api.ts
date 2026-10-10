@@ -19,11 +19,25 @@ import type {
   TUnreadCountResponse,
   TUpdateNotificationStatusInput,
 } from '@/types/notification';
+import type { TSrsSettings, TUpdateSrsSettings } from '@/types/srs-settings';
 import type { TSubjectResponse } from '@/types/subject';
-import type { TVocabConflictListResponse } from '@/types/vocab-conflict';
+import type { TVocabConflictListResponse, TVocabTrainerConflict } from '@/types/vocab-conflict';
 import type { TBulkVocabUpdateItem, TCreateTextTarget, TCreateVocab, TTextTarget, TUpdateTextTarget, TVocab } from '@/types/vocab-list';
 import type { TSemanticSearchGroupedParams, TSemanticSearchParams, TVocabSearchGroup } from '@/types/vocab-search';
-import type { TCreateVocabTrainer, TFormTestVocabTrainerUnion, TVocabTrainer } from '@/types/vocab-trainer';
+import type {
+  TCloneVocabTrainer,
+  TCreateVocabTrainer,
+  TFormTestVocabTrainerUnion,
+  TFsrsAnswerCheck,
+  TFsrsAnswerInput,
+  TFsrsAnswerResult,
+  TFsrsQueueParams,
+  TFsrsReviewQueue,
+  TFsrsReviewStats,
+  TFsrsReviewSummary,
+  TUpdateFsrsSettings,
+  TVocabTrainer,
+} from '@/types/vocab-trainer';
 import type { TWordTypeResponse } from '@/types/word-type';
 import { Env } from '@/libs/Env';
 import { BackendRequestError } from '@/utils/backend-request-error';
@@ -189,6 +203,10 @@ export const vocabApi = {
   getConflictBySubject: (params: VocabConflictBySubjectParams) => {
     const config = API_METHODS.vocabs.conflictBySubject(params);
     return serverApi.get<TVocabConflictListResponse>(config.endpoint);
+  },
+  getConflictByTrainer: (vocabIds: string[]) => {
+    const config = API_METHODS.vocabs.conflictByTrainer(vocabIds);
+    return serverApi.get<TVocabTrainerConflict[]>(config.endpoint);
   },
   random: (params: RandomVocabQueryParams) => {
     const config = API_METHODS.vocabs.random(params);
@@ -420,6 +438,38 @@ export const vocabTrainerApi = {
     const config = API_METHODS.vocabTrainers.deleteBulk(ids);
     return serverApi.post(config.endpoint, config.data);
   },
+  clone: (id: string, data: TCloneVocabTrainer) => {
+    const config = API_METHODS.vocabTrainers.clone(id, data);
+    return serverApi.post<TVocabTrainer>(config.endpoint, config.data);
+  },
+  removeVocab: (id: string, vocabId: string) => {
+    const config = API_METHODS.vocabTrainers.removeVocab(id, vocabId);
+    return serverApi.delete<TVocabTrainer>(config.endpoint);
+  },
+  updateFsrsSettings: (id: string, settings: TUpdateFsrsSettings) => {
+    const config = API_METHODS.vocabTrainers.updateFsrsSettings(id, settings);
+    return serverApi.patch<TVocabTrainer>(config.endpoint, config.data);
+  },
+  getReviewQueue: (id: string, params?: TFsrsQueueParams) => {
+    const config = API_METHODS.vocabTrainers.getReviewQueue(id, params);
+    return serverApi.get<TFsrsReviewQueue>(config.endpoint);
+  },
+  getReviewSummary: (id: string) => {
+    const config = API_METHODS.vocabTrainers.getReviewSummary(id);
+    return serverApi.get<TFsrsReviewSummary>(config.endpoint);
+  },
+  getReviewStats: (id: string) => {
+    const config = API_METHODS.vocabTrainers.getReviewStats(id);
+    return serverApi.get<TFsrsReviewStats>(config.endpoint);
+  },
+  submitReviewAnswer: (id: string, answer: TFsrsAnswerInput) => {
+    const config = API_METHODS.vocabTrainers.submitReviewAnswer(id, answer);
+    return serverApi.post<TFsrsAnswerResult>(config.endpoint, config.data);
+  },
+  checkReviewAnswer: (id: string, cardId: string, answer: string) => {
+    const config = API_METHODS.vocabTrainers.checkReviewAnswer(id, cardId, answer);
+    return serverApi.post<TFsrsAnswerCheck>(config.endpoint, config.data);
+  },
 };
 
 // Subjects API endpoints
@@ -451,6 +501,18 @@ export const subjectsApi = {
   generate: (data: { textTarget: string; targetLanguageCode: string }): Promise<{ jobId: string }> => {
     const config = API_METHODS.subjects.generate(data);
     return serverApi.post(config.endpoint, config.data);
+  },
+};
+
+// Spaced repetition (FSRS) defaults and timezone of the current user
+export const srsSettingsApi = {
+  get: () => {
+    const config = API_METHODS.srsSettings.get();
+    return serverApi.get<TSrsSettings>(config.endpoint);
+  },
+  update: (data: TUpdateSrsSettings) => {
+    const config = API_METHODS.srsSettings.update(data);
+    return serverApi.put<TSrsSettings>(config.endpoint, config.data);
   },
 };
 

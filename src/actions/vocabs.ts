@@ -1,10 +1,12 @@
 'use server';
 
 import type { ResponseAPI } from '@/types';
+import type { TDeleteVocabResult } from '@/types/vocab-conflict';
 import type { TBulkVocabUpdateItem, TCreateVocab, TVocab } from '@/types/vocab-list';
 import type { RandomVocabQueryParams, VocabQueryParams } from '@/utils/api-config';
 import { revalidatePath } from 'next/cache';
 import { vocabApi } from '@/utils/server-api';
+import { parseVocabInUse } from '@/utils/vocab-in-use';
 import { requireAuth } from './auth';
 import { toActionError } from './utils';
 
@@ -45,7 +47,8 @@ export async function updateVocab(id: string, vocabData: Partial<TCreateVocab>) 
   }
 }
 
-export async function deleteVocab(id: string): Promise<void> {
+/** Deletes a word. A word still in a trainer is refused and returned as a conflict; nothing is deleted then. */
+export async function deleteVocab(id: string): Promise<TDeleteVocabResult> {
   await requireAuth();
   if (!id || typeof id !== 'string') {
     throw new Error('Vocab ID is required');
@@ -55,7 +58,12 @@ export async function deleteVocab(id: string): Promise<void> {
     await vocabApi.delete(id);
     revalidatePath('/vocab-list');
     revalidatePath('/subjects/conflict-vocabularies');
+    return { ok: true };
   } catch (error) {
+    const conflict = parseVocabInUse(error);
+    if (conflict) {
+      return { ok: false, conflict };
+    }
     throw toActionError(error, 'Failed to delete vocabulary');
   }
 }
@@ -75,7 +83,8 @@ export async function createVocabsBulk(vocabData: TCreateVocab[]) {
   }
 }
 
-export async function deleteVocabsBulk(ids: string[]): Promise<{ success: boolean }> {
+/** Deletes several words, all or nothing: if one is still in a trainer the conflict is returned and none is deleted. */
+export async function deleteVocabsBulk(ids: string[]): Promise<TDeleteVocabResult> {
   await requireAuth();
   if (!Array.isArray(ids) || ids.length === 0) {
     throw new Error('IDs array is required and must not be empty');
@@ -85,8 +94,12 @@ export async function deleteVocabsBulk(ids: string[]): Promise<{ success: boolea
     await vocabApi.deleteBulk(ids);
     revalidatePath('/vocab-list');
     revalidatePath('/subjects/conflict-vocabularies');
-    return { success: true };
+    return { ok: true };
   } catch (error) {
+    const conflict = parseVocabInUse(error);
+    if (conflict) {
+      return { ok: false, conflict };
+    }
     throw toActionError(error, 'Failed to delete vocabularies');
   }
 }

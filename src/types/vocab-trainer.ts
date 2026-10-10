@@ -1,6 +1,7 @@
 import type React from 'react';
 import type { ResponseAPI, TLanguage, TOption } from '.';
-import type { EQuestionType, EVocabTrainerType } from '../enum/vocab-trainer';
+import type { EFsrsDirection, EFsrsRating, EFsrsState, EQuestionType, ETrainerMode, EVocabTrainerType } from '../enum/vocab-trainer';
+import type { TSrsDefaults } from './srs-settings';
 import type { TVocab } from './vocab-list';
 import type { TVocabSelectionFolderArray } from './vocab-selection';
 
@@ -19,6 +20,16 @@ export type TVocabTrainer = {
   vocabAssignments: TVocabAssignment[];
   results: TWordResults[];
   questionAnswers: TQuestion[];
+  mode: ETrainerMode;
+  fsrsDesiredRetention: number;
+  fsrsMaximumInterval: number;
+  /** Max new words per day; null = unlimited. */
+  fsrsNewPerDay: number | null;
+  fsrsDirections: EFsrsDirection[];
+  /** End of the cycle; null = no end. */
+  fsrsEndsAt: string | null;
+  /** Only on the response of create/update: words that got no card because they have no translation yet. */
+  fsrsSkippedVocabIds?: string[];
   updatedAt: string;
   createdAt: string;
 };
@@ -117,6 +128,29 @@ export type TCreateVocabTrainer = {
   reminderRepeat: number;
   reminderLastRemind: string;
   vocabAssignmentIds: string[];
+  /** Fixed after creation. Without it the trainer is Classic. */
+  mode?: ETrainerMode;
+  fsrsDesiredRetention?: number;
+  fsrsMaximumInterval?: number;
+  fsrsNewPerDay?: number | null;
+  /** Fixed after creation. */
+  fsrsDirections?: EFsrsDirection[];
+  fsrsEndsAt?: string | null;
+};
+
+/** Starts a new cycle from an FSRS trainer: the words, directions and settings are copied by the backend. */
+export type TCloneVocabTrainer = {
+  name: string;
+  /** End of the new cycle (ISO date); null or missing = no end. */
+  endsAt?: string | null;
+};
+
+/** What can change on an FSRS trainer after creation; mode and directions are fixed. Only the fields that are sent change. */
+export type TUpdateFsrsSettings = {
+  desiredRetention?: number;
+  maximumInterval?: number;
+  newPerDay?: number | null;
+  endsAt?: string | null;
 };
 
 export type TFlipCardQuestion = {
@@ -277,10 +311,18 @@ export type ExamResultsProps = {
 
 export type VocabTrainerFormData = {
   name: string;
+  mode: ETrainerMode;
   questionType: EQuestionType;
   setCountTime: number;
   reminderDisabled: boolean;
   vocabAssignmentIds: string[];
+  fsrsDirections: EFsrsDirection[];
+  fsrsDesiredRetention: number;
+  fsrsMaximumInterval: number;
+  /** null = unlimited. */
+  fsrsNewPerDay: number | null;
+  /** `YYYY-MM-DD`, empty = no deadline. */
+  fsrsEndsAt: string;
 };
 
 export type AddVocabTrainerDialogProps = {
@@ -295,6 +337,8 @@ export type AddVocabTrainerDialogProps = {
   cachedLanguageFolders?: TVocabSelectionFolderArray;
   onLanguageFoldersLoaded?: (folders: TVocabSelectionFolderArray) => void;
   userRole?: string;
+  /** What a new spaced repetition trainer starts from. */
+  srsDefaults?: TSrsDefaults;
 };
 
 export type QuickFilter = 'all' | 'recent' | 'difficult' | 'unstarted';
@@ -342,6 +386,8 @@ export type VocabTrainerLayoutProps = {
 export type VocabTrainerHeaderProps = {
   totalCount: number;
   onAddTrainer: () => void;
+  /** True while the user's defaults load: a trainer must not be created before they are known. */
+  isCreateDisabled?: boolean;
   statusOptions: Array<{ value: string; label: string }>;
   selectedStatuses: string[];
   onStatusFilterChange: (statuses: string[]) => void;
@@ -362,6 +408,8 @@ export type VocabTrainerContentProps = {
 export type ExamLauncherProps = {
   trainerId: string;
   questionType: EQuestionType;
+  /** A spaced repetition trainer opens its review session instead of an exam. */
+  mode?: ETrainerMode;
 };
 
 export type VocabTrainerListProps = {
@@ -369,4 +417,128 @@ export type VocabTrainerListProps = {
   initialLanguagesData?: ResponseAPI<TLanguage[]>;
   currentUser?: import('@/types/auth').TUser | null;
   loadError?: string;
+};
+
+export type TFsrsPreviewButton = {
+  /** When the card comes back if this button is pressed. */
+  due: string;
+  scheduledDays: number;
+};
+
+/** One card of a review session. `direction` decides which side is the question. */
+export type TFsrsQueueItem = {
+  cardId: string;
+  vocabId: string;
+  direction: EFsrsDirection;
+  state: EFsrsState;
+  isNew: boolean;
+  frontText: string[];
+  /** Every answer accepted for a typed answer. */
+  acceptedAnswers: string[];
+  frontLanguageCode: string;
+  backLanguageCode: string;
+  preview: Record<EFsrsRating, TFsrsPreviewButton>;
+};
+
+/** A fixed session list plus the counts around it. An ended trainer has no items. */
+export type TFsrsReviewQueue = {
+  ended: boolean;
+  items: TFsrsQueueItem[];
+  overdue: number;
+  dueToday: number;
+  newAvailable: number;
+  pendingAfterThisSession: number;
+};
+
+export type TFsrsQueueParams = {
+  /** Cards in the session (1-100, default 20). */
+  limit?: number;
+  /** Also include cards due within this many days after today (0-365). */
+  ahead?: number;
+};
+
+export type TFsrsReviewSummary = {
+  overdue: number;
+  dueToday: number;
+  newAvailable: number;
+  mastered: number;
+  leech: number;
+  ended: boolean;
+  endsAt: string | null;
+  estimatedDaysToClearBacklog: number;
+};
+
+export type TFsrsAnswerDiffSegment = { type: 'same' | 'missing' | 'extra'; text: string };
+
+/** Result of comparing a typed answer; nothing is recorded. */
+export type TFsrsAnswerCheck = {
+  correctAnswers: string[];
+  diff: TFsrsAnswerDiffSegment[];
+  suggestedRating: EFsrsRating.AGAIN | EFsrsRating.HARD | EFsrsRating.GOOD;
+};
+
+export type TFsrsAnswerInput = {
+  cardId: string;
+  /** Generated for each answer: sending the same one again does not schedule twice. */
+  answerId: string;
+  rating: EFsrsRating;
+  questionType: EQuestionType.FLIP_CARD | EQuestionType.FILL_IN_THE_BLANK;
+  /** Time from showing the card to rating it, in ms. */
+  durationMs?: number;
+};
+
+export type TFsrsAnswerResult = {
+  cardId: string;
+  rating: EFsrsRating;
+  state: EFsrsState;
+  due: string;
+  stability: number;
+  difficulty: number;
+  scheduledDays: number;
+  isDuplicate: boolean;
+};
+
+/** Recording an answer on a trainer whose cycle is over is an expected outcome, not an error. */
+export type TFsrsAnswerOutcome
+  = | { ended: false; result: TFsrsAnswerResult }
+    | { ended: true };
+
+type TFsrsStabilityBucket = { label: string; count: number };
+
+type TFsrsDirectionStats = {
+  direction: EFsrsDirection;
+  cards: number;
+  new: number;
+  review: number;
+  mastered: number;
+  leeches: number;
+};
+
+type TFsrsLeechCard = {
+  cardId: string;
+  vocabId: string;
+  direction: EFsrsDirection;
+  textSource: string;
+  lapses: number;
+};
+
+/** Statistics of one FSRS trainer, apart from the Classic mastery score. */
+export type TFsrsReviewStats = {
+  ended: boolean;
+  cardsByState: { new: number; review: number };
+  mastered: number;
+  leeches: number;
+  byDirection: TFsrsDirectionStats[];
+  /** Cards due on each of the next 30 days (overdue cards count on the first one). Empty once the cycle has ended. */
+  forecast: Array<{ date: string; count: number }>;
+  /** Share of the reviews of known cards that were not Again; `value` is null without any review. */
+  trueRetention: { value: number | null; reviews: number; windowDays: number };
+  stabilityBuckets: TFsrsStabilityBucket[];
+  leechCards: TFsrsLeechCard[];
+};
+
+/** A card that was rated in this session. */
+export type TFsrsReviewResult = {
+  item: TFsrsQueueItem;
+  rating: EFsrsRating;
 };

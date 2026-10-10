@@ -1,6 +1,8 @@
 'use client';
 
 import type { ColumnDef } from '@tanstack/react-table';
+import type { TSrsDefaults } from '@/types/srs-settings';
+import type { TTrainerFormData } from '@/libs/validations/vocab-trainer';
 import type { TVocabTrainer, VocabTrainerListProps } from '@/types/vocab-trainer';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DangerTriangle, Pen } from '@solar-icons/react/ssr';
@@ -8,9 +10,9 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { getProblematicVocabIdsForPractice } from '@/actions/statistics';
-import { createVocabTrainer, deleteVocabTrainer, deleteVocabTrainersBulk, updateVocabTrainer } from '@/actions/vocab-trainers';
+import { getSrsSettings } from '@/actions/srs-settings';
+import { createVocabTrainer, deleteVocabTrainer, deleteVocabTrainersBulk, updateFsrsSettings, updateVocabTrainer } from '@/actions/vocab-trainers';
 import { BulkDeleteDialog, DeleteActionButton, ErrorState } from '@/shared/ui/shared';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
@@ -19,23 +21,36 @@ import { Form } from '@/shared/ui/form';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { DataTable } from '@/shared/ui/table';
 import { QUESTION_TYPE_OPTIONS } from '@/constants/vocab-trainer';
-import { EQuestionType } from '@/enum/vocab-trainer';
+import { EFsrsDirection, EQuestionType, ETrainerMode } from '@/enum/vocab-trainer';
+import { createTrainerFormSchema, dateInputToEndsAt, endsAtToDateInput, FSRS_MAX_INTERVAL_DAYS } from '@/libs/validations/vocab-trainer';
 import { useApiPagination, useBulkDelete, useDialogState } from '@/hooks';
 import { getExamCooldownRemainingSeconds } from '@/utils/exam-cooldown';
 import AddVocabTrainerDialog from './AddVocabTrainerDialog';
+import CloneTrainerDialog from './CloneTrainerDialog';
 import ExamLauncher from './ExamLauncher';
+import FsrsTrainerActions from './FsrsTrainerActions';
+import FsrsTrainerStatus from './FsrsTrainerStatus';
 import VocabTrainerHeader from './VocabTrainerHeader';
 
-// Define the form schema
-const FormSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  questionType: z.enum(EQuestionType),
-  setCountTime: z.number().min(1, 'Time must be at least 1 second'),
-  reminderDisabled: z.boolean(),
-  vocabAssignmentIds: z.array(z.string()).min(1, 'At least one vocabulary must be selected'),
-});
+type FormData = TTrainerFormData;
 
-type FormData = z.infer<typeof FormSchema>;
+const SYSTEM_RETENTION = 0.9;
+const ALL_DIRECTIONS = [EFsrsDirection.SOURCE_TO_TARGET, EFsrsDirection.TARGET_TO_SOURCE];
+
+// The FSRS fields only matter in FSRS mode; they start from the user's defaults when those are known.
+const buildDefaultValues = (srsDefaults?: TSrsDefaults): FormData => ({
+  name: '',
+  mode: ETrainerMode.CLASSIC,
+  questionType: EQuestionType.MULTIPLE_CHOICE,
+  setCountTime: 900,
+  reminderDisabled: false,
+  vocabAssignmentIds: [],
+  fsrsDirections: srsDefaults?.directions ?? ALL_DIRECTIONS,
+  fsrsDesiredRetention: srsDefaults?.desiredRetention ?? SYSTEM_RETENTION,
+  fsrsMaximumInterval: FSRS_MAX_INTERVAL_DAYS,
+  fsrsNewPerDay: null,
+  fsrsEndsAt: '',
+});
 
 const QUESTION_TYPE_BADGE_CLASSES: Record<string, string> = {
   [EQuestionType.FILL_IN_THE_BLANK]: 'bg-accent text-accent-foreground',
@@ -80,16 +95,22 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
     setCooldownRemaining(getExamCooldownRemainingSeconds());
   }, []);
 
+  const [srsDefaults, setSrsDefaults] = useState<TSrsDefaults | undefined>();
+  const [isSrsDefaultsLoading, setIsSrsDefaultsLoading] = useState(true);
+  // The trainer whose ended cycle a new one is being started from.
+  const [cloneTarget, setCloneTarget] = useState<TVocabTrainer | null>(null);
+  // A deadline that is kept as it is stays valid after it has passed, so an ended trainer can still be renamed.
+  const [originalEndsAt, setOriginalEndsAt] = useState('');
+  const schemaRef = useRef(createTrainerFormSchema());
+
+  useEffect(() => {
+    schemaRef.current = createTrainerFormSchema({ originalEndsAt });
+  }, [originalEndsAt]);
+
   const form = useForm<FormData>({
-    resolver: zodResolver(FormSchema),
+    resolver: (values, context, options) => zodResolver(schemaRef.current)(values, context, options),
     mode: 'onChange',
-    defaultValues: {
-      name: '',
-      questionType: EQuestionType.MULTIPLE_CHOICE,
-      setCountTime: 900,
-      reminderDisabled: false,
-      vocabAssignmentIds: [],
-    },
+    defaultValues: buildDefaultValues(),
   });
 
   useEffect(() => {
@@ -108,13 +129,8 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
   const { handleSort, handlePageChange } = handlers;
 
   const resetForm = () => {
-    form.reset({
-      name: '',
-      questionType: EQuestionType.MULTIPLE_CHOICE,
-      setCountTime: 900,
-      reminderDisabled: false,
-      vocabAssignmentIds: [],
-    });
+    setOriginalEndsAt('');
+    form.reset(buildDefaultValues(srsDefaults));
   };
 
   const dialogState = useDialogState<TVocabTrainer>({
@@ -125,6 +141,29 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
   const setCreateDialogOpen = dialogState.setOpen;
 
   const problematicPresetConsumedRef = useRef(false);
+
+  // The user's defaults are read when the page loads. The create button stays off until they are here, or the
+  // request has failed, so a trainer is never started from system defaults while the user's are still on their way.
+  useEffect(() => {
+    let cancelled = false;
+    getSrsSettings()
+      .then(({ defaults }) => {
+        if (cancelled) {
+          return;
+        }
+        setSrsDefaults(defaults);
+        form.reset(buildDefaultValues(defaults));
+      })
+      .catch(() => undefined)
+      .finally(() => {
+        if (!cancelled) {
+          setIsSrsDefaultsLoading(false);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [form]);
 
   useEffect(() => {
     if (!isMounted || searchParams.get('preset') !== 'problematic' || problematicPresetConsumedRef.current) {
@@ -235,12 +274,20 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
     (item: TVocabTrainer) => {
       dialogState.handleEdit(item);
 
+      const endsAt = endsAtToDateInput(item.fsrsEndsAt);
+      setOriginalEndsAt(endsAt);
       form.reset({
         name: item.name,
+        mode: item.mode ?? ETrainerMode.CLASSIC,
         questionType: item.questionType,
         setCountTime: item.setCountTime,
         reminderDisabled: item.reminderDisabled,
         vocabAssignmentIds: item.vocabAssignments?.map(va => va.vocabId) || [],
+        fsrsDirections: item.fsrsDirections?.length ? item.fsrsDirections : ALL_DIRECTIONS,
+        fsrsDesiredRetention: item.fsrsDesiredRetention ?? SYSTEM_RETENTION,
+        fsrsMaximumInterval: item.fsrsMaximumInterval ?? FSRS_MAX_INTERVAL_DAYS,
+        fsrsNewPerDay: item.fsrsNewPerDay ?? null,
+        fsrsEndsAt: endsAt,
       });
     },
     [form, dialogState],
@@ -276,10 +323,39 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
         vocabAssignmentIds: formData.vocabAssignmentIds,
       };
 
-      if (dialogState.editMode && dialogState.editingItem) {
-        await updateVocabTrainer(dialogState.editingItem.id, apiData);
+      const isFsrs = formData.mode === ETrainerMode.FSRS;
+      const editingItem = dialogState.editMode ? dialogState.editingItem : null;
+
+      if (editingItem) {
+        await updateVocabTrainer(editingItem.id, apiData);
+        if (isFsrs) {
+          // Only what changed is sent: an unchanged deadline that has passed would be refused as "in the past".
+          const settings = {
+            ...(formData.fsrsDesiredRetention !== editingItem.fsrsDesiredRetention && { desiredRetention: formData.fsrsDesiredRetention }),
+            ...(formData.fsrsMaximumInterval !== editingItem.fsrsMaximumInterval && { maximumInterval: formData.fsrsMaximumInterval }),
+            ...(formData.fsrsNewPerDay !== editingItem.fsrsNewPerDay && { newPerDay: formData.fsrsNewPerDay }),
+            ...(formData.fsrsEndsAt !== originalEndsAt && { endsAt: dateInputToEndsAt(formData.fsrsEndsAt) }),
+          };
+          if (Object.keys(settings).length > 0) {
+            await updateFsrsSettings(editingItem.id, settings);
+          }
+        }
       } else {
-        await createVocabTrainer(apiData);
+        const created = await createVocabTrainer(isFsrs
+          ? {
+              ...apiData,
+              mode: ETrainerMode.FSRS,
+              fsrsDesiredRetention: formData.fsrsDesiredRetention,
+              fsrsMaximumInterval: formData.fsrsMaximumInterval,
+              fsrsNewPerDay: formData.fsrsNewPerDay,
+              fsrsDirections: formData.fsrsDirections,
+              fsrsEndsAt: dateInputToEndsAt(formData.fsrsEndsAt),
+            }
+          : apiData);
+        const skipped = created.fsrsSkippedVocabIds?.length ?? 0;
+        if (skipped > 0) {
+          toast.info(`${skipped} ${skipped === 1 ? 'word has' : 'words have'} no translation yet and got no questions.`);
+        }
         handlers.setPage(1);
       }
 
@@ -289,6 +365,7 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
       });
     } catch (error) {
       console.error('Failed to save vocab trainer:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to save the trainer');
     }
   };
 
@@ -320,8 +397,9 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
       header: 'Name',
       cell: ({ row }) => {
         return (
-          <div className="flex items-center space-x-3">
+          <div>
             <div className="font-semibold text-foreground">{row.original.name}</div>
+            {row.original.mode === ETrainerMode.FSRS && <FsrsTrainerStatus trainer={row.original} />}
           </div>
         );
       },
@@ -333,6 +411,10 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
       accessorKey: 'status',
       header: 'Status',
       cell: ({ row }) => {
+        // Pass or fail and the six passes belong to Classic; a spaced repetition trainer never "passes".
+        if (row.original.mode === ETrainerMode.FSRS) {
+          return <Badge className="bg-primary/15 text-primary">Spaced repetition</Badge>;
+        }
         const status = row.original.status;
         const passCount = row.original.reminderRepeat;
         const displayStatus = status === 'PASSED'
@@ -392,10 +474,9 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
       header: '',
       cell: ({ row: _row }) => (
         <div className="flex items-center space-x-2">
-          <ExamLauncher
-            trainerId={_row.original.id}
-            questionType={_row.original.questionType}
-          />
+          {_row.original.mode === ETrainerMode.FSRS
+            ? <FsrsTrainerActions trainer={_row.original} onExtend={handleEdit} onStartNewCycle={setCloneTarget} />
+            : <ExamLauncher trainerId={_row.original.id} questionType={_row.original.questionType} />}
           <Button
             variant="ghost"
             size="icon"
@@ -433,6 +514,7 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
         <VocabTrainerHeader
           totalCount={totalItems}
           onAddTrainer={() => dialogState.setOpen(true)}
+          isCreateDisabled={isSrsDefaultsLoading}
           statusOptions={statusOptions}
           selectedStatuses={selectedStatuses}
           onStatusFilterChange={handleStatusFilterChange}
@@ -461,6 +543,19 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
               cachedLanguageFolders={cachedLanguageFolders}
               onLanguageFoldersLoaded={setCachedLanguageFolders}
               userRole={user?.role}
+              srsDefaults={srsDefaults}
+            />
+
+            <CloneTrainerDialog
+              trainer={cloneTarget}
+              onClose={() => setCloneTarget(null)}
+              onCloned={() => {
+                setCloneTarget(null);
+                handlers.setPage(1);
+                startTransition(() => {
+                  router.refresh();
+                });
+              }}
             />
 
             <BulkDeleteDialog

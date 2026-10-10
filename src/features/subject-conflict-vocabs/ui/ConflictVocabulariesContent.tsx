@@ -11,6 +11,7 @@ import React, { useCallback, useMemo, useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { bulkUpdateVocabs, deleteVocab, deleteVocabsBulk, getVocabsByIds, updateVocab } from '@/actions/vocabs';
 import { cn } from '@/libs/utils';
+import { vocabInUseText } from '@/utils/vocab-in-use';
 import { buildVocabUpdateForSubjectReassign } from '@/utils/build-vocab-reassign-update';
 import {
   Breadcrumb,
@@ -153,10 +154,18 @@ export default function ConflictVocabulariesContent({
     [router, searchParams],
   );
 
+  // This page keeps the toast: a word that is still in a trainer is reported, not sent to the resolve page.
+  const handleDeleteVocab = useCallback(async (id: string) => {
+    const result = await deleteVocab(id);
+    if (!result.ok) {
+      throw new Error(vocabInUseText(result.conflict));
+    }
+  }, []);
+
   const bulkDelete = useBulkDelete({
     deleteMutation: async (ids: string[]) => {
-      await deleteVocabsBulk(ids);
-      return { success: true };
+      const result = await deleteVocabsBulk(ids);
+      return result.ok ? { success: true } : { success: false, error: vocabInUseText(result.conflict) };
     },
     onSuccess: () => {
       startTransition(() => router.refresh());
@@ -377,20 +386,20 @@ export default function ConflictVocabulariesContent({
           <DeleteActionButton
             itemId={row.original.id}
             itemName={row.original.textSource}
-            onDelete={deleteVocab}
+            onDelete={handleDeleteVocab}
             onSuccess={() => startTransition(() => router.refresh())}
           />
         ),
         enableSorting: false,
       },
     ],
-    [reassignOptions, rowBusyId, handleRowReassign, handleEditNavigate, startTransition],
+    [reassignOptions, rowBusyId, handleRowReassign, handleEditNavigate, handleDeleteVocab, startTransition, router],
   );
 
   const filterTrigger = (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="sm" className="h-9 border-border bg-card/80">
+        <Button variant="outline" size="sm" className="h-9 bg-card/80">
           <Filter size={16} weight="BoldDuotone" className="mr-2" />
           Filter
         </Button>
@@ -457,7 +466,7 @@ export default function ConflictVocabulariesContent({
               {titleSuffix}
             </h1>
           </div>
-          <Button variant="outline" className="shrink-0 border-border" asChild>
+          <Button variant="outline" className="shrink-0" asChild>
             <Link href="/subjects">
               <AltArrowLeft size={18} weight="BoldDuotone" className="mr-2" />
               Back to Subjects
