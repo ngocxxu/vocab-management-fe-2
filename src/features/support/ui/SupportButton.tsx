@@ -1,13 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { QuestionCircle } from '@solar-icons/react/ssr';
 import { sendSupportEmail } from '@/actions/support';
 import { SUPPORT_CATEGORIES, supportSchema } from '@/libs/validations/support';
-import type { TSupportFormData } from '@/libs/validations/support';
+import type { TSupportCategory, TSupportFormData } from '@/libs/validations/support';
 import { Button } from '@/shared/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shared/ui/dialog';
 import {
@@ -34,7 +35,16 @@ type SupportButtonProps = {
   inline?: boolean;
 };
 
+// Category values are sent to the backend as they are; only the label shown in the select is translated.
+const SUPPORT_CATEGORY_LABEL_KEYS: Record<TSupportCategory, string> = {
+  'Bug Report': 'supportCategories.bugReport',
+  'Feature Request': 'supportCategories.featureRequest',
+  'Account Issue': 'supportCategories.accountIssue',
+  'Other': 'supportCategories.other',
+};
+
 export function SupportButton({ userEmail = '', className, inline = false }: SupportButtonProps) {
+  const t = useTranslations();
   const [open, setOpen] = useState(false);
 
   const form = useForm<TSupportFormData>({
@@ -121,7 +131,7 @@ export function SupportButton({ userEmail = '', className, inline = false }: Sup
                       <SelectContent>
                         {SUPPORT_CATEGORIES.map(cat => (
                           <SelectItem key={cat} value={cat}>
-                            {cat}
+                            {t(SUPPORT_CATEGORY_LABEL_KEYS[cat])}
                           </SelectItem>
                         ))}
                       </SelectContent>

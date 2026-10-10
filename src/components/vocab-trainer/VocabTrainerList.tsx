@@ -2,6 +2,7 @@
 
 import type { ColumnDef } from '@tanstack/react-table';
 import type { TSrsDefaults } from '@/types/srs-settings';
+import { useTranslations } from 'next-intl';
 import type { TTrainerFormData } from '@/libs/validations/vocab-trainer';
 import type { TVocabTrainer, VocabTrainerListProps } from '@/types/vocab-trainer';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -63,6 +64,8 @@ const QUESTION_TYPE_BADGE_CLASSES: Record<string, string> = {
 const MAX_PASS_COUNT = 6;
 
 const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initialLanguagesData, currentUser, loadError }) => {
+  const t = useTranslations();
+  const questionTypeFilterOptions = QUESTION_TYPE_OPTIONS.map(option => ({ value: option.value, label: t(option.labelKey) }));
   const [isMounted, setIsMounted] = useState(false);
   const [cachedLanguageFolders, setCachedLanguageFolders] = useState<any[]>([]);
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
@@ -518,7 +521,7 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
           statusOptions={statusOptions}
           selectedStatuses={selectedStatuses}
           onStatusFilterChange={handleStatusFilterChange}
-          questionTypeOptions={QUESTION_TYPE_OPTIONS}
+          questionTypeOptions={questionTypeFilterOptions}
           selectedQuestionTypes={selectedQuestionTypes}
           onQuestionTypeFilterChange={handleQuestionTypeFilterChange}
           onClearFilters={clearFilters}

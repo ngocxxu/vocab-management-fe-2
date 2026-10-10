@@ -24,9 +24,9 @@ export const srsSettingsFormSchema = z.object({
   desiredRetention: z.number().min(SRS_MIN_RETENTION).max(SRS_MAX_RETENTION),
   directions: z
     .array(z.enum(EFsrsDirection))
-    .min(1, 'Pick at least one direction')
-    .refine(directions => new Set(directions).size === directions.length, 'Each direction can be picked once'),
+    .min(1, 'validation.directionRequired')
+    .refine(directions => new Set(directions).size === directions.length, 'validation.directionDuplicate'),
   questionType: z.enum([EQuestionType.FLIP_CARD, EQuestionType.FILL_IN_THE_BLANK]),
   reminderEnabled: z.boolean(),
-  timezone: z.string().min(1, 'Pick a timezone').refine(isValidTimezone, 'Unknown timezone'),
+  timezone: z.string().min(1, 'validation.timezoneRequired').refine(isValidTimezone, 'validation.timezoneUnknown'),
 });

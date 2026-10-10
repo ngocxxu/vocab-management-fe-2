@@ -13,7 +13,7 @@ export async function createApiKey(apiKeyData: TCreateApiKey) {
     revalidatePath('/api-keys');
     return result;
   } catch (error) {
-    throw toActionError(error, 'Failed to create API key');
+    throw await toActionError(error, 'createAPIKey');
   }
 }
 
@@ -24,6 +24,6 @@ export async function deleteApiKey(id: string) {
     revalidatePath('/api-keys');
     return result;
   } catch (error) {
-    throw toActionError(error, 'Failed to delete API key');
+    throw await toActionError(error, 'deleteAPIKey');
   }
 }

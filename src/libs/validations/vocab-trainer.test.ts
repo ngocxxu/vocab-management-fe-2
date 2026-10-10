@@ -49,11 +49,11 @@ describe('createTrainerFormSchema', () => {
   });
 
   it('rejects a Classic-only question type for FSRS', () => {
-    expect(messages({ ...fsrsForm, questionType: EQuestionType.MULTIPLE_CHOICE })).toEqual(['questionType: Pick flip card or type the answer']);
+    expect(messages({ ...fsrsForm, questionType: EQuestionType.MULTIPLE_CHOICE })).toEqual(['questionType: validation.questionTypeNotFsrs']);
   });
 
   it('rejects a deadline in the past but allows today', () => {
-    expect(messages({ ...fsrsForm, fsrsEndsAt: '2026-10-03' })).toEqual(['fsrsEndsAt: The deadline cannot be in the past']);
+    expect(messages({ ...fsrsForm, fsrsEndsAt: '2026-10-03' })).toEqual(['fsrsEndsAt: validation.deadlinePast']);
     expect(messages({ ...fsrsForm, fsrsEndsAt: '2026-10-04' })).toEqual([]);
   });
 
@@ -62,7 +62,7 @@ describe('createTrainerFormSchema', () => {
   });
 
   it('rejects a date that does not exist', () => {
-    expect(messages({ ...fsrsForm, fsrsEndsAt: '2026-02-31' })).toEqual(['fsrsEndsAt: Pick a valid date']);
+    expect(messages({ ...fsrsForm, fsrsEndsAt: '2026-02-31' })).toEqual(['fsrsEndsAt: validation.dateInvalid']);
   });
 });
 
@@ -116,16 +116,16 @@ describe('createCloneFormSchema', () => {
   });
 
   it('needs a name and keeps it short', () => {
-    expect(messagesOf({ name: '   ', endsAt: '' })).toEqual(['name: Name is required']);
-    expect(messagesOf({ name: 'x'.repeat(201), endsAt: '' })).toEqual(['name: Use at most 200 characters']);
+    expect(messagesOf({ name: '   ', endsAt: '' })).toEqual(['name: validation.nameRequired']);
+    expect(messagesOf({ name: 'x'.repeat(201), endsAt: '' })).toEqual(['name: validation.trainerNameTooLong']);
   });
 
   it('refuses a deadline in the past but allows today', () => {
-    expect(messagesOf({ name: 'Round 2', endsAt: '2026-10-03' })).toEqual(['endsAt: The deadline cannot be in the past']);
+    expect(messagesOf({ name: 'Round 2', endsAt: '2026-10-03' })).toEqual(['endsAt: validation.deadlinePast']);
     expect(messagesOf({ name: 'Round 2', endsAt: '2026-10-04' })).toEqual([]);
   });
 
   it('refuses a date that does not exist', () => {
-    expect(messagesOf({ name: 'Round 2', endsAt: '2026-02-31' })).toEqual(['endsAt: Pick a valid date']);
+    expect(messagesOf({ name: 'Round 2', endsAt: '2026-02-31' })).toEqual(['endsAt: validation.dateInvalid']);
   });
 });

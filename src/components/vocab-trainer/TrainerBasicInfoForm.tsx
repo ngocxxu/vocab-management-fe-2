@@ -2,6 +2,7 @@
 
 import { Archive, CloseCircle, Lock } from '@solar-icons/react/ssr';
 import React, { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { useFormContext } from 'react-hook-form';
 import {
   FormControl,
@@ -28,15 +29,17 @@ type TrainerBasicInfoFormProps = Readonly<{
   srsDefaults?: TSrsDefaults;
 }>;
 
+// titleKey and hintKey are translation keys under `modes`.
 const MODE_OPTIONS = [
-  { value: ETrainerMode.CLASSIC, title: 'Classic', hint: 'A timed test of the words you pick, every time.' },
-  { value: ETrainerMode.FSRS, title: 'Spaced repetition', hint: 'Short daily reviews; each word returns just before you would forget it.' },
+  { value: ETrainerMode.CLASSIC, titleKey: 'modes.classic.title', hintKey: 'modes.classic.hint' },
+  { value: ETrainerMode.FSRS, titleKey: 'modes.spacedRepetition.title', hintKey: 'modes.spacedRepetition.hint' },
 ];
 
 const MAX_VISIBLE_SELECTED_WORDS = 20;
 const EMPTY_SELECTED_WORDS: TrainerBasicInfoFormProps['selectedWords'] = [];
 
 const TrainerBasicInfoForm: React.FC<TrainerBasicInfoFormProps> = ({ userRole, selectedWords = EMPTY_SELECTED_WORDS, editMode = false, srsDefaults }) => {
+  const t = useTranslations();
   const form = useFormContext();
   const isFsrs = form.watch('mode') === ETrainerMode.FSRS;
   const [upsellOpen, setUpsellOpen] = useState(false);
@@ -119,8 +122,8 @@ const TrainerBasicInfoForm: React.FC<TrainerBasicInfoFormProps> = ({ userRole, s
                       editMode && field.value !== option.value && 'opacity-50',
                     )}
                   >
-                    <span className="block text-sm font-semibold text-foreground">{option.title}</span>
-                    <span className="mt-1 block text-xs text-muted-foreground">{option.hint}</span>
+                    <span className="block text-sm font-semibold text-foreground">{t(option.titleKey)}</span>
+                    <span className="mt-1 block text-xs text-muted-foreground">{t(option.hintKey)}</span>
                   </button>
                 ))}
               </div>
@@ -163,14 +166,14 @@ const TrainerBasicInfoForm: React.FC<TrainerBasicInfoFormProps> = ({ userRole, s
                       {option.value === EQuestionType.TRANSLATION_AUDIO && isGuest
                         ? (
                             <span className="flex w-full items-center justify-between gap-3">
-                              <span>{option.label}</span>
+                              <span>{t(option.labelKey)}</span>
                               <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-muted px-2.5 py-0.5 font-sans text-xs font-medium text-muted-foreground">
                                 <Lock size={12} weight="BoldDuotone" />
                                 Upgrade
                               </span>
                             </span>
                           )
-                        : option.label}
+                        : t(option.labelKey)}
                     </SelectItem>
                   ))}
                 </SelectContent>

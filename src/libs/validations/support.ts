@@ -10,10 +10,10 @@ export const SUPPORT_CATEGORIES = [
 export type TSupportCategory = (typeof SUPPORT_CATEGORIES)[number];
 
 export const supportSchema = z.object({
-  category: z.enum(SUPPORT_CATEGORIES, { error: 'Please select a category' }),
-  email: z.string().min(1, 'Email is required').email('Please enter a valid email'),
-  subject: z.string().min(1, 'Subject is required').max(150, 'Subject must be 150 characters or fewer'),
-  message: z.string().min(20, 'Message must be at least 20 characters').max(2000, 'Message must be 2000 characters or fewer'),
+  category: z.enum(SUPPORT_CATEGORIES, { error: 'validation.categoryRequired' }),
+  email: z.string().min(1, 'validation.emailRequired').email('validation.invalidEmail'),
+  subject: z.string().min(1, 'validation.subjectRequired').max(150, 'validation.subjectTooLong'),
+  message: z.string().min(20, 'validation.messageTooShort').max(2000, 'validation.messageTooLong'),
 });
 
 export type TSupportFormData = z.infer<typeof supportSchema>;

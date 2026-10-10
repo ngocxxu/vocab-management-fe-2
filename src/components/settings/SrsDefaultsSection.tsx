@@ -2,6 +2,7 @@
 
 import type { TSrsDefaults, TSrsQuestionType, TSrsSettings } from '@/types/srs-settings';
 import React, { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { updateSrsSettings } from '@/actions/srs-settings';
 import { Button } from '@/components/ui/button';
@@ -11,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Slider } from '@/components/ui/slider';
 import { FSRS_QUESTION_TYPE_OPTIONS } from '@/constants/vocab-trainer';
 import { EFsrsDirection } from '@/enum/vocab-trainer';
+import { toDisplayMessage } from '@/i18n/validation';
 import { formatRecallPerTen, SRS_MAX_RETENTION, SRS_MIN_RETENTION, srsSettingsFormSchema } from '@/libs/validations/srs-settings';
 import { SettingRow, SettingsGroup, SettingsSection } from './SettingsSection';
 
@@ -20,9 +22,10 @@ type SrsDefaultsSectionProps = {
   onDirtyChange?: (isDirty: boolean) => void;
 };
 
-const DIRECTION_OPTIONS: { value: EFsrsDirection; label: string; hint: string }[] = [
-  { value: EFsrsDirection.SOURCE_TO_TARGET, label: 'Word → meaning', hint: 'See the word, recall its meaning.' },
-  { value: EFsrsDirection.TARGET_TO_SOURCE, label: 'Meaning → word', hint: 'See the meaning, recall the word.' },
+// labelKey and hintKey are translation keys under `directions`.
+const DIRECTION_OPTIONS: { value: EFsrsDirection; labelKey: string; hintKey: string }[] = [
+  { value: EFsrsDirection.SOURCE_TO_TARGET, labelKey: 'directions.sourceToTarget.label', hintKey: 'directions.sourceToTarget.hint' },
+  { value: EFsrsDirection.TARGET_TO_SOURCE, labelKey: 'directions.targetToSource.label', hintKey: 'directions.targetToSource.hint' },
 ];
 
 const PERCENT = 100;
@@ -40,6 +43,7 @@ const readBrowserTimezone = (): string => Intl.DateTimeFormat().resolvedOptions(
 const readServerTimezone = (): string => '';
 
 export const SrsDefaultsSection: React.FC<SrsDefaultsSectionProps> = ({ settings, onDirtyChange }) => {
+  const t = useTranslations();
   const [saved, setSaved] = useState(settings);
   const [defaults, setDefaults] = useState<TSrsDefaults>(settings.defaults);
   // null until the user picks one: until then the timezone is the saved one, or the browser's the first time.
@@ -82,7 +86,7 @@ export const SrsDefaultsSection: React.FC<SrsDefaultsSectionProps> = ({ settings
   const handleSave = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!parsed.success) {
-      toast.error(parsed.error.issues[0]?.message ?? 'Check the values and try again');
+      toast.error(toDisplayMessage(parsed.error.issues[0]?.message ?? 'validation.checkValues', t));
       return;
     }
 
@@ -106,7 +110,7 @@ export const SrsDefaultsSection: React.FC<SrsDefaultsSectionProps> = ({ settings
         <div className="sticky bottom-4 z-10 mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-card p-3 shadow-lg">
           <div>
             <p className={parsed.success ? 'text-sm text-foreground' : 'text-sm text-destructive'}>
-              {parsed.success ? 'You have unsaved changes' : parsed.error.issues[0]?.message}
+              {parsed.success ? 'You have unsaved changes' : toDisplayMessage(parsed.error.issues[0]?.message ?? 'validation.checkValues', t)}
             </p>
             {parsed.success && (
               <p className="text-xs text-muted-foreground">Timezone applies to all trainers. Other settings apply to new trainers.</p>
@@ -182,8 +186,8 @@ export const SrsDefaultsSection: React.FC<SrsDefaultsSectionProps> = ({ settings
                     onCheckedChange={checked => toggleDirection(option.value, checked === true)}
                   />
                   <Label htmlFor={`srs-direction-${option.value}`} className="flex-col items-start gap-0.5 font-normal">
-                    {option.label}
-                    <span className="block text-xs text-muted-foreground">{option.hint}</span>
+                    {t(option.labelKey)}
+                    <span className="block text-xs text-muted-foreground">{t(option.hintKey)}</span>
                   </Label>
                 </div>
               ))}
@@ -197,7 +201,7 @@ export const SrsDefaultsSection: React.FC<SrsDefaultsSectionProps> = ({ settings
               </SelectTrigger>
               <SelectContent>
                 {FSRS_QUESTION_TYPE_OPTIONS.map(option => (
-                  <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                  <SelectItem key={option.value} value={option.value}>{t(option.labelKey)}</SelectItem>
                 ))}
               </SelectContent>
             </Select>

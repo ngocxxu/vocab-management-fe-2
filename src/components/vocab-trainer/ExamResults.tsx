@@ -1,6 +1,7 @@
 'use client';
 
-import { getQuestionTypeLabel } from '@/constants/vocab-trainer';
+import { useTranslations } from 'next-intl';
+import { getQuestionTypeLabelKey } from '@/constants/vocab-trainer';
 import { EQuestionType } from '@/enum/vocab-trainer';
 import type { ExamResultsProps, TExamResult } from '@/types/vocab-trainer';
 import {
@@ -48,6 +49,7 @@ const ExamResults: React.FC<ExamResultsProps> = ({
   durationFasterText,
   questionType,
 }) => {
+  const t = useTranslations();
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
   const isFlipCard = questionType === EQuestionType.FLIP_CARD;
 
@@ -327,8 +329,8 @@ const ExamResults: React.FC<ExamResultsProps> = ({
                       </div>
                       <span className="text-xs text-muted-foreground">
                         {questionType
-                          ? `Vocabulary: ${getQuestionTypeLabel(questionType)}`
-                          : 'Vocabulary'}
+                          ? `${t('questionTypes.vocabulary')}: ${t(getQuestionTypeLabelKey(questionType))}`
+                          : t('questionTypes.vocabulary')}
                       </span>
                     </div>
 

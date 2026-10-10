@@ -12,7 +12,7 @@ export async function getSrsSettings(): Promise<TSrsSettings> {
   try {
     return await srsSettingsApi.get();
   } catch (error) {
-    throw toActionError(error, 'Failed to load spaced repetition settings');
+    throw await toActionError(error, 'loadSpacedRepetitionSettings');
   }
 }
 
@@ -24,6 +24,6 @@ export async function updateSrsSettings(data: TUpdateSrsSettings): Promise<TSrsS
     revalidatePath('/profile');
     return result;
   } catch (error) {
-    throw toActionError(error, 'Failed to save spaced repetition settings');
+    throw await toActionError(error, 'saveSpacedRepetitionSettings');
   }
 }

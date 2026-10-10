@@ -5,7 +5,7 @@ import type { LanguageFolderQueryParams } from '@/utils/api-config';
 import { revalidatePath } from 'next/cache';
 import { languageFoldersApi } from '@/utils/server-api';
 import { requireAuth } from './auth';
-import { toActionError } from './utils';
+import { toActionError, translateError } from './utils';
 
 export async function createLanguageFolder(languageFolderData: {
   name: string;
@@ -20,7 +20,7 @@ export async function createLanguageFolder(languageFolderData: {
     revalidatePath('/vocab-list');
     return result;
   } catch (error) {
-    throw toActionError(error, 'Failed to create language folder');
+    throw await toActionError(error, 'createLanguageFolder');
   }
 }
 
@@ -40,7 +40,7 @@ export async function updateLanguageFolder(
     revalidatePath('/vocab-list');
     return result;
   } catch (error) {
-    throw toActionError(error, 'Failed to update language folder');
+    throw await toActionError(error, 'updateLanguageFolder');
   }
 }
 
@@ -52,7 +52,7 @@ export async function deleteLanguageFolder(id: string) {
     revalidatePath('/vocab-list');
     return result;
   } catch (error) {
-    throw toActionError(error, 'Failed to delete language folder');
+    throw await toActionError(error, 'deleteLanguageFolder');
   }
 }
 
@@ -67,7 +67,7 @@ export async function getMyLanguageFoldersForSelection(params?: LanguageFolderQu
     return result;
   } catch (error) {
     return {
-      error: error instanceof Error ? error.message : 'Failed to fetch language folders',
+      error: error instanceof Error ? error.message : await translateError('fetchLanguageFolders'),
     };
   }
 }

@@ -4,6 +4,7 @@ import type { GenerateUploadSignatureInput, GenerateUploadSignatureOutput } from
 import { cookies } from 'next/headers';
 import { Env } from '@/libs/Env';
 import { logger } from '@/libs/Logger';
+import { translateError } from './utils';
 
 export async function getCloudinaryUploadSignature(
   params?: GenerateUploadSignatureInput,
@@ -62,7 +63,7 @@ export async function getCloudinaryUploadSignature(
   } catch (error) {
     logger.error('Cloudinary signature error:', { error });
     return {
-      error: error instanceof Error ? error.message : 'Failed to get upload signature',
+      error: error instanceof Error ? error.message : await translateError('getUploadSignature'),
     };
   }
 }
