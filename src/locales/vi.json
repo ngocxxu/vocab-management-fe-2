@@ -216,5 +216,47 @@
       "originUnavailable": "Không xác định được địa chỉ gốc.",
       "resetPassword": "Không thể gửi email đặt lại mật khẩu. Vui lòng thử lại."
     }
+  },
+  "shell": {
+    "nav": {
+      "dashboard": "Bảng điều khiển",
+      "library": "Thư viện",
+      "vocabTrainer": "Luyện từ vựng",
+      "trainer": "Luyện tập",
+      "profile": "Hồ sơ",
+      "subjects": "Chủ đề",
+      "notifications": "Thông báo",
+      "apiKeys": "Khóa API",
+      "more": "Thêm",
+      "primary": "Điều hướng chính"
+    },
+    "sidebar": {
+      "mainMenu": "Menu chính",
+      "settings": "Cài đặt",
+      "signOut": "Đăng xuất",
+      "user": "Người dùng",
+      "avatar": "Ảnh đại diện",
+      "expand": "Mở thanh bên",
+      "collapse": "Thu gọn thanh bên"
+    },
+    "header": {
+      "searchPlaceholder": "Tìm từ, danh sách hoặc thẻ...",
+      "search": "Tìm kiếm",
+      "toggleTheme": "Đổi giao diện",
+      "switchToLight": "Chuyển sang chế độ sáng",
+      "switchToDark": "Chuyển sang chế độ tối",
+      "searchTitle": "Tìm kiếm",
+      "searchDescription": "Tìm từ, danh sách hoặc thẻ.",
+      "noResults": "Không có kết quả.",
+      "suggestions": "Gợi ý",
+      "searchAcross": "Tìm \"{query}\" trong toàn bộ từ vựng",
+      "heading": "Tìm kiếm"
+    },
+    "roles": {
+      "admin": "Quản trị viên"
+    },
+    "errors": {
+      "loadNotifications": "Không tải được thông báo"
+    }
   }
 }

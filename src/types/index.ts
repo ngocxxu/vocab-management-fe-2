@@ -67,7 +67,8 @@ export * from './word-type';
 export type MenuItem = {
   id: string;
   path: string;
-  label: string;
+  /** Translation key under `shell.nav`. */
+  labelKey: string;
   icon: React.ReactNode;
   category?: string;
 };

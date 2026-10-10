@@ -8,6 +8,7 @@ import type { TPlan } from '@/types/plan';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { getLayoutHeaderData } from '@/actions/layout-header';
 import { Header, MobileBottomNav, Sidebar } from '@/components/dashboard';
+import { useTranslations } from 'next-intl';
 import { logger } from '@/libs/Logger';
 import { SocketProvider } from '@/providers/SocketProvider';
 import { ChatBubble, ChatPanel, ChatProvider } from '@/features/chat';
@@ -35,6 +36,7 @@ export function LayoutClient({
   initialChatMessages,
   initialChatNextCursor,
 }: LayoutClientProps) {
+  const t = useTranslations('shell');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   const [isDesktop, setIsDesktop] = useState(false);
@@ -77,11 +79,11 @@ export function LayoutClient({
     } catch (error) {
       loadedHeaderDataKeyRef.current = null;
       logger.error('Failed to load layout header data:', { error });
-      setHeaderDataError('Unable to load notifications');
+      setHeaderDataError(t('errors.loadNotifications'));
     } finally {
       setIsHeaderDataLoading(false);
     }
-  }, [currentUserId, currentUserRole]);
+  }, [currentUserId, currentUserRole, t]);
 
   useEffect(() => {
     const handleResize = () => {

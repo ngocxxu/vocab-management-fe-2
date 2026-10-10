@@ -216,5 +216,47 @@
       "originUnavailable": "Origin URL could not be determined.",
       "resetPassword": "Failed to send reset email. Please try again."
     }
+  },
+  "shell": {
+    "nav": {
+      "dashboard": "Dashboard",
+      "library": "Library",
+      "vocabTrainer": "Vocab Trainer",
+      "trainer": "Trainer",
+      "profile": "Profile",
+      "subjects": "Subjects",
+      "notifications": "Notifications",
+      "apiKeys": "API Keys",
+      "more": "More",
+      "primary": "Primary"
+    },
+    "sidebar": {
+      "mainMenu": "Main Menu",
+      "settings": "Settings",
+      "signOut": "Sign out",
+      "user": "User",
+      "avatar": "Avatar",
+      "expand": "Expand sidebar",
+      "collapse": "Collapse sidebar"
+    },
+    "header": {
+      "searchPlaceholder": "Search words, lists, or tags...",
+      "search": "Search",
+      "toggleTheme": "Toggle theme",
+      "switchToLight": "Switch to light mode",
+      "switchToDark": "Switch to dark mode",
+      "searchTitle": "Search",
+      "searchDescription": "Search words, lists, or tags.",
+      "noResults": "No results.",
+      "suggestions": "Suggestions",
+      "searchAcross": "Search \"{query}\" across all vocab",
+      "heading": "Search"
+    },
+    "roles": {
+      "admin": "Admin"
+    },
+    "errors": {
+      "loadNotifications": "Unable to load notifications"
+    }
   }
 }
