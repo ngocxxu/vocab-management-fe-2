@@ -1,8 +1,8 @@
 'use client';
 
 import type { QuickFilter, VocabSelectionFiltersProps } from '@/types/vocab-trainer';
-import { Folder, Magnifer, Shuffle } from '@solar-icons/react/ssr';
-import React from 'react';
+import { AddCircle, Folder, Magnifer, MinusCircle, Shuffle } from '@solar-icons/react/ssr';
+import React, { useId, useState } from 'react';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
@@ -15,6 +15,13 @@ const QUICK_FILTERS: { id: QuickFilter; label: string }[] = [
   { id: 'unstarted', label: 'Unstarted' },
 ];
 
+const MIN_RANDOM_COUNT = 1;
+
+function clampCount(value: number, max?: number): number {
+  const upper = max ?? Number.POSITIVE_INFINITY;
+  return Math.min(Math.max(Math.trunc(value), MIN_RANDOM_COUNT), upper);
+}
+
 const VocabSelectionFilters: React.FC<VocabSelectionFiltersProps> = ({
   globalFilter,
   onGlobalFilterChange,
@@ -25,9 +32,38 @@ const VocabSelectionFilters: React.FC<VocabSelectionFiltersProps> = ({
   onQuickFilterChange,
   randomCount,
   onRandomCountChange,
+  maxRandomCount,
   onRandomize,
   isRandomizeDisabled,
 }) => {
+  const countId = useId();
+  const hintId = useId();
+  // The field holds text while it is being edited, so it can be empty or briefly out of range.
+  const [draft, setDraft] = useState(String(randomCount));
+  // The parent can change the count on its own (the default follows the words in scope), so the field follows it.
+  const [syncedCount, setSyncedCount] = useState(randomCount);
+  if (syncedCount !== randomCount) {
+    setSyncedCount(randomCount);
+    setDraft(String(randomCount));
+  }
+  const draftValue = draft === '' ? randomCount : Number(draft);
+  const isOverMax = maxRandomCount !== undefined && draftValue > maxRandomCount;
+
+  const commitCount = (value: number) => {
+    const next = clampCount(value, maxRandomCount);
+    setDraft(String(next));
+    onRandomCountChange(next);
+  };
+
+  const handleBlur = () => {
+    // An empty field goes back to the last count that was set, not to 1.
+    if (draft === '') {
+      setDraft(String(randomCount));
+      return;
+    }
+    commitCount(Number(draft));
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
@@ -68,25 +104,41 @@ const VocabSelectionFilters: React.FC<VocabSelectionFiltersProps> = ({
             Quick filters
           </p>
 
-          <div className="flex h-9 w-full items-center rounded-md border border-input bg-background shadow-xs sm:w-auto">
-            <div className="flex min-w-0 flex-1 items-center justify-center pr-1 pl-2 sm:flex-none">
-              <span className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Count</span>
-              <input
-                type="number"
-                inputMode="numeric"
-                min={1}
-                aria-label="Random vocabulary count"
-                value={randomCount}
-                onChange={(e) => {
-                  const next = Number(e.target.value);
-                  onRandomCountChange(Number.isFinite(next) ? Math.max(1, next) : 1);
-                }}
-                className={cn(
-                  'h-8 w-10 border-0 bg-none p-0 text-center text-sm font-semibold text-foreground shadow-none outline-none',
-                  'focus-visible:ring-0 disabled:pointer-events-none disabled:opacity-50',
-                )}
-              />
-            </div>
+          <div className="flex h-9 w-full items-center rounded-md border border-input bg-card shadow-xs sm:w-auto">
+            <label htmlFor={countId} className="pr-1 pl-3 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+              Count
+            </label>
+            <button
+              type="button"
+              aria-label="Decrease count"
+              disabled={draftValue <= MIN_RANDOM_COUNT}
+              onClick={() => commitCount(draftValue - 1)}
+              className="flex size-7 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
+            >
+              <MinusCircle size={16} weight="BoldDuotone" />
+            </button>
+            <input
+              id={countId}
+              type="text"
+              inputMode="numeric"
+              autoComplete="off"
+              aria-describedby={isOverMax ? hintId : undefined}
+              aria-invalid={isOverMax || undefined}
+              value={draft}
+              onChange={e => setDraft(e.target.value.replace(/\D/g, ''))}
+              onFocus={e => e.target.select()}
+              onBlur={handleBlur}
+              className="h-8 w-12 min-w-0 bg-transparent text-center text-sm font-semibold text-foreground tabular-nums outline-none"
+            />
+            <button
+              type="button"
+              aria-label="Increase count"
+              disabled={maxRandomCount !== undefined && draftValue >= maxRandomCount}
+              onClick={() => commitCount(draftValue + 1)}
+              className="flex size-7 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
+            >
+              <AddCircle size={16} weight="BoldDuotone" />
+            </button>
 
             <Button
               type="button"
@@ -94,7 +146,7 @@ const VocabSelectionFilters: React.FC<VocabSelectionFiltersProps> = ({
               onClick={onRandomize}
               disabled={isRandomizeDisabled}
               className={cn(
-                'h-8 shrink-0 rounded-md bg-primary/15 text-sm font-medium text-primary hover:text-primary hover:bg-primary/25',
+                'mr-0.5 h-8 shrink-0 rounded-md bg-primary/15 text-sm font-medium text-primary hover:bg-primary/25 hover:text-primary',
                 'disabled:opacity-50 sm:min-w-[132px]',
               )}
             >
@@ -105,6 +157,13 @@ const VocabSelectionFilters: React.FC<VocabSelectionFiltersProps> = ({
             </Button>
           </div>
         </div>
+
+        {isOverMax && (
+          <p id={hintId} className="text-right text-xs text-destructive">
+            {`Only ${maxRandomCount} words in this scope. Will use ${maxRandomCount}.`}
+          </p>
+        )}
+
         <div className="flex flex-wrap gap-2">
           {QUICK_FILTERS.map(({ id, label }) => (
             <button
