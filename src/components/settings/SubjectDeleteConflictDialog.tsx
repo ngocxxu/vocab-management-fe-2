@@ -2,6 +2,7 @@
 
 import { AltArrowRight, Archive, DangerTriangle } from '@solar-icons/react/ssr';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -25,6 +26,7 @@ export function SubjectDeleteConflictDialog({
   subjectId,
   vocabularyCount,
 }: SubjectDeleteConflictDialogProps) {
+  const t = useTranslations('subjects.conflict');
   const router = useRouter();
 
   const handleViewVocabularies = () => {
@@ -33,8 +35,8 @@ export function SubjectDeleteConflictDialog({
   };
 
   const countLabel = vocabularyCount !== undefined
-    ? `${vocabularyCount} Vocabularies`
-    : 'Vocabularies';
+    ? t('countVocabularies', { count: vocabularyCount })
+    : t('countUnknown');
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -52,33 +54,18 @@ export function SubjectDeleteConflictDialog({
           </div>
           <DialogHeader className="items-center space-y-2 text-center sm:text-center">
             <DialogTitle className="text-xl font-bold text-foreground">
-              Cannot Delete Subject
+              {t('cannotDelete')}
             </DialogTitle>
             <DialogDescription asChild>
               <p className="text-center text-sm text-muted-foreground">
                 {vocabularyCount !== undefined
-                  ? (
-                      <>
-                        This subject is currently used by
-                        {' '}
-                        <span className="font-semibold text-foreground">
-                          {vocabularyCount}
-                          {' '}
-                          vocabularies
-                        </span>
-                        . To delete this subject, you must first reassign or delete the
-                        associated vocabularies.
-                      </>
-                    )
-                  : (
-                      <>
-                        This subject is currently used by
-                        {' '}
-                        <span className="font-semibold text-foreground">one or more vocabularies</span>
-                        . To delete this subject, you must first reassign or delete the associated
-                        vocabularies.
-                      </>
-                    )}
+                  ? t.rich('usedByCount', {
+                      count: vocabularyCount,
+                      em: chunks => <span className="font-semibold text-foreground">{chunks}</span>,
+                    })
+                  : t.rich('usedByMany', {
+                      em: chunks => <span className="font-semibold text-foreground">{chunks}</span>,
+                    })}
               </p>
             </DialogDescription>
           </DialogHeader>
@@ -87,7 +74,7 @@ export function SubjectDeleteConflictDialog({
         <div className="flex items-center justify-between gap-3 rounded-lg border border-border bg-muted/50 px-4 py-3">
           <div className="flex items-center gap-2 text-sm font-medium text-foreground">
             <Archive size={20} weight="Linear" className="shrink-0 text-muted-foreground" />
-            Affected Items
+            {t('affectedItems')}
           </div>
           <span className="rounded-full border border-border bg-background px-3 py-1 text-xs font-semibold tracking-wide text-primary uppercase">
             {countLabel}
@@ -101,14 +88,14 @@ export function SubjectDeleteConflictDialog({
             className="flex-1 rounded-lg font-semibold tracking-wide uppercase"
             onClick={() => onOpenChange(false)}
           >
-            Close
+            {t('close')}
           </Button>
           <Button
             type="button"
             className="flex-1 rounded-lg font-semibold tracking-wide uppercase"
             onClick={handleViewVocabularies}
           >
-            View vocabularies
+            {t('viewVocabularies')}
             <AltArrowRight size={18} weight="BoldDuotone" className="ml-1" />
           </Button>
         </DialogFooter>

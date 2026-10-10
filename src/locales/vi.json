@@ -409,5 +409,127 @@
       "selectFolderRequired": "Chọn thư mục ngôn ngữ để thêm nhanh",
       "cancel": "Hủy"
     }
+  },
+  "library": {
+    "header": {
+      "title": "Thư viện của bạn",
+      "description": "Quản lý bộ từ vựng của bạn qua nhiều ngôn ngữ. Theo dõi tiến độ và làm chủ từ mới.",
+      "createNew": "Tạo thư mục mới",
+      "createShort": "Tạo thư mục",
+      "featureName": "Tạo thư mục ngôn ngữ",
+      "featureDescription": "Tạo thêm thư mục ngôn ngữ với gói Member. Nâng cấp để không giới hạn số thư mục."
+    },
+    "search": {
+      "placeholder": "Tìm thư mục ngôn ngữ...",
+      "sortBy": "Sắp xếp theo:",
+      "recent": "Gần đây",
+      "nameAz": "Tên A-Z",
+      "filter": "Lọc"
+    },
+    "card": {
+      "createTitle": "Tạo thư mục mới",
+      "startJourney": "Bắt đầu một hành trình ngôn ngữ mới",
+      "upgradeMore": "Nâng cấp để tạo thêm thư mục",
+      "created": "Tạo",
+      "mastery": "Mức thành thạo",
+      "words": "{count, plural, other {# từ}}",
+      "editFolder": "Sửa thư mục",
+      "deleteFolder": "Xóa thư mục",
+      "deleteTitle": "Xóa thư mục ngôn ngữ",
+      "deleteDescription": "Bạn có chắc muốn xóa \"{name}\"? Thao tác này không thể hoàn tác. Mọi từ vựng trong thư mục sẽ bị xóa vĩnh viễn.",
+      "cancel": "Hủy",
+      "deleting": "Đang xóa..."
+    },
+    "empty": {
+      "noResultsTitle": "Không tìm thấy thư mục ngôn ngữ",
+      "noResultsHint": "Thử đổi từ khóa tìm kiếm hoặc kiểm tra chính tả",
+      "firstTitle": "Tạo thư mục ngôn ngữ đầu tiên",
+      "firstHint": "Bắt đầu bằng việc tạo thư mục ngôn ngữ để sắp xếp từ vựng. Chọn ngôn ngữ nguồn và đích, rồi thêm những từ đầu tiên!",
+      "firstButton": "Tạo thư mục đầu tiên"
+    },
+    "time": {
+      "justNow": "Vừa xong",
+      "minutesAgo": "{count} phút trước",
+      "hoursAgo": "{count} giờ trước",
+      "dayAgo": "1 ngày trước",
+      "daysAgo": "{count} ngày trước"
+    },
+    "form": {
+      "folderName": "Tên thư mục",
+      "folderNamePlaceholder": "Nhập tên thư mục",
+      "autoGenerate": "Tự động tạo",
+      "sourceLanguage": "Ngôn ngữ nguồn",
+      "selectSource": "Chọn ngôn ngữ nguồn",
+      "targetLanguage": "Ngôn ngữ đích",
+      "selectTarget": "Chọn ngôn ngữ đích",
+      "folderColor": "Màu thư mục",
+      "save": "Lưu",
+      "cancel": "Hủy",
+      "saving": "Đang lưu...",
+      "nameRequired": "Cần nhập tên thư mục",
+      "nameTooShort": "Tên thư mục phải có ít nhất 2 ký tự",
+      "sourceRequired": "Cần chọn ngôn ngữ nguồn",
+      "targetRequired": "Cần chọn ngôn ngữ đích",
+      "targetDifferent": "Ngôn ngữ đích phải khác ngôn ngữ nguồn"
+    },
+    "modal": {
+      "createTitle": "Tạo thư mục ngôn ngữ mới",
+      "createSubmit": "Tạo thư mục"
+    },
+    "edit": {
+      "title": "Sửa thư mục ngôn ngữ",
+      "description": "Cập nhật thông tin thư mục ngôn ngữ. Nhấn lưu khi hoàn tất.",
+      "submit": "Cập nhật thư mục"
+    },
+    "toast": {
+      "created": "Đã tạo thư mục ngôn ngữ!",
+      "createFailed": "Không thể tạo thư mục ngôn ngữ. Vui lòng thử lại.",
+      "updated": "Đã cập nhật thư mục ngôn ngữ!",
+      "updateFailed": "Không thể cập nhật thư mục ngôn ngữ. Vui lòng thử lại.",
+      "deleted": "Đã xóa thư mục ngôn ngữ!",
+      "deleteFailed": "Không thể xóa thư mục ngôn ngữ. Vui lòng thử lại.",
+      "folderLimit": "Đã đạt giới hạn thư mục.",
+      "upgrade": "Nâng cấp",
+      "quotaMessage": "Đã đạt giới hạn. Nâng cấp lên Member để dùng thêm."
+    }
+  },
+  "subjects": {
+    "toast": {
+      "created": "Đã tạo chủ đề",
+      "updated": "Đã cập nhật chủ đề",
+      "deleted": "Đã xóa chủ đề",
+      "reordered": "Đã sắp xếp lại chủ đề"
+    },
+    "form": {
+      "nameRequired": "Cần nhập tên chủ đề",
+      "subjectName": "Tên chủ đề",
+      "placeholder": "Nhập tên chủ đề",
+      "create": "Tạo",
+      "update": "Cập nhật",
+      "saving": "Đang lưu..."
+    },
+    "cancel": "Hủy",
+    "delete": "Xóa",
+    "createNew": "Tạo chủ đề mới",
+    "editSubject": "Sửa chủ đề",
+    "title": "Chủ đề",
+    "description": "Quản lý và sắp xếp các nhóm học của bạn để cá nhân hóa lộ trình học từ vựng.",
+    "table": {
+      "dragReorder": "Kéo để sắp xếp",
+      "editAria": "Sửa chủ đề",
+      "deleteAria": "Xóa chủ đề",
+      "deleteTitle": "Xóa chủ đề",
+      "deleteDescription": "Bạn có chắc muốn xóa \"{name}\"? Thao tác này không thể hoàn tác."
+    },
+    "conflict": {
+      "cannotDelete": "Không thể xóa chủ đề",
+      "usedByCount": "Chủ đề này đang được dùng bởi <em>{count} từ vựng</em>. Để xóa chủ đề, trước tiên bạn phải chuyển hoặc xóa các từ vựng liên quan.",
+      "usedByMany": "Chủ đề này đang được dùng bởi <em>một hoặc nhiều từ vựng</em>. Để xóa chủ đề, trước tiên bạn phải chuyển hoặc xóa các từ vựng liên quan.",
+      "countVocabularies": "{count} từ vựng",
+      "countUnknown": "Từ vựng",
+      "affectedItems": "Mục bị ảnh hưởng",
+      "close": "Đóng",
+      "viewVocabularies": "Xem từ vựng"
+    }
   }
 }

@@ -409,5 +409,127 @@
       "selectFolderRequired": "Select a language folder for quick-add",
       "cancel": "Cancel"
     }
+  },
+  "library": {
+    "header": {
+      "title": "Your Library",
+      "description": "Manage your vocabulary collections across different languages. Track your progress and master new words.",
+      "createNew": "Create New Folder",
+      "createShort": "Create Folder",
+      "featureName": "Create language folder",
+      "featureDescription": "Create more language folders on the Member plan. Upgrade to unlock unlimited folders."
+    },
+    "search": {
+      "placeholder": "Search for language folders...",
+      "sortBy": "Sort by:",
+      "recent": "Recent",
+      "nameAz": "Name A-Z",
+      "filter": "Filter"
+    },
+    "card": {
+      "createTitle": "Create New Folder",
+      "startJourney": "Start a new language journey",
+      "upgradeMore": "Upgrade to create more folders",
+      "created": "Created",
+      "mastery": "Mastery",
+      "words": "{count, plural, one {# word} other {# words}}",
+      "editFolder": "Edit Folder",
+      "deleteFolder": "Delete Folder",
+      "deleteTitle": "Delete Language Folder",
+      "deleteDescription": "Are you sure you want to delete \"{name}\"? This action cannot be undone. All vocabulary items in this folder will be permanently removed.",
+      "cancel": "Cancel",
+      "deleting": "Deleting..."
+    },
+    "empty": {
+      "noResultsTitle": "No language folders found",
+      "noResultsHint": "Try adjusting your search terms or check your spelling",
+      "firstTitle": "Create Your First Language Folder",
+      "firstHint": "Start by creating a language folder to organize your vocabulary. Choose your source and target languages, then add your first words!",
+      "firstButton": "Create Your First Folder"
+    },
+    "time": {
+      "justNow": "Just now",
+      "minutesAgo": "{count} min ago",
+      "hoursAgo": "{count, plural, one {# hr ago} other {# hrs ago}}",
+      "dayAgo": "1 day ago",
+      "daysAgo": "{count} days ago"
+    },
+    "form": {
+      "folderName": "Folder Name",
+      "folderNamePlaceholder": "Enter folder name",
+      "autoGenerate": "Auto Generate",
+      "sourceLanguage": "Source Language",
+      "selectSource": "Select source language",
+      "targetLanguage": "Target Language",
+      "selectTarget": "Select target language",
+      "folderColor": "Folder Color",
+      "save": "Save",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "nameRequired": "Folder name is required",
+      "nameTooShort": "Folder name must be at least 2 characters",
+      "sourceRequired": "Source language is required",
+      "targetRequired": "Target language is required",
+      "targetDifferent": "Target language must be different from source language"
+    },
+    "modal": {
+      "createTitle": "Create New Language Folder",
+      "createSubmit": "Create Folder"
+    },
+    "edit": {
+      "title": "Edit Language Folder",
+      "description": "Update the details of your language folder. Click save when you’re done.",
+      "submit": "Update Folder"
+    },
+    "toast": {
+      "created": "Language folder created successfully!",
+      "createFailed": "Failed to create language folder. Please try again.",
+      "updated": "Language folder updated successfully!",
+      "updateFailed": "Failed to update language folder. Please try again.",
+      "deleted": "Language folder deleted successfully!",
+      "deleteFailed": "Failed to delete language folder. Please try again.",
+      "folderLimit": "Folder limit reached.",
+      "upgrade": "Upgrade",
+      "quotaMessage": "Limit reached. Upgrade to Member for more."
+    }
+  },
+  "subjects": {
+    "toast": {
+      "created": "Subject created successfully",
+      "updated": "Subject updated successfully",
+      "deleted": "Subject deleted successfully",
+      "reordered": "Subjects reordered successfully"
+    },
+    "form": {
+      "nameRequired": "Subject name is required",
+      "subjectName": "Subject Name",
+      "placeholder": "Enter subject name",
+      "create": "Create",
+      "update": "Update",
+      "saving": "Saving..."
+    },
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "createNew": "Create New Subject",
+    "editSubject": "Edit Subject",
+    "title": "Subjects",
+    "description": "Manage and reorder your learning categories to personalize your vocabulary study path.",
+    "table": {
+      "dragReorder": "Drag to reorder",
+      "editAria": "Edit subject",
+      "deleteAria": "Delete subject",
+      "deleteTitle": "Delete Subject",
+      "deleteDescription": "Are you sure you want to delete \"{name}\"? This action cannot be undone."
+    },
+    "conflict": {
+      "cannotDelete": "Cannot Delete Subject",
+      "usedByCount": "This subject is currently used by <em>{count} vocabularies</em>. To delete this subject, you must first reassign or delete the associated vocabularies.",
+      "usedByMany": "This subject is currently used by <em>one or more vocabularies</em>. To delete this subject, you must first reassign or delete the associated vocabularies.",
+      "countVocabularies": "{count} vocabularies",
+      "countUnknown": "Vocabularies",
+      "affectedItems": "Affected Items",
+      "close": "Close",
+      "viewVocabularies": "View vocabularies"
+    }
   }
 }
