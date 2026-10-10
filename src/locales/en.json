@@ -1,0 +1,9 @@
+{
+  "common": {
+    "language": "Language"
+  },
+  "profile": {
+    "languageLabel": "Interface language",
+    "languageHint": "Changes the language of the app on this browser."
+  }
+}

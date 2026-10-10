@@ -4,6 +4,7 @@ export * from './cloudinary';
 export * from './language-folders';
 export * from './languages';
 export * from './layout-header';
+export * from './locale';
 export * from './notifications';
 export * from './statistics';
 export * from './subjects';

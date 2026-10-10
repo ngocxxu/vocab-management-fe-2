@@ -1,0 +1,9 @@
+{
+  "common": {
+    "language": "Ngôn ngữ"
+  },
+  "profile": {
+    "languageLabel": "Ngôn ngữ giao diện",
+    "languageHint": "Đổi ngôn ngữ ứng dụng trên trình duyệt này."
+  }
+}

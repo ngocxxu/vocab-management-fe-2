@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { getPlanBadgeClassName, getPlanDisplayName } from '@/constants/plan';
 import { cn } from '@/libs/utils';
+import { LocaleSwitcher } from './LocaleSwitcher';
 
 type ProfileIdentityProps = {
   currentUser?: TUser | null;
@@ -96,6 +97,8 @@ export const ProfileIdentity: React.FC<ProfileIdentityProps> = ({ currentUser, c
           View details
         </Button>
       </div>
+
+      <LocaleSwitcher />
 
       <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
         <DialogContent className="sm:max-w-lg">
