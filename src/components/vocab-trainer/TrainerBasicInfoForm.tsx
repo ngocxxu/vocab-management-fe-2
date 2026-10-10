@@ -13,7 +13,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { UserRole } from '@/constants/auth';
-import { QUESTION_TYPE_OPTIONS } from '@/constants/vocab-trainer';
+import { FSRS_QUESTION_TYPE_OPTIONS, QUESTION_TYPE_OPTIONS } from '@/constants/vocab-trainer';
 import { EQuestionType, ETrainerMode } from '@/enum/vocab-trainer';
 import { cn } from '@/libs/utils';
 import { isFsrsQuestionType } from '@/libs/validations/vocab-trainer';
@@ -31,11 +31,6 @@ type TrainerBasicInfoFormProps = Readonly<{
 const MODE_OPTIONS = [
   { value: ETrainerMode.CLASSIC, title: 'Classic', hint: 'A timed test of the words you pick, every time.' },
   { value: ETrainerMode.FSRS, title: 'Spaced repetition', hint: 'Short daily reviews; each word returns just before you would forget it.' },
-];
-
-const FSRS_QUESTION_TYPE_OPTIONS = [
-  { value: EQuestionType.FLIP_CARD, label: 'Flip card (rate yourself)' },
-  { value: EQuestionType.FILL_IN_THE_BLANK, label: 'Type the answer' },
 ];
 
 const MAX_VISIBLE_SELECTED_WORDS = 20;

@@ -11,6 +11,11 @@ export const QUESTION_TYPE_OPTIONS = [
   { value: EQuestionType.FLIP_CARD, label: 'Flip Card' },
 ];
 
+/** Question types an FSRS trainer can use. Labels come from QUESTION_TYPE_OPTIONS so every screen shows the same text. */
+export const FSRS_QUESTION_TYPE_OPTIONS = [EQuestionType.FLIP_CARD, EQuestionType.FILL_IN_THE_BLANK].flatMap(
+  value => QUESTION_TYPE_OPTIONS.filter(option => option.value === value),
+);
+
 export function getQuestionTypeLabel(questionType: EQuestionType): string {
   const option = QUESTION_TYPE_OPTIONS.find(o => o.value === questionType);
   return option?.label ?? 'Vocabulary';

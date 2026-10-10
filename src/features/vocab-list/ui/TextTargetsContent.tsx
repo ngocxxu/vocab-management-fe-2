@@ -172,7 +172,7 @@ const TextTargetsContent: React.FC<TextTargetsContentProps> = ({
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="outline" className="h-10 border-border bg-card/80 backdrop-blur-sm">
+                <Button variant="outline" className="h-10 bg-card/80 backdrop-blur-sm">
                   <Filter size={16} weight="BoldDuotone" className="mr-2" />
                   <span className="hidden sm:inline">Filter</span>
                   {hasActiveFilters && (

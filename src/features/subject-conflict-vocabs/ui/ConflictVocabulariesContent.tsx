@@ -399,7 +399,7 @@ export default function ConflictVocabulariesContent({
   const filterTrigger = (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="sm" className="h-9 border-border bg-card/80">
+        <Button variant="outline" size="sm" className="h-9 bg-card/80">
           <Filter size={16} weight="BoldDuotone" className="mr-2" />
           Filter
         </Button>
@@ -466,7 +466,7 @@ export default function ConflictVocabulariesContent({
               {titleSuffix}
             </h1>
           </div>
-          <Button variant="outline" className="shrink-0 border-border" asChild>
+          <Button variant="outline" className="shrink-0" asChild>
             <Link href="/subjects">
               <AltArrowLeft size={18} weight="BoldDuotone" className="mr-2" />
               Back to Subjects

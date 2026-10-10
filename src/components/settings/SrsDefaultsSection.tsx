@@ -4,7 +4,8 @@ import type { TSrsDefaults, TSrsQuestionType, TSrsSettings } from '@/types/srs-s
 import React, { useMemo, useState, useSyncExternalStore } from 'react';
 import { toast } from 'sonner';
 import { updateSrsSettings } from '@/actions/srs-settings';
-import { EFsrsDirection, EQuestionType } from '@/enum/vocab-trainer';
+import { FSRS_QUESTION_TYPE_OPTIONS } from '@/constants/vocab-trainer';
+import { EFsrsDirection } from '@/enum/vocab-trainer';
 import { formatRecallPerTen, SRS_MAX_RETENTION, SRS_MIN_RETENTION, srsSettingsFormSchema } from '@/libs/validations/srs-settings';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
@@ -20,11 +21,6 @@ type SrsDefaultsSectionProps = {
 const DIRECTION_OPTIONS: { value: EFsrsDirection; label: string; hint: string }[] = [
   { value: EFsrsDirection.SOURCE_TO_TARGET, label: 'Word → meaning', hint: 'See the word, recall its meaning.' },
   { value: EFsrsDirection.TARGET_TO_SOURCE, label: 'Meaning → word', hint: 'See the meaning, recall the word.' },
-];
-
-const QUESTION_TYPE_OPTIONS: { value: TSrsQuestionType; label: string }[] = [
-  { value: EQuestionType.FLIP_CARD, label: 'Flip card (rate yourself)' },
-  { value: EQuestionType.FILL_IN_THE_BLANK, label: 'Typed answer' },
 ];
 
 const PERCENT = 100;
@@ -161,7 +157,7 @@ export const SrsDefaultsSection: React.FC<SrsDefaultsSectionProps> = ({ settings
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {QUESTION_TYPE_OPTIONS.map(option => (
+                {FSRS_QUESTION_TYPE_OPTIONS.map(option => (
                   <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
                 ))}
               </SelectContent>

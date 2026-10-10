@@ -88,7 +88,7 @@ const VocabListHeader: React.FC<VocabListHeaderProps> = ({
       <div className="flex flex-wrap items-center gap-2 sm:gap-3">
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="outline" className="h-10 border-border bg-card/80 backdrop-blur-sm">
+            <Button variant="outline" className="h-10 bg-card/80 backdrop-blur-sm">
               <Filter size={16} weight="BoldDuotone" className="mr-2" />
               <span className="hidden sm:inline">Filter</span>
             </Button>
@@ -129,7 +129,7 @@ const VocabListHeader: React.FC<VocabListHeaderProps> = ({
           featureName="Import CSV / Bulk import"
           onClick={onImportExcel}
           variant="outline"
-          className="h-10 border-border bg-card/80 backdrop-blur-sm"
+          className="h-10 bg-card/80 backdrop-blur-sm"
         >
           <Upload size={16} weight="BoldDuotone" className="mr-2" />
           <span className="hidden sm:inline">Import Excel</span>
