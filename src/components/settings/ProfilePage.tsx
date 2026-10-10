@@ -18,10 +18,10 @@ type ProfilePageProps = {
   srsSettings?: TSrsSettings | null;
 };
 
-// The order is the order of the tabs. Learning comes right after the account, because it is what people come back for.
+// The order is the order of the tabs. Spaced repetition comes right after the account, because it is what people come back for.
 const NAV_ITEMS = [
   { id: 'account', label: 'Account' },
-  { id: 'learning', label: 'Learning' },
+  { id: 'spaced-repetition', label: 'Spaced repetition' },
   { id: 'security', label: 'Security' },
   { id: 'plan', label: 'Plan' },
   { id: 'danger', label: 'Delete account' },
@@ -32,13 +32,13 @@ type TabId = (typeof NAV_ITEMS)[number]['id'];
 const TAB_PREFIX = 'tab-';
 
 export const ProfilePage: React.FC<ProfilePageProps> = ({ currentUser, currentPlan, srsSettings }) => {
-  // Learning only has a tab when its settings loaded.
-  const tabs = useMemo(() => NAV_ITEMS.filter(item => item.id !== 'learning' || Boolean(srsSettings)), [srsSettings]);
+  // The spaced repetition tab only exists when its settings loaded.
+  const tabs = useMemo(() => NAV_ITEMS.filter(item => item.id !== 'spaced-repetition' || Boolean(srsSettings)), [srsSettings]);
   const [selected, setSelected] = useState<TabId>('account');
-  const [isLearningDirty, setIsLearningDirty] = useState(false);
+  const [isSrsDirty, setIsSrsDirty] = useState(false);
   const current = tabs.some(tab => tab.id === selected) ? selected : (tabs[0]?.id ?? 'account');
 
-  // A link such as /profile#learning opens that tab. The hash is kept in sync when a tab is picked.
+  // A link such as /profile#spaced-repetition opens that tab. The hash is kept in sync when a tab is picked.
   useEffect(() => {
     const fromHash = window.location.hash.slice(1);
     const match = tabs.find(tab => tab.id === fromHash);
@@ -75,7 +75,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ currentUser, currentPl
   return (
     <SettingsPageShell
       title="Profile"
-      description="Manage your personal information, learning defaults and account."
+      description="Manage your personal information, spaced repetition defaults and account."
     >
       <div className="grid gap-8 lg:grid-cols-[13rem_minmax(0,1fr)]">
         <div role="tablist" aria-label="Profile sections" aria-orientation="vertical" className="lg:sticky lg:top-8 lg:self-start">
@@ -101,7 +101,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ currentUser, currentPl
                   )}
                 >
                   {tab.label}
-                  {tab.id === 'learning' && isLearningDirty && (
+                  {tab.id === 'spaced-repetition' && isSrsDirty && (
                     <span aria-label="unsaved changes" className="h-2 w-2 rounded-full bg-primary" />
                   )}
                 </button>
@@ -112,7 +112,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ currentUser, currentPl
 
         <div className="min-w-0">
           {panel('account', <ProfileIdentity currentUser={currentUser} currentPlan={currentPlan} />)}
-          {srsSettings && panel('learning', <SrsDefaultsSection settings={srsSettings} onDirtyChange={setIsLearningDirty} />)}
+          {srsSettings && panel('spaced-repetition', <SrsDefaultsSection settings={srsSettings} onDirtyChange={setIsSrsDirty} />)}
           {panel('security', <ProfileSecurity hasPassword={currentUser?.hasPassword ?? false} />)}
           {panel('plan', <ProfilePlan role={currentUser?.role ?? ''} currentPlan={currentPlan} />)}
           {panel('danger', <ProfileDangerZone />)}

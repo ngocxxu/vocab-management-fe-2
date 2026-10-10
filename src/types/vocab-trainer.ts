@@ -372,6 +372,8 @@ export type VocabSelectionFiltersProps = {
   onQuickFilterChange: (id: QuickFilter) => void;
   randomCount: number;
   onRandomCountChange: (count: number) => void;
+  /** How many words are in the current scope. Undefined while unknown: then the count is not capped. */
+  maxRandomCount?: number;
   onRandomize: () => void;
   isRandomizeDisabled: boolean;
 };

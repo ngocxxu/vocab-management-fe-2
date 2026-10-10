@@ -12,11 +12,11 @@ import { Slider } from '@/components/ui/slider';
 import { FSRS_QUESTION_TYPE_OPTIONS } from '@/constants/vocab-trainer';
 import { EFsrsDirection } from '@/enum/vocab-trainer';
 import { formatRecallPerTen, SRS_MAX_RETENTION, SRS_MIN_RETENTION, srsSettingsFormSchema } from '@/libs/validations/srs-settings';
-import { SettingRow, SettingsSection } from './SettingsSection';
+import { SettingRow, SettingsGroup, SettingsSection } from './SettingsSection';
 
 type SrsDefaultsSectionProps = {
   settings: TSrsSettings;
-  /** Lets the page mark the Learning tab while there are unsaved changes. */
+  /** Lets the page mark the Spaced repetition tab while there are unsaved changes. */
   onDirtyChange?: (isDirty: boolean) => void;
 };
 
@@ -104,15 +104,20 @@ export const SrsDefaultsSection: React.FC<SrsDefaultsSectionProps> = ({ settings
   const saveBar = isDirty
     ? (
         <div className="sticky bottom-4 z-10 mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-card p-3 shadow-lg">
-          <p className={parsed.success ? 'text-sm text-foreground' : 'text-sm text-destructive'}>
-            {parsed.success ? 'You have unsaved changes' : parsed.error.issues[0]?.message}
-          </p>
+          <div>
+            <p className={parsed.success ? 'text-sm text-foreground' : 'text-sm text-destructive'}>
+              {parsed.success ? 'You have unsaved changes' : parsed.error.issues[0]?.message}
+            </p>
+            {parsed.success && (
+              <p className="text-xs text-muted-foreground">Timezone applies to all trainers. Other settings apply to new trainers.</p>
+            )}
+          </div>
           <div className="flex gap-2">
             <Button type="button" variant="ghost" onClick={discardChanges} disabled={isSaving}>
               Discard
             </Button>
             <Button type="submit" disabled={isSaving || !parsed.success}>
-              {isSaving ? 'Saving...' : 'Save defaults'}
+              {isSaving ? 'Saving...' : 'Save changes'}
             </Button>
           </div>
         </div>
@@ -122,113 +127,123 @@ export const SrsDefaultsSection: React.FC<SrsDefaultsSectionProps> = ({ settings
   return (
     <form onSubmit={handleSave}>
       <SettingsSection
-        id="learning"
-        title="Learning defaults"
-        description="New spaced repetition trainers start from these values. Trainers you already have are not changed."
+        id="spaced-repetition"
+        title="Spaced repetition"
+        description="Only for spaced repetition trainers. Classic trainers have no defaults here: you set their question type and time limit when you create them."
         footer={saveBar}
       >
-        <SettingRow
-          label="Target recall"
-          htmlFor="srs-retention"
-          description={(
-            <>
-              At
-              {' '}
-              {retentionPercent}
-              %, you will recall about
-              {' '}
-              {formatRecallPerTen(defaults.desiredRetention)}
-              {' '}
-              of every 10 words when they come up for review. A higher target means more reviews.
-            </>
-          )}
+        <SettingsGroup
+          title="New trainers"
+          description="Starting values for spaced repetition trainers you create. Trainers you already have are not changed."
         >
-          <div className="space-y-2">
-            <p className="text-right text-sm font-semibold text-foreground">
-              {retentionPercent}
-              %
-            </p>
-            <Slider
-              id="srs-retention"
-              min={Math.round(SRS_MIN_RETENTION * PERCENT)}
-              max={Math.round(SRS_MAX_RETENTION * PERCENT)}
-              step={1}
-              value={[retentionPercent]}
-              onValueChange={([value]) => setDefaults({ ...defaults, desiredRetention: (value ?? retentionPercent) / PERCENT })}
-              aria-label="Target recall"
-            />
-          </div>
-        </SettingRow>
+          <SettingRow
+            label="Target recall"
+            htmlFor="srs-retention"
+            description={(
+              <>
+                At
+                {' '}
+                {retentionPercent}
+                %, you will recall about
+                {' '}
+                {formatRecallPerTen(defaults.desiredRetention)}
+                {' '}
+                of every 10 words when they come up for review. A higher target means more reviews.
+              </>
+            )}
+          >
+            <div className="space-y-2">
+              <p className="text-right text-sm font-semibold text-foreground">
+                {retentionPercent}
+                %
+              </p>
+              <Slider
+                id="srs-retention"
+                min={Math.round(SRS_MIN_RETENTION * PERCENT)}
+                max={Math.round(SRS_MAX_RETENTION * PERCENT)}
+                step={1}
+                value={[retentionPercent]}
+                onValueChange={([value]) => setDefaults({ ...defaults, desiredRetention: (value ?? retentionPercent) / PERCENT })}
+                aria-label="Target recall"
+              />
+            </div>
+          </SettingRow>
 
-        <SettingRow
-          label="Directions"
-          description="Each direction is reviewed on its own. The directions of a trainer cannot be changed after it is created."
-        >
-          <div className="space-y-3">
-            {DIRECTION_OPTIONS.map(option => (
-              <div key={option.value} className="flex items-start gap-2">
-                <Checkbox
-                  id={`srs-direction-${option.value}`}
-                  checked={defaults.directions.includes(option.value)}
-                  onCheckedChange={checked => toggleDirection(option.value, checked === true)}
-                />
-                <Label htmlFor={`srs-direction-${option.value}`} className="flex-col items-start gap-0.5 font-normal">
-                  {option.label}
-                  <span className="block text-xs text-muted-foreground">{option.hint}</span>
-                </Label>
-              </div>
-            ))}
-          </div>
-        </SettingRow>
-
-        <SettingRow label="Question type" htmlFor="srs-question-type">
-          <Select value={defaults.questionType} onValueChange={value => setDefaults({ ...defaults, questionType: value as TSrsQuestionType })}>
-            <SelectTrigger id="srs-question-type" className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {FSRS_QUESTION_TYPE_OPTIONS.map(option => (
-                <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+          <SettingRow
+            label="Directions to learn"
+            description="Each direction is reviewed on its own. The directions of a trainer cannot be changed after it is created."
+          >
+            <div className="space-y-3">
+              {DIRECTION_OPTIONS.map(option => (
+                <div key={option.value} className="flex items-start gap-2">
+                  <Checkbox
+                    id={`srs-direction-${option.value}`}
+                    checked={defaults.directions.includes(option.value)}
+                    onCheckedChange={checked => toggleDirection(option.value, checked === true)}
+                  />
+                  <Label htmlFor={`srs-direction-${option.value}`} className="flex-col items-start gap-0.5 font-normal">
+                    {option.label}
+                    <span className="block text-xs text-muted-foreground">{option.hint}</span>
+                  </Label>
+                </div>
               ))}
-            </SelectContent>
-          </Select>
-        </SettingRow>
+            </div>
+          </SettingRow>
 
-        <SettingRow
-          label="Email reminders"
-          description="One email per trainer per day, skipped when nothing is due. It stops after 3 emails without a review."
-        >
-          <div className="flex items-start gap-2">
-            <Checkbox
-              id="srs-reminder"
-              checked={defaults.reminderEnabled}
-              onCheckedChange={checked => setDefaults({ ...defaults, reminderEnabled: checked === true })}
-            />
-            <Label htmlFor="srs-reminder" className="font-normal">Email me when cards are due</Label>
-          </div>
-        </SettingRow>
+          <SettingRow label="Question type" htmlFor="srs-question-type">
+            <Select value={defaults.questionType} onValueChange={value => setDefaults({ ...defaults, questionType: value as TSrsQuestionType })}>
+              <SelectTrigger id="srs-question-type" className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {FSRS_QUESTION_TYPE_OPTIONS.map(option => (
+                  <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </SettingRow>
 
-        <SettingRow
-          label="Timezone"
-          htmlFor="srs-timezone"
-          description={(
-            <>
-              Your review day starts at 04:00 in this timezone, so studying after midnight still counts for the day before.
-              {isTimezoneFromBrowser && ' Detected from your browser: save to keep it.'}
-            </>
-          )}
+          <SettingRow
+            label="Email reminders"
+            description="One email per trainer per day, skipped when nothing is due. It stops after 3 emails without a review."
+          >
+            <div className="flex items-start gap-2">
+              <Checkbox
+                id="srs-reminder"
+                checked={defaults.reminderEnabled}
+                onCheckedChange={checked => setDefaults({ ...defaults, reminderEnabled: checked === true })}
+              />
+              <Label htmlFor="srs-reminder" className="font-normal">Email me when cards are due</Label>
+            </div>
+          </SettingRow>
+        </SettingsGroup>
+
+        <SettingsGroup
+          title="All spaced repetition trainers"
+          description="Applies to every spaced repetition trainer as soon as you save."
         >
-          <Select value={timezone} onValueChange={handleTimezoneChange}>
-            <SelectTrigger id="srs-timezone" className="w-full">
-              <SelectValue placeholder="Select a timezone" />
-            </SelectTrigger>
-            <SelectContent>
-              {timezones.map(zone => (
-                <SelectItem key={zone} value={zone}>{zone}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </SettingRow>
+          <SettingRow
+            label="Timezone"
+            htmlFor="srs-timezone"
+            description={(
+              <>
+                Your review day starts at 04:00 in this timezone, so studying after midnight still counts for the day before.
+                {isTimezoneFromBrowser && ' Detected from your browser: save to keep it.'}
+              </>
+            )}
+          >
+            <Select value={timezone} onValueChange={handleTimezoneChange}>
+              <SelectTrigger id="srs-timezone" className="w-full">
+                <SelectValue placeholder="Select a timezone" />
+              </SelectTrigger>
+              <SelectContent>
+                {timezones.map(zone => (
+                  <SelectItem key={zone} value={zone}>{zone}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </SettingRow>
+        </SettingsGroup>
       </SettingsSection>
     </form>
   );

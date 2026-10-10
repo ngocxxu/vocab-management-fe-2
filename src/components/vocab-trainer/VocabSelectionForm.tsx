@@ -25,6 +25,7 @@ import { getMasteryColors, getMasteryDisplay, getMasteryStatus } from '@/utils/v
 import VocabSelectionFilters from './VocabSelectionFilters';
 import VocabSelectionScope from './VocabSelectionScope';
 
+const RANDOM_COUNT_DEFAULT_MAX = 10;
 const EMPTY_CACHED_FOLDERS: TVocabSelectionFolderArray = [];
 const EMPTY_SELECTED_VOCAB_BY_ID: Record<string, TVocab> = {};
 
@@ -60,7 +61,6 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
   const form = useFormContext();
   const languages = useMemo(() => initialLanguagesData?.items || [], [initialLanguagesData]);
   const [quickFilter, setQuickFilter] = useState<QuickFilter>('all');
-  const [randomCount, setRandomCount] = useState<number>(10);
   const [isRandomizing, setIsRandomizing] = useState(false);
 
   const localPagination = useLocalPagination({ page: 1, pageSize: 5, sortBy: 'updatedAt', sortOrder: 'desc' });
@@ -117,6 +117,15 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
     cachedLanguageFolders,
     onLanguageFoldersLoaded,
   });
+
+  // The default count follows the words in scope (at most 10). A count the user picked holds only while the scope
+  // is the same: when the number of words changes, the default comes back.
+  const [countOverride, setCountOverride] = useState<{ value: number; total: number } | null>(null);
+  const defaultRandomCount = totalItems > 0 ? Math.min(totalItems, RANDOM_COUNT_DEFAULT_MAX) : RANDOM_COUNT_DEFAULT_MAX;
+  const randomCount = countOverride !== null && countOverride.total === totalItems ? countOverride.value : defaultRandomCount;
+  const handleRandomCountChange = useCallback((count: number) => {
+    setCountOverride({ value: count, total: totalItems });
+  }, [totalItems]);
 
   const scopedLanguageFolders = useMemo(() => {
     if (isAllScope(filters.sourceLanguageCode, filters.targetLanguageCode)) {
@@ -326,7 +335,8 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
         quickFilter={quickFilter}
         onQuickFilterChange={handleQuickFilter}
         randomCount={randomCount}
-        onRandomCountChange={setRandomCount}
+        maxRandomCount={totalItems > 0 ? totalItems : undefined}
+        onRandomCountChange={handleRandomCountChange}
         onRandomize={handleRandomize}
         isRandomizeDisabled={isLoading || isRandomizing}
       />

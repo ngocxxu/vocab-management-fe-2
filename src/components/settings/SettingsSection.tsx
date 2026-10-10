@@ -24,6 +24,22 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({ id, title, des
   </section>
 );
 
+type SettingsGroupProps = Readonly<{
+  title: string;
+  /** Says what the group's settings apply to, so the scope is visible next to them. */
+  description?: string;
+  children: React.ReactNode;
+}>;
+
+/** A part of a section whose settings share one scope. Groups inside a section are separated by a divider. */
+export const SettingsGroup: React.FC<SettingsGroupProps> = ({ title, description, children }) => (
+  <div className="pt-5">
+    <h3 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">{title}</h3>
+    {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}
+    <div className="mt-2 divide-y divide-border">{children}</div>
+  </div>
+);
+
 type SettingRowProps = Readonly<{
   label: string;
   htmlFor?: string;
