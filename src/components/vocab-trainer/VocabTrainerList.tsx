@@ -96,6 +96,7 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
   }, []);
 
   const [srsDefaults, setSrsDefaults] = useState<TSrsDefaults | undefined>();
+  const [isSrsDefaultsLoading, setIsSrsDefaultsLoading] = useState(true);
   // The trainer whose ended cycle a new one is being started from.
   const [cloneTarget, setCloneTarget] = useState<TVocabTrainer | null>(null);
   // A deadline that is kept as it is stays valid after it has passed, so an ended trainer can still be renamed.
@@ -140,22 +141,29 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
   const setCreateDialogOpen = dialogState.setOpen;
 
   const problematicPresetConsumedRef = useRef(false);
-  const srsDefaultsRequestedRef = useRef(false);
 
-  // The user's defaults are read once, when the create dialog is first opened. Without them the system defaults stay.
+  // The user's defaults are read when the page loads. The create button stays off until they are here, or the
+  // request has failed, so a trainer is never started from system defaults while the user's are still on their way.
   useEffect(() => {
-    if (!dialogState.open || dialogState.editMode || srsDefaultsRequestedRef.current) {
-      return;
-    }
-    srsDefaultsRequestedRef.current = true;
+    let cancelled = false;
     getSrsSettings()
       .then(({ defaults }) => {
+        if (cancelled) {
+          return;
+        }
         setSrsDefaults(defaults);
-        form.setValue('fsrsDirections', defaults.directions);
-        form.setValue('fsrsDesiredRetention', defaults.desiredRetention);
+        form.reset(buildDefaultValues(defaults));
       })
-      .catch(() => undefined);
-  }, [dialogState.open, dialogState.editMode, form]);
+      .catch(() => undefined)
+      .finally(() => {
+        if (!cancelled) {
+          setIsSrsDefaultsLoading(false);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [form]);
 
   useEffect(() => {
     if (!isMounted || searchParams.get('preset') !== 'problematic' || problematicPresetConsumedRef.current) {
@@ -506,6 +514,7 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
         <VocabTrainerHeader
           totalCount={totalItems}
           onAddTrainer={() => dialogState.setOpen(true)}
+          isCreateDisabled={isSrsDefaultsLoading}
           statusOptions={statusOptions}
           selectedStatuses={selectedStatuses}
           onStatusFilterChange={handleStatusFilterChange}

@@ -386,6 +386,8 @@ export type VocabTrainerLayoutProps = {
 export type VocabTrainerHeaderProps = {
   totalCount: number;
   onAddTrainer: () => void;
+  /** True while the user's defaults load: a trainer must not be created before they are known. */
+  isCreateDisabled?: boolean;
   statusOptions: Array<{ value: string; label: string }>;
   selectedStatuses: string[];
   onStatusFilterChange: (statuses: string[]) => void;
