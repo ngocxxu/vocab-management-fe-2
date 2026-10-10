@@ -2,10 +2,10 @@
 
 import type { SignUpFormData } from '@/libs/validations/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AltArrowRight, CheckCircle, Letter, LockPassword, StarFall } from '@solar-icons/react/ssr';
-import Image from 'next/image';
+import { AltArrowRight, CheckCircle, Letter, LockPassword } from '@solar-icons/react/ssr';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useCallback, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { EyeIcon } from '@/components/auth/EyeIcon';
@@ -23,10 +23,9 @@ import {
 } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 import { useAuthMutations } from '../hooks/useAuthMutations';
+import { AuthLeftPanel } from './AuthLeftPanel';
 
-const logoSrc = '/assets/logo/logo-light-mode.png';
 const pageBg = '#F5F7FA';
-const leftPanelBg = '#EFF4FC';
 
 function useRedirectTarget() {
   const searchParams = useSearchParams();
@@ -34,6 +33,7 @@ function useRedirectTarget() {
 }
 
 function SignUpForm() {
+  const t = useTranslations('auth');
   const redirectTo = useRedirectTarget();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -104,57 +104,7 @@ function SignUpForm() {
       }}
     >
       <div className="relative flex w-full max-w-[1280px] shrink-0 overflow-hidden rounded-2xl shadow-xl lg:h-[1024px]">
-        <aside
-          className="relative hidden min-w-0 flex-[0_0_45%] flex-col justify-between overflow-hidden px-8 py-10 lg:flex"
-          style={{ backgroundColor: leftPanelBg }}
-        >
-          <div
-            className="absolute inset-0 opacity-[0.05]"
-            style={{
-              backgroundImage: 'radial-gradient(circle, currentColor 1px, transparent 1px)',
-              backgroundSize: '24px 24px',
-            }}
-            aria-hidden
-          />
-          <div className="relative">
-            <div className="flex items-center gap-3 2xl:gap-4">
-              <div className="relative size-10 shrink-0 min-[1600px]:size-16 2xl:size-14">
-                <Image
-                  src={logoSrc}
-                  alt="Vocab"
-                  fill
-                  className="object-contain"
-                  priority
-                />
-              </div>
-              <div>
-                <span className="font-sans text-xl font-bold text-foreground uppercase min-[1600px]:text-4xl 2xl:text-3xl">Vocab</span>
-                <p className="font-sans text-xs tracking-wide text-primary uppercase min-[1600px]:text-lg 2xl:text-base">INTELLIGENCE</p>
-              </div>
-            </div>
-            <div className="mt-16 inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 min-[1600px]:mt-32 min-[1600px]:px-6 min-[1600px]:py-3 min-[1600px]:text-xl 2xl:mt-24 2xl:px-5 2xl:py-2.5 2xl:text-lg">
-              <StarFall size={18} weight="BoldDuotone" className="text-primary-foreground min-[1600px]:size-6 2xl:size-5" />
-              <span className="font-sans text-sm font-medium text-primary-foreground uppercase min-[1600px]:text-xl 2xl:text-lg">
-                AI-Powered Intelligence
-              </span>
-            </div>
-            <h1 className="mt-8 font-sans text-2xl leading-tight font-bold text-foreground min-[1600px]:text-6xl min-[1600px]:tracking-tight sm:text-3xl 2xl:mt-10 2xl:text-5xl 2xl:leading-tight">
-              Master any language with
-              {' '}
-              <span className="text-primary">Precision.</span>
-            </h1>
-            <p className="mt-4 font-sans text-base leading-relaxed text-muted-foreground min-[1600px]:text-2xl 2xl:mt-6 2xl:text-xl">
-              Our neural-spaced repetition system adapts to your pace, ensuring 98% retention through science-backed algorithms.
-            </p>
-          </div>
-          <p className="relative mt-auto pt-8 font-sans text-xs text-muted-foreground uppercase min-[1600px]:text-lg 2xl:text-base">
-            ©
-            {' '}
-            {new Date().getFullYear()}
-            {' '}
-            Ngoc Quach. All rights reserved.
-          </p>
-        </aside>
+        <AuthLeftPanel showStats={false} />
 
         <div className="relative flex min-w-0 flex-1 flex-col items-center justify-center overflow-auto px-8 py-10">
           <div className="mx-auto w-full max-w-md rounded-2xl bg-card px-8 py-10 shadow-xl">
@@ -166,16 +116,16 @@ function SignUpForm() {
                         <CheckCircle size={24} weight="BoldDuotone" className="text-primary" />
                       </div>
                     </div>
-                    <h2 className="mt-4 text-center font-sans text-2xl font-bold text-foreground">Check your email</h2>
+                    <h2 className="mt-4 text-center font-sans text-2xl font-bold text-foreground">{t('common.checkYourEmail')}</h2>
                     <p className="mt-2 text-center font-sans text-sm text-muted-foreground">
-                      We&apos;ve sent a confirmation link to
-                      {' '}
-                      <strong>{pendingConfirmationEmail}</strong>
-                      . Click the link to activate your account.
+                      {t.rich('signUp.confirmationSent', {
+                        email: pendingConfirmationEmail,
+                        strong: chunks => <strong>{chunks}</strong>,
+                      })}
                     </p>
                     <Alert className="mt-6">
                       <AlertDescription>
-                        If you don&apos;t see the email in your inbox, please check your spam folder.
+                        {t('common.spamHint')}
                       </AlertDescription>
                     </Alert>
                     <div className="mt-6 space-y-3">
@@ -186,18 +136,22 @@ function SignUpForm() {
                         onClick={handleResendConfirmation}
                         disabled={resendStatus === 'sending'}
                       >
-                        {resendStatus === 'sent' ? 'Email sent' : resendStatus === 'sending' ? 'Sending...' : 'Resend email'}
+                        {resendStatus === 'sent'
+                          ? t('signUp.resendSent')
+                          : resendStatus === 'sending'
+                            ? t('signUp.resendSending')
+                            : t('signUp.resend')}
                       </Button>
                       <Link href="/signin" className="block">
-                        <Button variant="ghost" className="h-11 w-full">Back to sign in</Button>
+                        <Button variant="ghost" className="h-11 w-full">{t('common.backToSignIn')}</Button>
                       </Link>
                     </div>
                   </>
                 )
               : (
                   <>
-                    <h2 className="font-sans text-2xl font-bold text-foreground">Create Account</h2>
-                    <p className="mt-1 font-sans text-sm text-muted-foreground">Sign up to get started with your vocabulary management.</p>
+                    <h2 className="font-sans text-2xl font-bold text-foreground">{t('signUp.title')}</h2>
+                    <p className="mt-1 font-sans text-sm text-muted-foreground">{t('signUp.subtitle')}</p>
 
                     <div className="mt-6 flex gap-3">
                       <Button
@@ -208,7 +162,7 @@ function SignUpForm() {
                         disabled={isOAuthLoading || form.formState.isSubmitting}
                       >
                         {isOAuthLoading
-                          ? <span className="text-sm">Connecting...</span>
+                          ? <span className="text-sm">{t('common.connecting')}</span>
                           : (
                               <>
                                 <svg className="mr-2 size-4" viewBox="0 0 24 24">
@@ -228,7 +182,7 @@ function SignUpForm() {
                         <span className="w-full border-t border-border" />
                       </div>
                       <div className="relative flex justify-center">
-                        <span className="bg-card px-2 font-sans text-xs text-muted-foreground uppercase">OR CONTINUE WITH EMAIL</span>
+                        <span className="bg-card px-2 font-sans text-xs text-muted-foreground uppercase">{t('common.orContinueWithEmail')}</span>
                       </div>
                     </div>
 
@@ -246,7 +200,7 @@ function SignUpForm() {
                             name="firstName"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel className="text-foreground uppercase">First Name</FormLabel>
+                                <FormLabel className="text-foreground uppercase">{t('signUp.firstName')}</FormLabel>
                                 <FormControl>
                                   <Input type="text" placeholder="John" className="h-11" {...field} />
                                 </FormControl>
@@ -259,7 +213,7 @@ function SignUpForm() {
                             name="lastName"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel className="text-foreground uppercase">Last Name</FormLabel>
+                                <FormLabel className="text-foreground uppercase">{t('signUp.lastName')}</FormLabel>
                                 <FormControl>
                                   <Input type="text" placeholder="Doe" className="h-11" {...field} />
                                 </FormControl>
@@ -274,7 +228,7 @@ function SignUpForm() {
                           name="email"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-foreground uppercase">Email Address</FormLabel>
+                              <FormLabel className="text-foreground uppercase">{t('common.emailAddress')}</FormLabel>
                               <div className="relative">
                                 <Letter size={18} weight="BoldDuotone" className="absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground" />
                                 <FormControl>
@@ -291,7 +245,7 @@ function SignUpForm() {
                           name="phone"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-foreground uppercase">Phone (Optional)</FormLabel>
+                              <FormLabel className="text-foreground uppercase">{t('signUp.phoneOptional')}</FormLabel>
                               <FormControl>
                                 <Input type="tel" placeholder="+1 (555) 123-4567" className="h-11" {...field} />
                               </FormControl>
@@ -305,17 +259,17 @@ function SignUpForm() {
                           name="password"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-foreground uppercase">Password</FormLabel>
+                              <FormLabel className="text-foreground uppercase">{t('common.password')}</FormLabel>
                               <div className="relative">
                                 <LockPassword size={18} weight="BoldDuotone" className="absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground" />
                                 <FormControl>
-                                  <Input type={showPassword ? 'text' : 'password'} placeholder="Create a strong password" className="h-11 pr-10 pl-10" {...field} />
+                                  <Input type={showPassword ? 'text' : 'password'} placeholder={t('signUp.createStrongPassword')} className="h-11 pr-10 pl-10" {...field} />
                                 </FormControl>
                                 <button
                                   type="button"
                                   className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                                   onClick={() => setShowPassword(v => !v)}
-                                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                                  aria-label={showPassword ? t('common.hidePassword') : t('common.showPassword')}
                                 >
                                   <EyeIcon open={showPassword} />
                                 </button>
@@ -330,17 +284,17 @@ function SignUpForm() {
                           name="confirmPassword"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-foreground uppercase">Confirm Password</FormLabel>
+                              <FormLabel className="text-foreground uppercase">{t('signUp.confirmPassword')}</FormLabel>
                               <div className="relative">
                                 <LockPassword size={18} weight="BoldDuotone" className="absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground" />
                                 <FormControl>
-                                  <Input type={showConfirmPassword ? 'text' : 'password'} placeholder="Confirm your password" className="h-11 pr-10 pl-10" {...field} />
+                                  <Input type={showConfirmPassword ? 'text' : 'password'} placeholder={t('signUp.confirmYourPassword')} className="h-11 pr-10 pl-10" {...field} />
                                 </FormControl>
                                 <button
                                   type="button"
                                   className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                                   onClick={() => setShowConfirmPassword(v => !v)}
-                                  aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                                  aria-label={showConfirmPassword ? t('common.hidePassword') : t('common.showPassword')}
                                 >
                                   <EyeIcon open={showConfirmPassword} />
                                 </button>
@@ -351,15 +305,15 @@ function SignUpForm() {
                         />
 
                         <Button type="submit" className="h-11 w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={form.formState.isSubmitting}>
-                          {form.formState.isSubmitting ? 'Creating Account...' : 'Create Account'}
+                          {form.formState.isSubmitting ? t('signUp.submitting') : t('signUp.submit')}
                           <AltArrowRight size={18} weight="BoldDuotone" className="ml-2" />
                         </Button>
 
                         <p className="text-center font-sans text-sm text-muted-foreground">
-                          Already have an account?
+                          {t('signUp.alreadyHaveAccount')}
                           {' '}
                           <Link href="/signin" className="font-semibold text-primary hover:underline">
-                            Sign in
+                            {t('common.signInLink')}
                           </Link>
                         </p>
                       </form>
