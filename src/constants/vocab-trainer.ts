@@ -17,10 +17,9 @@ export const FSRS_QUESTION_TYPE_OPTIONS = [EQuestionType.FLIP_CARD, EQuestionTyp
   value => QUESTION_TYPE_OPTIONS.filter(option => option.value === value),
 );
 
-/** Translation key for a question type's label; the fallback covers a type with no option. */
-export function getQuestionTypeLabelKey(questionType: EQuestionType): string {
-  const option = QUESTION_TYPE_OPTIONS.find(o => o.value === questionType);
-  return option?.labelKey ?? 'questionTypes.vocabulary';
+/** Translation key for a question type's label, or undefined for a type with no option (caller shows the raw value). */
+export function getQuestionTypeLabelKey(questionType: EQuestionType): string | undefined {
+  return QUESTION_TYPE_OPTIONS.find(o => o.value === questionType)?.labelKey;
 }
 
 export const getExamUrl = (trainerId: string, questionType: EQuestionType): string => {

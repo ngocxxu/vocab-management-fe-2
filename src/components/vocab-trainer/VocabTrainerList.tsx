@@ -451,9 +451,10 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
       cell: ({ row }) => {
         const type = row.original.questionType;
         const badgeClass = QUESTION_TYPE_BADGE_CLASSES[type] ?? QUESTION_TYPE_BADGE_CLASSES.default;
+        const typeLabelKey = getQuestionTypeLabelKey(type);
         return (
           <Badge className={badgeClass}>
-            {t(getQuestionTypeLabelKey(type))}
+            {typeLabelKey ? t(typeLabelKey) : type}
           </Badge>
         );
       },

@@ -324,7 +324,7 @@ const ExamResults: React.FC<ExamResultsProps> = ({
                       </div>
                       <span className="text-xs text-muted-foreground">
                         {questionType
-                          ? `${t('questionTypes.vocabulary')}: ${t(getQuestionTypeLabelKey(questionType))}`
+                          ? `${t('questionTypes.vocabulary')}: ${getQuestionTypeLabelKey(questionType) ? t(getQuestionTypeLabelKey(questionType)!) : questionType}`
                           : t('questionTypes.vocabulary')}
                       </span>
                     </div>
