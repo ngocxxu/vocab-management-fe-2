@@ -7,5 +7,3 @@ export function isQuotaError(error: unknown): boolean {
   }
   return false;
 }
-
-export const QUOTA_ERROR_MESSAGE = 'Limit reached. Upgrade to Member for more.';

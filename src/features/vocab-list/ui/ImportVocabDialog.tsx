@@ -9,6 +9,7 @@ import {
   RefreshCircle,
   Upload,
 } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
@@ -17,7 +18,7 @@ import * as XLSX from 'xlsx';
 import { z } from 'zod';
 import { createSubject } from '@/actions/subjects';
 import { importVocabsCsv } from '@/actions/vocabs';
-import { isQuotaError, QUOTA_ERROR_MESSAGE } from '@/utils/quota-error';
+import { isQuotaError } from '@/utils/quota-error';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -41,7 +42,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/shared/ui/input';
 
 const FormSchema = z.object({
-  file: z.instanceof(File, { message: 'Please select a file' }),
+  file: z.instanceof(File, { message: 'validation.fileRequired' }),
 });
 
 type FormData = z.infer<typeof FormSchema>;
@@ -54,6 +55,7 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
   targetLanguageCode,
   onImportSuccess,
 }) => {
+  const t = useTranslations('vocabList.importDialog');
   const [isUploading, setIsUploading] = useState(false);
   const [importResult, setImportResult] = useState<TCsvImportResponse | null>(null);
   const [showErrorDialog, setShowErrorDialog] = useState(false);
@@ -86,12 +88,12 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
       setCreatingSubjects(prev => new Set(prev).add(subjectName));
       await createSubject({ name: subjectName });
       setCreatedSubjects(prev => new Set(prev).add(subjectName));
-      toast.success(`Subject '${subjectName}' created successfully`);
+      toast.success(t('subjectCreated', { name: subjectName }));
       startTransition(() => {
         router.refresh();
       });
     } catch {
-      toast.error(`Failed to create subject '${subjectName}'. Please try again.`);
+      toast.error(t('subjectCreateFailed', { name: subjectName }));
     } finally {
       setCreatingSubjects((prev) => {
         const next = new Set(prev);
@@ -137,7 +139,7 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
 
       if (result.failed === 0) {
         // Complete success
-        toast.success(`Import completed successfully! Created: ${result.created}, Updated: ${result.updated}`);
+        toast.success(t('importSuccess', { created: result.created, updated: result.updated }));
         onImportSuccess();
         startTransition(() => {
           router.refresh();
@@ -146,11 +148,11 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
         form.reset();
       } else if (result.created > 0 || result.updated > 0) {
         // Partial success
-        toast.warning(`Import completed with errors. Created: ${result.created}, Updated: ${result.updated}, Failed: ${result.failed}`);
+        toast.warning(t('importPartial', { created: result.created, updated: result.updated, failed: result.failed }));
         setShowErrorDialog(true);
       } else {
         // Complete failure
-        toast.error(`Import failed. ${result.failed} rows failed to import.`);
+        toast.error(t('importFailedRows', { failed: result.failed }));
         setShowErrorDialog(true);
       }
     } catch (error: unknown) {
@@ -162,26 +164,26 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
           const errorResult = withResponse.response.data as TCsvImportResponse;
           if (errorResult.errors && Array.isArray(errorResult.errors)) {
             setImportResult(errorResult);
-            toast.error(`Import failed. ${errorResult.failed || 0} rows failed to import.`);
+            toast.error(t('importFailedRows', { failed: errorResult.failed || 0 }));
             setShowErrorDialog(true);
             return;
           }
         } catch {}
       }
 
-      const message = error instanceof Error ? error.message : 'Failed to import file. Please check the file format and try again.';
+      const message = error instanceof Error ? error.message : t('fallbackError');
       if (isQuotaError(error)) {
-        toast.error(QUOTA_ERROR_MESSAGE, {
+        toast.error(t('quotaMessage'), {
           description: message,
           action: {
-            label: 'Upgrade',
+            label: t('upgrade'),
             onClick: () => {
               window.location.href = '/#pricing';
             },
           },
         });
       } else {
-        toast.error('Import failed', { description: message });
+        toast.error(t('importFailedTitle'), { description: message });
       }
     } finally {
       setIsUploading(false);
@@ -209,9 +211,9 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-[500px]" aria-describedby="import-dialog-description">
           <DialogHeader>
-            <DialogTitle>Import Vocabulary</DialogTitle>
+            <DialogTitle>{t('title')}</DialogTitle>
             <DialogDescription id="import-dialog-description">
-              Upload an Excel file (.xls, .xlsx) or CSV file to import vocabulary data.
+              {t('description')}
             </DialogDescription>
           </DialogHeader>
 
@@ -222,7 +224,7 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
                 name="file"
                 render={({ field: { onChange, value, ...field } }) => (
                   <FormItem>
-                    <FormLabel>File</FormLabel>
+                    <FormLabel>{t('fileLabel')}</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -244,20 +246,20 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
 
               <DialogFooter>
                 <Button type="button" variant="outline" onClick={handleClose}>
-                  Cancel
+                  {t('cancel')}
                 </Button>
                 <Button type="submit" disabled={isUploading}>
                   {isUploading
                     ? (
                         <>
                           <RefreshCircle size={16} weight="BoldDuotone" className="mr-2 animate-spin" />
-                          Uploading...
+                          {t('uploading')}
                         </>
                       )
                     : (
                         <>
                           <Upload size={16} weight="BoldDuotone" className="mr-2" />
-                          Import
+                          {t('import')}
                         </>
                       )}
                 </Button>
@@ -272,10 +274,10 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
               <DangerCircle size={20} weight="BoldDuotone" className="text-destructive" />
-              Import Results
+              {t('resultsTitle')}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              Detailed results of the import operation.
+              {t('resultsDescription')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           {importResult && (
@@ -284,27 +286,27 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
                 <div className="flex items-center gap-2">
                   <CheckCircle size={16} weight="BoldDuotone" className="text-success" />
                   <span className="text-sm font-medium">
-                    Created:
+                    {t('createdLabel')}
                     {importResult.created}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle size={16} weight="BoldDuotone" className="text-primary" />
                   <span className="text-sm font-medium">
-                    Updated:
+                    {t('updatedLabel')}
                     {importResult.updated}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <DangerCircle size={16} weight="BoldDuotone" className="text-destructive" />
                   <span className="text-sm font-medium">
-                    Failed:
+                    {t('failedLabel')}
                     {importResult.failed}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium">
-                    Total:
+                    {t('totalLabel')}
                     {importResult.totalProcessed}
                   </span>
                 </div>
@@ -312,7 +314,7 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
 
               {importResult.errors && importResult.errors.length > 0 && (
                 <div>
-                  <h4 className="mb-2 font-medium">Error Details:</h4>
+                  <h4 className="mb-2 font-medium">{t('errorDetails')}</h4>
                   <div className="max-h-60 overflow-auto rounded-lg border">
                     <table className="w-full table-fixed">
                       <colgroup>
@@ -323,10 +325,10 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
                       </colgroup>
                       <thead>
                         <tr className="border-b bg-muted/30">
-                          <th className="px-4 py-2 text-left text-sm font-medium text-muted-foreground">Row</th>
-                          <th className="px-4 py-2 text-left text-sm font-medium text-muted-foreground">Error</th>
-                          <th className="px-4 py-2 text-left text-sm font-medium text-muted-foreground">Data</th>
-                          <th className="px-4 py-2 text-left text-sm font-medium text-muted-foreground">Action</th>
+                          <th className="px-4 py-2 text-left text-sm font-medium text-muted-foreground">{t('colRow')}</th>
+                          <th className="px-4 py-2 text-left text-sm font-medium text-muted-foreground">{t('colError')}</th>
+                          <th className="px-4 py-2 text-left text-sm font-medium text-muted-foreground">{t('colData')}</th>
+                          <th className="px-4 py-2 text-left text-sm font-medium text-muted-foreground">{t('colAction')}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -365,22 +367,20 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
                                       ? (
                                           <>
                                             <RefreshCircle size={12} weight="BoldDuotone" className="mr-1 animate-spin" />
-                                            Creating...
+                                            {t('creating')}
                                           </>
                                         )
                                       : isCreated
                                         ? (
                                             <>
                                               <CheckCircle size={12} weight="BoldDuotone" className="mr-1 text-success" />
-                                              Created
+                                              {t('createdButton')}
                                             </>
                                           )
                                         : (
                                             <>
                                               <AddCircle size={12} weight="BoldDuotone" className="mr-1" />
-                                              Create &apos;
-                                              {subjectName}
-                                              &apos;
+                                              {t('createSubject', { name: subjectName })}
                                             </>
                                           )}
                                   </Button>
@@ -397,8 +397,8 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
             </div>
           )}
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={handleRetry}>Try Again</AlertDialogCancel>
-            <AlertDialogAction onClick={handleClose}>Close</AlertDialogAction>
+            <AlertDialogCancel onClick={handleRetry}>{t('tryAgain')}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleClose}>{t('close')}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

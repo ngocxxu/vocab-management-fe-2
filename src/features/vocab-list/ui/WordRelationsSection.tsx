@@ -5,6 +5,7 @@ import type {
   TWordRelationPendingFlags,
   WordRelationsSectionProps,
 } from '@/types/vocab-list';
+import { useTranslations } from 'next-intl';
 import React from 'react';
 import { cn } from '@/libs/utils';
 import { Button } from '@/shared/ui/button';
@@ -22,23 +23,19 @@ import {
   PopoverTrigger,
 } from '@/shared/ui/popover';
 
-const RELATION_FLAG_META: Record<keyof TWordRelationPendingFlags, {
-  label: string;
+const RELATION_FLAG_CLASSES: Record<keyof TWordRelationPendingFlags, {
   activeClassName: string;
   inactiveClassName: string;
 }> = {
   isSynonym: {
-    label: 'Synonym',
     activeClassName: 'border-success/40 bg-success/10 text-success hover:bg-success/15',
     inactiveClassName: 'border-border bg-background text-muted-foreground hover:bg-muted/50',
   },
   isAntonym: {
-    label: 'Antonym',
     activeClassName: 'border-destructive/40 bg-destructive/10 text-destructive hover:bg-destructive/15',
     inactiveClassName: 'border-border bg-background text-muted-foreground hover:bg-muted/50',
   },
   isRelated: {
-    label: 'Related',
     activeClassName: 'border-primary/40 bg-primary/10 text-primary hover:bg-primary/15',
     inactiveClassName: 'border-border bg-background text-muted-foreground hover:bg-muted/50',
   },
@@ -57,7 +54,8 @@ function RelationFlagButton({
   flag: RelationFlag;
   onClick: () => void;
 }) {
-  const meta = RELATION_FLAG_META[flag];
+  const t = useTranslations('vocabList.relationFlags');
+  const classes = RELATION_FLAG_CLASSES[flag];
 
   return (
     <Button
@@ -66,12 +64,12 @@ function RelationFlagButton({
       disabled={disabled}
       className={cn(
         'h-6 flex-1 rounded-xl border text-sm font-medium shadow-none transition-colors',
-        active ? meta.activeClassName : meta.inactiveClassName,
+        active ? classes.activeClassName : classes.inactiveClassName,
       )}
       onClick={onClick}
-      title={meta.label}
+      title={t(flag)}
     >
-      {meta.label}
+      {t(flag)}
     </Button>
   );
 }
@@ -115,10 +113,12 @@ function RelationEditor({
   relation: TWordRelationDraft;
   onUpdateRelationFlags: (relationId: string, flag: RelationFlag) => void;
 }) {
+  const t = useTranslations('vocabList.relationFlags');
+
   return (
     <div className="space-y-2.5">
       <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
-        Edit Relation
+        {t('editRelation')}
       </p>
       <div className="space-y-2">
         <Button
@@ -135,7 +135,7 @@ function RelationEditor({
         >
           <div className="flex items-center gap-3">
             <RelationBadge active={relation.isSynonym} label="S" tone="success" />
-            <span className="text-sm font-medium">Synonym</span>
+            <span className="text-sm font-medium">{t('isSynonym')}</span>
           </div>
           <span className="text-base">{relation.isSynonym ? '✓' : ''}</span>
         </Button>
@@ -153,7 +153,7 @@ function RelationEditor({
         >
           <div className="flex items-center gap-3">
             <RelationBadge active={relation.isAntonym} label="A" tone="destructive" />
-            <span className="text-sm font-medium">Antonym</span>
+            <span className="text-sm font-medium">{t('isAntonym')}</span>
           </div>
           <span className="text-base">{relation.isAntonym ? '✓' : ''}</span>
         </Button>
@@ -170,7 +170,7 @@ function RelationEditor({
         >
           <div className="flex items-center gap-3">
             <RelationBadge active={relation.isRelated} label="R" tone="primary" />
-            <span className="text-sm font-medium">Related</span>
+            <span className="text-sm font-medium">{t('isRelated')}</span>
           </div>
           <span className="text-base">{relation.isRelated ? '✓' : ''}</span>
         </Button>
@@ -196,6 +196,7 @@ export default function WordRelationsSection({
   onRemoveRelation,
   hasInvalidRelationDrafts: _hasInvalidRelationDrafts,
 }: WordRelationsSectionProps) {
+  const t = useTranslations('vocabList.wordRelationsSection');
   const hasAutocomplete = relationInputValue.trim().length > 0;
   const hasSuggestions = relationAutocompleteItems.length > 0;
   const shouldOpenAutocomplete = hasAutocomplete && (relationAutocompleteLoading || hasSuggestions);
@@ -265,12 +266,12 @@ export default function WordRelationsSection({
   return (
     <div className="space-y-3">
       <h4 className="text-sm font-medium text-foreground">
-        Word Relations
+        {t('title')}
       </h4>
 
       <div className="rounded-2xl border border-border/70 bg-muted p-3 shadow-sm">
         <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
-          Set Relationship Type
+          {t('setType')}
         </p>
         <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-3">
           <RelationFlagButton
@@ -301,7 +302,7 @@ export default function WordRelationsSection({
               value={relationInputValue}
               onChange={event => onRelationInputChange(event.target.value)}
               onKeyDown={onInputKeyDown}
-              placeholder="Type or search word and press Enter to add"
+              placeholder={t('inputPlaceholder')}
               className="w-full"
               aria-expanded={shouldOpenAutocomplete}
               aria-autocomplete="list"
@@ -322,7 +323,7 @@ export default function WordRelationsSection({
               {relationAutocompleteLoading
                 ? (
                     <div className="px-3 py-2 text-sm text-muted-foreground">
-                      Searching vocabs...
+                      {t('searching')}
                     </div>
                   )
                 : (
@@ -348,7 +349,7 @@ export default function WordRelationsSection({
       </Popover>
 
       <p className="text-xs text-muted-foreground">
-        Tip: You can select both a relation (S/A) and Related (R) simultaneously.
+        {t('tip')}
       </p>
 
       {relationDrafts.length > 0 && (
@@ -405,7 +406,7 @@ export default function WordRelationsSection({
                           event.stopPropagation();
                           onRemoveRelation(relation.id);
                         }}
-                        aria-label={`Remove ${relation.word}`}
+                        aria-label={t('removeAria', { word: relation.word })}
                       >
                         ×
                       </button>
@@ -420,7 +421,7 @@ export default function WordRelationsSection({
                 </Popover>
                 {hasNoFlags && (
                   <p className="mt-1 text-xs text-destructive">
-                    At least one relation required
+                    {t('atLeastOne')}
                   </p>
                 )}
               </div>

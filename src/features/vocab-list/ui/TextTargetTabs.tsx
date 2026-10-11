@@ -2,6 +2,7 @@
 
 import type { TextTargetTabsProps } from '@/types/vocab-list';
 import { AddCircle, AltArrowRight, CheckCircle, CloseCircle, TrashBin2 } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import React from 'react';
 import { Button } from '@/shared/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
@@ -24,6 +25,7 @@ const TextTargetTabs: React.FC<TextTargetTabsProps> = ({
   initialLanguagesData: _initialLanguagesData,
   initialWordTypesData,
 }) => {
+  const t = useTranslations('vocabList.textTargetTabs');
   const wordTypes = initialWordTypesData?.items || [];
   const isLoading = false;
   const isError = false;
@@ -57,7 +59,7 @@ const TextTargetTabs: React.FC<TextTargetTabsProps> = ({
                 >
                   {index + 1}
                 </span>
-                <span className="truncate">{target.textTarget?.trim() ? target.textTarget : `Vocab ${index + 1}`}</span>
+                <span className="truncate">{target.textTarget?.trim() ? target.textTarget : t('vocabN', { n: index + 1 })}</span>
               </span>
               <span className="relative flex h-6 w-6 shrink-0 items-center justify-center">
                 <span
@@ -76,7 +78,7 @@ const TextTargetTabs: React.FC<TextTargetTabsProps> = ({
                       e.stopPropagation();
                       onRemoveTextTarget(index);
                     }}
-                    aria-label="Remove target"
+                    aria-label={t('removeTarget')}
                   >
                     <TrashBin2 size={16} weight="BoldDuotone" />
                   </button>
@@ -119,11 +121,11 @@ const TextTargetTabs: React.FC<TextTargetTabsProps> = ({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">Text Targets</h3>
+        <h3 className="text-lg font-semibold">{t('title')}</h3>
         {onAddTextTarget && (
           <Button type="button" variant="outline" size="sm" onClick={onAddTextTarget} disabled={textTargets.length >= 5}>
             <AddCircle size={16} weight="BoldDuotone" className="mr-1" />
-            Add Target
+            {t('addTarget')}
           </Button>
         )}
       </div>
@@ -137,8 +139,7 @@ const TextTargetTabs: React.FC<TextTargetTabsProps> = ({
               className="relative"
             >
               <p className="text-sm">
-                Vocab
-                {idx + 1}
+                {t('vocabN', { n: idx + 1 })}
               </p>
               {textTargets.length > 1 && onRemoveTextTarget && (
                 <div

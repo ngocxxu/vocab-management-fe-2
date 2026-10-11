@@ -2,6 +2,7 @@
 
 import type { VocabListHeaderProps } from '@/types/vocab-list';
 import { AddCircle, Filter, Folder, Upload } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import React, { useMemo } from 'react';
 import { PremiumFeatureGate } from '@/components/premium';
 import { getLanguageName } from '@/shared/utils/language';
@@ -29,27 +30,26 @@ const VocabListHeader: React.FC<VocabListHeaderProps> = ({
   queryParams,
   userRole,
 }) => {
+  const t = useTranslations('vocabList.header');
   const subjectFilterOptions = useMemo(() => {
     const byId = new Map(subjects.map(s => [s.id, s]));
     const options = subjects.map(subject => ({ value: subject.id, label: subject.name }));
 
     for (const id of [...new Set(selectedSubjectIds)]) {
       if (!byId.has(id)) {
-        options.push({ value: id, label: 'Unknown subject' });
+        options.push({ value: id, label: t('unknownSubject') });
       }
     }
     return options;
-  }, [subjects, selectedSubjectIds]);
+  }, [subjects, selectedSubjectIds, t]);
 
   return (
     <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
       <div className="space-y-3">
         <div className="flex items-center space-x-3">
-          <h1 className="text-3xl font-bold text-foreground">Vocab List</h1>
+          <h1 className="text-3xl font-bold text-foreground">{t('title')}</h1>
           <span className="inline-flex items-center rounded-full bg-accent px-2.5 py-0.5 text-sm font-medium text-accent-foreground">
-            {totalCount}
-            {' '}
-            Total
+            {t('total', { count: totalCount })}
           </span>
 
           <p className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-sm font-medium text-primary">
@@ -82,7 +82,7 @@ const VocabListHeader: React.FC<VocabListHeaderProps> = ({
               )
             : null}
 
-        <p className="text-muted-foreground">Track your vocabulary learning progress and review history.</p>
+        <p className="text-muted-foreground">{t('trackProgress')}</p>
       </div>
 
       <div className="flex flex-wrap items-center gap-2 sm:gap-3">
@@ -90,13 +90,13 @@ const VocabListHeader: React.FC<VocabListHeaderProps> = ({
           <PopoverTrigger asChild>
             <Button variant="outline" className="h-10 bg-card/80 backdrop-blur-sm">
               <Filter size={16} weight="BoldDuotone" className="mr-2" />
-              <span className="hidden sm:inline">Filter</span>
+              <span className="hidden sm:inline">{t('filter')}</span>
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-[calc(100vw-2rem)] sm:w-80" align="end">
             <div className="space-y-4">
               <div className="space-y-2">
-                <h4 className="font-medium text-foreground">Filter by Subjects</h4>
+                <h4 className="font-medium text-foreground">{t('filterBySubjects')}</h4>
                 <div className="space-y-2">
                   {isSubjectsLoading
                     ? <div className="h-10 w-full animate-pulse rounded-md bg-muted" />
@@ -106,7 +106,7 @@ const VocabListHeader: React.FC<VocabListHeaderProps> = ({
                           options={subjectFilterOptions}
                           defaultValue={selectedSubjectIds}
                           onValueChange={onSubjectFilterChange}
-                          placeholder="Choose subjects to filter by..."
+                          placeholder={t('chooseSubjects')}
                           maxCount={5}
                           className="w-full"
                         />
@@ -115,7 +115,7 @@ const VocabListHeader: React.FC<VocabListHeaderProps> = ({
               </div>
               <div className="flex justify-end space-x-2">
                 <Button variant="outline" size="sm" onClick={onClearFilters} disabled={!hasActiveFilters}>
-                  Clear Filters
+                  {t('clearFilters')}
                 </Button>
               </div>
             </div>
@@ -126,17 +126,17 @@ const VocabListHeader: React.FC<VocabListHeaderProps> = ({
         <ExportExcelButton queryParams={queryParams} />
         <PremiumFeatureGate
           userRole={userRole}
-          featureName="Import CSV / Bulk import"
+          featureName={t('importFeature')}
           onClick={onImportExcel}
           variant="outline"
           className="h-10 bg-card/80 backdrop-blur-sm"
         >
           <Upload size={16} weight="BoldDuotone" className="mr-2" />
-          <span className="hidden sm:inline">Import Excel</span>
+          <span className="hidden sm:inline">{t('importExcel')}</span>
         </PremiumFeatureGate>
         <Button onClick={onAddVocab} className="h-10 bg-primary text-primary-foreground shadow-lg hover:opacity-90">
           <AddCircle size={16} weight="BoldDuotone" className="mr-2" />
-          <span className="hidden sm:inline">Add Vocab</span>
+          <span className="hidden sm:inline">{t('addVocab')}</span>
         </Button>
       </div>
     </div>

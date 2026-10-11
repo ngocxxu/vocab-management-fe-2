@@ -1,6 +1,7 @@
 'use client';
 
 import type { TVocabGenerateTextTargetResult } from '@/types/vocab-list';
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { generateTextTargetContent } from '@/actions/vocabs';
@@ -29,6 +30,7 @@ export function useAIGenerate({
   onExampleChange,
   onAddExample,
 }: UseAIGenerateParams) {
+  const t = useTranslations('vocabList.aiGenerate');
   const [isGenerating, setIsGenerating] = useState(false);
   const [currentJobId, setCurrentJobId] = useState<string | null>(null);
   const { isCooldownActive, cooldownRemaining, markUsed } = useTextTargetCooldown();
@@ -64,7 +66,7 @@ export function useAIGenerate({
         }
       }
 
-      toast.success('AI generated content successfully');
+      toast.success(t('success'));
       markUsed();
       setIsGenerating(false);
       setCurrentJobId(null);
@@ -74,11 +76,11 @@ export function useAIGenerate({
     return () => {
       socket.off(SOCKET_EVENTS.VOCAB_GENERATE_TEXT_TARGET_RESULT, handler);
     };
-  }, [socket, isConnected, currentJobId, targetIndex, hasExamples, onInputChange, onExampleChange, onAddExample, markUsed]);
+  }, [socket, isConnected, currentJobId, targetIndex, hasExamples, onInputChange, onExampleChange, onAddExample, markUsed, t]);
 
   const handleGenerateAI = async () => {
     if (!textSource || !sourceLanguageCode || !targetLanguageCode) {
-      toast.error('Please fill in source text and language codes first');
+      toast.error(t('fillFirst'));
       return;
     }
 
@@ -91,7 +93,7 @@ export function useAIGenerate({
       });
       setCurrentJobId(String(jobId));
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to generate content');
+      toast.error(error instanceof Error ? error.message : t('failed'));
       setIsGenerating(false);
     }
   };

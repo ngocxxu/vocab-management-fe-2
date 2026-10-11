@@ -1,6 +1,7 @@
 'use client';
 
 import type { TVocab } from '@/types/vocab-list';
+import { useTranslations } from 'next-intl';
 import { useCallback, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/shared/ui/button';
@@ -27,6 +28,7 @@ export function RowReassignSubjectsPopover({
   applying,
   onApply,
 }: RowReassignSubjectsPopoverProps) {
+  const t = useTranslations('subjects');
   const [open, setOpen] = useState(false);
   const [draftIds, setDraftIds] = useState<string[]>([]);
   const [search, setSearch] = useState('');
@@ -56,7 +58,7 @@ export function RowReassignSubjectsPopover({
 
   const handleApply = async () => {
     if (draftIds.length === 0) {
-      toast.error('Select at least one subject.');
+      toast.error(t('vocabs.toast.rowSelectSubject'));
       return;
     }
     const ok = await onApply(vocab, draftIds);
@@ -74,9 +76,9 @@ export function RowReassignSubjectsPopover({
           size="sm"
           className="h-8 w-[min(100%,260px)] justify-between font-normal"
           disabled={disabled || applying}
-          aria-label="Choose subjects to reassign"
+          aria-label={t('vocabs.popover.chooseAria')}
         >
-          {draftIds.length === 0 ? 'Subjects…' : `${draftIds.length} selected`}
+          {draftIds.length === 0 ? t('vocabs.popover.trigger') : t('vocabs.popover.selected', { count: draftIds.length })}
         </Button>
       </PopoverTrigger>
       <PopoverContent
@@ -88,7 +90,7 @@ export function RowReassignSubjectsPopover({
         <div className="border-b px-3 py-2">
           <input
             type="search"
-            placeholder="Search subjects..."
+            placeholder={t('vocabs.popover.search')}
             value={search}
             onChange={e => setSearch(e.target.value)}
             className="w-full rounded-md border border-input bg-background px-2 py-1.5 text-sm outline-none placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring"
@@ -97,7 +99,7 @@ export function RowReassignSubjectsPopover({
         <div className="max-h-[220px] overflow-y-auto p-2">
           {filtered.length === 0
             ? (
-                <p className="px-2 py-3 text-center text-sm text-muted-foreground">No subjects.</p>
+                <p className="px-2 py-3 text-center text-sm text-muted-foreground">{t('vocabs.popover.none')}</p>
               )
             : (
                 filtered.map(opt => (
@@ -117,7 +119,7 @@ export function RowReassignSubjectsPopover({
         </div>
         <div className="flex justify-end gap-2 border-t p-2">
           <Button type="button" variant="ghost" size="sm" onClick={() => setOpen(false)}>
-            Cancel
+            {t('cancel')}
           </Button>
           <Button
             type="button"
@@ -125,7 +127,7 @@ export function RowReassignSubjectsPopover({
             onClick={() => void handleApply()}
             disabled={applying}
           >
-            Apply
+            {t('vocabs.popover.apply')}
           </Button>
         </div>
       </PopoverContent>

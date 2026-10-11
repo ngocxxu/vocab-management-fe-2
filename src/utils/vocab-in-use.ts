@@ -32,6 +32,16 @@ export function parseVocabInUse(error: unknown): TVocabInUse | null {
   return null;
 }
 
+type TTranslateInUse = (key: string, values?: Record<string, number>) => string;
+
+/** Translated version of vocabInUseText; `t` is the `subjects` translator. */
+export function vocabInUseMessage(conflict: TVocabInUse, t: TTranslateInUse): string {
+  if (conflict.kind === 'single') {
+    return t('vocabInUse.single', { count: conflict.trainerCount });
+  }
+  return t('vocabInUse.bulk', { count: conflict.blockedCount });
+}
+
 /** Sentence for a toast when a delete was refused. */
 export function vocabInUseText(conflict: TVocabInUse): string {
   if (conflict.kind === 'single') {

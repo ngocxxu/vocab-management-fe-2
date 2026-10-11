@@ -1,6 +1,6 @@
 import type { VocabListContentProps } from '@/types/vocab-list';
 import Link from 'next/link';
-import React from 'react';
+import { getTranslations } from 'next-intl/server';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -11,7 +11,7 @@ import {
 } from '@/shared/ui/breadcrumb';
 import VocabList from './VocabList';
 
-const VocabListContent: React.FC<VocabListContentProps> = ({
+const VocabListContent = async ({
   initialVocabsData,
   initialLanguageFolderData,
   initialSubjectsData,
@@ -20,7 +20,9 @@ const VocabListContent: React.FC<VocabListContentProps> = ({
   initialSemanticSuggestions,
   currentUser,
   vocabListLoadFailed,
-}) => {
+}: VocabListContentProps) => {
+  const t = await getTranslations('vocabList.breadcrumb');
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
@@ -28,12 +30,12 @@ const VocabListContent: React.FC<VocabListContentProps> = ({
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link href="/library">Library</Link>
+                <Link href="/library">{t('library')}</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>Vocab List</BreadcrumbPage>
+              <BreadcrumbPage>{t('vocabList')}</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>

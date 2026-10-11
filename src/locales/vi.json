@@ -81,7 +81,8 @@
     "randomizeVocabularies": "Không thể xáo trộn từ vựng",
     "fetchVocabulariesByIds": "Không thể tải từ vựng theo mã",
     "fetchLanguageFolders": "Không thể tải thư mục ngôn ngữ",
-    "loadLanguageFolders": "Không thể tải thư mục ngôn ngữ"
+    "loadLanguageFolders": "Không thể tải thư mục ngôn ngữ",
+    "saveVocabulary": "Lưu từ vựng thất bại"
   },
   "validation": {
     "emailRequired": "Email là bắt buộc",
@@ -117,7 +118,13 @@
     "checkValues": "Kiểm tra lại các giá trị rồi thử lại",
     "invalidForm": "Dữ liệu biểu mẫu không hợp lệ",
     "newPasswordRequired": "Mật khẩu mới là bắt buộc",
-    "currentPasswordRequired": "Mật khẩu hiện tại là bắt buộc"
+    "currentPasswordRequired": "Mật khẩu hiện tại là bắt buộc",
+    "fileRequired": "Vui lòng chọn tệp",
+    "sourceLanguageRequired": "Vui lòng chọn ngôn ngữ nguồn",
+    "sourceTextRequired": "Vui lòng nhập văn bản nguồn",
+    "targetLanguageRequired": "Vui lòng chọn ngôn ngữ đích",
+    "targetTextRequired": "Vui lòng nhập văn bản đích",
+    "textTargetRequired": "Cần ít nhất một mục tiêu văn bản"
   },
   "questionTypes": {
     "multipleChoice": "Trắc nghiệm",
@@ -530,6 +537,402 @@
       "affectedItems": "Mục bị ảnh hưởng",
       "close": "Đóng",
       "viewVocabularies": "Xem từ vựng"
+    },
+    "vocabs": {
+      "toast": {
+        "selectSubject": "Chọn ít nhất một chủ đề để chuyển tới.",
+        "loadFailed": "Không thể tải các từ vựng đã chọn.",
+        "reassigned": "Đã chuyển từ vựng sang chủ đề mới.",
+        "reassignFailed": "Không thể chuyển từ vựng.",
+        "rowSelectSubject": "Chọn ít nhất một chủ đề.",
+        "rowReassigned": "Đã chuyển từ vựng.",
+        "rowReassignFailed": "Không thể chuyển.",
+        "openVocabList": "Mở danh sách từ vựng",
+        "openVocabListDescription": "Tìm từ này trong danh sách chính để sửa đầy đủ."
+      },
+      "columns": {
+        "select": "Chọn tất cả",
+        "selectRow": "Chọn dòng",
+        "textSource": "Nguồn văn bản",
+        "textTargets": "Mục tiêu văn bản",
+        "reassign": "Chuyển sang chủ đề mới",
+        "dateAdded": "Ngày thêm",
+        "actions": "Thao tác"
+      },
+      "filter": {
+        "button": "Lọc",
+        "sortBy": "Sắp xếp theo",
+        "sortCreated": "Ngày tạo",
+        "sortUpdated": "Ngày cập nhật",
+        "sortTextSource": "Tên từ vựng",
+        "order": "Thứ tự",
+        "newestFirst": "Mới nhất trước",
+        "oldestFirst": "Cũ nhất trước"
+      },
+      "title": "Từ vựng",
+      "titleFor": "của {name}",
+      "backToSubjects": "Quay lại chủ đề",
+      "breadcrumbConflict": "Từ vựng xung đột",
+      "loadError": "Không tải được từ vựng xung đột. Thử lại hoặc quay lại chủ đề.",
+      "actionRequired": "Cần xử lý",
+      "alertBody": "{count} từ vựng này đang chặn việc xóa chủ đề. Hãy chuyển hoặc xóa chúng để tiếp tục.",
+      "searchPlaceholder": "Tìm từ vựng...",
+      "bulk": {
+        "title": "Chuyển hàng loạt sang chủ đề khác",
+        "description": "Chọn chủ đề mới cho {count} từ vựng đã chọn. Chủ đề gây xung đột sẽ bị gỡ và các chủ đề đã chọn sẽ được thêm vào mọi mục tiêu văn bản.",
+        "targetSubjects": "Chủ đề đích",
+        "choose": "Chọn chủ đề...",
+        "previewTitle": "Xem trước các mục đã chọn",
+        "total": "tổng",
+        "noneSelected": "Chưa chọn mục nào.",
+        "remove": "Gỡ {name}",
+        "removeGeneric": "Gỡ từ vựng đã chọn",
+        "showMore": "Hiện thêm {count} mục đã chọn",
+        "more": "+{count} nữa",
+        "note": "Lưu ý",
+        "noteBody": "Chuyển các từ vựng này sẽ giải quyết xung đột liên quan đến chủ đề trong luồng xóa này. Thay đổi được lưu trên máy chủ.",
+        "confirm": "Xác nhận chuyển"
+      },
+      "popover": {
+        "trigger": "Chủ đề…",
+        "selected": "{count} đã chọn",
+        "chooseAria": "Chọn chủ đề để chuyển",
+        "search": "Tìm chủ đề...",
+        "none": "Không có chủ đề.",
+        "apply": "Áp dụng"
+      }
+    },
+    "vocabInUse": {
+      "single": "Từ này đang được {count} bộ luyện sử dụng. Hãy gỡ khỏi các bộ luyện trước.",
+      "bulk": "{count} từ đang được bộ luyện sử dụng. Hãy gỡ chúng khỏi bộ luyện trước. Chưa có gì bị xóa."
+    }
+  },
+  "trainerConflicts": {
+    "modeSpaced": "Lặp lại ngắt quãng",
+    "modeClassic": "Cổ điển",
+    "removedFrom": "Đã xóa khỏi {name}",
+    "removeFailed": "Không thể xóa từ khỏi bộ luyện tập",
+    "deleted": "Đã xóa {text}",
+    "deleteFailed": "Xóa từ vựng thất bại",
+    "backToList": "Quay lại danh sách từ vựng",
+    "title": "Các từ này vẫn còn trong bộ luyện tập",
+    "description": "Gỡ từng từ khỏi bộ luyện tập, rồi xóa. Không có gì bị xóa cho đến khi từ được gỡ hết.",
+    "loadFailedTitle": "Hiện chưa tải được các từ này",
+    "loadFailedDescription": "Vui lòng tải lại trang hoặc thử lại sau.",
+    "nothingBlocking": "Không còn gì chặn các từ này nữa.",
+    "notInAnyTrainer": "Từ này không còn trong bộ luyện tập nào.",
+    "deleteVocabulary": "Xóa từ vựng",
+    "removeFromTrainer": "Gỡ khỏi bộ luyện tập",
+    "removeDialogTitle": "Gỡ {text} khỏi {trainer}?",
+    "removeFsrsDescription": "Lịch ôn tập của từ này trong bộ luyện tập sẽ bị xóa. Lịch sử ôn tập được giữ lại. Từ vẫn còn trong thư viện của bạn.",
+    "removeClassicDescription": "Từ vẫn còn trong thư viện của bạn. Chỉ bị gỡ khỏi bộ luyện tập này.",
+    "cancel": "Hủy",
+    "remove": "Gỡ"
+  },
+  "vocabList": {
+    "breadcrumb": {
+      "library": "Thư viện",
+      "vocabList": "Danh sách từ vựng"
+    },
+    "header": {
+      "title": "Danh sách từ vựng",
+      "total": "từ",
+      "trackProgress": "Theo dõi tiến độ học từ vựng và lịch sử ôn tập.",
+      "filter": "Lọc",
+      "filterBySubjects": "Lọc theo chủ đề",
+      "chooseSubjects": "Chọn chủ đề để lọc...",
+      "clearFilters": "Xóa bộ lọc",
+      "importFeature": "Nhập CSV / nhập hàng loạt",
+      "importExcel": "Nhập Excel",
+      "addVocab": "Thêm từ",
+      "unknownSubject": "Chủ đề không xác định"
+    },
+    "columns": {
+      "textSource": "Văn bản nguồn",
+      "textTarget": "Văn bản đích",
+      "textTargets": "Mục tiêu văn bản",
+      "context": "Ngữ cảnh & sắc thái",
+      "examples": "Ví dụ",
+      "masteryScore": "Điểm thành thạo",
+      "playPronunciation": "Phát âm",
+      "selectAll": "Chọn tất cả",
+      "selectRow": "Chọn dòng"
+    },
+    "columnsMenu": {
+      "button": "Cột",
+      "selectAll": "Chọn tất cả"
+    },
+    "searchPlaceholder": "Tìm từ vựng...",
+    "noResults": "Không có kết quả",
+    "itemName": "mục từ vựng",
+    "itemNamePlural": "mục từ vựng",
+    "loadFailed": "Không tải được danh sách từ vựng. Hãy thử thay đổi bộ lọc hoặc tải lại trang.",
+    "toast": {
+      "created": "Tạo từ vựng thành công",
+      "updated": "Cập nhật từ vựng thành công",
+      "deleted": "Xóa từ vựng thành công!",
+      "deleteFailed": "Xóa từ vựng thất bại. Vui lòng thử lại.",
+      "errorTitle": "Lỗi",
+      "fixFields": "Vui lòng sửa các trường được đánh dấu",
+      "fixFieldsTab": "Kiểm tra tab {tab} — mỗi mục tiêu cần một chủ đề.",
+      "quotaMessage": "Đã đạt giới hạn. Nâng cấp lên Member để dùng thêm.",
+      "upgrade": "Nâng cấp"
+    },
+    "view": {
+      "viewVocab": "Xem từ vựng",
+      "editVocab": "Sửa từ vựng"
+    },
+    "related": {
+      "synonyms": "Từ đồng nghĩa",
+      "related": "Liên quan",
+      "antonyms": "Từ trái nghĩa",
+      "notInList": "Từ này chưa có trong danh sách của bạn"
+    },
+    "expandedRow": {
+      "editVocab": "Sửa từ",
+      "editTitle": "Sửa",
+      "explanation": "Giải thích",
+      "usageExamples": "Ví dụ sử dụng",
+      "collapseDetails": "Thu gọn chi tiết"
+    },
+    "examples": {
+      "title": "Ví dụ",
+      "addExample": "Thêm ví dụ",
+      "source": "Nguồn",
+      "sourcePlaceholder": "Ví dụ văn bản nguồn...",
+      "target": "Đích",
+      "targetPlaceholder": "Ví dụ văn bản đích..."
+    },
+    "export": {
+      "button": "Xuất Excel",
+      "exporting": "Đang xuất...",
+      "success": "Xuất từ vựng thành công",
+      "failed": "Xuất từ vựng thất bại. Vui lòng thử lại.",
+      "sampleTemplate": "Tệp mẫu"
+    },
+    "deleteConflict": {
+      "countVocabs": "{count, plural, other {# từ vựng}}",
+      "countTrainers": "{count, plural, other {# bộ luyện tập}}",
+      "trainersFallback": "Bộ luyện tập",
+      "cannotDeleteVocabs": "Không thể xóa các từ vựng",
+      "cannotDeleteVocab": "Không thể xóa từ vựng",
+      "bulkBody": "Một số từ đã chọn vẫn còn trong bộ luyện tập. Không có gì bị xóa. Hãy gỡ chúng khỏi bộ luyện tập trước.",
+      "singleBody": "Từ này vẫn còn trong một hoặc nhiều bộ luyện tập. Hãy gỡ nó khỏi bộ luyện tập trước.",
+      "affectedItems": "Mục bị ảnh hưởng",
+      "close": "Đóng",
+      "viewTrainers": "Xem bộ luyện tập"
+    },
+    "subjectBadge": {
+      "more": "+{count} nữa",
+      "showMore": "Hiện thêm {count} chủ đề"
+    },
+    "subjectsSection": {
+      "title": "Chủ đề",
+      "loadFailed": "Không tải được chủ đề. Vui lòng thử lại.",
+      "suggesting": "Đang gợi ý...",
+      "wait": "Chờ {seconds}s",
+      "suggest": "Gợi ý",
+      "chooseSubjects": "Chọn chủ đề...",
+      "aiSuggested": "AI GỢI Ý",
+      "suggestionsFound": "Tìm thấy {count} gợi ý",
+      "matchingExisting": "Trùng với chủ đề có sẵn",
+      "newCreativeIdeas": "Ý tưởng chủ đề mới"
+    },
+    "relationFlags": {
+      "isSynonym": "Đồng nghĩa",
+      "isAntonym": "Trái nghĩa",
+      "isRelated": "Liên quan",
+      "editRelation": "Sửa quan hệ"
+    },
+    "wordRelations": {
+      "title": "Quan hệ từ",
+      "addAria": "Thêm “{word}” vào danh sách của bạn",
+      "notInListTip": "Từ này chưa có trong danh sách của bạn. Nhấn (+) để thêm nhanh",
+      "errors": {
+        "enterWord": "Hãy nhập từ liên quan trước.",
+        "selectType": "Chọn ít nhất một loại quan hệ.",
+        "synonymAntonym": "Không thể chọn đồng thời Đồng nghĩa và Trái nghĩa.",
+        "duplicateFree": "Quan hệ văn bản tự do này đã tồn tại.",
+        "duplicateLinked": "Quan hệ đã liên kết này đã tồn tại."
+      }
+    },
+    "wordRelationsSection": {
+      "title": "Quan hệ từ",
+      "setType": "Chọn loại quan hệ",
+      "inputPlaceholder": "Nhập hoặc tìm từ rồi nhấn Enter để thêm",
+      "searching": "Đang tìm từ vựng...",
+      "tip": "Mẹo: Bạn có thể chọn đồng thời một quan hệ (S/A) và Liên quan (R).",
+      "removeAria": "Xóa {word}",
+      "atLeastOne": "Cần ít nhất một quan hệ"
+    },
+    "aiGenerate": {
+      "success": "AI đã tạo nội dung thành công",
+      "fillFirst": "Vui lòng nhập văn bản nguồn và mã ngôn ngữ trước",
+      "failed": "Tạo nội dung thất bại"
+    },
+    "addDialog": {
+      "editTitle": "Sửa từ vựng",
+      "addTitle": "Thêm từ vựng mới",
+      "editDescription": "Cập nhật thông tin của mục từ vựng",
+      "addDescription": "Nhập thông tin cho mục từ vựng mới",
+      "basicInfo": "Thông tin cơ bản",
+      "textTargets": "Mục tiêu văn bản",
+      "addNew": "+ Thêm mới",
+      "meaningContext": "Nghĩa và ngữ cảnh",
+      "aiGenerate": "AI tạo",
+      "aiFeatureName": "AI tạo (mục tiêu văn bản)",
+      "aiDescription": "Tự động tạo văn bản đích và ví dụ bằng AI. Nâng cấp lên Member để mở khóa.",
+      "generating": "Đang tạo...",
+      "wait": "Chờ {seconds}s",
+      "cancel": "Hủy",
+      "updating": "Đang cập nhật...",
+      "validating": "Đang kiểm tra...",
+      "updateVocab": "Cập nhật từ vựng",
+      "addVocab": "Thêm từ vựng"
+    },
+    "languageForm": {
+      "source": "Nguồn",
+      "target": "Đích",
+      "selectLanguage": "Chọn ngôn ngữ",
+      "loadingLanguages": "Đang tải ngôn ngữ...",
+      "errorLoadingLanguages": "Lỗi khi tải ngôn ngữ",
+      "textSource": "Văn bản nguồn",
+      "enterSourceText": "Nhập văn bản nguồn"
+    },
+    "textTargetTabs": {
+      "title": "Mục tiêu văn bản",
+      "addTarget": "Thêm mục tiêu",
+      "vocabN": "Từ {n}",
+      "removeTarget": "Xóa mục tiêu"
+    },
+    "textTargetForm": {
+      "targetText": "Văn bản đích",
+      "targetTextPlaceholder": "Nhập văn bản đích...",
+      "wordType": "Loại từ",
+      "selectWordType": "Chọn loại từ",
+      "loadingWordTypes": "Đang tải loại từ...",
+      "errorLoadingWordTypes": "Lỗi khi tải loại từ",
+      "none": "Không có",
+      "grammarNotes": "Ghi chú ngữ pháp",
+      "grammarPlaceholder": "VD: Dùng với giới từ",
+      "explanationUsage": "Giải thích & cách dùng",
+      "explanationSource": "Nguồn",
+      "explanationSourcePlaceholder": "Nhập giải thích nguồn...",
+      "explanationTarget": "Đích",
+      "explanationTargetPlaceholder": "Nhập giải thích đích..."
+    },
+    "textTargetBalloon": {
+      "editAria": "Sửa mục tiêu văn bản",
+      "edit": "Sửa",
+      "editTitle": "Sửa mục tiêu văn bản",
+      "text": "Văn bản",
+      "grammar": "Ngữ pháp",
+      "explanationSource": "Giải thích (nguồn)",
+      "explanationTarget": "Giải thích (đích)",
+      "cancel": "Hủy",
+      "saving": "Đang lưu…",
+      "save": "Lưu",
+      "deleteAria": "Xóa mục tiêu văn bản",
+      "delete": "Xóa",
+      "deleteTitle": "Xóa mục tiêu văn bản?",
+      "deleteDescription": "Thao tác này sẽ xóa vĩnh viễn \"{text}\" và không thể hoàn tác.",
+      "emptyError": "Mục tiêu văn bản không được để trống",
+      "updated": "Đã cập nhật mục tiêu văn bản",
+      "updateFailed": "Cập nhật mục tiêu văn bản thất bại",
+      "deleted": "Đã xóa mục tiêu văn bản",
+      "deleteFailed": "Xóa mục tiêu văn bản thất bại"
+    },
+    "textTargetDialog": {
+      "editTitle": "Sửa mục tiêu văn bản",
+      "addTitle": "Thêm mục tiêu văn bản",
+      "editDescription": "Cập nhật thông tin của mục tiêu văn bản này",
+      "addDescription": "Nhập thông tin cho mục tiêu văn bản mới",
+      "coreMeaning": "Nghĩa chính",
+      "generating": "Đang tạo...",
+      "aiGenerate": "AI tạo",
+      "wait": "Chờ {seconds}s",
+      "targetText": "Văn bản đích",
+      "targetTextPlaceholder": "Nhập văn bản đích...",
+      "wordType": "Loại từ",
+      "selectWordType": "Chọn loại từ",
+      "none": "Không có",
+      "grammarNotes": "Ghi chú ngữ pháp",
+      "grammarPlaceholder": "VD: Dùng với giới từ",
+      "subjects": "Chủ đề",
+      "chooseSubjects": "Chọn chủ đề...",
+      "explanations": "Giải thích",
+      "source": "Nguồn",
+      "sourceExplanationPlaceholder": "Nhập giải thích nguồn...",
+      "target": "Đích",
+      "targetExplanationPlaceholder": "Nhập giải thích đích...",
+      "cancel": "Hủy",
+      "update": "Cập nhật",
+      "create": "Tạo",
+      "textRequired": "Cần nhập mục tiêu văn bản",
+      "subjectRequired": "Cần chọn ít nhất một chủ đề",
+      "updated": "Đã cập nhật mục tiêu văn bản thành công",
+      "created": "Đã tạo mục tiêu văn bản thành công",
+      "saveFailed": "Lưu mục tiêu văn bản thất bại",
+      "errorTitle": "Lỗi"
+    },
+    "textTargetsContent": {
+      "breadcrumbLibrary": "Thư viện",
+      "breadcrumbVocabList": "Danh sách từ vựng",
+      "breadcrumbTextTargets": "Mục tiêu văn bản",
+      "subtitle": "Chi tiết các ánh xạ ngữ nghĩa và bản dịch theo ngữ cảnh.",
+      "sourceLabel": "Nguồn",
+      "targetLabel": "Đích",
+      "filter": "Lọc",
+      "filterBySubjects": "Lọc theo chủ đề",
+      "chooseSubjectsFilter": "Chọn chủ đề để lọc...",
+      "clearFilters": "Xóa bộ lọc",
+      "addTarget": "Thêm mục tiêu"
+    },
+    "textTargetsTable": {
+      "colTextTarget": "Văn bản đích",
+      "colType": "Loại",
+      "colGrammar": "Ngữ pháp",
+      "colExplanationSource": "Giải thích (Nguồn)",
+      "colExplanationTarget": "Giải thích (Đích)",
+      "colSubjects": "Chủ đề",
+      "colExamples": "Ví dụ",
+      "searchPlaceholder": "Tìm mục tiêu văn bản...",
+      "itemName": "mục tiêu văn bản",
+      "deleteSuccess": "Xóa mục tiêu văn bản thành công!",
+      "deleteError": "Xóa mục tiêu văn bản thất bại. Vui lòng thử lại."
+    },
+    "importDialog": {
+      "title": "Nhập từ vựng",
+      "description": "Tải lên tệp Excel (.xls, .xlsx) hoặc CSV để nhập dữ liệu từ vựng.",
+      "fileLabel": "Tệp",
+      "uploading": "Đang tải lên...",
+      "import": "Nhập",
+      "cancel": "Hủy",
+      "subjectCreated": "Đã tạo chủ đề “{name}” thành công",
+      "subjectCreateFailed": "Tạo chủ đề “{name}” thất bại. Vui lòng thử lại.",
+      "importSuccess": "Nhập dữ liệu thành công! Đã tạo: {created}, đã cập nhật: {updated}",
+      "importPartial": "Nhập dữ liệu có lỗi. Đã tạo: {created}, đã cập nhật: {updated}, thất bại: {failed}",
+      "importFailedRows": "Nhập thất bại. {failed} dòng không nhập được.",
+      "fallbackError": "Không nhập được tệp. Hãy kiểm tra định dạng tệp và thử lại.",
+      "importFailedTitle": "Nhập thất bại",
+      "quotaMessage": "Đã đạt giới hạn. Nâng cấp lên Member để dùng thêm.",
+      "upgrade": "Nâng cấp",
+      "resultsTitle": "Kết quả nhập",
+      "resultsDescription": "Kết quả chi tiết của thao tác nhập.",
+      "createdLabel": "Đã tạo:",
+      "updatedLabel": "Đã cập nhật:",
+      "failedLabel": "Thất bại:",
+      "totalLabel": "Tổng:",
+      "errorDetails": "Chi tiết lỗi:",
+      "colRow": "Dòng",
+      "colError": "Lỗi",
+      "colData": "Dữ liệu",
+      "colAction": "Thao tác",
+      "creating": "Đang tạo...",
+      "createdButton": "Đã tạo",
+      "createSubject": "Tạo “{name}”",
+      "tryAgain": "Thử lại",
+      "close": "Đóng"
     }
   }
 }

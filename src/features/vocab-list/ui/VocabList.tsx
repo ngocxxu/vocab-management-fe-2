@@ -15,6 +15,7 @@ import {
   Pen,
   VolumeLoud,
 } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
@@ -29,7 +30,7 @@ import {
   updateVocab,
 } from '@/actions/vocabs';
 import type { TVocabInUse } from '@/types/vocab-conflict';
-import { isQuotaError, QUOTA_ERROR_MESSAGE } from '@/utils/quota-error';
+import { isQuotaError } from '@/utils/quota-error';
 import { BulkDeleteDialog, DeleteActionButton, ErrorState } from '@/shared/ui/shared';
 import { Button } from '@/shared/ui/button';
 import { Checkbox } from '@/shared/ui/checkbox';
@@ -54,16 +55,16 @@ import { useWordRelations } from '../hooks/useWordRelations';
 // Utility function to generate unique IDs
 const generateId = () => `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 
-// Define the form schema
+// Define the form schema. Messages are validation keys, translated by FormMessage.
 const FormSchema = z.object({
-  textSource: z.string().min(1, 'Source text is required'),
-  sourceLanguageCode: z.string().min(1, 'Source language is required'),
-  targetLanguageCode: z.string().min(1, 'Target language is required'),
+  textSource: z.string().min(1, 'validation.sourceTextRequired'),
+  sourceLanguageCode: z.string().min(1, 'validation.sourceLanguageRequired'),
+  targetLanguageCode: z.string().min(1, 'validation.targetLanguageRequired'),
   textTargets: z.array(
     z.object({
       id: z.string(),
       wordTypeId: z.string().optional(),
-      textTarget: z.string().min(1, 'Target text is required'),
+      textTarget: z.string().min(1, 'validation.targetTextRequired'),
       grammar: z.string(),
       explanationSource: z.string(),
       explanationTarget: z.string(),
@@ -76,9 +77,9 @@ const FormSchema = z.object({
       })),
     }).refine(
       data => data.subjectIds.length > 0 || data.pendingSubjectNames.length > 0,
-      { message: 'At least one subject must be selected', path: ['subjectIds'] },
+      { message: 'validation.subjectRequired', path: ['subjectIds'] },
     ),
-  ).min(1, 'At least one text target is required'),
+  ).min(1, 'validation.textTargetRequired'),
 });
 
 type FormData = z.infer<typeof FormSchema>;
@@ -93,6 +94,8 @@ const VocabList: React.FC<VocabListProps> = ({
   currentUser,
   vocabListLoadFailed = false,
 }) => {
+  const t = useTranslations('vocabList');
+  const tErrors = useTranslations('errors');
   const [importDialogOpen, setImportDialogOpen] = React.useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const user = currentUser ?? null;
@@ -223,8 +226,8 @@ const VocabList: React.FC<VocabListProps> = ({
         router.refresh();
       });
     },
-    itemName: 'vocabulary item',
-    itemNamePlural: 'vocabulary items',
+    itemName: t('itemName'),
+    itemNamePlural: t('itemNamePlural'),
   });
 
   const { relationController, relatedWords, resetRelations } = useWordRelations({
@@ -454,8 +457,8 @@ const VocabList: React.FC<VocabListProps> = ({
         if (badIndex >= 0) {
           setActiveTab(badIndex.toString());
         }
-        toast.error('Please fix the highlighted fields', {
-          description: badIndex >= 0 ? `Check tab ${badIndex + 1} — each target needs a subject.` : undefined,
+        toast.error(t('toast.fixFields'), {
+          description: badIndex >= 0 ? t('toast.fixFieldsTab', { tab: badIndex + 1 }) : undefined,
         });
         return;
       }
@@ -484,7 +487,7 @@ const VocabList: React.FC<VocabListProps> = ({
         handlers.setPage(1);
       }
 
-      toast.success(dialogState.editMode ? 'Vocabulary updated successfully' : 'Vocabulary created successfully');
+      toast.success(dialogState.editMode ? t('toast.updated') : t('toast.created'));
 
       resetForm();
       dialogState.handleClose();
@@ -492,16 +495,16 @@ const VocabList: React.FC<VocabListProps> = ({
         router.refresh();
       });
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to save vocabulary';
+      const errorMessage = error instanceof Error ? error.message : tErrors('saveVocabulary');
       if (isQuotaError(error)) {
-        toast.error(QUOTA_ERROR_MESSAGE, {
+        toast.error(t('toast.quotaMessage'), {
           description: errorMessage,
-          action: { label: 'Upgrade', onClick: () => {
+          action: { label: t('toast.upgrade'), onClick: () => {
             window.location.href = '/#pricing';
           } },
         });
       } else {
-        toast.error('Error', { description: errorMessage });
+        toast.error(t('toast.errorTitle'), { description: errorMessage });
       }
     }
   };
@@ -517,14 +520,14 @@ const VocabList: React.FC<VocabListProps> = ({
         <Checkbox
           checked={table.getIsAllPageRowsSelected()}
           onCheckedChange={value => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
+          aria-label={t('columns.selectAll')}
         />
       ),
       cell: ({ row }) => (
         <Checkbox
           checked={row.getIsSelected()}
           onCheckedChange={value => row.toggleSelected(!!value)}
-          aria-label="Select row"
+          aria-label={t('columns.selectRow')}
         />
       ),
       enableSorting: false,
@@ -532,7 +535,7 @@ const VocabList: React.FC<VocabListProps> = ({
     },
     {
       accessorKey: 'textSource',
-      header: 'Text Source',
+      header: t('columns.textSource'),
       cell: ({ row }) => {
         return (
           <div className="flex items-center space-x-3">
@@ -554,8 +557,8 @@ const VocabList: React.FC<VocabListProps> = ({
                 e.stopPropagation();
                 handleSpeakTextSource(row.original);
               }}
-              aria-label="Play pronunciation"
-              title="Play pronunciation"
+              aria-label={t('columns.playPronunciation')}
+              title={t('columns.playPronunciation')}
             >
               <VolumeLoud size={16} weight="BoldDuotone" className="text-muted-foreground" />
             </Button>
@@ -568,7 +571,7 @@ const VocabList: React.FC<VocabListProps> = ({
     },
     {
       accessorKey: 'textTargets',
-      header: 'Text Targets',
+      header: t('columns.textTargets'),
       cell: ({ row }) => {
         const textTargets = row.original.textTargets;
 
@@ -594,7 +597,7 @@ const VocabList: React.FC<VocabListProps> = ({
     },
     {
       accessorKey: 'masteryScore',
-      header: 'Mastery Score',
+      header: t('columns.masteryScore'),
       cell: ({ row }) => <MasteryScoreCell score={row.original.masteryScore} />,
       enableSorting: true,
       enableHiding: true,
@@ -648,15 +651,15 @@ const VocabList: React.FC<VocabListProps> = ({
           </Button>
           <DeleteActionButton
             itemId={_row.original.id}
-            itemName="vocabulary item"
+            itemName={t('itemName')}
             onDelete={handleDeleteVocab}
             onSuccess={() => {
               startTransition(() => {
                 router.refresh();
               });
             }}
-            successMessage="Vocabulary deleted successfully!"
-            errorMessage="Failed to delete vocabulary. Please try again."
+            successMessage={t('toast.deleted')}
+            errorMessage={t('toast.deleteFailed')}
           />
         </div>
       ),
@@ -664,7 +667,7 @@ const VocabList: React.FC<VocabListProps> = ({
       enableHiding: false,
       size: 50,
     },
-  ], [expanded, handleDeleteVocab, handleEdit, handleSpeakTextSource, router, startTransition]);
+  ], [expanded, handleDeleteVocab, handleEdit, handleSpeakTextSource, router, startTransition, t]);
 
   return (
     <Form {...form}>
@@ -700,7 +703,7 @@ const VocabList: React.FC<VocabListProps> = ({
         <VocabViewSwitcher value={view} onChange={handleViewChange} />
 
         {isError && (
-          <ErrorState message="Could not load the vocabulary list. Try adjusting filters or refresh the page." />
+          <ErrorState message={t('loadFailed')} />
         )}
 
         {isMounted && (
@@ -747,8 +750,8 @@ const VocabList: React.FC<VocabListProps> = ({
               open={bulkDelete.bulkDeleteDialogOpen}
               onOpenChange={bulkDelete.setBulkDeleteDialogOpen}
               itemCount={bulkDelete.selectedIds.length}
-              itemName="vocabulary item"
-              itemNamePlural="vocabulary items"
+              itemName={t('itemName')}
+              itemNamePlural={t('itemNamePlural')}
               onConfirm={bulkDelete.confirmBulkDelete}
               onCancel={() => bulkDelete.reset()}
             />
@@ -757,7 +760,7 @@ const VocabList: React.FC<VocabListProps> = ({
               <DataTable
                 columns={columns}
                 data={data}
-                searchPlaceholder="Search vocab..."
+                searchPlaceholder={t('searchPlaceholder')}
                 searchValue={textSource}
                 onSearchChangeAction={handleSearchChange}
                 showSearch={true}

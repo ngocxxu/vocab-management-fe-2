@@ -81,7 +81,8 @@
     "randomizeVocabularies": "Failed to randomize vocabularies",
     "fetchVocabulariesByIds": "Failed to fetch vocabularies by ids",
     "fetchLanguageFolders": "Failed to fetch language folders",
-    "loadLanguageFolders": "Failed to load language folders"
+    "loadLanguageFolders": "Failed to load language folders",
+    "saveVocabulary": "Failed to save vocabulary"
   },
   "validation": {
     "emailRequired": "Email is required",
@@ -117,7 +118,13 @@
     "checkValues": "Check the values and try again",
     "invalidForm": "Invalid form data",
     "newPasswordRequired": "New password is required",
-    "currentPasswordRequired": "Current password is required"
+    "currentPasswordRequired": "Current password is required",
+    "fileRequired": "Please select a file",
+    "sourceLanguageRequired": "Source language is required",
+    "sourceTextRequired": "Source text is required",
+    "targetLanguageRequired": "Target language is required",
+    "targetTextRequired": "Target text is required",
+    "textTargetRequired": "At least one text target is required"
   },
   "questionTypes": {
     "multipleChoice": "Multiple Choice",
@@ -530,6 +537,402 @@
       "affectedItems": "Affected Items",
       "close": "Close",
       "viewVocabularies": "View vocabularies"
+    },
+    "vocabs": {
+      "toast": {
+        "selectSubject": "Select at least one subject to reassign to.",
+        "loadFailed": "Could not load selected vocabularies.",
+        "reassigned": "Vocabularies reassigned successfully.",
+        "reassignFailed": "Failed to reassign vocabularies.",
+        "rowSelectSubject": "Select at least one subject.",
+        "rowReassigned": "Vocabulary reassigned.",
+        "rowReassignFailed": "Failed to reassign.",
+        "openVocabList": "Open Vocab List",
+        "openVocabListDescription": "Find this word from the main list to edit full details."
+      },
+      "columns": {
+        "select": "Select all",
+        "selectRow": "Select row",
+        "textSource": "Text Source",
+        "textTargets": "Text Targets",
+        "reassign": "Reassign to new subject",
+        "dateAdded": "Date added",
+        "actions": "Actions"
+      },
+      "filter": {
+        "button": "Filter",
+        "sortBy": "Sort by",
+        "sortCreated": "Created date",
+        "sortUpdated": "Updated date",
+        "sortTextSource": "Vocabulary name",
+        "order": "Order",
+        "newestFirst": "Newest first",
+        "oldestFirst": "Oldest first"
+      },
+      "title": "Vocabularies",
+      "titleFor": "for {name}",
+      "backToSubjects": "Back to Subjects",
+      "breadcrumbConflict": "Conflict Vocabularies",
+      "loadError": "Could not load conflicting vocabularies. Try again or return to subjects.",
+      "actionRequired": "Action required",
+      "alertBody": "These {count} vocabularies are preventing the deletion of this subject. Reassign or delete them to proceed with the subject removal.",
+      "searchPlaceholder": "Search vocabularies...",
+      "bulk": {
+        "title": "Bulk Reassign Subject",
+        "description": "Select new subjects for the {count} selected vocabularies. The conflicting subject will be removed and the chosen subjects added on all text targets.",
+        "targetSubjects": "Target subjects",
+        "choose": "Choose subjects...",
+        "previewTitle": "Selected items preview",
+        "total": "total",
+        "noneSelected": "No items selected.",
+        "remove": "Remove {name}",
+        "removeGeneric": "Remove selected vocabulary",
+        "showMore": "Show {count} more selected items",
+        "more": "+{count} more",
+        "note": "Note",
+        "noteBody": "Reassigning these vocabularies resolves subject-related conflicts for this deletion flow. Changes are persisted on the server.",
+        "confirm": "Confirm reassign"
+      },
+      "popover": {
+        "trigger": "Subjects…",
+        "selected": "{count} selected",
+        "chooseAria": "Choose subjects to reassign",
+        "search": "Search subjects...",
+        "none": "No subjects.",
+        "apply": "Apply"
+      }
+    },
+    "vocabInUse": {
+      "single": "This vocab is used by {count} trainers. Remove it from the trainers first.",
+      "bulk": "{count, plural, one {# vocab is} other {# vocabs are}} used by trainers. Remove {count, plural, one {it} other {them}} from the trainers first. Nothing was deleted."
+    }
+  },
+  "trainerConflicts": {
+    "modeSpaced": "Spaced repetition",
+    "modeClassic": "Classic",
+    "removedFrom": "Removed from {name}",
+    "removeFailed": "Failed to remove the word from the trainer",
+    "deleted": "{text} deleted",
+    "deleteFailed": "Failed to delete vocabulary",
+    "backToList": "Back to vocab list",
+    "title": "These words are still in trainers",
+    "description": "Take each word out of its trainers, then delete it. Nothing is deleted until a word is free.",
+    "loadFailedTitle": "Unable to load these words right now",
+    "loadFailedDescription": "Please refresh the page or try again later.",
+    "nothingBlocking": "Nothing is blocking these words any more.",
+    "notInAnyTrainer": "This word is not in any trainer any more.",
+    "deleteVocabulary": "Delete vocabulary",
+    "removeFromTrainer": "Remove from trainer",
+    "removeDialogTitle": "Remove {text} from {trainer}?",
+    "removeFsrsDescription": "The review schedule of this word in this trainer is deleted. The review history is kept. The word stays in your library.",
+    "removeClassicDescription": "The word stays in your library. It is only removed from this trainer.",
+    "cancel": "Cancel",
+    "remove": "Remove"
+  },
+  "vocabList": {
+    "breadcrumb": {
+      "library": "Library",
+      "vocabList": "Vocab List"
+    },
+    "header": {
+      "title": "Vocab List",
+      "total": "Total",
+      "trackProgress": "Track your vocabulary learning progress and review history.",
+      "filter": "Filter",
+      "filterBySubjects": "Filter by Subjects",
+      "chooseSubjects": "Choose subjects to filter by...",
+      "clearFilters": "Clear Filters",
+      "importFeature": "Import CSV / Bulk import",
+      "importExcel": "Import Excel",
+      "addVocab": "Add Vocab",
+      "unknownSubject": "Unknown subject"
+    },
+    "columns": {
+      "textSource": "Text Source",
+      "textTarget": "Text Target",
+      "textTargets": "Text Targets",
+      "context": "Context & Nuance",
+      "examples": "Examples",
+      "masteryScore": "Mastery Score",
+      "playPronunciation": "Play pronunciation",
+      "selectAll": "Select all",
+      "selectRow": "Select row"
+    },
+    "columnsMenu": {
+      "button": "Columns",
+      "selectAll": "Select All"
+    },
+    "searchPlaceholder": "Search vocab...",
+    "noResults": "No results",
+    "itemName": "vocabulary item",
+    "itemNamePlural": "vocabulary items",
+    "loadFailed": "Could not load the vocabulary list. Try adjusting filters or refresh the page.",
+    "toast": {
+      "created": "Vocabulary created successfully",
+      "updated": "Vocabulary updated successfully",
+      "deleted": "Vocabulary deleted successfully!",
+      "deleteFailed": "Failed to delete vocabulary. Please try again.",
+      "errorTitle": "Error",
+      "fixFields": "Please fix the highlighted fields",
+      "fixFieldsTab": "Check tab {tab} — each target needs a subject.",
+      "quotaMessage": "Limit reached. Upgrade to Member for more.",
+      "upgrade": "Upgrade"
+    },
+    "view": {
+      "viewVocab": "View vocabulary",
+      "editVocab": "Edit vocabulary"
+    },
+    "related": {
+      "synonyms": "Synonyms",
+      "related": "Related",
+      "antonyms": "Antonyms",
+      "notInList": "This word is not yet in your list"
+    },
+    "expandedRow": {
+      "editVocab": "Edit vocab",
+      "editTitle": "Edit",
+      "explanation": "Explanation",
+      "usageExamples": "Usage Examples",
+      "collapseDetails": "Collapse Details"
+    },
+    "examples": {
+      "title": "Examples",
+      "addExample": "Add Example",
+      "source": "Source",
+      "sourcePlaceholder": "Source text example...",
+      "target": "Target",
+      "targetPlaceholder": "Target text example..."
+    },
+    "export": {
+      "button": "Export Excel",
+      "exporting": "Exporting...",
+      "success": "Vocabularies exported successfully",
+      "failed": "Failed to export vocabularies. Please try again.",
+      "sampleTemplate": "Sample Template"
+    },
+    "deleteConflict": {
+      "countVocabs": "{count, plural, one {# Vocab} other {# Vocabs}}",
+      "countTrainers": "{count, plural, one {# Trainer} other {# Trainers}}",
+      "trainersFallback": "Trainers",
+      "cannotDeleteVocabs": "Cannot Delete Vocabularies",
+      "cannotDeleteVocab": "Cannot Delete Vocabulary",
+      "bulkBody": "Some of the selected words are still in trainers. Nothing was deleted. Remove them from their trainers first.",
+      "singleBody": "This word is still in one or more trainers. Remove it from the trainers first.",
+      "affectedItems": "Affected Items",
+      "close": "Close",
+      "viewTrainers": "View trainers"
+    },
+    "subjectBadge": {
+      "more": "+{count} more",
+      "showMore": "Show {count} more subjects"
+    },
+    "subjectsSection": {
+      "title": "Subjects",
+      "loadFailed": "Failed to load subjects. Please try again.",
+      "suggesting": "Suggesting...",
+      "wait": "Wait {seconds}s",
+      "suggest": "Suggest",
+      "chooseSubjects": "Choose subjects...",
+      "aiSuggested": "AI SUGGESTED",
+      "suggestionsFound": "{count} suggestions found",
+      "matchingExisting": "Matching Existing",
+      "newCreativeIdeas": "New Creative Ideas"
+    },
+    "relationFlags": {
+      "isSynonym": "Synonym",
+      "isAntonym": "Antonym",
+      "isRelated": "Related",
+      "editRelation": "Edit Relation"
+    },
+    "wordRelations": {
+      "title": "Word Relations",
+      "addAria": "Add “{word}” to your list",
+      "notInListTip": "This word is not yet in your list. Click (+) to add it quickly",
+      "errors": {
+        "enterWord": "Enter a related word first.",
+        "selectType": "Select at least one relation type.",
+        "synonymAntonym": "Synonym and Antonym cannot both be selected.",
+        "duplicateFree": "This free-text relation already exists.",
+        "duplicateLinked": "This linked relation already exists."
+      }
+    },
+    "wordRelationsSection": {
+      "title": "Word Relations",
+      "setType": "Set Relationship Type",
+      "inputPlaceholder": "Type or search word and press Enter to add",
+      "searching": "Searching vocabs...",
+      "tip": "Tip: You can select both a relation (S/A) and Related (R) simultaneously.",
+      "removeAria": "Remove {word}",
+      "atLeastOne": "At least one relation required"
+    },
+    "aiGenerate": {
+      "success": "AI generated content successfully",
+      "fillFirst": "Please fill in source text and language codes first",
+      "failed": "Failed to generate content"
+    },
+    "addDialog": {
+      "editTitle": "Edit Vocabulary",
+      "addTitle": "Add New Vocabulary",
+      "editDescription": "Update the details for your vocabulary item",
+      "addDescription": "Enter the details for your new vocabulary item",
+      "basicInfo": "Basic Information",
+      "textTargets": "Text Targets",
+      "addNew": "+ Add New",
+      "meaningContext": "Meaning and Context",
+      "aiGenerate": "AI Generate",
+      "aiFeatureName": "AI Generate (text target)",
+      "aiDescription": "Auto-generate target text and examples with AI. Upgrade to Member to unlock.",
+      "generating": "Generating...",
+      "wait": "Wait {seconds}s",
+      "cancel": "Cancel",
+      "updating": "Updating...",
+      "validating": "Validating...",
+      "updateVocab": "Update Vocabulary",
+      "addVocab": "Add Vocabulary"
+    },
+    "languageForm": {
+      "source": "Source",
+      "target": "Target",
+      "selectLanguage": "Select language",
+      "loadingLanguages": "Loading languages...",
+      "errorLoadingLanguages": "Error loading languages",
+      "textSource": "Text Source",
+      "enterSourceText": "Enter source text"
+    },
+    "textTargetTabs": {
+      "title": "Text Targets",
+      "addTarget": "Add Target",
+      "vocabN": "Vocab {n}",
+      "removeTarget": "Remove target"
+    },
+    "textTargetForm": {
+      "targetText": "Target Text",
+      "targetTextPlaceholder": "Enter target text...",
+      "wordType": "Word Type",
+      "selectWordType": "Select word type",
+      "loadingWordTypes": "Loading word types...",
+      "errorLoadingWordTypes": "Error loading word types",
+      "none": "None",
+      "grammarNotes": "Grammar Notes",
+      "grammarPlaceholder": "e.g. Used with prepositions",
+      "explanationUsage": "Explanation & Usage",
+      "explanationSource": "Source",
+      "explanationSourcePlaceholder": "Input source explanation...",
+      "explanationTarget": "Target",
+      "explanationTargetPlaceholder": "Input target explanation..."
+    },
+    "textTargetBalloon": {
+      "editAria": "Edit text target",
+      "edit": "Edit",
+      "editTitle": "Edit Text Target",
+      "text": "Text",
+      "grammar": "Grammar",
+      "explanationSource": "Explanation (source)",
+      "explanationTarget": "Explanation (target)",
+      "cancel": "Cancel",
+      "saving": "Saving…",
+      "save": "Save",
+      "deleteAria": "Delete text target",
+      "delete": "Delete",
+      "deleteTitle": "Delete text target?",
+      "deleteDescription": "This will permanently delete \"{text}\" and cannot be undone.",
+      "emptyError": "Text target cannot be empty",
+      "updated": "Text target updated",
+      "updateFailed": "Failed to update text target",
+      "deleted": "Text target deleted",
+      "deleteFailed": "Failed to delete text target"
+    },
+    "textTargetDialog": {
+      "editTitle": "Edit Text Target",
+      "addTitle": "Add Text Target",
+      "editDescription": "Update the details for this text target",
+      "addDescription": "Enter the details for a new text target",
+      "coreMeaning": "Core Meaning",
+      "generating": "Generating...",
+      "aiGenerate": "AI Generate",
+      "wait": "Wait {seconds}s",
+      "targetText": "Target Text",
+      "targetTextPlaceholder": "Enter target text...",
+      "wordType": "Word Type",
+      "selectWordType": "Select word type",
+      "none": "None",
+      "grammarNotes": "Grammar Notes",
+      "grammarPlaceholder": "e.g. Used with prepositions",
+      "subjects": "Subjects",
+      "chooseSubjects": "Choose subjects...",
+      "explanations": "Explanations",
+      "source": "Source",
+      "sourceExplanationPlaceholder": "Input source explanation...",
+      "target": "Target",
+      "targetExplanationPlaceholder": "Input target explanation...",
+      "cancel": "Cancel",
+      "update": "Update",
+      "create": "Create",
+      "textRequired": "Text target is required",
+      "subjectRequired": "At least one subject must be selected",
+      "updated": "Text target updated successfully",
+      "created": "Text target created successfully",
+      "saveFailed": "Failed to save text target",
+      "errorTitle": "Error"
+    },
+    "textTargetsContent": {
+      "breadcrumbLibrary": "Library",
+      "breadcrumbVocabList": "Vocab List",
+      "breadcrumbTextTargets": "Text Targets",
+      "subtitle": "Detailed breakdown of semantic mappings and contextual translations.",
+      "sourceLabel": "Source",
+      "targetLabel": "Target",
+      "filter": "Filter",
+      "filterBySubjects": "Filter by Subjects",
+      "chooseSubjectsFilter": "Choose subjects to filter by...",
+      "clearFilters": "Clear Filters",
+      "addTarget": "Add Target"
+    },
+    "textTargetsTable": {
+      "colTextTarget": "Text Target",
+      "colType": "Type",
+      "colGrammar": "Grammar",
+      "colExplanationSource": "Explanation (Source)",
+      "colExplanationTarget": "Explanation (Target)",
+      "colSubjects": "Subjects",
+      "colExamples": "Examples",
+      "searchPlaceholder": "Search text targets...",
+      "itemName": "text target",
+      "deleteSuccess": "Text target deleted successfully!",
+      "deleteError": "Failed to delete text target. Please try again."
+    },
+    "importDialog": {
+      "title": "Import Vocabulary",
+      "description": "Upload an Excel file (.xls, .xlsx) or CSV file to import vocabulary data.",
+      "fileLabel": "File",
+      "uploading": "Uploading...",
+      "import": "Import",
+      "cancel": "Cancel",
+      "subjectCreated": "Subject “{name}” created successfully",
+      "subjectCreateFailed": "Failed to create subject “{name}”. Please try again.",
+      "importSuccess": "Import completed successfully! Created: {created}, Updated: {updated}",
+      "importPartial": "Import completed with errors. Created: {created}, Updated: {updated}, Failed: {failed}",
+      "importFailedRows": "Import failed. {failed} rows failed to import.",
+      "fallbackError": "Failed to import file. Please check the file format and try again.",
+      "importFailedTitle": "Import failed",
+      "quotaMessage": "Limit reached. Upgrade to Member for more.",
+      "upgrade": "Upgrade",
+      "resultsTitle": "Import Results",
+      "resultsDescription": "Detailed results of the import operation.",
+      "createdLabel": "Created:",
+      "updatedLabel": "Updated:",
+      "failedLabel": "Failed:",
+      "totalLabel": "Total:",
+      "errorDetails": "Error Details:",
+      "colRow": "Row",
+      "colError": "Error",
+      "colData": "Data",
+      "colAction": "Action",
+      "creating": "Creating...",
+      "createdButton": "Created",
+      "createSubject": "Create “{name}”",
+      "tryAgain": "Try Again",
+      "close": "Close"
     }
   }
 }

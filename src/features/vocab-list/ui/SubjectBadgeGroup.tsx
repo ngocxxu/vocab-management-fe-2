@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
 import { cn } from '@/libs/utils';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
@@ -29,6 +30,7 @@ function SubjectBadge({ subject, className }: Readonly<{ subject: TSubjectBadge;
 }
 
 export function SubjectBadgeGroup({ subjects }: SubjectBadgeGroupProps) {
+  const t = useTranslations('vocabList.subjectBadge');
   const containerRef = useRef<HTMLDivElement | null>(null);
   const measureBadgeRefs = useRef<Array<HTMLSpanElement | null>>([]);
   const measureMoreRef = useRef<HTMLButtonElement | null>(null);
@@ -101,12 +103,9 @@ export function SubjectBadgeGroup({ subjects }: SubjectBadgeGroupProps) {
                 onMouseLeave={() => setPopoverOpen(false)}
                 onFocus={() => setPopoverOpen(true)}
                 onBlur={() => setPopoverOpen(false)}
-                aria-label={`Show ${hiddenCount} more subjects`}
+                aria-label={t('showMore', { count: hiddenCount })}
               >
-                +
-                {hiddenCount}
-                {' '}
-                more
+                {t('more', { count: hiddenCount })}
               </button>
             </PopoverTrigger>
             <PopoverContent
@@ -142,10 +141,7 @@ export function SubjectBadgeGroup({ subjects }: SubjectBadgeGroupProps) {
           className="inline-flex shrink-0 items-center rounded-full border border-dashed border-border bg-background px-3 py-0.5 text-xs font-semibold whitespace-nowrap text-muted-foreground"
           tabIndex={-1}
         >
-          +
-          {subjects.length}
-          {' '}
-          more
+          {t('more', { count: subjects.length })}
         </button>
       </div>
     </div>

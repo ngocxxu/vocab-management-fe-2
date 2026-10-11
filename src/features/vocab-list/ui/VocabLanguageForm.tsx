@@ -2,6 +2,7 @@
 
 import type { VocabLanguageFormProps } from '@/types/vocab-list';
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { useFormContext } from 'react-hook-form';
 import {
   FormControl,
@@ -33,6 +34,7 @@ const VocabLanguageForm: React.FC<VocabLanguageFormProps> = ({
   onRemoveRelation,
   hasInvalidRelationDrafts,
 }) => {
+  const t = useTranslations('vocabList.languageForm');
   const form = useFormContext();
   const languages = initialLanguagesData?.items || [];
   const isLoading = false;
@@ -49,7 +51,7 @@ const VocabLanguageForm: React.FC<VocabLanguageFormProps> = ({
           name="sourceLanguageCode"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Source</FormLabel>
+              <FormLabel>{t('source')}</FormLabel>
               <Select
                 onValueChange={(value) => {
                   field.onChange(value);
@@ -63,20 +65,20 @@ const VocabLanguageForm: React.FC<VocabLanguageFormProps> = ({
               >
                 <FormControl>
                   <SelectTrigger className="mt-1 w-full">
-                    <SelectValue placeholder="Select language" />
+                    <SelectValue placeholder={t('selectLanguage')} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
                   {isLoading
                     ? (
                         <SelectItem value="loading" disabled>
-                          Loading languages...
+                          {t('loadingLanguages')}
                         </SelectItem>
                       )
                     : isError
                       ? (
                           <SelectItem value="error" disabled>
-                            Error loading languages
+                            {t('errorLoadingLanguages')}
                           </SelectItem>
                         )
                       : (
@@ -98,7 +100,7 @@ const VocabLanguageForm: React.FC<VocabLanguageFormProps> = ({
           name="targetLanguageCode"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Target</FormLabel>
+              <FormLabel>{t('target')}</FormLabel>
               <Select
                 onValueChange={(value) => {
                   field.onChange(value);
@@ -112,20 +114,20 @@ const VocabLanguageForm: React.FC<VocabLanguageFormProps> = ({
               >
                 <FormControl>
                   <SelectTrigger className="mt-1 w-full">
-                    <SelectValue placeholder="Select language" />
+                    <SelectValue placeholder={t('selectLanguage')} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
                   {isLoading
                     ? (
                         <SelectItem value="loading" disabled>
-                          Loading languages...
+                          {t('loadingLanguages')}
                         </SelectItem>
                       )
                     : isError
                       ? (
                           <SelectItem value="error" disabled>
-                            Error loading languages
+                            {t('errorLoadingLanguages')}
                           </SelectItem>
                         )
                       : (
@@ -148,9 +150,9 @@ const VocabLanguageForm: React.FC<VocabLanguageFormProps> = ({
         name="textSource"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Text Source</FormLabel>
+            <FormLabel>{t('textSource')}</FormLabel>
             <FormControl>
-              <Input type="text" placeholder="Enter source text" className="mt-1 w-full" {...field} />
+              <Input type="text" placeholder={t('enterSourceText')} className="mt-1 w-full" {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>

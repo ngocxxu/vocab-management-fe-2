@@ -7,11 +7,12 @@ import type { TVocabConflictListResponse } from '@/types/vocab-conflict';
 import { AltArrowLeft, CloseCircle, DangerTriangle, Filter, InfoCircle } from '@solar-icons/react/ssr';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import React, { useCallback, useMemo, useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { bulkUpdateVocabs, deleteVocab, deleteVocabsBulk, getVocabsByIds, updateVocab } from '@/actions/vocabs';
 import { cn } from '@/libs/utils';
-import { vocabInUseText } from '@/utils/vocab-in-use';
+import { vocabInUseMessage } from '@/utils/vocab-in-use';
 import { buildVocabUpdateForSubjectReassign } from '@/utils/build-vocab-reassign-update';
 import {
   Breadcrumb,
@@ -79,6 +80,7 @@ export default function ConflictVocabulariesContent({
   conflictSubjectName,
   loadFailed,
 }: ConflictVocabulariesContentProps) {
+  const t = useTranslations('subjects');
   const router = useRouter();
   const searchParams = useSearchParams();
   const [, startTransition] = useTransition();
@@ -158,14 +160,14 @@ export default function ConflictVocabulariesContent({
   const handleDeleteVocab = useCallback(async (id: string) => {
     const result = await deleteVocab(id);
     if (!result.ok) {
-      throw new Error(vocabInUseText(result.conflict));
+      throw new Error(vocabInUseMessage(result.conflict, t));
     }
-  }, []);
+  }, [t]);
 
   const bulkDelete = useBulkDelete({
     deleteMutation: async (ids: string[]) => {
       const result = await deleteVocabsBulk(ids);
-      return result.ok ? { success: true } : { success: false, error: vocabInUseText(result.conflict) };
+      return result.ok ? { success: true } : { success: false, error: vocabInUseMessage(result.conflict, t) };
     },
     onSuccess: () => {
       startTransition(() => router.refresh());
@@ -207,7 +209,7 @@ export default function ConflictVocabulariesContent({
 
   const confirmBulkReassign = async () => {
     if (bulkTargetSubjectIds.length === 0) {
-      toast.error('Select at least one subject to reassign to.');
+      toast.error(t('vocabs.toast.selectSubject'));
       return;
     }
     const fetched = await getVocabsByIds(reassignIds);
@@ -217,7 +219,7 @@ export default function ConflictVocabulariesContent({
     }
     const vocabs = fetched as TVocab[];
     if (vocabs.length === 0) {
-      toast.error('Could not load selected vocabularies.');
+      toast.error(t('vocabs.toast.loadFailed'));
       return;
     }
     try {
@@ -226,7 +228,7 @@ export default function ConflictVocabulariesContent({
         data: buildVocabUpdateForSubjectReassign(v, subjectId, bulkTargetSubjectIds),
       }));
       await bulkUpdateVocabs(updates);
-      toast.success('Vocabularies reassigned successfully.');
+      toast.success(t('vocabs.toast.reassigned'));
       reassignClearSelectionRef.current?.({});
       reassignClearSelectionRef.current = null;
       setReassignOpen(false);
@@ -234,7 +236,7 @@ export default function ConflictVocabulariesContent({
       setBulkTargetSubjectIds([]);
       startTransition(() => router.refresh());
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : 'Failed to reassign vocabularies.');
+      toast.error(e instanceof Error ? e.message : t('vocabs.toast.reassignFailed'));
     }
   };
 
@@ -242,7 +244,7 @@ export default function ConflictVocabulariesContent({
     async (vocab: TVocab, newSubjectIds: string[]): Promise<boolean> => {
       const ids = newSubjectIds.filter(id => id !== subjectId);
       if (ids.length === 0) {
-        toast.error('Select at least one subject.');
+        toast.error(t('vocabs.toast.rowSelectSubject'));
         return false;
       }
       setRowBusyId(vocab.id);
@@ -251,17 +253,17 @@ export default function ConflictVocabulariesContent({
           vocab.id,
           buildVocabUpdateForSubjectReassign(vocab, subjectId, ids),
         );
-        toast.success('Vocabulary reassigned.');
+        toast.success(t('vocabs.toast.rowReassigned'));
         startTransition(() => router.refresh());
         return true;
       } catch (e) {
-        toast.error(e instanceof Error ? e.message : 'Failed to reassign.');
+        toast.error(e instanceof Error ? e.message : t('vocabs.toast.rowReassignFailed'));
         return false;
       } finally {
         setRowBusyId(null);
       }
     },
-    [subjectId, router, startTransition],
+    [subjectId, router, startTransition, t],
   );
 
   const handleEditNavigate = useCallback(
@@ -274,15 +276,15 @@ export default function ConflictVocabulariesContent({
         router.push(`/vocab-list?${q.toString()}`);
         return;
       }
-      toast.message('Open Vocab List', {
-        description: 'Find this word from the main list to edit full details.',
+      toast.message(t('vocabs.toast.openVocabList'), {
+        description: t('vocabs.toast.openVocabListDescription'),
       });
       router.push('/vocab-list');
     },
-    [router],
+    [router, t],
   );
 
-  const titleSuffix = conflictSubjectName ? ` for ${conflictSubjectName}` : '';
+  const titleSuffix = conflictSubjectName ? ` ${t('vocabs.titleFor', { name: conflictSubjectName })}` : '';
 
   const columns = useMemo<ColumnDef<TVocab>[]>(
     () => [
@@ -292,14 +294,14 @@ export default function ConflictVocabulariesContent({
           <Checkbox
             checked={table.getIsAllPageRowsSelected()}
             onCheckedChange={value => table.toggleAllPageRowsSelected(!!value)}
-            aria-label="Select all"
+            aria-label={t('vocabs.columns.select')}
           />
         ),
         cell: ({ row }) => (
           <Checkbox
             checked={row.getIsSelected()}
             onCheckedChange={value => row.toggleSelected(!!value)}
-            aria-label="Select row"
+            aria-label={t('vocabs.columns.selectRow')}
           />
         ),
         enableSorting: false,
@@ -307,7 +309,7 @@ export default function ConflictVocabulariesContent({
       },
       {
         accessorKey: 'textSource',
-        header: 'Text Source',
+        header: t('vocabs.columns.textSource'),
         cell: ({ row }) => (
           <span
             key={`${row.original.textSource}`}
@@ -323,7 +325,7 @@ export default function ConflictVocabulariesContent({
       },
       {
         accessorKey: 'textTargets',
-        header: 'Text Targets',
+        header: t('vocabs.columns.textTargets'),
         cell: ({ row }) => {
           const textTargets = row.original.textTargets;
           if (!textTargets?.length) {
@@ -349,7 +351,7 @@ export default function ConflictVocabulariesContent({
       },
       {
         id: 'reassign',
-        header: 'Reassign to new subject',
+        header: t('vocabs.columns.reassign'),
         cell: ({ row }) => (
           <div
             data-no-expand
@@ -371,7 +373,7 @@ export default function ConflictVocabulariesContent({
       },
       {
         accessorKey: 'createdAt',
-        header: 'Date added',
+        header: t('vocabs.columns.dateAdded'),
         cell: ({ row }) => (
           <span className="text-sm text-muted-foreground">
             {formatConflictDate(row.original.createdAt)}
@@ -381,7 +383,7 @@ export default function ConflictVocabulariesContent({
       },
       {
         id: 'actions',
-        header: 'Actions',
+        header: t('vocabs.columns.actions'),
         cell: ({ row }) => (
           <DeleteActionButton
             itemId={row.original.id}
@@ -393,7 +395,7 @@ export default function ConflictVocabulariesContent({
         enableSorting: false,
       },
     ],
-    [reassignOptions, rowBusyId, handleRowReassign, handleEditNavigate, handleDeleteVocab, startTransition, router],
+    [reassignOptions, rowBusyId, handleRowReassign, handleEditNavigate, handleDeleteVocab, startTransition, router, t],
   );
 
   const filterTrigger = (
@@ -401,13 +403,13 @@ export default function ConflictVocabulariesContent({
       <PopoverTrigger asChild>
         <Button variant="outline" size="sm" className="h-9 bg-card/80">
           <Filter size={16} weight="BoldDuotone" className="mr-2" />
-          Filter
+          {t('vocabs.filter.button')}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-72" align="start">
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label>Sort by</Label>
+            <Label>{t('vocabs.filter.sortBy')}</Label>
             <Select
               value={pagination.sortBy}
               onValueChange={v => updateQuery({ sortBy: v })}
@@ -416,14 +418,14 @@ export default function ConflictVocabulariesContent({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="createdAt">Created date</SelectItem>
-                <SelectItem value="updatedAt">Updated date</SelectItem>
-                <SelectItem value="textSource">Vocabulary name</SelectItem>
+                <SelectItem value="createdAt">{t('vocabs.filter.sortCreated')}</SelectItem>
+                <SelectItem value="updatedAt">{t('vocabs.filter.sortUpdated')}</SelectItem>
+                <SelectItem value="textSource">{t('vocabs.filter.sortTextSource')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div className="space-y-2">
-            <Label>Order</Label>
+            <Label>{t('vocabs.filter.order')}</Label>
             <Select
               value={pagination.sortOrder}
               onValueChange={v => updateQuery({ sortOrder: v })}
@@ -432,8 +434,8 @@ export default function ConflictVocabulariesContent({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="desc">Newest first</SelectItem>
-                <SelectItem value="asc">Oldest first</SelectItem>
+                <SelectItem value="desc">{t('vocabs.filter.newestFirst')}</SelectItem>
+                <SelectItem value="asc">{t('vocabs.filter.oldestFirst')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -449,12 +451,12 @@ export default function ConflictVocabulariesContent({
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link href="/subjects">Subjects</Link>
+                <Link href="/subjects">{t('title')}</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>Conflict Vocabularies</BreadcrumbPage>
+              <BreadcrumbPage>{t('vocabs.breadcrumbConflict')}</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
@@ -462,41 +464,36 @@ export default function ConflictVocabulariesContent({
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="space-y-2">
             <h1 className="text-3xl font-bold text-foreground">
-              Vocabularies
+              {t('vocabs.title')}
               {titleSuffix}
             </h1>
           </div>
           <Button variant="outline" className="shrink-0" asChild>
             <Link href="/subjects">
               <AltArrowLeft size={18} weight="BoldDuotone" className="mr-2" />
-              Back to Subjects
+              {t('vocabs.backToSubjects')}
             </Link>
           </Button>
         </div>
 
         {loadFailed && (
-          <ErrorState message="Could not load conflicting vocabularies. Try again or return to subjects." />
+          <ErrorState message={t('vocabs.loadError')} />
         )}
 
         {!loadFailed && (
           <>
             <Alert variant="destructive" className="mb-6 border-destructive/50 bg-destructive/10">
               <DangerTriangle className="size-4" />
-              <AlertTitle>Action required</AlertTitle>
+              <AlertTitle>{t('vocabs.actionRequired')}</AlertTitle>
               <AlertDescription>
-                These
-                {' '}
-                {totalItems}
-                {' '}
-                vocabularies are preventing the deletion of this subject. Reassign or delete them to proceed with
-                the subject removal.
+                {t('vocabs.alertBody', { count: totalItems })}
               </AlertDescription>
             </Alert>
 
             <DataTable
               columns={columns}
               data={data}
-              searchPlaceholder="Search vocabularies..."
+              searchPlaceholder={t('vocabs.searchPlaceholder')}
               searchValue={textSourceParam}
               onSearchChangeAction={handleSearchChange}
               showSearch
@@ -542,27 +539,23 @@ export default function ConflictVocabulariesContent({
             >
               <DialogContent className="max-h-[min(90vh,720px)] overflow-y-auto sm:max-w-lg">
                 <DialogHeader>
-                  <DialogTitle>Bulk Reassign Subject</DialogTitle>
+                  <DialogTitle>{t('vocabs.bulk.title')}</DialogTitle>
                   <DialogDescription>
-                    Select new subjects for the
-                    {' '}
-                    {reassignIds.length}
-                    {' '}
-                    selected vocabularies. The conflicting subject will be removed and the chosen subjects added on all text targets.
+                    {t('vocabs.bulk.description', { count: reassignIds.length })}
                   </DialogDescription>
                 </DialogHeader>
 
                 <div className="space-y-4 py-1">
                   <div className="space-y-2">
                     <Label className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                      Target subjects
+                      {t('vocabs.bulk.targetSubjects')}
                     </Label>
                     <MultiSelect
                       key={subjectMultiSelectKey}
                       options={subjectMultiSelectOptions}
                       defaultValue={[]}
                       onValueChange={setBulkTargetSubjectIds}
-                      placeholder="Choose subjects..."
+                      placeholder={t('vocabs.bulk.choose')}
                       maxCount={5}
                       className="w-full"
                       resetOnDefaultValueChange
@@ -576,17 +569,17 @@ export default function ConflictVocabulariesContent({
                   <div className="rounded-lg border border-border bg-muted/30 p-4">
                     <div className="mb-3 flex items-center justify-between gap-2">
                       <span className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                        Selected items preview
+                        {t('vocabs.bulk.previewTitle')}
                       </span>
                       <span className="inline-flex items-center rounded-full bg-primary/15 px-2.5 py-0.5 text-xs font-medium text-primary">
                         {reassignIds.length}
                         {' '}
-                        total
+                        {t('vocabs.bulk.total')}
                       </span>
                     </div>
                     {reassignIds.length === 0
                       ? (
-                          <p className="text-sm text-muted-foreground">No items selected.</p>
+                          <p className="text-sm text-muted-foreground">{t('vocabs.bulk.noneSelected')}</p>
                         )
                       : (
                           <div className="flex flex-wrap gap-2">
@@ -603,7 +596,9 @@ export default function ConflictVocabulariesContent({
                                   type="button"
                                   className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-primary transition-colors hover:bg-primary/15"
                                   onClick={() => removeReassignId(id)}
-                                  aria-label={textSourceById.get(id) ? `Remove ${textSourceById.get(id)}` : 'Remove selected vocabulary'}
+                                  aria-label={textSourceById.get(id)
+                                    ? t('vocabs.bulk.remove', { name: textSourceById.get(id) ?? '' })
+                                    : t('vocabs.bulk.removeGeneric')}
                                 >
                                   <CloseCircle size={14} weight="BoldDuotone" />
                                 </button>
@@ -615,12 +610,9 @@ export default function ConflictVocabulariesContent({
                                 className="inline-flex items-center rounded-full bg-muted px-3 py-1 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/80"
                                 onClick={() =>
                                   setPreviewVisibleCount(c => c + PREVIEW_PAGE_SIZE)}
-                                aria-label={`Show ${Math.min(PREVIEW_PAGE_SIZE, reassignIds.length - previewVisibleCount)} more selected items`}
+                                aria-label={t('vocabs.bulk.showMore', { count: Math.min(PREVIEW_PAGE_SIZE, reassignIds.length - previewVisibleCount) })}
                               >
-                                +
-                                {reassignIds.length - previewVisibleCount}
-                                {' '}
-                                more
+                                {t('vocabs.bulk.more', { count: reassignIds.length - previewVisibleCount })}
                               </button>
                             )}
                           </div>
@@ -629,23 +621,23 @@ export default function ConflictVocabulariesContent({
 
                   <Alert className="text-warning-950 dark:text-warning-100 [&>svg]:text-warning-700 dark:[&>svg]:text-warning-300 border-warning/40 bg-warning/10 dark:border-warning/30 dark:bg-warning/10">
                     <InfoCircle className="size-4" />
-                    <AlertTitle>Note</AlertTitle>
+                    <AlertTitle>{t('vocabs.bulk.note')}</AlertTitle>
                     <AlertDescription>
-                      Reassigning these vocabularies resolves subject-related conflicts for this deletion flow. Changes are persisted on the server.
+                      {t('vocabs.bulk.noteBody')}
                     </AlertDescription>
                   </Alert>
                 </div>
 
                 <DialogFooter className="gap-2 sm:gap-0">
                   <Button type="button" variant="outline" onClick={() => setReassignOpen(false)}>
-                    Cancel
+                    {t('cancel')}
                   </Button>
                   <Button
                     type="button"
                     disabled={reassignIds.length === 0 || bulkTargetSubjectIds.length === 0}
                     onClick={() => void confirmBulkReassign()}
                   >
-                    Confirm reassign
+                    {t('vocabs.bulk.confirm')}
                   </Button>
                 </DialogFooter>
               </DialogContent>

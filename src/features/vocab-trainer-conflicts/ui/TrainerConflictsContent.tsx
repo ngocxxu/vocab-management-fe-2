@@ -4,6 +4,7 @@ import type { TVocabTrainerConflict } from '@/types/vocab-conflict';
 import { AltArrowLeft } from '@solar-icons/react/ssr';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { deleteVocab } from '@/actions/vocabs';
@@ -23,7 +24,7 @@ import {
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
-import { vocabInUseText } from '@/utils/vocab-in-use';
+import { vocabInUseMessage } from '@/utils/vocab-in-use';
 
 type TrainerConflictsContentProps = Readonly<{
   conflicts: TVocabTrainerConflict[];
@@ -36,17 +37,19 @@ type TRemoveTarget = {
   trainer: TVocabTrainerConflict['trainers'][number];
 };
 
-const MODE_LABEL: Record<ETrainerMode, string> = {
-  [ETrainerMode.FSRS]: 'Spaced repetition',
-  [ETrainerMode.CLASSIC]: 'Classic',
-};
-
 /** The words of a refused delete. Each word can be taken out of its trainers, then deleted once it is free. */
 export default function TrainerConflictsContent({ conflicts, loadFailed }: TrainerConflictsContentProps) {
+  const t = useTranslations('trainerConflicts');
+  const tSubjects = useTranslations('subjects');
   const router = useRouter();
   const [, startTransition] = useTransition();
   const [busyKey, setBusyKey] = useState<string | null>(null);
   const [removeTarget, setRemoveTarget] = useState<TRemoveTarget | null>(null);
+
+  const modeLabel: Record<ETrainerMode, string> = {
+    [ETrainerMode.FSRS]: t('modeSpaced'),
+    [ETrainerMode.CLASSIC]: t('modeClassic'),
+  };
 
   const refresh = () => startTransition(() => router.refresh());
 
@@ -64,11 +67,11 @@ export default function TrainerConflictsContent({ conflicts, loadFailed }: Train
     setBusyKey(`${vocabId}:${trainer.id}`);
     try {
       await removeVocabFromTrainer(trainer.id, vocabId);
-      toast.success(`Removed from ${trainer.name}`);
+      toast.success(t('removedFrom', { name: trainer.name }));
       setRemoveTarget(null);
       refresh();
     } catch (error: unknown) {
-      toast.error(error instanceof Error ? error.message : 'Failed to remove the word from the trainer');
+      toast.error(error instanceof Error ? error.message : t('removeFailed'));
     } finally {
       setBusyKey(null);
     }
@@ -79,13 +82,13 @@ export default function TrainerConflictsContent({ conflicts, loadFailed }: Train
     try {
       const result = await deleteVocab(vocabId);
       if (result.ok) {
-        toast.success(`${textSource} deleted`);
+        toast.success(t('deleted', { text: textSource }));
       } else {
-        toast.error(vocabInUseText(result.conflict));
+        toast.error(vocabInUseMessage(result.conflict, tSubjects));
       }
       refresh();
     } catch (error: unknown) {
-      toast.error(error instanceof Error ? error.message : 'Failed to delete vocabulary');
+      toast.error(error instanceof Error ? error.message : t('deleteFailed'));
     } finally {
       setBusyKey(null);
     }
@@ -96,26 +99,26 @@ export default function TrainerConflictsContent({ conflicts, loadFailed }: Train
       <Button asChild variant="ghost" size="sm" className="-ml-2">
         <Link href="/vocab-list">
           <AltArrowLeft size={18} weight="BoldDuotone" />
-          Back to vocab list
+          {t('backToList')}
         </Link>
       </Button>
 
       <div className="space-y-1">
-        <h1 className="text-2xl font-bold text-foreground">These words are still in trainers</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
         <p className="text-sm text-muted-foreground">
-          Take each word out of its trainers, then delete it. Nothing is deleted until a word is free.
+          {t('description')}
         </p>
       </div>
 
       {loadFailed && (
         <Alert variant="destructive">
-          <AlertTitle>Unable to load these words right now</AlertTitle>
-          <AlertDescription>Please refresh the page or try again later.</AlertDescription>
+          <AlertTitle>{t('loadFailedTitle')}</AlertTitle>
+          <AlertDescription>{t('loadFailedDescription')}</AlertDescription>
         </Alert>
       )}
 
       {!loadFailed && conflicts.length === 0 && (
-        <p className="text-center text-muted-foreground">Nothing is blocking these words any more.</p>
+        <p className="text-center text-muted-foreground">{t('nothingBlocking')}</p>
       )}
 
       {conflicts.map(conflict => (
@@ -127,14 +130,14 @@ export default function TrainerConflictsContent({ conflicts, loadFailed }: Train
             {conflict.trainers.length === 0
               ? (
                   <div className="flex flex-wrap items-center justify-between gap-3">
-                    <p className="text-sm text-muted-foreground">This word is not in any trainer any more.</p>
+                    <p className="text-sm text-muted-foreground">{t('notInAnyTrainer')}</p>
                     <Button
                       type="button"
                       variant="destructive"
                       disabled={busyKey === conflict.vocabId}
                       onClick={() => void handleDelete(conflict.vocabId, conflict.textSource)}
                     >
-                      Delete vocabulary
+                      {t('deleteVocabulary')}
                     </Button>
                   </div>
                 )
@@ -144,7 +147,7 @@ export default function TrainerConflictsContent({ conflicts, loadFailed }: Train
                       <li key={trainer.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
                         <div className="flex items-center gap-2">
                           <span className="font-medium text-foreground">{trainer.name}</span>
-                          <Badge variant="outline">{MODE_LABEL[trainer.mode]}</Badge>
+                          <Badge variant="outline">{modeLabel[trainer.mode]}</Badge>
                         </div>
                         <Button
                           type="button"
@@ -153,7 +156,7 @@ export default function TrainerConflictsContent({ conflicts, loadFailed }: Train
                           disabled={busyKey !== null}
                           onClick={() => setRemoveTarget({ vocabId: conflict.vocabId, textSource: conflict.textSource, trainer })}
                         >
-                          Remove from trainer
+                          {t('removeFromTrainer')}
                         </Button>
                       </li>
                     ))}
@@ -167,18 +170,18 @@ export default function TrainerConflictsContent({ conflicts, loadFailed }: Train
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {removeTarget ? `Remove ${removeTarget.textSource} from ${removeTarget.trainer.name}?` : ''}
+              {removeTarget ? t('removeDialogTitle', { text: removeTarget.textSource, trainer: removeTarget.trainer.name }) : ''}
             </AlertDialogTitle>
             <AlertDialogDescription>
               {removeTarget?.trainer.mode === ETrainerMode.FSRS
-                ? 'The review schedule of this word in this trainer is deleted. The review history is kept. The word stays in your library.'
-                : 'The word stays in your library. It is only removed from this trainer.'}
+                ? t('removeFsrsDescription')
+                : t('removeClassicDescription')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
             <AlertDialogAction disabled={busyKey !== null} onClick={() => void handleRemove()}>
-              Remove
+              {t('remove')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

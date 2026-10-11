@@ -3,6 +3,7 @@
 import type { ColumnDef, VisibilityState } from '@tanstack/react-table';
 import type { TTextTarget } from '@/types/vocab-list';
 import { Pen } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import React, { useMemo, useTransition } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { deleteTextTarget } from '@/actions/text-targets';
@@ -75,6 +76,7 @@ const TextTargetsTable: React.FC<TextTargetsTableProps> = ({
   columnVisibility,
   onColumnVisibilityChange,
 }) => {
+  const t = useTranslations('vocabList.textTargetsTable');
   const router = useRouter();
   const searchParams = useSearchParams();
   const [, startTransition] = useTransition();
@@ -103,7 +105,7 @@ const TextTargetsTable: React.FC<TextTargetsTableProps> = ({
   const columns = useMemo<ColumnDef<TTextTarget>[]>(() => [
     {
       accessorKey: 'textTarget',
-      header: 'Text Target',
+      header: t('colTextTarget'),
       cell: ({ row }) => (
         <span className="text-sm font-semibold break-words text-foreground">{row.original.textTarget}</span>
       ),
@@ -112,7 +114,7 @@ const TextTargetsTable: React.FC<TextTargetsTableProps> = ({
     },
     {
       id: 'wordType',
-      header: 'Type',
+      header: t('colType'),
       cell: ({ row }) => {
         const name = row.original.wordType?.name;
         if (!name) {
@@ -129,14 +131,14 @@ const TextTargetsTable: React.FC<TextTargetsTableProps> = ({
     },
     {
       accessorKey: 'grammar',
-      header: 'Grammar',
+      header: t('colGrammar'),
       cell: ({ row }) => <GrammarTags grammar={row.original.grammar} />,
       enableSorting: false,
       size: 140,
     },
     {
       accessorKey: 'explanationSource',
-      header: 'Explanation (Source)',
+      header: t('colExplanationSource'),
       cell: ({ row }) => (
         <span className="text-sm break-words text-foreground">{row.original.explanationSource || '—'}</span>
       ),
@@ -145,7 +147,7 @@ const TextTargetsTable: React.FC<TextTargetsTableProps> = ({
     },
     {
       accessorKey: 'explanationTarget',
-      header: 'Explanation (Target)',
+      header: t('colExplanationTarget'),
       cell: ({ row }) => (
         <span className="text-sm break-words text-muted-foreground italic">{row.original.explanationTarget || '—'}</span>
       ),
@@ -154,7 +156,7 @@ const TextTargetsTable: React.FC<TextTargetsTableProps> = ({
     },
     {
       id: 'subjects',
-      header: 'Subjects',
+      header: t('colSubjects'),
       cell: ({ row }) => {
         const subjects = row.original.textTargetSubjects.map(ts => ({
           id: ts.subject.id,
@@ -167,7 +169,7 @@ const TextTargetsTable: React.FC<TextTargetsTableProps> = ({
     },
     {
       id: 'examples',
-      header: 'Examples',
+      header: t('colExamples'),
       cell: ({ row }) => <ExamplesCell examples={row.original.vocabExamples} />,
       enableSorting: false,
       size: 220,
@@ -187,7 +189,7 @@ const TextTargetsTable: React.FC<TextTargetsTableProps> = ({
           </Button>
           <DeleteActionButton
             itemId={row.original.id}
-            itemName="text target"
+            itemName={t('itemName')}
             onDelete={async (id: string) => {
               await deleteTextTarget(vocabId, id);
             }}
@@ -196,8 +198,8 @@ const TextTargetsTable: React.FC<TextTargetsTableProps> = ({
                 router.refresh();
               });
             }}
-            successMessage="Text target deleted successfully!"
-            errorMessage="Failed to delete text target. Please try again."
+            successMessage={t('deleteSuccess')}
+            errorMessage={t('deleteError')}
           />
         </div>
       ),
@@ -206,14 +208,14 @@ const TextTargetsTable: React.FC<TextTargetsTableProps> = ({
       enableResizing: false,
       size: 80,
     },
-  ], [onEdit, vocabId, router, startTransition]);
+  ], [onEdit, vocabId, router, startTransition, t]);
 
   return (
     <DataTable
       columns={columns}
       data={textTargets}
       showSearch={true}
-      searchPlaceholder="Search text targets..."
+      searchPlaceholder={t('searchPlaceholder')}
       searchValue={searchValue}
       onSearchChangeAction={onSearchChange}
       showPagination={true}

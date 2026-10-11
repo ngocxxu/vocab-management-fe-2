@@ -3,6 +3,7 @@
 import type { SubjectsSectionProps } from '@/types/vocab-list';
 import type { TSubjectGenerateResult } from '@/types/subject';
 import { MagicStick, RefreshCircle } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { generateSubjectSuggestions } from '@/actions/subjects';
@@ -38,6 +39,7 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = React.memo(({
   targetLanguageCode,
   textTarget,
 }) => {
+  const t = useTranslations('vocabList.subjectsSection');
   const form = useFormContext();
   const [isMounted, setIsMounted] = useState(false);
   const [suggestState, setSuggestState] = useState<SuggestState>('idle');
@@ -138,7 +140,7 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = React.memo(({
   if (!isMounted || subjectsLoading) {
     return (
       <div className="space-y-4">
-        <h4 className="text-sm font-medium">Subjects</h4>
+        <h4 className="text-sm font-medium">{t('title')}</h4>
         <Skeleton className="h-10 w-full" />
       </div>
     );
@@ -147,9 +149,9 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = React.memo(({
   if (subjectsError) {
     return (
       <div className="space-y-4">
-        <h4 className="text-sm font-medium">Subjects</h4>
+        <h4 className="text-sm font-medium">{t('title')}</h4>
         <div className="h-10 rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
-          Failed to load subjects. Please try again.
+          {t('loadFailed')}
         </div>
       </div>
     );
@@ -158,7 +160,7 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = React.memo(({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h4 className="text-sm font-medium">Subjects</h4>
+        <h4 className="text-sm font-medium">{t('title')}</h4>
         <Button
           type="button"
           variant="outline"
@@ -171,23 +173,20 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = React.memo(({
             ? (
                 <>
                   <RefreshCircle size={12} weight="BoldDuotone" className="animate-spin" />
-                  Suggesting...
+                  {t('suggesting')}
                 </>
               )
             : isCooldownActive
               ? (
                   <>
                     <RefreshCircle size={12} weight="BoldDuotone" />
-                    Wait
-                    {' '}
-                    {cooldownRemaining}
-                    s
+                    {t('wait', { seconds: cooldownRemaining })}
                   </>
                 )
               : (
                   <>
                     <MagicStick size={12} weight="BoldDuotone" />
-                    Suggest
+                    {t('suggest')}
                   </>
                 )}
         </Button>
@@ -199,14 +198,14 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = React.memo(({
         name={subjectIdsPath}
         render={() => (
           <FormItem>
-            <FormLabel className="sr-only">Subjects</FormLabel>
+            <FormLabel className="sr-only">{t('title')}</FormLabel>
             <FormControl>
               <MultiSelect
                 key={targetId}
                 options={allOptions}
                 defaultValue={multiSelectValue}
                 onValueChange={handleMultiSelectChange}
-                placeholder="Choose subjects..."
+                placeholder={t('chooseSubjects')}
                 maxCount={4}
                 disabled={subjectsLoading}
                 className="w-full"
@@ -225,17 +224,15 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = React.memo(({
       {aiSuggestions && (
         <div className="space-y-3 rounded-lg border border-primary/30 bg-primary/5 p-3">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-bold text-primary">AI SUGGESTED</span>
+            <span className="text-sm font-bold text-primary">{t('aiSuggested')}</span>
             <Badge variant="secondary">
-              {aiSuggestions.totalCount}
-              {' '}
-              suggestions found
+              {t('suggestionsFound', { count: aiSuggestions.totalCount })}
             </Badge>
           </div>
 
           {aiSuggestions.matchingExisting.length > 0 && (
             <div>
-              <p className="mb-2 text-xs tracking-wide text-muted-foreground uppercase">Matching Existing</p>
+              <p className="mb-2 text-xs tracking-wide text-muted-foreground uppercase">{t('matchingExisting')}</p>
               <div className="flex flex-wrap gap-2">
                 {aiSuggestions.matchingExisting.map((s) => {
                   const isAdded = currentSubjectIds.includes(s.id);
@@ -260,7 +257,7 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = React.memo(({
 
           {aiSuggestions.newCreativeIdeas.length > 0 && (
             <div>
-              <p className="mb-2 text-xs tracking-wide text-muted-foreground uppercase">New Creative Ideas</p>
+              <p className="mb-2 text-xs tracking-wide text-muted-foreground uppercase">{t('newCreativeIdeas')}</p>
               <div className="flex flex-wrap gap-2">
                 {aiSuggestions.newCreativeIdeas.map((s) => {
                   const isAdded = currentPendingNames.includes(s.name);

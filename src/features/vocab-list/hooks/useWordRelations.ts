@@ -6,6 +6,7 @@ import type {
 } from '@/types/vocab-list';
 import type { TRelatedWordAutocompleteItem } from '@/types/vocab-related-word';
 import type { VocabQueryParams } from '@/utils/api-config';
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo, useReducer } from 'react';
 import { toast } from 'sonner';
 import {
@@ -156,18 +157,18 @@ function wordRelationsReducer(state: TWordRelationsState, action: TWordRelations
   }
 }
 
-function validateRelationFlags(flags: TWordRelationsController['relationPendingFlags']) {
+type TRelationFlagsErrorKey = 'selectType' | 'synonymAntonym';
+
+function getRelationFlagsErrorKey(flags: TWordRelationsController['relationPendingFlags']): TRelationFlagsErrorKey | null {
   if (!flags.isSynonym && !flags.isAntonym && !flags.isRelated) {
-    toast.error('Select at least one relation type.');
-    return false;
+    return 'selectType';
   }
 
   if (flags.isSynonym && flags.isAntonym) {
-    toast.error('Synonym and Antonym cannot both be selected.');
-    return false;
+    return 'synonymAntonym';
   }
 
-  return true;
+  return null;
 }
 
 export function useWordRelations({
@@ -187,6 +188,7 @@ export function useWordRelations({
   languageFolderId?: string;
   getVocabsForSelection: TGetVocabsForSelection;
 }) {
+  const t = useTranslations('vocabList.wordRelations.errors');
   const [state, dispatch] = useReducer(wordRelationsReducer, initialState);
 
   const resetRelations = useCallback(() => {
@@ -216,11 +218,13 @@ export function useWordRelations({
   const onAddFreeTextRelation = useCallback(() => {
     const normalizedValue = state.relationInputValue.trim();
     if (!normalizedValue) {
-      toast.error('Enter a related word first.');
+      toast.error(t('enterWord'));
       return;
     }
 
-    if (!validateRelationFlags(state.relationPendingFlags)) {
+    const flagsErrorKey = getRelationFlagsErrorKey(state.relationPendingFlags);
+    if (flagsErrorKey) {
+      toast.error(t(flagsErrorKey));
       return;
     }
 
@@ -228,7 +232,7 @@ export function useWordRelations({
       relation => normalizeFreeText(relation.freeText) === normalizeFreeText(normalizedValue),
     );
     if (duplicate) {
-      toast.error('This free-text relation already exists.');
+      toast.error(t('duplicateFree'));
       return;
     }
 
@@ -245,16 +249,18 @@ export function useWordRelations({
       },
     });
     dispatch({ type: 'reset-composer' });
-  }, [state.relationDrafts, state.relationInputValue, state.relationPendingFlags]);
+  }, [state.relationDrafts, state.relationInputValue, state.relationPendingFlags, t]);
 
   const onAddLinkedRelation = useCallback((item: TRelatedWordAutocompleteItem) => {
-    if (!validateRelationFlags(state.relationPendingFlags)) {
+    const flagsErrorKey = getRelationFlagsErrorKey(state.relationPendingFlags);
+    if (flagsErrorKey) {
+      toast.error(t(flagsErrorKey));
       return;
     }
 
     const duplicate = state.relationDrafts.some(relation => relation.linkedVocabId === item.id);
     if (duplicate) {
-      toast.error('This linked relation already exists.');
+      toast.error(t('duplicateLinked'));
       return;
     }
 
@@ -271,7 +277,7 @@ export function useWordRelations({
       },
     });
     dispatch({ type: 'reset-composer' });
-  }, [state.relationDrafts, state.relationPendingFlags]);
+  }, [state.relationDrafts, state.relationPendingFlags, t]);
 
   useEffect(() => {
     if (!dialogOpen) {
