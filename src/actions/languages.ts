@@ -12,7 +12,7 @@ export async function createLanguage(languageData: { name: string; code: string 
     revalidatePath('/vocab-list');
     return result;
   } catch (error) {
-    throw toActionError(error, 'Failed to create language');
+    throw await toActionError(error, 'createLanguage');
   }
 }
 
@@ -23,7 +23,7 @@ export async function updateLanguage(id: string, languageData: { name: string; c
     revalidatePath('/vocab-list');
     return result;
   } catch (error) {
-    throw toActionError(error, 'Failed to update language');
+    throw await toActionError(error, 'updateLanguage');
   }
 }
 
@@ -34,6 +34,6 @@ export async function deleteLanguage(id: string) {
     revalidatePath('/vocab-list');
     return result;
   } catch (error) {
-    throw toActionError(error, 'Failed to delete language');
+    throw await toActionError(error, 'deleteLanguage');
   }
 }

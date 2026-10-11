@@ -3,19 +3,21 @@
 import { Settings, Star } from '@solar-icons/react/ssr';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import React, { useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { markAllNotificationsAsRead } from '@/actions/notifications';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/libs/utils';
 
-const PREFERENCE_ITEMS: { id: string; label: string; description: string }[] = [
-  { id: 'learningReminders', label: 'Learning Reminders', description: 'Daily practice nudges' },
-  { id: 'achievements', label: 'Achievements', description: 'When you hit milestones' },
-  { id: 'productUpdates', label: 'Product Updates', description: 'New features & tips' },
-];
+const PREFERENCE_ITEMS = [
+  { id: 'learningReminders', labelKey: 'settings.learningReminders', hintKey: 'settings.learningRemindersHint' },
+  { id: 'achievements', labelKey: 'settings.achievements', hintKey: 'settings.achievementsHint' },
+  { id: 'productUpdates', labelKey: 'settings.productUpdates', hintKey: 'settings.productUpdatesHint' },
+] as const;
 
 export const NotificationsSidebar: React.FC = () => {
+  const t = useTranslations('notifications');
   const router = useRouter();
   const [, startTransition] = useTransition();
   const [learningReminders, setLearningReminders] = useState(true);
@@ -45,11 +47,11 @@ export const NotificationsSidebar: React.FC = () => {
   const handleClearAll = async () => {
     try {
       await markAllNotificationsAsRead();
-      toast.success('All notifications marked as read');
+      toast.success(t('markAllReadToast'));
       startTransition(() => router.refresh());
     } catch (error) {
       console.error('Failed to clear notifications:', error);
-      toast.error('Failed to clear notifications');
+      toast.error(t('settings.clearAllFailed'));
     }
   };
 
@@ -59,11 +61,11 @@ export const NotificationsSidebar: React.FC = () => {
         <div className="flex items-center gap-2">
           <Settings size={18} weight="BoldDuotone" className="text-muted-foreground" />
           <h2 className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">
-            Settings
+            {t('settings.title')}
           </h2>
         </div>
         <div className="space-y-3">
-          {PREFERENCE_ITEMS.map(({ id, label, description }) => {
+          {PREFERENCE_ITEMS.map(({ id, labelKey, hintKey }) => {
             const on = getPrefValue(id);
             return (
               <div
@@ -71,8 +73,8 @@ export const NotificationsSidebar: React.FC = () => {
                 className="flex items-center justify-between rounded-lg border border-border bg-muted/30 px-4 py-3"
               >
                 <div>
-                  <p className="font-medium text-foreground">{label}</p>
-                  <p className="text-xs text-muted-foreground">{description}</p>
+                  <p className="font-medium text-foreground">{t(labelKey)}</p>
+                  <p className="text-xs text-muted-foreground">{t(hintKey)}</p>
                 </div>
                 <button
                   type="button"
@@ -101,7 +103,7 @@ export const NotificationsSidebar: React.FC = () => {
           className="w-full"
           onClick={handleClearAll}
         >
-          Clear All Notifications
+          {t('settings.clearAll')}
         </Button>
       </div>
 
@@ -113,10 +115,10 @@ export const NotificationsSidebar: React.FC = () => {
           <Star size={48} weight="BoldDuotone" className="text-primary" />
         </div>
         <div className="relative space-y-3">
-          <h3 className="text-lg font-bold text-foreground">Level up your learning with Pro</h3>
-          <p className="text-sm text-muted-foreground">Unlock advanced analytics and offline mode.</p>
+          <h3 className="text-lg font-bold text-foreground">{t('settings.upgradeTitle')}</h3>
+          <p className="text-sm text-muted-foreground">{t('settings.upgradeBody')}</p>
           <Button asChild className="w-full">
-            <Link href="#">Upgrade Now</Link>
+            <Link href="#">{t('settings.upgradeCta')}</Link>
           </Button>
         </div>
       </div>

@@ -31,6 +31,7 @@ import {
   TrashBin2,
 } from '@solar-icons/react/ssr';
 import React, { useMemo, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { PAGE_SIZE_OPTIONS } from '@/constants/pagination';
@@ -178,6 +179,7 @@ export function DataTable<TData extends { id: string }, TValue>({
   hideHeader = false,
   displayCount,
 }: Readonly<DataTableProps<TData, TValue>>) {
+  const t = useTranslations('dataTable');
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [internalColumnVisibility, setInternalColumnVisibility] = useState<VisibilityState>({});
@@ -349,9 +351,7 @@ export function DataTable<TData extends { id: string }, TValue>({
                     {selectedRowCount > 0 && (onBulkDelete || onBulkReassign) && (
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                          {selectedRowCount}
-                          {' '}
-                          selected
+                          {t('selected', { count: selectedRowCount })}
                         </span>
                         {onBulkReassign && (
                           <Button
@@ -363,7 +363,7 @@ export function DataTable<TData extends { id: string }, TValue>({
                             }}
                           >
                             <RefreshCircle size={16} weight="BoldDuotone" className="mr-1.5" />
-                            Bulk reassign
+                            {t('bulkReassign')}
                           </Button>
                         )}
                         {onBulkDelete && (
@@ -376,7 +376,7 @@ export function DataTable<TData extends { id: string }, TValue>({
                             }}
                           >
                             <TrashBin2 size={16} weight="BoldDuotone" className="mr-1.5" />
-                            Bulk delete
+                            {t('bulkDelete')}
                           </Button>
                         )}
                       </div>
@@ -396,9 +396,7 @@ export function DataTable<TData extends { id: string }, TValue>({
                       >
                         <TrashBin2 size={16} weight="BoldDuotone" />
                         <span>
-                          Delete (
-                          {selectedRowCount}
-                          )
+                          {t('deleteCount', { count: selectedRowCount })}
                         </span>
                       </Button>
                     )}
@@ -474,10 +472,10 @@ export function DataTable<TData extends { id: string }, TValue>({
                                     title={
                                       header.column.getCanSort()
                                         ? header.column.getNextSortingOrder() === 'asc'
-                                          ? 'Sort ascending'
+                                          ? t('sortAsc')
                                           : header.column.getNextSortingOrder() === 'desc'
-                                            ? 'Sort descending'
-                                            : 'Clear sort'
+                                            ? t('sortDesc')
+                                            : t('sortClear')
                                         : undefined
                                     }
                                   >
@@ -508,7 +506,7 @@ export function DataTable<TData extends { id: string }, TValue>({
                                 }}
                                 style={{ touchAction: 'none' }}
                                 className="group absolute top-0 right-0 flex h-full w-3 cursor-col-resize items-center justify-center select-none"
-                                title="Drag to resize, double-click to reset"
+                                title={t('resizeHint')}
                                 aria-hidden="true"
                               >
                                 <div
@@ -547,7 +545,7 @@ export function DataTable<TData extends { id: string }, TValue>({
                         ? (
                             <tr className={`border-b border-border ${rowClassName}`}>
                               <td className={`px-3 py-4 text-xs text-muted-foreground sm:px-6 sm:py-6 sm:text-sm ${cellClassName}`} colSpan={memoizedColumns.length}>
-                                No results
+                                {t('noResults')}
                               </td>
                             </tr>
                           )
@@ -605,19 +603,11 @@ export function DataTable<TData extends { id: string }, TValue>({
         <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
           <div className="flex items-center gap-3">
             <div className="text-xs text-muted-foreground sm:text-sm">
-              Showing
-              {' '}
-              {displayCount ?? (manualPagination ? data.length : table.getFilteredRowModel().rows.length)}
-              {' '}
-              of
-              {' '}
-              {manualPagination ? totalItems : data.length}
-              {' '}
-              results
+              {t('showing', { shown: displayCount ?? (manualPagination ? data.length : table.getFilteredRowModel().rows.length), total: manualPagination ? totalItems : data.length })}
             </div>
             {onPageSizeChange && (
               <div className="flex items-center gap-1.5">
-                <span className="text-xs text-muted-foreground">Rows per page</span>
+                <span className="text-xs text-muted-foreground">{t('rowsPerPage')}</span>
                 <Select
                   value={String(pageSize)}
                   onValueChange={v => onPageSizeChange(Number(v))}
@@ -652,7 +642,7 @@ export function DataTable<TData extends { id: string }, TValue>({
               className="flex items-center space-x-2 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
             >
               <AltArrowLeft size={16} weight="BoldDuotone" />
-              <span>Previous</span>
+              <span>{t('previous')}</span>
             </Button>
 
             <div className="flex items-center space-x-1">
@@ -718,7 +708,7 @@ export function DataTable<TData extends { id: string }, TValue>({
               size="sm"
               className="flex items-center space-x-2 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
             >
-              <span>Next</span>
+              <span>{t('next')}</span>
               <AltArrowRight size={16} weight="BoldDuotone" />
             </Button>
           </div>

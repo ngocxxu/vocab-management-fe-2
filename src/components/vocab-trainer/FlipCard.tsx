@@ -2,6 +2,7 @@
 
 import type { FlipCardProps } from '@/types/vocab-trainer';
 import { VolumeLoud } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import React from 'react';
 import { Button } from '@/components/ui/button';
 
@@ -11,12 +12,13 @@ const FlipCard: React.FC<FlipCardProps> = ({
   onFlip,
   onPlayAudio,
 }) => {
+  const t = useTranslations('trainer.flip');
   const { frontText, backText, frontLanguageCode, backLanguageCode } = question;
 
   const safeFrontLanguageCode = frontLanguageCode || 'EN';
   const safeBackLanguageCode = backLanguageCode || 'VI';
-  const safeFrontText = frontText || ['No text available'];
-  const safeBackText = backText || ['No text available'];
+  const safeFrontText = frontText || [t('noText')];
+  const safeBackText = backText || [t('noText')];
 
   return (
     <div className="perspective-1000 mx-auto max-w-2xl">
@@ -69,7 +71,7 @@ const FlipCard: React.FC<FlipCardProps> = ({
               </Button>
             )}
             <div className="absolute bottom-4 text-sm text-muted-foreground">
-              Click to flip
+              {t('clickFlip')}
             </div>
           </div>
         </div>
@@ -109,7 +111,7 @@ const FlipCard: React.FC<FlipCardProps> = ({
               </Button>
             )}
             <div className="absolute bottom-4 text-sm text-muted-foreground">
-              Click to flip back
+              {t('clickFlipBack')}
             </div>
           </div>
         </div>

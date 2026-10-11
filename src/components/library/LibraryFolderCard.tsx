@@ -20,6 +20,7 @@ import {
 import { cn } from '@/libs/utils';
 import type { LibraryFolderCardProps } from '@/types/language-folder';
 import { Folder, MenuDots, NotebookMinimalistic, Pen, TrashBin2 } from '@solar-icons/react/ssr';
+import { useLocale, useTranslations } from 'next-intl';
 import React, { useCallback, useState } from 'react';
 import { formatEditedAgo } from './utils';
 
@@ -57,6 +58,9 @@ const LibraryFolderCard: React.FC<LibraryFolderCardProps> = ({
   onEdit,
   onDelete,
 }) => {
+  const t = useTranslations('library.card');
+  const tTime = useTranslations('library.time');
+  const locale = useLocale();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const handleCardClick = useCallback(() => {
@@ -82,7 +86,7 @@ const LibraryFolderCard: React.FC<LibraryFolderCardProps> = ({
   }, [folder.id, onDelete]);
 
   const vocabCount = folder.vocabCount ?? 0;
-  const wordsLabel = `${vocabCount} word${vocabCount === 1 ? '' : 's'}`;
+  const wordsLabel = t('words', { count: vocabCount });
 
   const masteryScore = folder.averageMastery ?? 0;
   const masteryPercent = clampInt(masteryScore * 10, 0, 100);
@@ -128,9 +132,9 @@ const LibraryFolderCard: React.FC<LibraryFolderCardProps> = ({
                 {folder.name}
               </h3>
               <p className="mt-0.5 text-sm font-normal text-muted-foreground">
-                Created
+                {t('created')}
                 {' '}
-                {formatEditedAgo(folder.updatedAt)}
+                {formatEditedAgo(folder.updatedAt, tTime, locale)}
               </p>
             </div>
           </div>
@@ -148,14 +152,14 @@ const LibraryFolderCard: React.FC<LibraryFolderCardProps> = ({
             <DropdownMenuContent align="end" onClick={e => e.stopPropagation()}>
               <DropdownMenuItem onClick={handleEdit}>
                 <Pen size={16} weight="BoldDuotone" className="mr-2" />
-                Edit Folder
+                {t('editFolder')}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={handleDeleteClick}
                 className="text-destructive focus:text-destructive"
               >
                 <TrashBin2 size={16} weight="BoldDuotone" className="mr-2" />
-                Delete Folder
+                {t('deleteFolder')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -179,7 +183,7 @@ const LibraryFolderCard: React.FC<LibraryFolderCardProps> = ({
         <div className="mt-4">
           <div className="mb-1.5 flex items-center justify-between">
             <span className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
-              Mastery
+              {t('mastery')}
             </span>
             <span className={cn('text-base font-semibold', textClass)}>
               {masteryPercent}
@@ -198,22 +202,18 @@ const LibraryFolderCard: React.FC<LibraryFolderCardProps> = ({
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent onClick={e => e.stopPropagation()}>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Language Folder</AlertDialogTitle>
+            <AlertDialogTitle>{t('deleteTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete &quot;
-              {folder.name}
-              ? This
-              action cannot be undone. All vocabulary items in this folder will
-              be permanently removed.
+              {t('deleteDescription', { name: folder.name })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={handleConfirmDelete}
             >
-              Delete Folder
+              {t('deleteFolder')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

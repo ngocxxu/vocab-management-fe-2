@@ -3,6 +3,7 @@
 import type { TSrsQuestionType } from '@/types/srs-settings';
 import type { TFsrsQueueItem, TFsrsReviewResult } from '@/types/vocab-trainer';
 import React, { useCallback, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { submitReviewAnswer } from '@/actions/vocab-trainers';
 import { EFsrsRating } from '@/enum/vocab-trainer';
@@ -27,16 +28,12 @@ type FsrsReviewSessionProps = Readonly<{
 type RetryRound = { items: TFsrsQueueItem[]; index: number; recalled: number };
 
 function Progress({ label, current, total }: Readonly<{ label: string; current: number; total: number }>) {
+  const t = useTranslations('trainer.fsrs.progress');
+
   return (
     <div className="mx-auto w-full max-w-2xl space-y-2">
       <p className="text-sm font-medium text-muted-foreground">
-        {label}
-        {' '}
-        {Math.min(current + 1, total)}
-        {' '}
-        of
-        {' '}
-        {total}
+        {t('counter', { label, current: Math.min(current + 1, total), total })}
       </p>
       <div
         role="progressbar"
@@ -53,6 +50,7 @@ function Progress({ label, current, total }: Readonly<{ label: string; current: 
 }
 
 const FsrsReviewSession: React.FC<FsrsReviewSessionProps> = ({ trainerId, questionType, items, pendingAfter, moreCount, isLoadingMore, onMore, onStop, onEnded }) => {
+  const t = useTranslations('trainer.fsrs');
   const [results, setResults] = useState<TFsrsReviewResult[]>([]);
   const [retry, setRetry] = useState<RetryRound | null>(null);
   const [retryOutcome, setRetryOutcome] = useState<{ recalled: number; total: number } | null>(null);
@@ -74,11 +72,11 @@ const FsrsReviewSession: React.FC<FsrsReviewSessionProps> = ({ trainerId, questi
 
       return true;
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to save the answer', { description: 'Press the button again to retry.' });
+      toast.error(error instanceof Error ? error.message : t('review.saveFailed'), { description: t('review.saveRetry') });
 
       return false;
     }
-  }, [trainerId, questionType, onEnded]);
+  }, [trainerId, questionType, onEnded, t]);
 
   // The retry round only moves through the missed cards on screen: it never calls the server.
   const rateRetry = (rating: EFsrsRating): Promise<boolean> => {
@@ -99,7 +97,7 @@ const FsrsReviewSession: React.FC<FsrsReviewSessionProps> = ({ trainerId, questi
   if (retry && retryItem) {
     return (
       <div className="space-y-6">
-        <Progress label="Retry missed" current={retry.index} total={retry.items.length} />
+        <Progress label={t('progress.retryMissed')} current={retry.index} total={retry.items.length} />
         <FsrsCardStep key={`${retryItem.cardId}-retry`} trainerId={trainerId} item={retryItem} questionType={questionType} variant="retry" onRate={rating => rateRetry(rating)} />
       </div>
     );
@@ -109,7 +107,7 @@ const FsrsReviewSession: React.FC<FsrsReviewSessionProps> = ({ trainerId, questi
   if (current) {
     return (
       <div className="space-y-6">
-        <Progress label="Question" current={results.length} total={items.length} />
+        <Progress label={t('progress.question')} current={results.length} total={items.length} />
         <FsrsCardStep
           key={current.cardId}
           trainerId={trainerId}

@@ -1,6 +1,8 @@
 'use server';
 
+import { getTranslations } from 'next-intl/server';
 import { Resend } from 'resend';
+import { toDisplayMessage } from '@/i18n/validation';
 import { supportSchema } from '@/libs/validations/support';
 import type { TSupportFormData } from '@/libs/validations/support';
 import { requireAuth } from './auth';
@@ -23,7 +25,8 @@ export async function sendSupportEmail(data: TSupportFormData): Promise<{ messag
 
   const parsed = supportSchema.safeParse(data);
   if (!parsed.success) {
-    throw new Error(parsed.error.issues[0]?.message ?? 'Invalid form data');
+    const t = await getTranslations();
+    throw new Error(toDisplayMessage(parsed.error.issues[0]?.message ?? 'validation.invalidForm', key => t(key)));
   }
 
   const { category, subject, message, email } = parsed.data;
@@ -40,6 +43,6 @@ export async function sendSupportEmail(data: TSupportFormData): Promise<{ messag
     });
     return { messageId: result.data?.id };
   } catch (error) {
-    throw toActionError(error, 'Failed to send support email');
+    throw await toActionError(error, 'sendSupportEmail');
   }
 }

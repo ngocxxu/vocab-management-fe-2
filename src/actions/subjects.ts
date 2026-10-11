@@ -20,7 +20,7 @@ export async function createSubject(subjectData: { name: string }) {
     revalidatePath('/vocab-list');
     return result;
   } catch (error) {
-    throw toActionError(error, 'Failed to create subject');
+    throw await toActionError(error, 'createSubject');
   }
 }
 
@@ -32,7 +32,7 @@ export async function updateSubject(id: string, subjectData: { name: string; ord
     revalidatePath('/vocab-list');
     return result;
   } catch (error) {
-    throw toActionError(error, 'Failed to update subject');
+    throw await toActionError(error, 'updateSubject');
   }
 }
 
@@ -51,7 +51,7 @@ export async function deleteSubject(id: string): Promise<DeleteSubjectResult> {
       }
       return { ok: false, code: 'CONFLICT', vocabularyCount };
     }
-    throw toActionError(error, 'Failed to delete subject');
+    throw await toActionError(error, 'deleteSubject');
   }
 }
 
@@ -63,7 +63,7 @@ export async function reorderSubjects(subjects: { id: string; order: number }[])
     revalidatePath('/vocab-list');
     return result;
   } catch (error) {
-    throw toActionError(error, 'Failed to reorder subjects');
+    throw await toActionError(error, 'reorderSubjects');
   }
 }
 
@@ -75,6 +75,6 @@ export async function generateSubjectSuggestions(data: {
   try {
     return await subjectsApi.generate(data);
   } catch (error) {
-    throw toActionError(error, 'Failed to generate subject suggestions');
+    throw await toActionError(error, 'generateSubjectSuggestions');
   }
 }

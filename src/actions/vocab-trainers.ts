@@ -34,7 +34,7 @@ export async function createVocabTrainer(trainerData: TCreateVocabTrainer) {
     revalidatePath('/vocab-trainer');
     return result;
   } catch (error) {
-    throw toActionError(error, 'Failed to create vocab trainer');
+    throw await toActionError(error, 'createVocabTrainer');
   }
 }
 
@@ -52,7 +52,7 @@ export async function updateVocabTrainer(id: string, trainerData: Partial<TCreat
     revalidatePath('/vocab-trainer');
     return result;
   } catch (error) {
-    throw toActionError(error, 'Failed to update vocab trainer');
+    throw await toActionError(error, 'updateVocabTrainer');
   }
 }
 
@@ -66,7 +66,7 @@ export async function deleteVocabTrainer(id: string): Promise<void> {
     await vocabTrainerApi.delete(id);
     revalidatePath('/vocab-trainer');
   } catch (error) {
-    throw toActionError(error, 'Failed to delete vocab trainer');
+    throw await toActionError(error, 'deleteVocabTrainer');
   }
 }
 
@@ -81,7 +81,7 @@ export async function deleteVocabTrainersBulk(ids: string[]): Promise<{ success:
     revalidatePath('/vocab-trainer');
     return { success: true };
   } catch (error) {
-    throw toActionError(error, 'Failed to delete vocab trainers');
+    throw await toActionError(error, 'deleteVocabTrainers');
   }
 }
 
@@ -95,7 +95,7 @@ export async function getExam(id: string): Promise<TQuestionAPI> {
     const result = await vocabTrainerApi.getExam(id);
     return result as TQuestionAPI;
   } catch (error) {
-    throw toActionError(error, 'Failed to fetch exam');
+    throw await toActionError(error, 'fetchExam');
   }
 }
 
@@ -113,7 +113,7 @@ export async function submitExam(id: string, examData: TFormTestVocabTrainerUnio
     revalidatePath('/vocab-trainer');
     return result;
   } catch (error) {
-    throw toActionError(error, 'Failed to submit exam');
+    throw await toActionError(error, 'submitExam');
   }
 }
 
@@ -138,7 +138,7 @@ export async function cloneVocabTrainer(id: string, data: TCloneVocabTrainer): P
     revalidatePath('/vocab-trainer');
     return result;
   } catch (error) {
-    throw toActionError(error, 'Failed to start a new cycle');
+    throw await toActionError(error, 'startANewCycle');
   }
 }
 
@@ -158,7 +158,7 @@ export async function removeVocabFromTrainer(trainerId: string, vocabId: string)
     revalidatePath('/vocab-list');
     return result;
   } catch (error) {
-    throw toActionError(error, 'Failed to remove the word from the trainer');
+    throw await toActionError(error, 'removeTheWordFromTheTrainer');
   }
 }
 
@@ -175,7 +175,7 @@ export async function updateFsrsSettings(id: string, settings: TUpdateFsrsSettin
     revalidatePath('/vocab-trainer');
     return result;
   } catch (error) {
-    throw toActionError(error, 'Failed to update spaced repetition settings');
+    throw await toActionError(error, 'updateSpacedRepetitionSettings');
   }
 }
 
@@ -187,7 +187,7 @@ export async function getReviewQueue(id: string, params?: TFsrsQueueParams): Pro
   try {
     return await vocabTrainerApi.getReviewQueue(id, params);
   } catch (error) {
-    throw toActionError(error, 'Failed to load the review session');
+    throw await toActionError(error, 'loadTheReviewSession');
   }
 }
 
@@ -198,7 +198,7 @@ export async function getReviewSummary(id: string): Promise<TFsrsReviewSummary> 
   try {
     return await vocabTrainerApi.getReviewSummary(id);
   } catch (error) {
-    throw toActionError(error, 'Failed to load the review summary');
+    throw await toActionError(error, 'loadTheReviewSummary');
   }
 }
 
@@ -216,7 +216,7 @@ export async function checkReviewAnswer(id: string, cardId: string, answer: stri
   try {
     return await vocabTrainerApi.checkReviewAnswer(id, cardId, answer);
   } catch (error) {
-    throw toActionError(error, 'Failed to check the answer');
+    throw await toActionError(error, 'checkTheAnswer');
   }
 }
 
@@ -240,7 +240,7 @@ export async function submitReviewAnswer(id: string, answer: TFsrsAnswerInput): 
       revalidatePath('/vocab-trainer');
       return { ended: true };
     }
-    throw toActionError(error, 'Failed to save the answer');
+    throw await toActionError(error, 'saveTheAnswer');
   }
 }
 

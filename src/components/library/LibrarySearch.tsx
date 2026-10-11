@@ -2,6 +2,7 @@
 
 import { Filter, List, Magnifer } from '@solar-icons/react/ssr';
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -25,8 +26,9 @@ const LibrarySearch: React.FC<LibrarySearchProps> = ({
   sortBy,
   sortOrder,
   onSortChange,
-  placeholder = 'Search for language folders...',
+  placeholder,
 }) => {
+  const t = useTranslations('library.search');
   const sortValue = sortBy === 'updatedAt' && sortOrder === 'desc'
     ? SORT_VALUE_RECENT
     : sortBy === 'name' && sortOrder === 'asc'
@@ -41,7 +43,7 @@ const LibrarySearch: React.FC<LibrarySearchProps> = ({
     }
   };
 
-  const sortLabel = sortValue === SORT_VALUE_RECENT ? 'Recent' : 'Name A-Z';
+  const sortLabel = sortValue === SORT_VALUE_RECENT ? t('recent') : t('nameAz');
 
   return (
     <div className="flex h-12 w-full flex-row items-center rounded-lg bg-card">
@@ -50,7 +52,7 @@ const LibrarySearch: React.FC<LibrarySearchProps> = ({
           <Magnifer size={20} weight="BoldDuotone" className="text-muted-foreground" />
         </div>
         <Input
-          placeholder={placeholder}
+          placeholder={placeholder ?? t('placeholder')}
           value={searchQuery}
           onChange={e => onSearchChange(e.target.value)}
           className="h-full border-0 bg-transparent pr-3 pl-11 text-foreground shadow-none placeholder:text-muted-foreground focus-visible:ring-0"
@@ -63,15 +65,15 @@ const LibrarySearch: React.FC<LibrarySearchProps> = ({
             <SelectValue className="text-muted-foreground">
               <span className="flex items-center gap-2">
                 <List size={18} weight="BoldDuotone" className="shrink-0 text-muted-foreground" />
-                Sort by:
+                {t('sortBy')}
                 {' '}
                 {sortLabel}
               </span>
             </SelectValue>
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value={SORT_VALUE_RECENT}>Recent</SelectItem>
-            <SelectItem value={SORT_VALUE_NAME}>Name A-Z</SelectItem>
+            <SelectItem value={SORT_VALUE_RECENT}>{t('recent')}</SelectItem>
+            <SelectItem value={SORT_VALUE_NAME}>{t('nameAz')}</SelectItem>
           </SelectContent>
         </Select>
         <Button
@@ -80,7 +82,7 @@ const LibrarySearch: React.FC<LibrarySearchProps> = ({
           className="h-12 shrink-0 border-0 bg-transparent px-3 text-muted-foreground hover:bg-muted/50 hover:text-muted-foreground"
         >
           <Filter size={18} weight="BoldDuotone" className="mr-2 shrink-0 text-muted-foreground" />
-          Filter
+          {t('filter')}
         </Button>
       </div>
     </div>

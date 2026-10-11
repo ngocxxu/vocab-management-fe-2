@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import type { VariantProps } from 'class-variance-authority';
 import { cva } from 'class-variance-authority';
 import {
@@ -299,8 +300,10 @@ export type MultiSelectRef = {
 const DEFAULT_OPTIONS: string[] = [];
 
 export const MultiSelect = (
-  { ref, options, onValueChange, variant, defaultValue = DEFAULT_OPTIONS, placeholder = 'Select options', animation = 0, animationConfig, maxCount = 3, modalPopover = false, asChild: _asChild = false, className, hideSelectAll = false, searchable = true, emptyIndicator, autoSize = false, singleLine = false, popoverClassName, disabled = false, responsive, minWidth, maxWidth, deduplicateOptions = false, resetOnDefaultValueChange = true, closeOnSelect = false, ...props }: MultiSelectProps & { ref?: React.RefObject<MultiSelectRef | null> },
+  { ref, options, onValueChange, variant, defaultValue = DEFAULT_OPTIONS, placeholder: placeholderProp, animation = 0, animationConfig, maxCount = 3, modalPopover = false, asChild: _asChild = false, className, hideSelectAll = false, searchable = true, emptyIndicator, autoSize = false, singleLine = false, popoverClassName, disabled = false, responsive, minWidth, maxWidth, deduplicateOptions = false, resetOnDefaultValueChange = true, closeOnSelect = false, ...props }: MultiSelectProps & { ref?: React.RefObject<MultiSelectRef | null> },
 ) => {
+  const t = useTranslations('multiSelect');
+  const placeholder = placeholderProp ?? t('defaultPlaceholder');
   const [selectedValues, setSelectedValues] = React.useState<string[]>(defaultValue);
   const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
   const [isAnimating, setIsAnimating] = React.useState(false);
@@ -699,16 +702,16 @@ export const MultiSelect = (
 
         if (addedLabels.length === 1) {
           announce(
-            `${addedLabels[0]} selected. ${selectedCount} of ${totalOptions} options selected.`,
+            t('announceAdded', { label: addedLabels[0] ?? '', selected: selectedCount, total: totalOptions }),
           );
         } else {
           announce(
-            `${addedLabels.length} options selected. ${selectedCount} of ${totalOptions} total selected.`,
+            t('announceAddedMany', { count: addedLabels.length, selected: selectedCount, total: totalOptions }),
           );
         }
       } else if (diff < 0) {
         announce(
-          `Option removed. ${selectedCount} of ${totalOptions} options selected.`,
+          t('announceRemoved', { selected: selectedCount, total: totalOptions }),
         );
       }
       prevSelectedCount.current = selectedCount;
@@ -717,10 +720,10 @@ export const MultiSelect = (
     if (isPopoverOpen !== prevIsOpen.current) {
       if (isPopoverOpen) {
         announce(
-          `Dropdown opened. ${totalOptions} options available. Use arrow keys to navigate.`,
+          t('announceOpened', { total: totalOptions }),
         );
       } else {
-        announce('Dropdown closed.');
+        announce(t('announceClosed'));
       }
       prevIsOpen.current = isPopoverOpen;
     }
@@ -737,14 +740,12 @@ export const MultiSelect = (
         ).length;
 
         announce(
-          `${filteredCount} option${
-            filteredCount === 1 ? '' : 's'
-          } found for "${searchValue}"`,
+          t('announceFound', { count: filteredCount, query: searchValue }),
         );
       }
       prevSearchValue.current = searchValue;
     }
-  }, [selectedValues, isPopoverOpen, searchValue, announce, getAllOptions]);
+  }, [selectedValues, isPopoverOpen, searchValue, announce, getAllOptions, t]);
 
   return (
     <>
@@ -763,18 +764,12 @@ export const MultiSelect = (
         modal={modalPopover}
       >
         <div id={triggerDescriptionId} className="sr-only">
-          Multi-select dropdown. Use arrow keys to navigate, Enter to select,
-          and Escape to close.
+          {t('helpDescription')}
         </div>
         <div id={selectedCountId} className="sr-only" aria-live="polite">
           {selectedValues.length === 0
-            ? 'No options selected'
-            : `${selectedValues.length} option${
-              selectedValues.length === 1 ? '' : 's'
-            } selected: ${selectedValues
-              .map(value => getOptionByValue(value)?.label)
-              .filter(Boolean)
-              .join(', ')}`}
+            ? t('noneSelected')
+            : t('selectedSummary', { count: selectedValues.length, labels: selectedValues.map(value => getOptionByValue(value)?.label).filter(Boolean).join(', ') })}
         </div>
 
         <PopoverTrigger asChild>
@@ -788,9 +783,7 @@ export const MultiSelect = (
             aria-haspopup="listbox"
             aria-controls={isPopoverOpen ? listboxId : undefined}
             aria-describedby={`${triggerDescriptionId} ${selectedCountId}`}
-            aria-label={`Multi-select: ${selectedValues.length} of ${
-              getAllOptions().length
-            } options selected. ${placeholder}`}
+            aria-label={t('triggerAria', { selected: selectedValues.length, total: getAllOptions().length, placeholder })}
             className={cn(
               'flex p-1 rounded-md border min-h-10 h-auto items-center justify-between dark:bg-input/30 dark:hover:bg-input/50 bg-inherit hover:bg-inherit [&_svg]:pointer-events-auto',
               autoSize ? 'w-auto' : 'w-full',
@@ -902,7 +895,7 @@ export const MultiSelect = (
                                     toggleOption(value);
                                   }
                                 }}
-                                aria-label={`Remove ${option.label} from selection`}
+                                aria-label={t('removeOption', { label: option.label })}
                                 className="-m-0.5 ml-2 h-4 w-4 cursor-pointer rounded-sm p-0.5 hover:bg-primary-foreground/20 focus:ring-1 focus:ring-ring/50 focus:outline-none"
                               >
                                 <CloseCircle
@@ -935,9 +928,7 @@ export const MultiSelect = (
                             animationDelay: `${animationConfig?.delay || 0}s`,
                           }}
                         >
-                          {`+ ${
-                            selectedValues.length - responsiveSettings.maxCount
-                          } more`}
+                          {t('moreCount', { count: selectedValues.length - responsiveSettings.maxCount })}
                           <CloseCircle
                             className={cn(
                               'ml-2 h-4 w-4 cursor-pointer',
@@ -966,7 +957,7 @@ export const MultiSelect = (
                             handleClear();
                           }
                         }}
-                        aria-label={`Clear all ${selectedValues.length} selected options`}
+                        aria-label={t('clearAll', { count: selectedValues.length })}
                         className="mx-2 flex h-4 w-4 cursor-pointer items-center justify-center rounded-sm text-muted-foreground hover:text-foreground focus:ring-2 focus:ring-ring focus:ring-offset-1 focus:outline-none"
                       >
                         <CloseCircle size={16} weight="BoldDuotone" />
@@ -996,7 +987,7 @@ export const MultiSelect = (
           id={listboxId}
           role="listbox"
           aria-multiselectable="true"
-          aria-label="Available options"
+          aria-label={t('listboxAria')}
           className={cn(
             'w-auto p-0',
             getPopoverAnimationClass(),
@@ -1018,17 +1009,17 @@ export const MultiSelect = (
           <Command>
             {searchable && (
               <CommandInput
-                placeholder="Search options..."
+                placeholder={t('searchPlaceholder')}
                 onKeyDown={handleInputKeyDown}
                 value={searchValue}
                 onValueChange={setSearchValue}
-                aria-label="Search through available options"
+                aria-label={t('searchAria')}
                 aria-describedby={`${multiSelectId}-search-help`}
               />
             )}
             {searchable && (
               <div id={`${multiSelectId}-search-help`} className="sr-only">
-                Type to filter options. Use arrow keys to navigate results.
+                {t('searchHelp')}
               </div>
             )}
             <CommandList
@@ -1039,7 +1030,7 @@ export const MultiSelect = (
               )}
             >
               <CommandEmpty>
-                {emptyIndicator || 'No results found.'}
+                {emptyIndicator || t('noResults')}
               </CommandEmpty>
               {' '}
               {!hideSelectAll && !searchValue && (
@@ -1052,9 +1043,7 @@ export const MultiSelect = (
                       selectedValues.length
                       === getAllOptions().filter(opt => !opt.disabled).length
                     }
-                    aria-label={`Select all ${
-                      getAllOptions().length
-                    } options`}
+                    aria-label={t('selectAllAria', { count: getAllOptions().length })}
                     className="cursor-pointer"
                   >
                     <div
@@ -1070,10 +1059,9 @@ export const MultiSelect = (
                       <CheckCircle size={16} weight="BoldDuotone" />
                     </div>
                     <span>
-                      (Select All
-                      {getAllOptions().length > 20
-                        ? ` - ${getAllOptions().length} options`
-                        : ''}
+                      (
+                      {t('selectAllLabel')}
+                      {getAllOptions().length > 20 ? ` - ${t('optionsCount', { count: getAllOptions().length })}` : ''}
                       )
                     </span>
                   </CommandItem>
@@ -1094,9 +1082,7 @@ export const MultiSelect = (
                               role="option"
                               aria-selected={isSelected}
                               aria-disabled={option.disabled}
-                              aria-label={`${option.label}${
-                                isSelected ? ', selected' : ', not selected'
-                              }${option.disabled ? ', disabled' : ''}`}
+                              aria-label={`${option.label}${isSelected ? t('itemSelected') : t('itemNotSelected')}${option.disabled ? t('itemDisabled') : ''}`}
                               className={cn(
                                 'cursor-pointer',
                                 option.disabled && 'opacity-50 cursor-not-allowed',
@@ -1138,9 +1124,7 @@ export const MultiSelect = (
                             role="option"
                             aria-selected={isSelected}
                             aria-disabled={option.disabled}
-                            aria-label={`${option.label}${
-                              isSelected ? ', selected' : ', not selected'
-                            }${option.disabled ? ', disabled' : ''}`}
+                            aria-label={`${option.label}${isSelected ? t('itemSelected') : t('itemNotSelected')}${option.disabled ? t('itemDisabled') : ''}`}
                             className={cn(
                               'cursor-pointer',
                               option.disabled && 'opacity-50 cursor-not-allowed',

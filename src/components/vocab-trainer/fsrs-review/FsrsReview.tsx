@@ -3,6 +3,7 @@
 import type { TSrsQuestionType } from '@/types/srs-settings';
 import type { TFsrsReviewQueue, TFsrsReviewSummary } from '@/types/vocab-trainer';
 import { AltArrowLeft } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useState } from 'react';
 import { toast } from 'sonner';
@@ -20,6 +21,7 @@ type FsrsReviewProps = Readonly<{
 }>;
 
 const FsrsReview: React.FC<FsrsReviewProps> = ({ trainerId, trainerName, questionType, summary }) => {
+  const t = useTranslations('trainer.fsrs');
   const router = useRouter();
   const [queue, setQueue] = useState<TFsrsReviewQueue | null>(null);
   // A new key starts a new session: its answers and its retry round begin empty.
@@ -39,7 +41,7 @@ const FsrsReview: React.FC<FsrsReviewProps> = ({ trainerId, trainerName, questio
         return;
       }
       if (loaded.items.length === 0) {
-        toast.info('Nothing to review right now.');
+        toast.info(t('review.nothingToReview'));
         setQueue(null);
 
         return;
@@ -48,11 +50,11 @@ const FsrsReview: React.FC<FsrsReviewProps> = ({ trainerId, trainerName, questio
       setQueue(loaded);
       setSessionKey(key => key + 1);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to load the review session');
+      toast.error(error instanceof Error ? error.message : t('review.loadFailed'));
     } finally {
       setIsLoading(false);
     }
-  }, [trainerId]);
+  }, [trainerId, t]);
 
   const handleStop = useCallback(() => router.push('/vocab-trainer'), [router]);
 
@@ -60,7 +62,7 @@ const FsrsReview: React.FC<FsrsReviewProps> = ({ trainerId, trainerName, questio
     <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:py-10">
       <Button type="button" variant="ghost" size="sm" className="mb-6 -ml-2" onClick={handleStop}>
         <AltArrowLeft size={16} weight="BoldDuotone" className="mr-1" />
-        Back to trainers
+        {t('review.back')}
       </Button>
 
       {queue && !hasEnded

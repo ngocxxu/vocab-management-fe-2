@@ -2,9 +2,13 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
+import LandingLocaleSwitch from '@/components/landing/LandingLocaleSwitch';
 
 export default function LandingHeader({ logoSrc }: Readonly<{ logoSrc: string }>) {
+  const t = useTranslations('landing.header');
+
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
@@ -29,29 +33,30 @@ export default function LandingHeader({ logoSrc }: Readonly<{ logoSrc: string }>
             href="#features"
             className="text-sm font-medium text-muted-foreground hover:text-foreground"
           >
-            Features
+            {t('features')}
           </Link>
           <Link
             href="#methodology"
             className="text-sm font-medium text-muted-foreground hover:text-foreground"
           >
-            Solutions
+            {t('solutions')}
           </Link>
           <Link
             href="#pricing"
             className="text-sm font-medium text-muted-foreground hover:text-foreground"
           >
-            Pricing
+            {t('pricing')}
           </Link>
           <span className="h-4 w-px bg-border" aria-hidden />
+          <LandingLocaleSwitch />
           <Link
             href="/signin"
             className="text-sm font-medium text-foreground hover:text-primary"
           >
-            Sign In
+            {t('signIn')}
           </Link>
           <Link href="/signup">
-            <Button className="rounded-xl shadow-sm">Get Started</Button>
+            <Button className="rounded-xl shadow-sm">{t('getStarted')}</Button>
           </Link>
         </nav>
       </div>

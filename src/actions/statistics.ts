@@ -3,6 +3,7 @@
 import { MAX_PROBLEMATIC_PRACTICE_LIMIT } from '@/constants/statistics';
 import { statisticsApi } from '@/utils/server-api';
 import { requireAuth } from './auth';
+import { translateError } from './utils';
 
 export async function getProblematicVocabIdsForPractice(sourceLanguageCode?: string): Promise<string[] | { error: string }> {
   try {
@@ -18,7 +19,7 @@ export async function getProblematicVocabIdsForPractice(sourceLanguageCode?: str
     return (problematic ?? []).map(item => item.vocabId);
   } catch (error) {
     return {
-      error: error instanceof Error ? error.message : 'Failed to load problematic vocabulary',
+      error: error instanceof Error ? error.message : await translateError('loadProblematicVocabulary'),
     };
   }
 }

@@ -3,6 +3,7 @@
 import type { TMessage } from '@/types/chat';
 import { ClockCircle, DangerCircle } from '@solar-icons/react/ssr';
 import Image from 'next/image';
+import { useLocale, useTranslations } from 'next-intl';
 import ReactMarkdown from 'react-markdown';
 import { cn } from '@/libs/utils';
 
@@ -11,23 +12,25 @@ type MessageBubbleProps = {
   onRetry?: () => void;
 };
 
-export function formatMessageTime(createdAt: string): string {
+export function formatMessageTime(createdAt: string, locale: string): string {
   const date = new Date(createdAt);
 
   if (Number.isNaN(date.getTime())) {
     return '';
   }
 
-  return date.toLocaleTimeString('en-US', {
+  return date.toLocaleTimeString(locale, {
     hour: 'numeric',
     minute: '2-digit',
-    hour12: true,
+    hour12: locale.startsWith('en'),
   });
 }
 
 export function MessageBubble({ message, onRetry }: MessageBubbleProps) {
+  const t = useTranslations('chat.message');
+  const locale = useLocale();
   const isUser = message.role === 'USER';
-  const timeLabel = formatMessageTime(message.createdAt);
+  const timeLabel = formatMessageTime(message.createdAt, locale);
 
   if (isUser) {
     const isSending = message.status === 'sending';
@@ -53,7 +56,7 @@ export function MessageBubble({ message, onRetry }: MessageBubbleProps) {
             <ClockCircle
               size={14}
               className="text-muted-foreground"
-              aria-label="Sending"
+              aria-label={t('sending')}
             />
           )}
           {isFailed && (
@@ -61,10 +64,10 @@ export function MessageBubble({ message, onRetry }: MessageBubbleProps) {
               type="button"
               onClick={onRetry}
               className="flex items-center gap-1 text-xs text-destructive hover:underline"
-              aria-label="Retry sending message"
+              aria-label={t('retryAria')}
             >
               <DangerCircle size={14} />
-              Failed · Tap to retry
+              {t('failed')}
             </button>
           )}
         </div>
@@ -76,7 +79,7 @@ export function MessageBubble({ message, onRetry }: MessageBubbleProps) {
     <div className="flex min-w-0 items-start gap-2 px-4">
       <Image
         src="/assets/images/head_ai.png"
-        alt="AI"
+        alt={t('aiAlt')}
         width={28}
         height={28}
         className="mt-1 shrink-0 rounded-full object-cover"

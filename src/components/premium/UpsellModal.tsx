@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import {
   Dialog,
   DialogContent,
@@ -23,23 +24,25 @@ export function UpsellModal({
   featureName,
   description,
 }: UpsellModalProps) {
+  const t = useTranslations('premium.upsell');
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="rounded-2xl sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">
-            Upgrade to Pro
+            {t('title')}
           </DialogTitle>
           <DialogDescription asChild>
             <p className="mt-2 font-sans text-sm text-muted-foreground">
-              {description ?? `${featureName} is available on the Pro plan. Upgrade to unlock it.`}
+              {description ?? t('description', { feature: featureName })}
             </p>
           </DialogDescription>
         </DialogHeader>
         <div className="mt-4 flex flex-col gap-3">
           <Button asChild className="w-full rounded-xl bg-primary font-semibold text-primary-foreground">
             <Link href="/#pricing" onClick={() => onOpenChange(false)}>
-              Upgrade
+              {t('action')}
             </Link>
           </Button>
         </div>

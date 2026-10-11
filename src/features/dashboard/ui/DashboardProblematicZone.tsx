@@ -12,6 +12,6 @@ export async function DashboardProblematicZone() {
     if (isUnauthorizedError(error)) {
       redirect(getExpiredSessionRedirect('/dashboard'));
     }
-    return <ZoneError sectionName="problematic words" />;
+    return <ZoneError section="problematic" />;
   }
 }

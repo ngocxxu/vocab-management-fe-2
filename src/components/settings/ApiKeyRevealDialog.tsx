@@ -1,6 +1,7 @@
 'use client';
 
 import { Copy } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -13,6 +14,7 @@ type ApiKeyRevealDialogProps = {
 };
 
 export const ApiKeyRevealDialog: React.FC<ApiKeyRevealDialogProps> = ({ apiKey, onClose }) => {
+  const t = useTranslations('settings.apiKeys');
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -21,7 +23,7 @@ export const ApiKeyRevealDialog: React.FC<ApiKeyRevealDialogProps> = ({ apiKey, 
     }
     await navigator.clipboard.writeText(apiKey);
     setCopied(true);
-    toast.success('Copied to clipboard');
+    toast.success(t('copiedToast'));
   };
 
   const handleClose = () => {
@@ -40,14 +42,14 @@ export const ApiKeyRevealDialog: React.FC<ApiKeyRevealDialogProps> = ({ apiKey, 
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Copy your API key now</DialogTitle>
+          <DialogTitle>{t('revealTitle')}</DialogTitle>
           <DialogDescription>
-            This is the only time the full key is shown. Store it somewhere safe — you won't be able to view it again after closing this dialog.
+            {t('revealDescription')}
           </DialogDescription>
         </DialogHeader>
         <div className="flex items-center gap-2">
           <Input readOnly value={apiKey ?? ''} className="font-mono text-sm" onFocus={e => e.target.select()} />
-          <Button type="button" variant="outline" size="icon" onClick={handleCopy} aria-label="Copy API key">
+          <Button type="button" variant="outline" size="icon" onClick={handleCopy} aria-label={t('copyAria')}>
             <Copy size={16} weight="BoldDuotone" />
           </Button>
         </div>
@@ -57,7 +59,7 @@ export const ApiKeyRevealDialog: React.FC<ApiKeyRevealDialogProps> = ({ apiKey, 
             onClick={handleClose}
             disabled={!copied}
           >
-            {copied ? 'Done' : 'Copy it first'}
+            {copied ? t('revealDone') : t('revealCopyFirst')}
           </Button>
         </DialogFooter>
       </DialogContent>

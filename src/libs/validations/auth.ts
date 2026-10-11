@@ -4,12 +4,12 @@ import { z } from 'zod';
 export const signInSchema = z.object({
   email: z
     .string()
-    .min(1, 'Email is required')
-    .email('Please enter a valid email address'),
+    .min(1, 'validation.emailRequired')
+    .email('validation.invalidEmail'),
   password: z
     .string()
-    .min(1, 'Password is required')
-    .min(6, 'Password must be at least 6 characters'),
+    .min(1, 'validation.passwordRequired')
+    .min(6, 'validation.passwordTooShort'),
 });
 
 // Sign up validation schema
@@ -17,33 +17,33 @@ export const signUpSchema = z
   .object({
     firstName: z
       .string()
-      .min(1, 'First name is required')
-      .min(2, 'First name must be at least 2 characters'),
+      .min(1, 'validation.firstNameRequired')
+      .min(2, 'validation.firstNameTooShort'),
     lastName: z
       .string()
-      .min(1, 'Last name is required')
-      .min(2, 'Last name must be at least 2 characters'),
+      .min(1, 'validation.lastNameRequired')
+      .min(2, 'validation.lastNameTooShort'),
     email: z
       .string()
-      .min(1, 'Email is required')
-      .email('Please enter a valid email address'),
+      .min(1, 'validation.emailRequired')
+      .email('validation.invalidEmail'),
     phone: z
       .string()
       .optional()
       .refine(
         val => !val || /^\+?[1-9]\d{0,15}$/.test(val.replace(/\s/g, '')),
-        'Please enter a valid phone number',
+        'validation.invalidPhone',
       ),
     password: z
       .string()
-      .min(1, 'Password is required')
-      .min(6, 'Password must be at least 6 characters'),
+      .min(1, 'validation.passwordRequired')
+      .min(6, 'validation.passwordTooShort'),
     confirmPassword: z
       .string()
-      .min(1, 'Please confirm your password'),
+      .min(1, 'validation.confirmPasswordRequired'),
   })
   .refine(data => data.password === data.confirmPassword, {
-    message: 'Passwords do not match',
+    message: 'validation.passwordsDoNotMatch',
     path: ['confirmPassword'],
   });
 
@@ -51,8 +51,8 @@ export const signUpSchema = z
 export const forgotPasswordSchema = z.object({
   email: z
     .string()
-    .min(1, 'Email is required')
-    .email('Please enter a valid email address'),
+    .min(1, 'validation.emailRequired')
+    .email('validation.invalidEmail'),
 });
 
 // Type exports

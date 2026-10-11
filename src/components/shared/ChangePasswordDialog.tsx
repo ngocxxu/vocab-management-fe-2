@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LockPassword } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -27,28 +28,29 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
+// Schema messages are validation keys, translated by FormMessage.
 function buildSchema(hasPassword: boolean) {
   return z
     .object({
       currentPassword: z.string().optional(),
       newPassword: z
         .string()
-        .min(1, 'New password is required')
-        .min(6, 'Password must be at least 6 characters'),
-      confirmPassword: z.string().min(1, 'Please confirm your password'),
+        .min(1, 'validation.newPasswordRequired')
+        .min(6, 'validation.passwordTooShort'),
+      confirmPassword: z.string().min(1, 'validation.confirmPasswordRequired'),
     })
     .superRefine((data, ctx) => {
       if (hasPassword && !data.currentPassword) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: 'Current password is required',
+          message: 'validation.currentPasswordRequired',
           path: ['currentPassword'],
         });
       }
       if (data.newPassword !== data.confirmPassword) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: 'Passwords do not match',
+          message: 'validation.passwordsDoNotMatch',
           path: ['confirmPassword'],
         });
       }
@@ -72,6 +74,8 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
   onOpenChange,
   hasPassword,
 }) => {
+  const t = useTranslations('settings.password');
+  const tErrors = useTranslations('errors');
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -96,10 +100,10 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
         currentPassword: hasPassword ? data.currentPassword : undefined,
         newPassword: data.newPassword,
       });
-      toast.success(hasPassword ? 'Password changed successfully' : 'Password set successfully');
+      toast.success(hasPassword ? t('changedToast') : t('setToast'));
       handleOpenChange(false);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to update password');
+      toast.error(error instanceof Error ? error.message : tErrors('updatePassword'));
     } finally {
       setIsSubmitting(false);
     }
@@ -111,12 +115,10 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <LockPassword size={20} weight="BoldDuotone" className="text-muted-foreground" />
-            {hasPassword ? 'Change Password' : 'Set Password'}
+            {hasPassword ? t('changeTitle') : t('setTitle')}
           </DialogTitle>
           <DialogDescription>
-            {hasPassword
-              ? 'Enter your current password and choose a new one.'
-              : 'Add a password to your account so you can also sign in with email and password.'}
+            {hasPassword ? t('changeDescription') : t('setDescription')}
           </DialogDescription>
         </DialogHeader>
 
@@ -128,7 +130,7 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
                 name="currentPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Current Password</FormLabel>
+                    <FormLabel>{t('currentPassword')}</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input type={showCurrentPassword ? 'text' : 'password'} autoComplete="current-password" className="pr-10" {...field} />
@@ -136,7 +138,7 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
                           type="button"
                           onClick={() => setShowCurrentPassword(prev => !prev)}
                           className="absolute top-1/2 right-3 -translate-y-1/2"
-                          aria-label={showCurrentPassword ? 'Hide password' : 'Show password'}
+                          aria-label={showCurrentPassword ? t('hidePassword') : t('showPassword')}
                         >
                           <EyeIcon open={showCurrentPassword} />
                         </button>
@@ -153,7 +155,7 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
               name="newPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>New Password</FormLabel>
+                  <FormLabel>{t('newPassword')}</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Input type={showNewPassword ? 'text' : 'password'} autoComplete="new-password" className="pr-10" {...field} />
@@ -161,7 +163,7 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
                         type="button"
                         onClick={() => setShowNewPassword(prev => !prev)}
                         className="absolute top-1/2 right-3 -translate-y-1/2"
-                        aria-label={showNewPassword ? 'Hide password' : 'Show password'}
+                        aria-label={showNewPassword ? t('hidePassword') : t('showPassword')}
                       >
                         <EyeIcon open={showNewPassword} />
                       </button>
@@ -177,7 +179,7 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Confirm New Password</FormLabel>
+                  <FormLabel>{t('confirmNewPassword')}</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Input type={showConfirmPassword ? 'text' : 'password'} autoComplete="new-password" className="pr-10" {...field} />
@@ -185,7 +187,7 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
                         type="button"
                         onClick={() => setShowConfirmPassword(prev => !prev)}
                         className="absolute top-1/2 right-3 -translate-y-1/2"
-                        aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                        aria-label={showConfirmPassword ? t('hidePassword') : t('showPassword')}
                       >
                         <EyeIcon open={showConfirmPassword} />
                       </button>
@@ -198,10 +200,10 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
 
             <DialogFooter>
               <Button type="button" variant="ghost" disabled={isSubmitting} onClick={() => handleOpenChange(false)}>
-                Cancel
+                {t('cancel')}
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? 'Saving...' : hasPassword ? 'Update Password' : 'Set Password'}
+                {isSubmitting ? t('saving') : hasPassword ? t('update') : t('set')}
               </Button>
             </DialogFooter>
           </form>

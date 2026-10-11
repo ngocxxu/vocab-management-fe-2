@@ -2,6 +2,7 @@
 
 import type { ExpandedRowContentProps, TExamples, TVocab } from '@/types/vocab-list';
 import { AltArrowUp, Pen, VolumeLoud } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import React, { useCallback } from 'react';
 import { useSpeechSynthesis } from 'react-speech-kit';
 import { Button } from '@/shared/ui/button';
@@ -42,6 +43,7 @@ const ExpandedRowContent: React.FC<ExpandedRowContentProps> = ({
   onAddFreeTextWord,
   headerContent,
 }) => {
+  const t = useTranslations('vocabList');
   const { speak, cancel, voices } = useSpeechSynthesis();
 
   const handleSpeakTextTarget = useCallback((text: string) => {
@@ -82,8 +84,8 @@ const ExpandedRowContent: React.FC<ExpandedRowContentProps> = ({
                           size="icon"
                           className="h-8 w-8 shrink-0 p-0"
                           onClick={() => handleSpeakTextTarget(target.textTarget)}
-                          aria-label="Play pronunciation"
-                          title="Play pronunciation"
+                          aria-label={t('columns.playPronunciation')}
+                          title={t('columns.playPronunciation')}
                         >
                           <VolumeLoud size={18} weight="BoldDuotone" className="text-muted-foreground" />
                         </Button>
@@ -100,8 +102,8 @@ const ExpandedRowContent: React.FC<ExpandedRowContentProps> = ({
                             size="icon"
                             className="h-8 w-8 shrink-0 rounded-full p-0"
                             onClick={() => onEdit(vocab, index)}
-                            aria-label="Edit vocab"
-                            title="Edit"
+                            aria-label={t('expandedRow.editVocab')}
+                            title={t('expandedRow.editTitle')}
                           >
                             <Pen size={16} weight="BoldDuotone" className="text-muted-foreground" />
                           </Button>
@@ -119,7 +121,7 @@ const ExpandedRowContent: React.FC<ExpandedRowContentProps> = ({
 
                     {showExplanations && (target.explanationSource || target.explanationTarget) && (
                       <div className="mb-4">
-                        <p className="mb-1.5 text-xs font-medium tracking-wide text-muted-foreground uppercase">Explanation</p>
+                        <p className="mb-1.5 text-xs font-medium tracking-wide text-muted-foreground uppercase">{t('expandedRow.explanation')}</p>
                         <div className="rounded-lg bg-muted p-4 dark:bg-muted">
                           {target.explanationSource && <p className="text-sm text-foreground italic">{target.explanationSource}</p>}
                           {target.explanationTarget && (
@@ -133,7 +135,7 @@ const ExpandedRowContent: React.FC<ExpandedRowContentProps> = ({
 
                     {showExamples && target.vocabExamples?.filter((ex: TExamples) => ex.source || ex.target).length > 0 && (
                       <div>
-                        <p className="mb-1.5 text-xs font-medium tracking-wide text-muted-foreground uppercase">Usage Examples</p>
+                        <p className="mb-1.5 text-xs font-medium tracking-wide text-muted-foreground uppercase">{t('expandedRow.usageExamples')}</p>
                         <div className="space-y-3">
                           {target.vocabExamples
                             .filter((ex: TExamples) => ex.source || ex.target)
@@ -166,7 +168,7 @@ const ExpandedRowContent: React.FC<ExpandedRowContentProps> = ({
                   className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
                 >
                   <AltArrowUp size={16} weight="BoldDuotone" />
-                  Collapse Details
+                  {t('expandedRow.collapseDetails')}
                 </button>
               </div>
             )}

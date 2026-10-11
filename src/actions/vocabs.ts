@@ -8,7 +8,7 @@ import { revalidatePath } from 'next/cache';
 import { vocabApi } from '@/utils/server-api';
 import { parseVocabInUse } from '@/utils/vocab-in-use';
 import { requireAuth } from './auth';
-import { toActionError } from './utils';
+import { toActionError, translateError } from './utils';
 
 export async function createVocab(vocabData: TCreateVocab) {
   await requireAuth();
@@ -24,7 +24,7 @@ export async function createVocab(vocabData: TCreateVocab) {
     revalidatePath('/vocab-list');
     return result;
   } catch (error) {
-    throw toActionError(error, 'Failed to create vocabulary');
+    throw await toActionError(error, 'createVocabulary');
   }
 }
 
@@ -43,7 +43,7 @@ export async function updateVocab(id: string, vocabData: Partial<TCreateVocab>) 
     revalidatePath('/subjects/conflict-vocabularies');
     return result;
   } catch (error) {
-    throw toActionError(error, 'Failed to update vocabulary');
+    throw await toActionError(error, 'updateVocabulary');
   }
 }
 
@@ -64,7 +64,7 @@ export async function deleteVocab(id: string): Promise<TDeleteVocabResult> {
     if (conflict) {
       return { ok: false, conflict };
     }
-    throw toActionError(error, 'Failed to delete vocabulary');
+    throw await toActionError(error, 'deleteVocabulary');
   }
 }
 
@@ -79,7 +79,7 @@ export async function createVocabsBulk(vocabData: TCreateVocab[]) {
     revalidatePath('/vocab-list');
     return result;
   } catch (error) {
-    throw toActionError(error, 'Failed to create vocabularies');
+    throw await toActionError(error, 'createVocabularies');
   }
 }
 
@@ -100,7 +100,7 @@ export async function deleteVocabsBulk(ids: string[]): Promise<TDeleteVocabResul
     if (conflict) {
       return { ok: false, conflict };
     }
-    throw toActionError(error, 'Failed to delete vocabularies');
+    throw await toActionError(error, 'deleteVocabularies');
   }
 }
 
@@ -116,7 +116,7 @@ export async function bulkUpdateVocabs(updates: TBulkVocabUpdateItem[]): Promise
     revalidatePath('/subjects/conflict-vocabularies');
     return result;
   } catch (error) {
-    throw toActionError(error, 'Failed to update vocabularies');
+    throw await toActionError(error, 'updateVocabularies');
   }
 }
 
@@ -141,7 +141,7 @@ export async function importVocabsCsv(
     revalidatePath('/vocab-list');
     return result;
   } catch (error) {
-    throw toActionError(error, 'Failed to import vocabularies');
+    throw await toActionError(error, 'importVocabularies');
   }
 }
 
@@ -156,7 +156,7 @@ export async function exportVocabsCsv(params: Omit<VocabQueryParams, 'userId'>):
     return blob;
   } catch (error) {
     return {
-      error: error instanceof Error ? error.message : 'Failed to export vocabularies',
+      error: error instanceof Error ? error.message : await translateError('exportVocabularies'),
     };
   }
 }
@@ -171,7 +171,7 @@ export async function getVocabsForSelection(params: Omit<VocabQueryParams, 'user
     return result;
   } catch (error) {
     return {
-      error: error instanceof Error ? error.message : 'Failed to fetch vocabularies',
+      error: error instanceof Error ? error.message : await translateError('fetchVocabularies'),
     };
   }
 }
@@ -206,7 +206,7 @@ export async function getRandomVocabsForSelection(
     return [];
   } catch (error) {
     return {
-      error: error instanceof Error ? error.message : 'Failed to randomize vocabularies',
+      error: error instanceof Error ? error.message : await translateError('randomizeVocabularies'),
     };
   }
 }
@@ -226,7 +226,7 @@ export async function getVocabsByIds(ids: string[]): Promise<TVocab[] | { error:
     return await vocabApi.getBulk(cleaned);
   } catch (error) {
     return {
-      error: error instanceof Error ? error.message : 'Failed to fetch vocabularies by ids',
+      error: error instanceof Error ? error.message : await translateError('fetchVocabulariesByIds'),
     };
   }
 }
@@ -241,6 +241,6 @@ export async function generateTextTargetContent(data: {
   try {
     return await vocabApi.generateTextTarget(data);
   } catch (error) {
-    throw toActionError(error, 'Failed to enqueue text target generation');
+    throw await toActionError(error, 'enqueueTextTargetGeneration');
   }
 }

@@ -1,4 +1,5 @@
 import type { TOAuthProvider, TResendConfirmationData, TSigninData, TSignupData } from '@/types/auth';
+import { useTranslations } from 'next-intl';
 import { Env } from '@/libs/Env';
 import { supabase } from '@/libs/supabase';
 import { useCallback, useState } from 'react';
@@ -16,6 +17,7 @@ function getOrigin(): string | undefined {
 }
 
 export function useAuthMutations() {
+  const t = useTranslations('auth');
   const [errorMessage, setErrorMessage] = useState('');
   const [isOAuthLoading, setIsOAuthLoading] = useState(false);
 
@@ -24,30 +26,30 @@ export function useAuthMutations() {
     try {
       await authClient.signin(data);
     } catch (err) {
-      setErrorMessage(getAuthErrorMessage(err, 'Failed to sign in. Please try again.'));
+      setErrorMessage(getAuthErrorMessage(err, t('errors.signIn')));
       throw err;
     }
-  }, []);
+  }, [t]);
 
   const signup = useCallback(async (data: TSignupData) => {
     setErrorMessage('');
     try {
       return await authClient.signup(data);
     } catch (err) {
-      setErrorMessage(getAuthErrorMessage(err, 'Failed to sign up. Please try again.'));
+      setErrorMessage(getAuthErrorMessage(err, t('errors.signUp')));
       throw err;
     }
-  }, []);
+  }, [t]);
 
   const resendConfirmation = useCallback(async (data: TResendConfirmationData) => {
     setErrorMessage('');
     try {
       return await authClient.resendConfirmation(data);
     } catch (err) {
-      setErrorMessage(getAuthErrorMessage(err, 'Failed to resend confirmation email. Please try again.'));
+      setErrorMessage(getAuthErrorMessage(err, t('errors.resendConfirmation')));
       throw err;
     }
-  }, []);
+  }, [t]);
 
   const signInWithProvider = useCallback(async (provider: TOAuthProvider, redirectTo: string) => {
     setIsOAuthLoading(true);
@@ -56,7 +58,7 @@ export function useAuthMutations() {
     try {
       const origin = getOrigin();
       if (!origin) {
-        throw new Error('Origin URL could not be determined');
+        throw new Error(t('errors.originUnavailable'));
       }
 
       const callbackUrl = `${origin}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`;
@@ -68,11 +70,11 @@ export function useAuthMutations() {
         throw oauthError;
       }
     } catch (err) {
-      setErrorMessage(err instanceof Error ? err.message : 'Failed to sign in with provider. Please try again.');
+      setErrorMessage(err instanceof Error ? err.message : t('errors.provider'));
       setIsOAuthLoading(false);
       throw err;
     }
-  }, []);
+  }, [t]);
 
   return {
     errorMessage,

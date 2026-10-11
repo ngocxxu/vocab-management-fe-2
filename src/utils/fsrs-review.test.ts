@@ -5,9 +5,9 @@ import {
   clampDuration,
   countRatings,
   daysUntilEnd,
-  directionLabel,
+  deadlineStatus,
+  directionLabelKey,
   estimateMinutes,
-  formatDeadline,
   formatInterval,
   formatPercent,
   formatShortDate,
@@ -53,7 +53,7 @@ describe('ratingForKey', () => {
 
 describe('formatInterval', () => {
   it('shows days, months and years', () => {
-    expect([1, 6, 29, 30, 45, 200, 364, 365, 548, 3650].map(formatInterval)).toEqual(['1d', '6d', '29d', '1mo', '2mo', '7mo', '12mo', '1y', '1.5y', '10y']);
+    expect([1, 6, 29, 30, 45, 200, 364, 365, 548, 3650].map(days => formatInterval(days))).toEqual(['1d', '6d', '29d', '1mo', '2mo', '7mo', '12mo', '1y', '1.5y', '10y']);
   });
 
   it('never shows 0 days', () => {
@@ -70,9 +70,9 @@ describe('session helpers', () => {
     expect([0, 19, 20, 400].map(isBacklog)).toEqual([false, false, true, true]);
   });
 
-  it('labels the direction the card is asked in', () => {
-    expect(directionLabel(EFsrsDirection.SOURCE_TO_TARGET)).toBe('Word → Meaning');
-    expect(directionLabel(EFsrsDirection.TARGET_TO_SOURCE)).toBe('Meaning → Word');
+  it('keys the direction the card is asked in', () => {
+    expect(directionLabelKey(EFsrsDirection.SOURCE_TO_TARGET)).toBe('direction.sourceToTarget');
+    expect(directionLabelKey(EFsrsDirection.TARGET_TO_SOURCE)).toBe('direction.targetToSource');
   });
 
   it('keeps the duration inside what the backend accepts', () => {
@@ -104,14 +104,18 @@ describe('deadline', () => {
     expect([isCycleEnded('2026-10-04T09:59:59.000Z', now), isCycleEnded('2026-10-04T10:00:01.000Z', now), isCycleEnded(null, now)]).toEqual([true, false, false]);
   });
 
-  it('says how long is left in plain words', () => {
-    expect(['2026-10-04T09:00:00.000Z', '2026-10-04T20:00:00.000Z', '2026-10-09T09:00:00.000Z'].map(date => formatDeadline(date, now))).toEqual(['Cycle ended', 'Ends today', '5 days left']);
+  it('reports how long is left as a key and a day count', () => {
+    expect(['2026-10-04T09:00:00.000Z', '2026-10-04T20:00:00.000Z', '2026-10-09T09:00:00.000Z'].map(date => deadlineStatus(date, now))).toEqual([
+      { key: 'cycleEnded', days: 0 },
+      { key: 'endsToday', days: 1 },
+      { key: 'daysLeft', days: 5 },
+    ]);
   });
 });
 
 describe('formatting', () => {
   it('shows a short date without moving the day', () => {
-    expect([formatShortDate('2026-10-07'), formatShortDate('2026-01-01'), formatShortDate('nope')]).toEqual(['Oct 07', 'Jan 01', 'nope']);
+    expect([formatShortDate('2026-10-07', 'en-US'), formatShortDate('2026-01-01', 'en-US'), formatShortDate('nope', 'en-US')]).toEqual(['Oct 07', 'Jan 01', 'nope']);
   });
 
   it('shows a share as a percentage, or a dash without data', () => {

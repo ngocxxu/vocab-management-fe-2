@@ -2,6 +2,7 @@
 
 import type { TextTargetFormProps, WordTypeItem } from '@/types/vocab-list';
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { useFormContext } from 'react-hook-form';
 import {
   FormControl,
@@ -31,6 +32,7 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
   onAddExample,
   onRemoveExample,
 }) => {
+  const t = useTranslations('vocabList.textTargetForm');
   const form = useFormContext();
 
   return (
@@ -42,11 +44,11 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
             name={`textTargets.${targetIndex}.textTarget`}
             render={() => (
               <FormItem>
-                <Label htmlFor={`textTarget-${targetIndex}`}>Target Text</Label>
+                <Label htmlFor={`textTarget-${targetIndex}`}>{t('targetText')}</Label>
                 <FormControl>
                   <Input
                     id={`textTarget-${targetIndex}`}
-                    placeholder="Enter target text..."
+                    placeholder={t('targetTextPlaceholder')}
                     value={target.textTarget}
                     onChange={e => onInputChange('textTarget', e.target.value, targetIndex)}
                     className="mt-1 w-full"
@@ -58,30 +60,30 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
           />
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-              <Label htmlFor={`wordType-${targetIndex}`}>Word Type</Label>
+              <Label htmlFor={`wordType-${targetIndex}`}>{t('wordType')}</Label>
               <Select
                 value={target.wordTypeId || ''}
                 onValueChange={(value: string) => onInputChange('wordTypeId', value === '__none__' ? '' : value, targetIndex)}
               >
                 <SelectTrigger className="mt-1 w-full">
-                  <SelectValue placeholder="Select word type" />
+                  <SelectValue placeholder={t('selectWordType')} />
                 </SelectTrigger>
                 <SelectContent>
                   {isLoading
                     ? (
                         <SelectItem value="loading" disabled>
-                          Loading word types...
+                          {t('loadingWordTypes')}
                         </SelectItem>
                       )
                     : isError
                       ? (
                           <SelectItem value="error" disabled>
-                            Error loading word types
+                            {t('errorLoadingWordTypes')}
                           </SelectItem>
                         )
                       : (
                           <>
-                            <SelectItem value="__none__">None</SelectItem>
+                            <SelectItem value="__none__">{t('none')}</SelectItem>
                             {wordTypes.map((wordType: WordTypeItem) => (
                               <SelectItem key={wordType.id} value={wordType.id}>
                                 {wordType.name}
@@ -93,10 +95,10 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
               </Select>
             </div>
             <div>
-              <Label htmlFor={`grammar-${targetIndex}`}>Grammar Notes</Label>
+              <Label htmlFor={`grammar-${targetIndex}`}>{t('grammarNotes')}</Label>
               <Input
                 id={`grammar-${targetIndex}`}
-                placeholder="e.g. Used with prepositions"
+                placeholder={t('grammarPlaceholder')}
                 value={target.grammar}
                 onChange={e => onInputChange('grammar', e.target.value, targetIndex)}
                 className="mt-1"
@@ -118,16 +120,16 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
 
       <section>
         <div className="mb-3 border-b pb-2">
-          <h4 className="text-sm font-medium">Explanation & Usage</h4>
+          <h4 className="text-sm font-medium">{t('explanationUsage')}</h4>
         </div>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div>
             <Label htmlFor={`explanationSource-${targetIndex}`} className="text-xs tracking-wide uppercase">
-              Source
+              {t('explanationSource')}
             </Label>
             <Textarea
               id={`explanationSource-${targetIndex}`}
-              placeholder="Input source explanation..."
+              placeholder={t('explanationSourcePlaceholder')}
               value={target.explanationSource}
               onChange={e => onInputChange('explanationSource', e.target.value, targetIndex)}
               className="mt-1"
@@ -136,11 +138,11 @@ const TextTargetForm: React.FC<TextTargetFormProps> = ({
           </div>
           <div>
             <Label htmlFor={`explanationTarget-${targetIndex}`} className="text-xs tracking-wide uppercase">
-              Target
+              {t('explanationTarget')}
             </Label>
             <Textarea
               id={`explanationTarget-${targetIndex}`}
-              placeholder="Input target explanation..."
+              placeholder={t('explanationTargetPlaceholder')}
               value={target.explanationTarget}
               onChange={e => onInputChange('explanationTarget', e.target.value, targetIndex)}
               className="mt-1"

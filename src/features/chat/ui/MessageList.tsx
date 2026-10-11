@@ -2,11 +2,13 @@
 
 import Image from 'next/image';
 import { useLayoutEffect, useRef } from 'react';
+import { useTranslations } from 'next-intl';
 import { useChat } from '@/providers/ChatProvider';
 import { MessageBubble } from './MessageBubble';
 import { ToolChip } from './ToolChip';
 
 export function MessageList() {
+  const t = useTranslations('chat.message');
   const { state, loadMoreHistory, retryMessage } = useChat();
   const bottomRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -52,7 +54,7 @@ export function MessageList() {
         <div className="flex items-start gap-2 px-4">
           <Image
             src="/assets/images/head_ai.png"
-            alt="AI"
+            alt={t('aiAlt')}
             width={28}
             height={28}
             className="mt-1 shrink-0 rounded-full object-cover"

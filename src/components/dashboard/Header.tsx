@@ -28,6 +28,7 @@ import {
 } from '@solar-icons/react/ssr';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import React, { useCallback, useEffect, useState } from 'react';
 
 export const Header: React.FC<HeaderProps> = ({
@@ -42,6 +43,7 @@ export const Header: React.FC<HeaderProps> = ({
   error = null,
   onNotificationsChanged,
 }) => {
+  const t = useTranslations('shell');
   const { theme, toggleTheme, mounted } = useTheme();
   const router = useRouter();
   const [commandOpen, setCommandOpen] = useState(false);
@@ -79,7 +81,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   const planBadgeLabel = (currentPlan ?? user?.role)
     ? user?.role === 'ADMIN'
-      ? 'Admin'
+      ? t('roles.admin')
       : currentPlan
         ? (() => {
             const priceSuffix = Number(currentPlan.priceLabel) ? ` - ${currentPlan.priceLabel}` : '';
@@ -97,7 +99,7 @@ export const Header: React.FC<HeaderProps> = ({
             size="icon"
             className="hidden h-10 w-10 flex-shrink-0 rounded-xl hover:bg-accent md:inline-flex"
             onClick={onSidebarToggle}
-            title={isSidebarExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
+            title={isSidebarExpanded ? t('sidebar.collapse') : t('sidebar.expand')}
           >
             {isSidebarExpanded
               ? <HamburgerMenu size={64} weight="BoldDuotone" className="text-muted-foreground" />
@@ -107,11 +109,11 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="relative flex flex-1 items-center rounded-full border border-border bg-muted md:max-w-xl">
             <Magnifer size={16} weight="BoldDuotone" className="ml-4 shrink-0 text-muted-foreground" />
             <Input
-              placeholder="Search words, lists, or tags..."
+              placeholder={t('header.searchPlaceholder')}
               className="h-10 flex-1 border-0 bg-transparent pr-2 pl-3 text-sm focus-visible:ring-0 focus-visible:ring-offset-0"
               onFocus={openCommand}
               readOnly
-              aria-label="Search"
+              aria-label={t('header.search')}
             />
             <Button
               variant="ghost"
@@ -131,7 +133,7 @@ export const Header: React.FC<HeaderProps> = ({
             className="h-10 w-10 flex-shrink-0 rounded-xl hover:bg-accent"
             onClick={toggleTheme}
             title={
-              mounted ? (theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode') : 'Toggle theme'
+              mounted ? (theme === 'dark' ? t('header.switchToLight') : t('header.switchToDark')) : t('header.toggleTheme')
             }
           >
             {mounted
@@ -163,7 +165,7 @@ export const Header: React.FC<HeaderProps> = ({
               ? (
                   <Image
                     src={user.avatar}
-                    alt={`${user?.firstName ?? ''} ${user?.lastName ?? ''}`.trim() || 'Avatar'}
+                    alt={`${user?.firstName ?? ''} ${user?.lastName ?? ''}`.trim() || t('sidebar.avatar')}
                     width={40}
                     height={40}
                     className="h-10 w-10 rounded-full object-cover shadow-sm"
@@ -191,40 +193,40 @@ export const Header: React.FC<HeaderProps> = ({
               size="icon"
               className="h-10 w-10 shrink-0 rounded-lg border-muted-foreground/30 hover:bg-accent"
               onClick={handleLogout}
-              title="Sign out"
+              title={t('sidebar.signOut')}
             >
               <Logout size={20} weight="BoldDuotone" className="text-muted-foreground" />
             </Button>
           </div>
         </div>
       </div>
-      <CommandDialog open={commandOpen} onOpenChange={setCommandOpen} title="Search" description="Search words, lists, or tags.">
+      <CommandDialog open={commandOpen} onOpenChange={setCommandOpen} title={t('header.searchTitle')} description={t('header.searchDescription')}>
         <CommandInput
-          placeholder="Search words, lists, or tags..."
+          placeholder={t('header.searchPlaceholder')}
           value={commandQuery}
           onValueChange={setCommandQuery}
         />
         <CommandList>
-          <CommandEmpty>No results.</CommandEmpty>
+          <CommandEmpty>{t('header.noResults')}</CommandEmpty>
           {/*
             Deliberately a link to the search page, not a live search here: this
             component is mounted on every screen, so searching inline would fire
             an embedding call from the app shell on every keystroke.
           */}
           {commandQuery.trim().length > 0 && (
-            <CommandGroup heading="Search">
+            <CommandGroup heading={t('header.heading')}>
               <CommandItem
                 value={`search-${commandQuery}`}
                 onSelect={() => runCommand(`/search?q=${encodeURIComponent(commandQuery.trim())}`)}
               >
-                {`Search "${commandQuery.trim()}" across all vocab`}
+                {t('header.searchAcross', { query: commandQuery.trim() })}
               </CommandItem>
             </CommandGroup>
           )}
-          <CommandGroup heading="Suggestions">
-            <CommandItem onSelect={() => runCommand('/dashboard')}>Dashboard</CommandItem>
-            <CommandItem onSelect={() => runCommand('/library')}>Library</CommandItem>
-            <CommandItem onSelect={() => runCommand('/vocab-trainer')}>Vocab Trainer</CommandItem>
+          <CommandGroup heading={t('header.suggestions')}>
+            <CommandItem onSelect={() => runCommand('/dashboard')}>{t('nav.dashboard')}</CommandItem>
+            <CommandItem onSelect={() => runCommand('/library')}>{t('nav.library')}</CommandItem>
+            <CommandItem onSelect={() => runCommand('/vocab-trainer')}>{t('nav.vocabTrainer')}</CommandItem>
           </CommandGroup>
         </CommandList>
       </CommandDialog>

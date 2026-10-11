@@ -2,6 +2,7 @@
 
 import type { TFsrsReviewSummary } from '@/types/vocab-trainer';
 import React, { useState } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Button } from '@/shared/ui/button';
 import { cn } from '@/libs/utils';
@@ -25,6 +26,8 @@ function Count({ label, value }: Readonly<{ label: string; value: number }>) {
 }
 
 const FsrsReviewStart: React.FC<FsrsReviewStartProps> = ({ trainerName, summary, isLoading, onStart }) => {
+  const t = useTranslations('trainer.fsrs');
+  const locale = useLocale();
   const [size, setSize] = useState<number>(DEFAULT_SESSION_SIZE);
   const available = summary.overdue + summary.dueToday + summary.newAvailable;
   const sessionCount = Math.min(size, available);
@@ -34,10 +37,11 @@ const FsrsReviewStart: React.FC<FsrsReviewStartProps> = ({ trainerName, summary,
       <div className="mx-auto w-full max-w-xl space-y-4 text-center">
         <h1 className="text-2xl font-bold text-foreground">{trainerName}</h1>
         <Alert>
-          <AlertTitle>This cycle has ended</AlertTitle>
+          <AlertTitle>{t('start.endedTitle')}</AlertTitle>
           <AlertDescription>
-            {summary.endsAt ? `The deadline was ${new Date(summary.endsAt).toLocaleDateString()}. ` : ''}
-            Nothing is scheduled anymore and your progress is kept. Extend the deadline in the trainer settings, or start a new trainer to learn these words again.
+            {summary.endsAt
+              ? t('start.endedBodyWithDate', { date: new Date(summary.endsAt).toLocaleDateString(locale) })
+              : t('start.endedBody')}
           </AlertDescription>
         </Alert>
       </div>
@@ -48,32 +52,30 @@ const FsrsReviewStart: React.FC<FsrsReviewStartProps> = ({ trainerName, summary,
     <div className="mx-auto w-full max-w-xl space-y-6">
       <div className="space-y-1 text-center">
         <h1 className="text-2xl font-bold text-foreground">{trainerName}</h1>
-        <p className="text-muted-foreground">Short sessions work better than long ones.</p>
+        <p className="text-muted-foreground">{t('start.shortSessions')}</p>
       </div>
 
       {isBacklog(summary.overdue) && (
         <Alert>
-          <AlertTitle>Welcome back!</AlertTitle>
+          <AlertTitle>{t('start.welcomeBack')}</AlertTitle>
           <AlertDescription>
-            {summary.overdue}
-            {' '}
-            questions are overdue. That is normal after a break, so there is no need to rush.
-            {summary.estimatedDaysToClearBacklog > 0 && ` At ${size} questions a day you will be caught up in about ${summary.estimatedDaysToClearBacklog} ${summary.estimatedDaysToClearBacklog === 1 ? 'day' : 'days'}.`}
+            {t('start.backlogBody', { count: summary.overdue })}
+            {summary.estimatedDaysToClearBacklog > 0 && ` ${t('start.backlogPace', { size, days: summary.estimatedDaysToClearBacklog })}`}
           </AlertDescription>
         </Alert>
       )}
 
       <div className="grid grid-cols-3 gap-2">
-        <Count label="Overdue" value={summary.overdue} />
-        <Count label="Due today" value={summary.dueToday} />
-        <Count label="New to learn" value={summary.newAvailable} />
+        <Count label={t('start.overdue')} value={summary.overdue} />
+        <Count label={t('start.dueToday')} value={summary.dueToday} />
+        <Count label={t('start.newToLearn')} value={summary.newAvailable} />
       </div>
 
       {available === 0
-        ? <p className="text-center text-muted-foreground">You are all caught up. Come back later, or look ahead below.</p>
+        ? <p className="text-center text-muted-foreground">{t('start.allCaughtUp')}</p>
         : (
             <div className="space-y-3">
-              <p className="text-sm font-medium text-foreground" id="session-size-label">Questions in this session</p>
+              <p className="text-sm font-medium text-foreground" id="session-size-label">{t('start.sessionSize')}</p>
               <div className="flex flex-wrap gap-2" role="radiogroup" aria-labelledby="session-size-label">
                 {SESSION_SIZES.map(option => (
                   <button
@@ -92,36 +94,18 @@ const FsrsReviewStart: React.FC<FsrsReviewStartProps> = ({ trainerName, summary,
                 ))}
               </div>
               <Button type="button" size="lg" className="w-full" disabled={isLoading} onClick={() => onStart(size, 0)}>
-                Start
-                {' '}
-                {sessionCount}
-                {' '}
-                {sessionCount === 1 ? 'question' : 'questions'}
-                {' '}
-                (about
-                {' '}
-                {estimateMinutes(sessionCount)}
-                {' '}
-                min)
+                {t('start.startSession', { count: sessionCount, minutes: estimateMinutes(sessionCount) })}
               </Button>
               {available > sessionCount && (
                 <p className="text-center text-sm text-muted-foreground">
-                  {available - sessionCount}
-                  {' '}
-                  {available - sessionCount === 1 ? 'question waits' : 'questions wait'}
-                  {' '}
-                  for later sessions.
+                  {t('start.waiting', { count: available - sessionCount })}
                 </p>
               )}
             </div>
           )}
 
       <Button type="button" variant="outline" className="w-full" disabled={isLoading} onClick={() => onStart(size, REVIEW_AHEAD_DAYS)}>
-        Review the next
-        {' '}
-        {REVIEW_AHEAD_DAYS}
-        {' '}
-        days
+        {t('start.reviewAhead', { days: REVIEW_AHEAD_DAYS })}
       </Button>
     </div>
   );

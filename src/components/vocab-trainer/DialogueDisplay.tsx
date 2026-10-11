@@ -2,14 +2,17 @@
 
 import type { DialogueDisplayProps } from '@/types/vocab-trainer';
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { Card, CardContent } from '@/components/ui/card';
 
 const DialogueDisplay: React.FC<DialogueDisplayProps> = ({ dialogue }) => {
+  const t = useTranslations('trainer.dialogue');
+
   if (!dialogue || dialogue.length === 0) {
     return (
       <Card className="border border-border bg-card">
         <CardContent className="p-8 text-center text-muted-foreground">
-          No dialogue available
+          {t('empty')}
         </CardContent>
       </Card>
     );

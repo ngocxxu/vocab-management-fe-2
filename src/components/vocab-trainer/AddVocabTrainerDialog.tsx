@@ -1,6 +1,7 @@
 'use client';
 
 import { RefreshCircle } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -33,6 +34,7 @@ const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({
   userRole,
   srsDefaults,
 }) => {
+  const t = useTranslations('trainer.dialog');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedVocabById, setSelectedVocabById] = useState<Record<string, TVocab>>({});
   const [removalConfirmOpen, setRemovalConfirmOpen] = useState(false);
@@ -127,11 +129,11 @@ const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({
       {/* Only the body scrolls. Header and footer are separate rows, so the footer never sits on top of scrolled content. */}
       <DialogContent className="flex max-h-[90vh] flex-col gap-0 overflow-hidden p-0 sm:max-w-[700px] lg:max-w-[950px] xl:max-w-[1100px] 2xl:max-w-[1300px]">
         <DialogHeader className="shrink-0 border-b px-6 pt-6 pr-12 pb-4">
-          <DialogTitle>{editMode ? 'Edit Vocab Trainer' : 'Create New Vocab Trainer'}</DialogTitle>
+          <DialogTitle>{editMode ? t('editTitle') : t('createTitle')}</DialogTitle>
           <DialogDescription>
             {editMode
-              ? 'Update the details for your vocabulary trainer'
-              : 'Configure your session and select words to practice.'}
+              ? t('editDescription')
+              : t('createDescription')}
           </DialogDescription>
         </DialogHeader>
 
@@ -172,7 +174,7 @@ const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({
           <div className="flex gap-2">
             <DialogClose asChild>
               <Button variant="outline" disabled={isSubmitting}>
-                Cancel
+                {t('cancel')}
               </Button>
             </DialogClose>
             <Button
@@ -183,15 +185,15 @@ const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({
                 ? (
                     <>
                       <RefreshCircle size={16} weight="BoldDuotone" className="mr-2 animate-spin" />
-                      Creating...
+                      {t('creating')}
                     </>
                   )
                 : editMode
                   ? (
-                      'Update Trainer'
+                      t('update')
                     )
                   : (
-                      'Create Trainer'
+                      t('create')
                     )}
             </Button>
           </div>
@@ -201,16 +203,15 @@ const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {removedCount === 1 ? '1 word' : `${removedCount} words`}
-              {' will lose their review schedule'}
+              {t('removeTitle', { count: removedCount })}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              Removing a word deletes its review schedule in this trainer. Its review history is kept. Adding the word back later starts it as new.
+              {t('removeDescription')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={() => void handleConfirmRemoval()}>Remove and update</AlertDialogAction>
+            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={() => void handleConfirmRemoval()}>{t('removeConfirm')}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

@@ -2,6 +2,7 @@
 
 import { Lock } from '@solar-icons/react/ssr';
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { useFormContext } from 'react-hook-form';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Button } from '@/shared/ui/button';
@@ -24,21 +25,21 @@ type FsrsSettingsFieldsProps = Readonly<{
 type FsrsCardCountProps = Pick<FsrsSettingsFieldsProps, 'wordCount' | 'wordsWithoutTranslation'>;
 
 const DIRECTION_OPTIONS = [
-  { value: EFsrsDirection.SOURCE_TO_TARGET, title: 'Recognise', example: 'apple → quả táo', hint: 'See the word, know the meaning' },
-  { value: EFsrsDirection.TARGET_TO_SOURCE, title: 'Recall', example: 'quả táo → apple', hint: 'See the meaning, produce the word' },
+  { value: EFsrsDirection.SOURCE_TO_TARGET, titleKey: 'directionRecognise', hintKey: 'directionRecogniseHint', example: 'apple → quả táo' },
+  { value: EFsrsDirection.TARGET_TO_SOURCE, titleKey: 'directionRecall', hintKey: 'directionRecallHint', example: 'quả táo → apple' },
 ];
 
 const MAX_LISTED_WORDS = 5;
 const ADVANCED_FIELDS = ['fsrsDesiredRetention', 'fsrsNewPerDay', 'fsrsMaximumInterval'] as const;
 
-function retentionHint(retention: number): string {
+function retentionHintKey(retention: number): 'retentionHintHigh' | 'retentionHintMid' | 'retentionHintLow' {
   if (retention >= 0.95) {
-    return 'Very few misses, but many more reviews every day.';
+    return 'retentionHintHigh';
   }
   if (retention >= 0.9) {
-    return 'A good balance between remembering and workload.';
+    return 'retentionHintMid';
   }
-  return 'Fewer reviews, but you will forget more words.';
+  return 'retentionHintLow';
 }
 
 /** Cards the trainer will create: words with a translation × directions. */
@@ -51,29 +52,23 @@ function useCardCount({ wordCount, wordsWithoutTranslation }: FsrsCardCountProps
 
 /** Footer summary: stays visible while the form scrolls. */
 export const FsrsCardSummary: React.FC<FsrsCardCountProps> = (props) => {
+  const t = useTranslations('trainer.settings');
   const { directions, cardWords, cards } = useCardCount(props);
 
   return (
     <p className="text-sm text-muted-foreground">
-      {cardWords}
-      {' '}
-      {cardWords === 1 ? 'word' : 'words'}
-      {' × '}
-      {directions.length}
-      {' '}
-      {directions.length === 1 ? 'direction' : 'directions'}
-      {' = '}
-      <span className="font-semibold text-foreground">
-        {cards}
-        {' '}
-        {cards === 1 ? 'question' : 'questions'}
-      </span>
-      {' to learn'}
+      {t.rich('cardSummary', {
+        words: cardWords,
+        directions: directions.length,
+        cards,
+        strong: chunks => <span className="font-semibold text-foreground">{chunks}</span>,
+      })}
     </p>
   );
 };
 
 const FsrsSettingsFields: React.FC<FsrsSettingsFieldsProps> = ({ editMode, wordCount, wordsWithoutTranslation }) => {
+  const t = useTranslations('trainer.settings');
   const form = useFormContext();
   const endsAt = form.watch('fsrsEndsAt') as string;
   const { directions, cards } = useCardCount({ wordCount, wordsWithoutTranslation });
@@ -93,22 +88,21 @@ const FsrsSettingsFields: React.FC<FsrsSettingsFieldsProps> = ({ editMode, wordC
   return (
     <div className="space-y-5">
       <h3 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-        Spaced repetition
+        {t('spacedRepetition')}
       </h3>
 
       {wordsWithoutTranslation.length > 0 && (
         <Alert>
           <AlertTitle>
-            {wordsWithoutTranslation.length === 1 ? '1 word has' : `${wordsWithoutTranslation.length} words have`}
-            {' '}
-            no translation yet
+            {t('noTranslationTitle', { count: wordsWithoutTranslation.length })}
           </AlertTitle>
           <AlertDescription>
-            They get no questions until you add a translation:
-            {' '}
-            {wordsWithoutTranslation.slice(0, MAX_LISTED_WORDS).join(', ')}
-            {wordsWithoutTranslation.length > MAX_LISTED_WORDS && ` and ${wordsWithoutTranslation.length - MAX_LISTED_WORDS} more`}
-            .
+            {t('noTranslationBody', {
+              words: wordsWithoutTranslation.slice(0, MAX_LISTED_WORDS).join(', '),
+              more: wordsWithoutTranslation.length > MAX_LISTED_WORDS
+                ? t('moreWords', { count: wordsWithoutTranslation.length - MAX_LISTED_WORDS })
+                : '',
+            })}
           </AlertDescription>
         </Alert>
       )}
@@ -118,8 +112,8 @@ const FsrsSettingsFields: React.FC<FsrsSettingsFieldsProps> = ({ editMode, wordC
         name="fsrsDirections"
         render={() => (
           <FormItem>
-            <FormLabel>Directions to learn</FormLabel>
-            <div className="mt-1 grid grid-cols-1 gap-2 sm:grid-cols-2" role="group" aria-label="Directions to learn">
+            <FormLabel>{t('directions')}</FormLabel>
+            <div className="mt-1 grid grid-cols-1 gap-2 sm:grid-cols-2" role="group" aria-label={t('directions')}>
               {DIRECTION_OPTIONS.map((option) => {
                 const selected = directions.includes(option.value);
                 return (
@@ -135,20 +129,20 @@ const FsrsSettingsFields: React.FC<FsrsSettingsFieldsProps> = ({ editMode, wordC
                       editMode && !selected && 'opacity-50',
                     )}
                   >
-                    <span className="block text-sm font-semibold text-foreground">{option.title}</span>
+                    <span className="block text-sm font-semibold text-foreground">{t(option.titleKey)}</span>
                     <span className="mt-0.5 block text-sm text-primary">{option.example}</span>
-                    <span className="mt-1 block text-xs text-muted-foreground">{option.hint}</span>
+                    <span className="mt-1 block text-xs text-muted-foreground">{t(option.hintKey)}</span>
                   </button>
                 );
               })}
             </div>
             <p className="mt-2 text-xs text-muted-foreground">
-              Each word is asked once per direction, then comes back on a schedule until you know it. Over time you will see more questions than this.
+              {t('directionsNote')}
             </p>
             {editMode && (
               <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
                 <Lock size={12} weight="BoldDuotone" />
-                Directions are fixed after the trainer is created.
+                {t('directionsLocked')}
               </p>
             )}
             <FormMessage />
@@ -162,21 +156,21 @@ const FsrsSettingsFields: React.FC<FsrsSettingsFieldsProps> = ({ editMode, wordC
         render={({ field }) => (
           <FormItem>
             <FormLabel>
-              Deadline
+              {t('deadline')}
               {' '}
-              <span className="font-normal text-muted-foreground">(optional)</span>
+              <span className="font-normal text-muted-foreground">{t('optional')}</span>
             </FormLabel>
             <FormControl>
               <Input type="date" className="mt-1" {...field} />
             </FormControl>
-            <p className="text-sm text-muted-foreground">Every word will be asked again before this date, for example an exam.</p>
+            <p className="text-sm text-muted-foreground">{t('deadlineHelp')}</p>
             <FormMessage />
           </FormItem>
         )}
       />
 
       <details className="rounded-xl border border-border bg-card p-3" open={advancedHasError || undefined}>
-        <summary className="cursor-pointer text-sm font-medium text-foreground">Advanced</summary>
+        <summary className="cursor-pointer text-sm font-medium text-foreground">{t('advanced')}</summary>
         <div className="mt-4 space-y-5">
           <FormField
             control={form.control}
@@ -184,7 +178,7 @@ const FsrsSettingsFields: React.FC<FsrsSettingsFieldsProps> = ({ editMode, wordC
             render={({ field }) => (
               <FormItem>
                 <div className="flex items-center justify-between gap-3">
-                  <FormLabel>Desired retention</FormLabel>
+                  <FormLabel>{t('retention')}</FormLabel>
                   <span className="inline-flex rounded-full bg-primary/15 px-3 py-1 text-sm font-medium text-primary">
                     {Math.round(field.value * 100)}
                     %
@@ -197,17 +191,14 @@ const FsrsSettingsFields: React.FC<FsrsSettingsFieldsProps> = ({ editMode, wordC
                     step={1}
                     value={[Math.round(field.value * 100)]}
                     onValueChange={value => field.onChange((value[0] ?? 90) / 100)}
-                    aria-label="Desired retention"
+                    aria-label={t('retention')}
                   />
                 </FormControl>
                 <p className="text-sm text-muted-foreground">
-                  About
-                  {' '}
-                  {formatRecallPerTen(field.value)}
-                  {' '}
-                  of 10 words still remembered when they come back.
-                  {' '}
-                  {retentionHint(field.value)}
+                  {t('retentionBody', {
+                    recall: formatRecallPerTen(field.value),
+                    hint: t(retentionHintKey(field.value)),
+                  })}
                 </p>
                 <FormMessage />
               </FormItem>
@@ -220,9 +211,9 @@ const FsrsSettingsFields: React.FC<FsrsSettingsFieldsProps> = ({ editMode, wordC
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  New questions per day
+                  {t('newPerDay')}
                   {' '}
-                  <span className="font-normal text-muted-foreground">(empty = no limit)</span>
+                  <span className="font-normal text-muted-foreground">{t('noLimit')}</span>
                 </FormLabel>
                 <FormControl>
                   <Input
@@ -230,7 +221,7 @@ const FsrsSettingsFields: React.FC<FsrsSettingsFieldsProps> = ({ editMode, wordC
                     inputMode="numeric"
                     min={1}
                     className="mt-1"
-                    placeholder="No limit"
+                    placeholder={t('noLimitPlaceholder')}
                     value={field.value ?? ''}
                     onChange={event => field.onChange(event.target.value === '' ? null : Number(event.target.value))}
                   />
@@ -238,17 +229,7 @@ const FsrsSettingsFields: React.FC<FsrsSettingsFieldsProps> = ({ editMode, wordC
                 {suggestion !== null && field.value !== suggestion && (
                   <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
                     <span>
-                      {suggestion}
-                      {' '}
-                      new
-                      {' '}
-                      {suggestion === 1 ? 'question' : 'questions'}
-                      {' '}
-                      a day brings all
-                      {' '}
-                      {cards}
-                      {' '}
-                      in before the deadline.
+                      {t('suggestion', { perDay: suggestion, cards })}
                     </span>
                     <Button
                       type="button"
@@ -256,9 +237,7 @@ const FsrsSettingsFields: React.FC<FsrsSettingsFieldsProps> = ({ editMode, wordC
                       size="sm"
                       onClick={() => form.setValue('fsrsNewPerDay', suggestion, { shouldDirty: true, shouldValidate: true })}
                     >
-                      Use
-                      {' '}
-                      {suggestion}
+                      {t('suggestionUse', { count: suggestion })}
                     </Button>
                   </div>
                 )}
@@ -272,7 +251,7 @@ const FsrsSettingsFields: React.FC<FsrsSettingsFieldsProps> = ({ editMode, wordC
             name="fsrsMaximumInterval"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Longest gap between reviews (days)</FormLabel>
+                <FormLabel>{t('maxInterval')}</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
@@ -286,8 +265,8 @@ const FsrsSettingsFields: React.FC<FsrsSettingsFieldsProps> = ({ editMode, wordC
                 </FormControl>
                 <p className="text-sm text-muted-foreground">
                   {field.value === FSRS_MAX_INTERVAL_DAYS
-                    ? 'Long term: no practical limit.'
-                    : `Cards come back at least every ${field.value} days.`}
+                    ? t('longTerm')
+                    : t('comeBack', { days: field.value })}
                 </p>
                 <FormMessage />
               </FormItem>

@@ -2,29 +2,31 @@
 
 import { Chart, QuestionCircle, SquareAcademicCap } from '@solar-icons/react/ssr';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function LandingHero() {
+  const t = useTranslations('landing.hero');
+
   return (
     <section className="container mx-auto px-4 pt-16 pb-12">
       <div className="mx-auto max-w-5xl text-center">
         <span className="mb-8 inline-flex items-center gap-2 rounded-full border border-primary/40 bg-background px-3 py-1.5 text-xs font-medium tracking-wide text-primary uppercase sm:text-sm">
           <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-          PROFESSIONAL VOCABULARY MANAGEMENT
+          {t('badge')}
         </span>
         <h1 className="mb-8 text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl xl:text-7xl 2xl:text-[5rem]">
-          <span>Master Your Vocabulary</span>
+          <span>{t('titleLine1')}</span>
           <span className="mt-2 block sm:mt-4">
-            with
+            {t('titleLine2')}
             {' '}
-            <span className="text-primary italic sm:text-5xl lg:text-6xl xl:text-7xl 2xl:text-[5rem]">Precision</span>
+            <span className="text-primary italic sm:text-5xl lg:text-6xl xl:text-7xl 2xl:text-[5rem]">{t('titleAccent')}</span>
           </span>
         </h1>
         <p className="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground xl:text-xl 2xl:text-2xl">
-          Track, learn, and practice words efficiently with our intelligent
-          management system. Built for professionals who demand excellence.
+          {t('subtitle')}
         </p>
         <div className="flex flex-wrap items-center justify-center gap-3 xl:gap-4">
           <Link href="/signup">
@@ -32,7 +34,7 @@ export default function LandingHero() {
               size="lg"
               className="h-12 rounded-full px-8 font-semibold shadow-sm xl:h-14 xl:px-10 xl:text-base 2xl:h-16 2xl:px-12 2xl:text-lg"
             >
-              Create Account
+              {t('createAccount')}
             </Button>
           </Link>
           <Link href="/signin">
@@ -41,7 +43,7 @@ export default function LandingHero() {
               variant="outline"
               className="h-12 rounded-full border-2 border-primary bg-background px-8 font-semibold text-primary hover:bg-accent hover:text-primary xl:h-14 xl:px-10 xl:text-base 2xl:h-16 2xl:px-12 2xl:text-lg"
             >
-              Sign In
+              {t('signIn')}
             </Button>
           </Link>
         </div>

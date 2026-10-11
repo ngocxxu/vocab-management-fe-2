@@ -3,13 +3,14 @@
 import type { TSrsQuestionType } from '@/types/srs-settings';
 import type { TFsrsAnswerCheck, TFsrsAnswerDiffSegment, TFsrsQueueItem } from '@/types/vocab-trainer';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { checkReviewAnswer } from '@/actions/vocab-trainers';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { EFsrsRating, EQuestionType } from '@/enum/vocab-trainer';
 import { cn } from '@/libs/utils';
-import { clampDuration, directionLabel, ratingForKey } from '@/utils/fsrs-review';
+import { clampDuration, directionLabelKey, ratingForKey } from '@/utils/fsrs-review';
 import FlipCard from '../FlipCard';
 import FsrsRatingButtons from './FsrsRatingButtons';
 
@@ -29,10 +30,11 @@ const SEGMENT_CLASSES: Record<TFsrsAnswerDiffSegment['type'], string> = {
   extra: 'text-destructive line-through',
 };
 
-const SEGMENT_HINTS: Record<TFsrsAnswerDiffSegment['type'], string> = {
-  same: '',
-  missing: ' (missing)',
-  extra: ' (not needed)',
+/** Keys under trainer.fsrs.card for the text a screen reader reads after a segment. */
+const SEGMENT_HINT_KEYS: Record<TFsrsAnswerDiffSegment['type'], string | null> = {
+  same: null,
+  missing: 'missingHint',
+  extra: 'extraHint',
 };
 
 function isTypingTarget(target: EventTarget | null): boolean {
@@ -40,6 +42,7 @@ function isTypingTarget(target: EventTarget | null): boolean {
 }
 
 const FsrsCardStep: React.FC<FsrsCardStepProps> = ({ trainerId, item, questionType, variant, onRate }) => {
+  const t = useTranslations('trainer.fsrs');
   const isTyped = questionType === EQuestionType.FILL_IN_THE_BLANK;
   const [revealed, setRevealed] = useState(false);
   const [answer, setAnswer] = useState('');
@@ -80,7 +83,7 @@ const FsrsCardStep: React.FC<FsrsCardStepProps> = ({ trainerId, item, questionTy
       setCheck(await checkReviewAnswer(trainerId, item.cardId, typed));
       setRevealed(true);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to check the answer');
+      toast.error(error instanceof Error ? error.message : t('review.checkFailed'));
     } finally {
       setIsChecking(false);
     }
@@ -112,8 +115,8 @@ const FsrsCardStep: React.FC<FsrsCardStepProps> = ({ trainerId, item, questionTy
   return (
     <div className="mx-auto w-full max-w-2xl space-y-5">
       <div className="flex items-center justify-between gap-3 text-sm">
-        <span className="font-medium text-muted-foreground">{directionLabel(item.direction)}</span>
-        {item.isNew && <span className="rounded-full bg-primary/15 px-3 py-1 text-xs font-semibold text-primary">New</span>}
+        <span className="font-medium text-muted-foreground">{t(directionLabelKey(item.direction))}</span>
+        {item.isNew && <span className="rounded-full bg-primary/15 px-3 py-1 text-xs font-semibold text-primary">{t('card.new')}</span>}
       </div>
 
       {isTyped
@@ -145,9 +148,7 @@ const FsrsCardStep: React.FC<FsrsCardStepProps> = ({ trainerId, item, questionTy
           }}
         >
           <label htmlFor={`answer-${item.cardId}`} className="text-sm font-medium text-foreground">
-            Your answer (
-            {item.backLanguageCode.toUpperCase()}
-            )
+            {t('card.yourAnswer', { language: item.backLanguageCode.toUpperCase() })}
           </label>
           <Input
             ref={inputRef}
@@ -162,8 +163,8 @@ const FsrsCardStep: React.FC<FsrsCardStepProps> = ({ trainerId, item, questionTy
           />
           {!revealed && (
             <div className="flex flex-wrap gap-2">
-              <Button type="submit" disabled={isChecking}>Check</Button>
-              <Button type="button" variant="outline" disabled={isChecking} onClick={() => void handleCheck('')}>I don't know</Button>
+              <Button type="submit" disabled={isChecking}>{t('card.check')}</Button>
+              <Button type="button" variant="outline" disabled={isChecking} onClick={() => void handleCheck('')}>{t('card.iDontKnow')}</Button>
             </div>
           )}
         </form>
@@ -172,28 +173,30 @@ const FsrsCardStep: React.FC<FsrsCardStepProps> = ({ trainerId, item, questionTy
       {!isTyped && !revealed && (
         <div className="flex justify-center">
           <Button type="button" onClick={() => setRevealed(true)}>
-            Show answer
-            <span className="ml-2 text-xs opacity-70" aria-hidden="true">Space</span>
+            {t('card.showAnswer')}
+            <span className="ml-2 text-xs opacity-70" aria-hidden="true">{t('card.spaceHint')}</span>
           </Button>
         </div>
       )}
 
       {isTyped && revealed && check && (
         <div className="space-y-2 rounded-2xl border border-border bg-card p-4" aria-live="polite">
-          <p className="text-sm text-muted-foreground">Compared with the closest answer</p>
+          <p className="text-sm text-muted-foreground">{t('card.comparedWith')}</p>
           <p className="text-xl font-semibold">
-            {check.diff.map((segment, index) => (
-              // eslint-disable-next-line react/no-array-index-key -- the segments have no id and never reorder
-              <span key={index} className={cn(SEGMENT_CLASSES[segment.type])}>
-                {segment.text}
-                {SEGMENT_HINTS[segment.type] && <span className="sr-only">{SEGMENT_HINTS[segment.type]}</span>}
-              </span>
-            ))}
+            {check.diff.map((segment, index) => {
+              const hintKey = SEGMENT_HINT_KEYS[segment.type];
+
+              return (
+                // eslint-disable-next-line react/no-array-index-key -- the segments have no id and never reorder
+                <span key={index} className={cn(SEGMENT_CLASSES[segment.type])}>
+                  {segment.text}
+                  {hintKey && <span className="sr-only">{t(`card.${hintKey}`)}</span>}
+                </span>
+              );
+            })}
           </p>
           <p className="text-sm text-muted-foreground">
-            Accepted:
-            {' '}
-            <span className="font-medium text-foreground">{check.correctAnswers.join(', ')}</span>
+            {t('card.accepted', { answers: check.correctAnswers.join(', ') })}
           </p>
         </div>
       )}
@@ -208,12 +211,12 @@ const FsrsCardStep: React.FC<FsrsCardStepProps> = ({ trainerId, item, questionTy
       )}
 
       {revealed && variant === 'retry' && (
-        <div className="grid grid-cols-2 gap-2" role="group" aria-label="Did you remember it this time?">
+        <div className="grid grid-cols-2 gap-2" role="group" aria-label={t('card.retryGroup')}>
           <Button type="button" variant="outline" disabled={isSubmitting} onClick={() => void handleRate(EFsrsRating.AGAIN)}>
-            Still missed
+            {t('card.stillMissed')}
           </Button>
           <Button type="button" disabled={isSubmitting} onClick={() => void handleRate(EFsrsRating.GOOD)}>
-            Got it
+            {t('card.gotIt')}
           </Button>
         </div>
       )}

@@ -5,7 +5,8 @@ import type { LibraryProps, TCreateLanguageFolder, TLanguageFolder } from '@/typ
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useMemo, useState, useTransition } from 'react';
 import { toast } from 'sonner';
-import { isQuotaError, QUOTA_ERROR_MESSAGE } from '@/utils/quota-error';
+import { isQuotaError } from '@/utils/quota-error';
+import { useTranslations } from 'next-intl';
 import CreateFolderCard from './CreateFolderCard';
 import CreateFolderModal from './CreateFolderModal';
 import EditFolderDialog from './EditFolderDialog';
@@ -16,6 +17,8 @@ import LibraryLoadingState from './LibraryLoadingState';
 import LibrarySearch from './LibrarySearch';
 
 const Library: React.FC<LibraryProps> = ({ initialData, initialLanguagesData, currentUser, currentPlan }) => {
+  const t = useTranslations('library.toast');
+  const tErrors = useTranslations('errors');
   const router = useRouter();
   const [, startTransition] = useTransition();
   const user = currentUser ?? null;
@@ -62,18 +65,18 @@ const Library: React.FC<LibraryProps> = ({ initialData, initialLanguagesData, cu
       console.error('Error creating language folder:', error);
       if (isQuotaError(error)) {
         setIsCreateModalOpen(false);
-        toast.error(QUOTA_ERROR_MESSAGE, {
-          description: error instanceof Error ? error.message : 'Folder limit reached.',
-          action: { label: 'Upgrade', onClick: () => {
+        toast.error(t('quotaMessage'), {
+          description: error instanceof Error ? error.message : t('folderLimit'),
+          action: { label: t('upgrade'), onClick: () => {
             window.location.href = '/#pricing';
           } },
         });
       } else {
-        toast.error(error instanceof Error ? error.message : 'Failed to create language folder');
+        toast.error(error instanceof Error ? error.message : tErrors('createLanguageFolder'));
         throw error;
       }
     }
-  }, [router, startTransition]);
+  }, [router, startTransition, t, tErrors]);
 
   const handleCloseModal = useCallback(() => {
     setIsCreateModalOpen(false);
@@ -102,15 +105,15 @@ const Library: React.FC<LibraryProps> = ({ initialData, initialLanguagesData, cu
   const handleDelete = useCallback(async (folderId: string) => {
     try {
       await deleteLanguageFolder(folderId);
-      toast.success('Language folder deleted successfully!');
+      toast.success(t('deleted'));
       startTransition(() => {
         router.refresh();
       });
     } catch (error) {
       console.error('Error deleting language folder:', error);
-      toast.error('Failed to delete language folder. Please try again.');
+      toast.error(t('deleteFailed'));
     }
-  }, [router, startTransition]);
+  }, [router, startTransition, t]);
 
   const data = useMemo<TLanguageFolder[]>(() => {
     const languageFolders = initialData?.items || [];

@@ -3,10 +3,13 @@
 import { AltArrowRight } from '@solar-icons/react/ssr';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 export default function LandingFooter({ logoSrc }: Readonly<{ logoSrc: string }>) {
+  const t = useTranslations('landing.footer');
+
   return (
     <footer id="pricing" className="border-t border-border bg-muted/30 py-16">
       <div className="container mx-auto px-4">
@@ -22,13 +25,12 @@ export default function LandingFooter({ logoSrc }: Readonly<{ logoSrc: string }>
               />
             </Link>
             <p className="mt-3 text-sm text-muted-foreground">
-              The premier destination for professional vocabulary management
-              and high-performance language learning.
+              {t('tagline')}
             </p>
           </div>
           <div>
             <h4 className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-              Product
+              {t('product')}
             </h4>
             <ul className="mt-3 space-y-2">
               <li>
@@ -36,7 +38,7 @@ export default function LandingFooter({ logoSrc }: Readonly<{ logoSrc: string }>
                   href="#features"
                   className="text-sm text-foreground hover:text-primary"
                 >
-                  Features
+                  {t('features')}
                 </Link>
               </li>
               <li>
@@ -44,7 +46,7 @@ export default function LandingFooter({ logoSrc }: Readonly<{ logoSrc: string }>
                   href="#methodology"
                   className="text-sm text-foreground hover:text-primary"
                 >
-                  Methodology
+                  {t('methodology')}
                 </Link>
               </li>
               <li>
@@ -52,14 +54,14 @@ export default function LandingFooter({ logoSrc }: Readonly<{ logoSrc: string }>
                   href="#"
                   className="text-sm text-foreground hover:text-primary"
                 >
-                  API
+                  {t('api')}
                 </Link>
               </li>
             </ul>
           </div>
           <div>
             <h4 className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-              Support
+              {t('support')}
             </h4>
             <ul className="mt-3 space-y-2">
               <li>
@@ -67,7 +69,7 @@ export default function LandingFooter({ logoSrc }: Readonly<{ logoSrc: string }>
                   href="#"
                   className="text-sm text-foreground hover:text-primary"
                 >
-                  Help Center
+                  {t('helpCenter')}
                 </Link>
               </li>
               <li>
@@ -75,7 +77,7 @@ export default function LandingFooter({ logoSrc }: Readonly<{ logoSrc: string }>
                   href="#"
                   className="text-sm text-foreground hover:text-primary"
                 >
-                  Community
+                  {t('community')}
                 </Link>
               </li>
               <li>
@@ -83,19 +85,19 @@ export default function LandingFooter({ logoSrc }: Readonly<{ logoSrc: string }>
                   href="#"
                   className="text-sm text-foreground hover:text-primary"
                 >
-                  Contact
+                  {t('contact')}
                 </Link>
               </li>
             </ul>
           </div>
           <div>
             <h4 className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-              Stay Updated
+              {t('stayUpdated')}
             </h4>
             <div className="mt-3 flex gap-2">
               <Input
                 type="email"
-                placeholder="Enter your email"
+                placeholder={t('emailPlaceholder')}
                 className="rounded-lg bg-background"
               />
               <Button size="icon" className="shrink-0 rounded-lg">
@@ -106,23 +108,20 @@ export default function LandingFooter({ logoSrc }: Readonly<{ logoSrc: string }>
         </div>
         <div className="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-8">
           <p className="text-sm text-muted-foreground">
-            ©
-            {new Date().getFullYear()}
-            {' '}
-            Ngoc Quach. All rights reserved.
+            {t('copyright', { year: new Date().getFullYear() })}
           </p>
           <div className="flex gap-6">
             <Link
               href="#"
               className="text-sm text-muted-foreground hover:text-foreground"
             >
-              Privacy
+              {t('privacy')}
             </Link>
             <Link
               href="#"
               className="text-sm text-muted-foreground hover:text-foreground"
             >
-              Terms
+              {t('terms')}
             </Link>
           </div>
         </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useCallback, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { ColorPicker } from '@/components/ui/color-picker';
 import { Input } from '@/components/ui/input';
@@ -20,13 +21,14 @@ const LanguageFolderForm: React.FC<LanguageFolderFormProps> = ({
   initialData = {},
   onSubmit,
   onCancel,
-  submitButtonText = 'Save',
-  cancelButtonText = 'Cancel',
+  submitButtonText,
+  cancelButtonText,
   isSubmitting = false,
   showAutoGenerate = false,
   className,
   initialLanguagesData,
 }) => {
+  const t = useTranslations('library.form');
   const languages = initialLanguagesData?.items || [];
   const isLoadingLanguages = false;
   const [formData, setFormData] = useState<LanguageFolderFormData>({
@@ -42,26 +44,26 @@ const LanguageFolderForm: React.FC<LanguageFolderFormProps> = ({
     const newErrors: LanguageFolderFormErrors = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = 'Folder name is required';
+      newErrors.name = t('nameRequired');
     } else if (formData.name.trim().length < 2) {
-      newErrors.name = 'Folder name must be at least 2 characters';
+      newErrors.name = t('nameTooShort');
     }
 
     if (!formData.sourceLanguageCode) {
-      newErrors.sourceLanguageCode = 'Source language is required';
+      newErrors.sourceLanguageCode = t('sourceRequired');
     }
 
     if (!formData.targetLanguageCode) {
-      newErrors.targetLanguageCode = 'Target language is required';
+      newErrors.targetLanguageCode = t('targetRequired');
     }
 
     if (formData.sourceLanguageCode === formData.targetLanguageCode) {
-      newErrors.targetLanguageCode = 'Target language must be different from source language';
+      newErrors.targetLanguageCode = t('targetDifferent');
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  }, [formData]);
+  }, [formData, t]);
 
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,13 +106,13 @@ const LanguageFolderForm: React.FC<LanguageFolderFormProps> = ({
     <form onSubmit={handleSubmit} className={cn('space-y-6', className)}>
       {/* Folder Name */}
       <div className="space-y-2">
-        <Label htmlFor="folder-name">Folder Name</Label>
+        <Label htmlFor="folder-name">{t('folderName')}</Label>
         <div className="flex gap-2">
           <Input
             id="folder-name"
             value={formData.name}
             onChange={e => handleInputChange('name', e.target.value)}
-            placeholder="Enter folder name"
+            placeholder={t('folderNamePlaceholder')}
             className={errors.name ? 'border-destructive' : ''}
             disabled={isSubmitting}
           />
@@ -123,7 +125,7 @@ const LanguageFolderForm: React.FC<LanguageFolderFormProps> = ({
               disabled={!formData.sourceLanguageCode || !formData.targetLanguageCode || isSubmitting}
               className="whitespace-nowrap"
             >
-              Auto Generate
+              {t('autoGenerate')}
             </Button>
           )}
         </div>
@@ -136,14 +138,14 @@ const LanguageFolderForm: React.FC<LanguageFolderFormProps> = ({
       <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
         {/* Source Language */}
         <div className="space-y-2">
-          <Label htmlFor="source-language">Source Language</Label>
+          <Label htmlFor="source-language">{t('sourceLanguage')}</Label>
           <Select
             value={formData.sourceLanguageCode}
             onValueChange={value => handleInputChange('sourceLanguageCode', value)}
             disabled={isSubmitting || isLoadingLanguages}
           >
             <SelectTrigger className={cn('w-full', errors.sourceLanguageCode ? 'border-destructive' : '')}>
-              <SelectValue placeholder="Select source language" />
+              <SelectValue placeholder={t('selectSource')} />
             </SelectTrigger>
             <SelectContent>
               {languages?.map(language => (
@@ -160,14 +162,14 @@ const LanguageFolderForm: React.FC<LanguageFolderFormProps> = ({
 
         {/* Target Language */}
         <div className="space-y-2">
-          <Label htmlFor="target-language">Target Language</Label>
+          <Label htmlFor="target-language">{t('targetLanguage')}</Label>
           <Select
             value={formData.targetLanguageCode}
             onValueChange={value => handleInputChange('targetLanguageCode', value)}
             disabled={isSubmitting || isLoadingLanguages}
           >
             <SelectTrigger className={cn('w-full', errors.targetLanguageCode ? 'border-destructive' : '')}>
-              <SelectValue placeholder="Select target language" />
+              <SelectValue placeholder={t('selectTarget')} />
             </SelectTrigger>
             <SelectContent>
               {availableTargetLanguages.map(language => (
@@ -185,7 +187,7 @@ const LanguageFolderForm: React.FC<LanguageFolderFormProps> = ({
 
       {/* Folder Color */}
       <div className="space-y-2">
-        <Label>Folder Color</Label>
+        <Label>{t('folderColor')}</Label>
         <ColorPicker
           value={formData.folderColor}
           onChange={color => handleInputChange('folderColor', color)}
@@ -201,13 +203,13 @@ const LanguageFolderForm: React.FC<LanguageFolderFormProps> = ({
           onClick={onCancel}
           disabled={isSubmitting}
         >
-          {cancelButtonText}
+          {cancelButtonText ?? t('cancel')}
         </Button>
         <Button
           type="submit"
           disabled={isSubmitting || isLoadingLanguages}
         >
-          {isSubmitting ? 'Saving...' : submitButtonText}
+          {isSubmitting ? t('saving') : (submitButtonText ?? t('save'))}
         </Button>
       </div>
     </form>

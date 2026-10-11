@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import React from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -10,9 +11,10 @@ const ExamErrorState: React.FC<ExamErrorStateProps> = ({
   error,
   onBackToTrainers,
   variant = 'inline',
-  fallbackMessage = 'An error occurred. Please try again.',
+  fallbackMessage,
 }) => {
-  const errorMessage = error || fallbackMessage;
+  const t = useTranslations('shared');
+  const errorMessage = error || fallbackMessage || t('examErrorFallback');
   const content = (
     <>
       <Alert variant="destructive">
@@ -20,7 +22,7 @@ const ExamErrorState: React.FC<ExamErrorStateProps> = ({
       </Alert>
       <div className="flex justify-center">
         <Button onClick={onBackToTrainers} variant="outline">
-          Back to Trainers
+          {t('backToTrainers')}
         </Button>
       </div>
     </>

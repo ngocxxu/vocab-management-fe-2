@@ -2,6 +2,14 @@ export type MasteryStatus = 'Unstarted' | 'Beginner' | 'Learning' | 'Mastered';
 
 export type MasteryDisplayKind = 'unstarted' | 'beginner' | 'learning' | 'mastered';
 
+/** Translation keys (under `mastery`) for each status label. */
+export const MASTERY_LABEL_KEYS: Record<MasteryStatus, string> = {
+  Unstarted: 'unstarted',
+  Beginner: 'beginner',
+  Learning: 'learning',
+  Mastered: 'mastered',
+};
+
 const MAX_MASTERY_SCORE = 10;
 
 function clampMasteryScore(score: number | undefined): number {

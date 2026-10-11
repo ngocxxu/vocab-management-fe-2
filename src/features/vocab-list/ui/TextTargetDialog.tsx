@@ -4,6 +4,7 @@ import type { TCreateTextTarget, TTextTarget, TUpdateTextTarget } from '@/types/
 import type { TSubjectResponse } from '@/types/subject';
 import type { TWordTypeResponse } from '@/types/word-type';
 import { MagicStick, RefreshCircle } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { createTextTarget, updateTextTarget } from '@/actions/text-targets';
@@ -74,6 +75,7 @@ const TextTargetDialog: React.FC<TextTargetDialogProps> = ({
   initialWordTypesData,
   onSuccess,
 }) => {
+  const t = useTranslations('vocabList.textTargetDialog');
   const [form, setForm] = useState<FormState>(defaultForm());
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -136,11 +138,11 @@ const TextTargetDialog: React.FC<TextTargetDialogProps> = ({
 
   const handleSubmit = async () => {
     if (!form.textTarget.trim()) {
-      toast.error('Text target is required');
+      toast.error(t('textRequired'));
       return;
     }
     if (form.subjectIds.length === 0) {
-      toast.error('At least one subject must be selected');
+      toast.error(t('subjectRequired'));
       return;
     }
 
@@ -158,17 +160,17 @@ const TextTargetDialog: React.FC<TextTargetDialogProps> = ({
 
       if (editMode && editingItem) {
         await updateTextTarget(vocabId, editingItem.id, payload as TUpdateTextTarget);
-        toast.success('Text target updated successfully');
+        toast.success(t('updated'));
       } else {
         await createTextTarget(vocabId, payload);
-        toast.success('Text target created successfully');
+        toast.success(t('created'));
       }
 
       onSuccess();
       handleClose();
     } catch (error) {
-      const msg = error instanceof Error ? error.message : 'Failed to save text target';
-      toast.error('Error', { description: msg });
+      const msg = error instanceof Error ? error.message : t('saveFailed');
+      toast.error(t('errorTitle'), { description: msg });
     } finally {
       setIsSubmitting(false);
     }
@@ -185,9 +187,9 @@ const TextTargetDialog: React.FC<TextTargetDialogProps> = ({
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[700px]">
         <DialogHeader>
-          <DialogTitle>{editMode ? 'Edit Text Target' : 'Add Text Target'}</DialogTitle>
+          <DialogTitle>{editMode ? t('editTitle') : t('addTitle')}</DialogTitle>
           <DialogDescription>
-            {editMode ? 'Update the details for this text target' : 'Enter the details for a new text target'}
+            {editMode ? t('editDescription') : t('addDescription')}
           </DialogDescription>
         </DialogHeader>
 
@@ -197,7 +199,7 @@ const TextTargetDialog: React.FC<TextTargetDialogProps> = ({
             <div className="mb-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="h-5 w-2 shrink-0 rounded-full bg-primary" />
-                <h4 className="text-sm font-semibold">Core Meaning</h4>
+                <h4 className="text-sm font-semibold">{t('coreMeaning')}</h4>
               </div>
               <Button
                 type="button"
@@ -211,33 +213,30 @@ const TextTargetDialog: React.FC<TextTargetDialogProps> = ({
                   ? (
                       <>
                         <RefreshCircle size={12} weight="BoldDuotone" className="animate-spin" />
-                        Generating...
+                        {t('generating')}
                       </>
                     )
                   : isCooldownActive
                     ? (
                         <>
                           <RefreshCircle size={12} weight="BoldDuotone" />
-                          Wait
-                          {' '}
-                          {cooldownRemaining}
-                          s
+                          {t('wait', { seconds: cooldownRemaining })}
                         </>
                       )
                     : (
                         <>
                           <MagicStick size={12} weight="BoldDuotone" />
-                          AI Generate
+                          {t('aiGenerate')}
                         </>
                       )}
               </Button>
             </div>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="textTarget">Target Text</Label>
+                <Label htmlFor="textTarget">{t('targetText')}</Label>
                 <Input
                   id="textTarget"
-                  placeholder="Enter target text..."
+                  placeholder={t('targetTextPlaceholder')}
                   value={form.textTarget}
                   onChange={e => updateField('textTarget', e.target.value)}
                   className="mt-1 w-full"
@@ -245,13 +244,13 @@ const TextTargetDialog: React.FC<TextTargetDialogProps> = ({
               </div>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
-                  <Label htmlFor="wordType">Word Type</Label>
+                  <Label htmlFor="wordType">{t('wordType')}</Label>
                   <Select value={form.wordTypeId || ''} onValueChange={v => updateField('wordTypeId', v === '__none__' ? '' : v)}>
                     <SelectTrigger id="wordType" className="mt-1 w-full">
-                      <SelectValue placeholder="Select word type" />
+                      <SelectValue placeholder={t('selectWordType')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="__none__">None</SelectItem>
+                      <SelectItem value="__none__">{t('none')}</SelectItem>
                       {wordTypes.map(wt => (
                         <SelectItem key={wt.id} value={wt.id}>{wt.name}</SelectItem>
                       ))}
@@ -259,10 +258,10 @@ const TextTargetDialog: React.FC<TextTargetDialogProps> = ({
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="grammar">Grammar Notes</Label>
+                  <Label htmlFor="grammar">{t('grammarNotes')}</Label>
                   <Input
                     id="grammar"
-                    placeholder="e.g. Used with prepositions"
+                    placeholder={t('grammarPlaceholder')}
                     value={form.grammar}
                     onChange={e => updateField('grammar', e.target.value)}
                     className="mt-1"
@@ -270,12 +269,12 @@ const TextTargetDialog: React.FC<TextTargetDialogProps> = ({
                 </div>
               </div>
               <div>
-                <Label className="mb-1 block">Subjects</Label>
+                <Label className="mb-1 block">{t('subjects')}</Label>
                 <MultiSelect
                   options={subjects.map(s => ({ value: s.id, label: s.name }))}
                   defaultValue={form.subjectIds}
                   onValueChange={v => updateField('subjectIds', v)}
-                  placeholder="Choose subjects..."
+                  placeholder={t('chooseSubjects')}
                   maxCount={5}
                   className="w-full"
                   resetOnDefaultValueChange={true}
@@ -292,16 +291,16 @@ const TextTargetDialog: React.FC<TextTargetDialogProps> = ({
           <section className="pl-4">
             <div className="mb-3 flex items-center gap-2">
               <div className="h-5 w-2 shrink-0 rounded-full bg-primary" />
-              <h4 className="text-sm font-semibold">Explanations</h4>
+              <h4 className="text-sm font-semibold">{t('explanations')}</h4>
             </div>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>
                 <Label htmlFor="explanationSource" className="text-xs tracking-wide uppercase">
-                  Source
+                  {t('source')}
                 </Label>
                 <Textarea
                   id="explanationSource"
-                  placeholder="Input source explanation..."
+                  placeholder={t('sourceExplanationPlaceholder')}
                   value={form.explanationSource}
                   onChange={e => updateField('explanationSource', e.target.value)}
                   className="mt-1"
@@ -310,11 +309,11 @@ const TextTargetDialog: React.FC<TextTargetDialogProps> = ({
               </div>
               <div>
                 <Label htmlFor="explanationTarget" className="text-xs tracking-wide uppercase">
-                  Target
+                  {t('target')}
                 </Label>
                 <Textarea
                   id="explanationTarget"
-                  placeholder="Input target explanation..."
+                  placeholder={t('targetExplanationPlaceholder')}
                   value={form.explanationTarget}
                   onChange={e => updateField('explanationTarget', e.target.value)}
                   className="mt-1"
@@ -338,11 +337,11 @@ const TextTargetDialog: React.FC<TextTargetDialogProps> = ({
 
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant="outline" onClick={handleClose}>Cancel</Button>
+            <Button variant="outline" onClick={handleClose}>{t('cancel')}</Button>
           </DialogClose>
           <Button onClick={handleSubmit} disabled={isSubmitting}>
             {isSubmitting && <RefreshCircle size={16} className="mr-2 animate-spin" />}
-            {editMode ? 'Update' : 'Create'}
+            {editMode ? t('update') : t('create')}
           </Button>
         </DialogFooter>
       </DialogContent>

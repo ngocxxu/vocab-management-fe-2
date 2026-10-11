@@ -89,12 +89,12 @@ export function createTrainerFormSchema({ originalEndsAt = '', now = new Date() 
 
   return z
     .object({
-      name: z.string().min(1, 'Name is required'),
+      name: z.string().min(1, 'validation.nameRequired'),
       mode: z.enum(ETrainerMode),
       questionType: z.enum(EQuestionType),
-      setCountTime: z.number().min(1, 'Time must be at least 1 second'),
+      setCountTime: z.number().min(1, 'validation.timeTooShort'),
       reminderDisabled: z.boolean(),
-      vocabAssignmentIds: z.array(z.string()).min(1, 'At least one vocabulary must be selected'),
+      vocabAssignmentIds: z.array(z.string()).min(1, 'validation.vocabularyRequired'),
       fsrsDirections: z.array(z.enum(EFsrsDirection)),
       fsrsDesiredRetention: z.number(),
       fsrsMaximumInterval: z.number(),
@@ -110,25 +110,25 @@ export function createTrainerFormSchema({ originalEndsAt = '', now = new Date() 
       const issue = (path: string, message: string) => ctx.addIssue({ code: 'custom', path: [path], message });
 
       if (!isFsrsQuestionType(value.questionType)) {
-        issue('questionType', 'Pick flip card or type the answer');
+        issue('questionType', 'validation.questionTypeNotFsrs');
       }
       if (value.fsrsDirections.length === 0) {
-        issue('fsrsDirections', 'Pick at least one direction');
+        issue('fsrsDirections', 'validation.directionRequired');
       }
       if (value.fsrsDesiredRetention < SRS_MIN_RETENTION || value.fsrsDesiredRetention > SRS_MAX_RETENTION) {
-        issue('fsrsDesiredRetention', `Retention must be between ${Math.round(SRS_MIN_RETENTION * 100)}% and ${Math.round(SRS_MAX_RETENTION * 100)}%`);
+        issue('fsrsDesiredRetention', 'validation.retentionOutOfRange');
       }
       if (!Number.isInteger(value.fsrsMaximumInterval) || value.fsrsMaximumInterval < 1 || value.fsrsMaximumInterval > FSRS_MAX_INTERVAL_DAYS) {
-        issue('fsrsMaximumInterval', `Enter a whole number of days from 1 to ${FSRS_MAX_INTERVAL_DAYS}`);
+        issue('fsrsMaximumInterval', 'validation.maximumIntervalOutOfRange');
       }
       if (value.fsrsNewPerDay !== null && (!Number.isInteger(value.fsrsNewPerDay) || value.fsrsNewPerDay < 1)) {
-        issue('fsrsNewPerDay', 'Enter a whole number of 1 or more, or leave it empty');
+        issue('fsrsNewPerDay', 'validation.newPerDayInvalid');
       }
       if (value.fsrsEndsAt !== '') {
         if (!parseDateInput(value.fsrsEndsAt)) {
-          issue('fsrsEndsAt', 'Pick a valid date');
+          issue('fsrsEndsAt', 'validation.dateInvalid');
         } else if (value.fsrsEndsAt !== originalEndsAt && value.fsrsEndsAt < today) {
-          issue('fsrsEndsAt', 'The deadline cannot be in the past');
+          issue('fsrsEndsAt', 'validation.deadlinePast');
         }
       }
     });
@@ -139,11 +139,11 @@ export function createCloneFormSchema({ now = new Date() }: { now?: Date } = {})
   const today = toDateInput(now);
 
   return z.object({
-    name: z.string().trim().min(1, 'Name is required').max(MAX_TRAINER_NAME_LENGTH, `Use at most ${MAX_TRAINER_NAME_LENGTH} characters`),
+    name: z.string().trim().min(1, 'validation.nameRequired').max(MAX_TRAINER_NAME_LENGTH, 'validation.trainerNameTooLong'),
     endsAt: z
       .string()
-      .refine(value => value === '' || parseDateInput(value) !== null, 'Pick a valid date')
-      .refine(value => value === '' || parseDateInput(value) === null || value >= today, 'The deadline cannot be in the past'),
+      .refine(value => value === '' || parseDateInput(value) !== null, 'validation.dateInvalid')
+      .refine(value => value === '' || parseDateInput(value) === null || value >= today, 'validation.deadlinePast'),
   });
 }
 

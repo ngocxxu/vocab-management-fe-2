@@ -16,6 +16,6 @@ export async function DashboardHeatmapZone() {
     if (isUnauthorizedError(error)) {
       redirect(getExpiredSessionRedirect('/dashboard'));
     }
-    return <ZoneError sectionName="activity" />;
+    return <ZoneError section="activity" />;
   }
 }

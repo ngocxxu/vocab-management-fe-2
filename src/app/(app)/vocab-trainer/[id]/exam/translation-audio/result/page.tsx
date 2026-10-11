@@ -1,6 +1,7 @@
 'use client';
 
 import { RefreshCircle } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
 import { ExamErrorState } from '@/shared/ui/shared';
@@ -14,6 +15,7 @@ import {
 import { SOCKET_EVENTS } from '@/utils/socket-config';
 
 const TranslationAudioResultPage: React.FC = () => {
+  const t = useTranslations('trainer.evaluation');
   const params = useParams();
   const router = useRouter();
   const trainerId = params.id as string;
@@ -95,7 +97,7 @@ const TranslationAudioResultPage: React.FC = () => {
         });
         setIsLoading(false);
       } else if (data.status === 'failed') {
-        setError(data.data?.error || 'Evaluation failed');
+        setError(data.data?.error || t('failed'));
         setIsLoading(false);
       }
     };
@@ -105,7 +107,7 @@ const TranslationAudioResultPage: React.FC = () => {
     return () => {
       socket.off(SOCKET_EVENTS.AUDIO_EVALUATION_PROGRESS, handleAudioEvaluationProgress);
     };
-  }, [socket, jobId]);
+  }, [socket, jobId, t]);
 
   const handleBackToTrainers = () => {
     const storageKey = `translation_audio_result_${trainerId}`;
@@ -123,10 +125,10 @@ const TranslationAudioResultPage: React.FC = () => {
           <RefreshCircle size={64} weight="BoldDuotone" className="mx-auto animate-spin text-primary" />
           <div className="space-y-2">
             <h2 className="text-2xl font-bold text-foreground">
-              Evaluating your translation...
+              {t('audioTitle')}
             </h2>
             <p className="text-muted-foreground">
-              This may take a few moments. Please wait.
+              {t('wait')}
             </p>
           </div>
         </div>

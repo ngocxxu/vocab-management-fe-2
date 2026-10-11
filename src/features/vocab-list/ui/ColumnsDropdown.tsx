@@ -2,6 +2,7 @@
 
 import type { VisibilityState } from '@tanstack/react-table';
 import { SidebarMinimalistic } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -16,17 +17,19 @@ type TColumnsDropdownProps = {
   onColumnVisibilityChange: (vis: VisibilityState) => void;
 };
 
+// labelKey is a translation key under `vocabList.columnsMenu`.
 const TOGGLEABLE_COLUMNS = [
-  { id: 'textTarget', label: 'Text Target' },
-  { id: 'wordType', label: 'Type' },
-  { id: 'grammar', label: 'Grammar' },
-  { id: 'explanationSource', label: 'Explanation (Source)' },
-  { id: 'explanationTarget', label: 'Explanation (Target)' },
-  { id: 'subjects', label: 'Subjects' },
-  { id: 'examples', label: 'Examples' },
+  { id: 'textTarget', labelKey: 'textTarget' },
+  { id: 'wordType', labelKey: 'wordType' },
+  { id: 'grammar', labelKey: 'grammar' },
+  { id: 'explanationSource', labelKey: 'explanationSource' },
+  { id: 'explanationTarget', labelKey: 'explanationTarget' },
+  { id: 'subjects', labelKey: 'subjects' },
+  { id: 'examples', labelKey: 'examples' },
 ] as const;
 
 export function ColumnsDropdown({ columnVisibility, onColumnVisibilityChange }: TColumnsDropdownProps) {
+  const t = useTranslations('vocabList.columnsMenu');
   const isVisible = (id: string) => columnVisibility[id] !== false;
 
   const toggle = (id: string) => {
@@ -46,7 +49,7 @@ export function ColumnsDropdown({ columnVisibility, onColumnVisibilityChange }: 
       <DropdownMenuTrigger asChild>
         <Button variant="outline" className="h-10 bg-card/80 backdrop-blur-sm">
           <SidebarMinimalistic size={16} weight="BoldDuotone" className="mr-2" />
-          <span className="hidden sm:inline">Columns</span>
+          <span className="hidden sm:inline">{t('button')}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-52">
@@ -57,7 +60,7 @@ export function ColumnsDropdown({ columnVisibility, onColumnVisibilityChange }: 
             onCheckedChange={() => toggle(col.id)}
             onSelect={e => e.preventDefault()}
           >
-            {col.label}
+            {t(col.labelKey)}
           </DropdownMenuCheckboxItem>
         ))}
         <DropdownMenuSeparator />
@@ -66,7 +69,7 @@ export function ColumnsDropdown({ columnVisibility, onColumnVisibilityChange }: 
           onClick={selectAll}
           className="w-full px-2 py-1.5 text-left text-sm font-medium text-primary hover:bg-accent"
         >
-          Select All
+          {t('selectAll')}
         </button>
       </DropdownMenuContent>
     </DropdownMenu>

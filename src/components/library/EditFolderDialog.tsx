@@ -5,10 +5,12 @@ import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { updateLanguageFolder } from '@/actions/language-folders';
+import { useTranslations } from 'next-intl';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
 import LanguageFolderForm from './LanguageFolderForm';
 
 const EditFolderDialog = ({ open, onOpenChange, folder, onFolderUpdated, initialLanguagesData }: EditFolderDialogProps) => {
+  const t = useTranslations('library');
   const [isUpdating, setIsUpdating] = useState(false);
   const router = useRouter();
   const [, startTransition] = useTransition();
@@ -17,7 +19,7 @@ const EditFolderDialog = ({ open, onOpenChange, folder, onFolderUpdated, initial
     try {
       setIsUpdating(true);
       await updateLanguageFolder(folder.id, formData);
-      toast.success('Language folder updated successfully!');
+      toast.success(t('toast.updated'));
       onFolderUpdated?.();
       startTransition(() => {
         router.refresh();
@@ -25,7 +27,7 @@ const EditFolderDialog = ({ open, onOpenChange, folder, onFolderUpdated, initial
       onOpenChange(false);
     } catch (error) {
       console.error('Error updating language folder:', error);
-      toast.error('Failed to update language folder. Please try again.');
+      toast.error(t('toast.updateFailed'));
       throw error; // Re-throw to let the form handle the error state
     } finally {
       setIsUpdating(false);
@@ -36,9 +38,9 @@ const EditFolderDialog = ({ open, onOpenChange, folder, onFolderUpdated, initial
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Edit Language Folder</DialogTitle>
+          <DialogTitle>{t('edit.title')}</DialogTitle>
           <DialogDescription>
-            Update the details of your language folder. Click save when you're done.
+            {t('edit.description')}
           </DialogDescription>
         </DialogHeader>
 
@@ -51,7 +53,7 @@ const EditFolderDialog = ({ open, onOpenChange, folder, onFolderUpdated, initial
           }}
           onSubmit={handleSubmit}
           onCancel={() => onOpenChange(false)}
-          submitButtonText="Update Folder"
+          submitButtonText={t('edit.submit')}
           isSubmitting={isUpdating}
           showAutoGenerate={false}
           initialLanguagesData={initialLanguagesData}

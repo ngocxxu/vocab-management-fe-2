@@ -4,6 +4,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import type { TExamples, TFlatVocabRow, TVocab } from '@/types/vocab-list';
 import type { TRelatedWordItem } from '@/types/vocab-related-word';
 import { Eye, Pen, VolumeLoud } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import React, { useMemo } from 'react';
 import { DeleteActionButton } from '@/shared/ui/shared';
@@ -40,6 +41,7 @@ const LINKED_CHIP_TONE: Record<TRelationTone, string> = {
 };
 
 function RelatedWordsGroup({ label, tone, words }: { label: string; tone: TRelationTone; words: TRelatedWordItem[] }) {
+  const t = useTranslations('vocabList');
   if (words.length === 0) {
     return null;
   }
@@ -62,7 +64,7 @@ function RelatedWordsGroup({ label, tone, words }: { label: string; tone: TRelat
                 <span
                   key={w.id}
                   aria-disabled="true"
-                  title="This word is not yet in your list"
+                  title={t('related.notInList')}
                   className="inline-flex cursor-not-allowed items-center rounded-full border border-dashed border-muted-foreground/30 bg-muted/40 px-2 py-0.5 text-xs text-muted-foreground"
                 >
                   {w.word}
@@ -73,17 +75,6 @@ function RelatedWordsGroup({ label, tone, words }: { label: string; tone: TRelat
     </div>
   );
 }
-
-// Cell rendering is fully controlled by `renderBody` below — these defs only supply
-// headers + sortability for the header row. `textSource` stays sortable (matches the
-// Collapse view's sort field); the rest have no single-value accessor, so sorting is disabled.
-const TABLE_COLUMNS: ColumnDef<TFlatVocabRow>[] = [
-  { id: 'textSource', accessorFn: row => row.vocab.textSource, header: 'Text Source', enableSorting: true },
-  { id: 'textTarget', header: 'Text Target', enableSorting: false },
-  { id: 'context', header: 'Context & Nuance', enableSorting: false },
-  { id: 'examples', header: 'Examples', enableSorting: false },
-  { id: 'actions', header: '', enableSorting: false },
-];
 
 const VocabTableView: React.FC<VocabTableViewProps> = ({
   vocabs,
@@ -103,14 +94,26 @@ const VocabTableView: React.FC<VocabTableViewProps> = ({
   onDeleteSuccess,
   onView,
 }) => {
+  const t = useTranslations('vocabList');
   const flatRows = useMemo(() => flattenVocabTextTargets(vocabs), [vocabs]);
+
+  // Cell rendering is fully controlled by `renderBody` below — these defs only supply
+  // headers + sortability for the header row. `textSource` stays sortable (matches the
+  // Collapse view's sort field); the rest have no single-value accessor, so sorting is disabled.
+  const tableColumns = useMemo<ColumnDef<TFlatVocabRow>[]>(() => [
+    { id: 'textSource', accessorFn: row => row.vocab.textSource, header: t('columns.textSource'), enableSorting: true },
+    { id: 'textTarget', header: t('columns.textTarget'), enableSorting: false },
+    { id: 'context', header: t('columns.context'), enableSorting: false },
+    { id: 'examples', header: t('columns.examples'), enableSorting: false },
+    { id: 'actions', header: '', enableSorting: false },
+  ], [t]);
 
   return (
     <DataTable
-      columns={TABLE_COLUMNS}
+      columns={tableColumns}
       data={flatRows}
       displayCount={vocabs.length}
-      searchPlaceholder="Search vocab..."
+      searchPlaceholder={t('searchPlaceholder')}
       searchValue={searchValue}
       onSearchChangeAction={onSearchChangeAction}
       showSearch={true}
@@ -131,8 +134,8 @@ const VocabTableView: React.FC<VocabTableViewProps> = ({
         flatRows.length === 0
           ? (
               <tr className="border-b border-border">
-                <td className="px-3 py-4 text-xs text-muted-foreground sm:px-6 sm:py-6 sm:text-sm" colSpan={TABLE_COLUMNS.length}>
-                  No results
+                <td className="px-3 py-4 text-xs text-muted-foreground sm:px-6 sm:py-6 sm:text-sm" colSpan={tableColumns.length}>
+                  {t('noResults')}
                 </td>
               </tr>
             )
@@ -152,14 +155,14 @@ const VocabTableView: React.FC<VocabTableViewProps> = ({
                             size="icon"
                             className="h-6 w-6 shrink-0 p-0 hover:bg-accent"
                             onClick={() => onSpeak(row.vocab)}
-                            aria-label="Play pronunciation"
+                            aria-label={t('columns.playPronunciation')}
                           >
                             <VolumeLoud size={16} weight="BoldDuotone" className="text-muted-foreground" />
                           </Button>
                         </div>
-                        <RelatedWordsGroup label="Synonyms" tone="synonym" words={relations.synonyms} />
-                        <RelatedWordsGroup label="Related" tone="related" words={relations.related} />
-                        <RelatedWordsGroup label="Antonyms" tone="antonym" words={relations.antonyms} />
+                        <RelatedWordsGroup label={t('related.synonyms')} tone="synonym" words={relations.synonyms} />
+                        <RelatedWordsGroup label={t('related.related')} tone="related" words={relations.related} />
+                        <RelatedWordsGroup label={t('related.antonyms')} tone="antonym" words={relations.antonyms} />
                       </td>
                     </>
                   )}
@@ -186,20 +189,20 @@ const VocabTableView: React.FC<VocabTableViewProps> = ({
                   </td>
                   <td className="px-3 py-3 sm:px-6 sm:py-4">
                     <div className="flex items-center gap-1">
-                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-accent" aria-label="View vocabulary" onClick={() => onView(row.vocab)}>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-accent" aria-label={t('view.viewVocab')} onClick={() => onView(row.vocab)}>
                         <Eye size={16} weight="BoldDuotone" className="text-muted-foreground" />
                       </Button>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-accent" aria-label="Edit vocabulary" onClick={() => onEdit(row.vocab, row.textTargetIndex)}>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-accent" aria-label={t('view.editVocab')} onClick={() => onEdit(row.vocab, row.textTargetIndex)}>
                         <Pen size={16} weight="BoldDuotone" className="text-muted-foreground" />
                       </Button>
                       {row.isGroupStart && (
                         <DeleteActionButton
                           itemId={row.vocab.id}
-                          itemName="vocabulary item"
+                          itemName={t('itemName')}
                           onDelete={onDeleteVocab}
                           onSuccess={onDeleteSuccess}
-                          successMessage="Vocabulary deleted successfully!"
-                          errorMessage="Failed to delete vocabulary. Please try again."
+                          successMessage={t('toast.deleted')}
+                          errorMessage={t('toast.deleteFailed')}
                         />
                       )}
                     </div>

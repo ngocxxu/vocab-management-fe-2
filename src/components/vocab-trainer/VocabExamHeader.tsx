@@ -2,6 +2,7 @@
 
 import type { VocabExamHeaderProps } from '@/types/vocab-trainer';
 import { ClockCircle, Target } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import React from 'react';
 
 const VocabExamHeader: React.FC<VocabExamHeaderProps> = ({
@@ -11,6 +12,8 @@ const VocabExamHeader: React.FC<VocabExamHeaderProps> = ({
   timeRemaining,
   level = 'STANDARD',
 }) => {
+  const t = useTranslations('trainer.header');
+
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
@@ -33,18 +36,10 @@ const VocabExamHeader: React.FC<VocabExamHeaderProps> = ({
                   {trainerName}
                 </h1>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  QUESTION
-                  {' '}
-                  {currentQuestion}
-                  {' '}
-                  OF
-                  {' '}
-                  {totalQuestions}
+                  {t('questionOf', { current: currentQuestion, total: totalQuestions })}
                 </p>
                 <p className="mt-0.5 text-xs font-bold tracking-wide text-primary uppercase">
-                  {level}
-                  {' '}
-                  LEVEL
+                  {t('level', { level })}
                 </p>
               </div>
             </div>
@@ -53,7 +48,7 @@ const VocabExamHeader: React.FC<VocabExamHeaderProps> = ({
               <ClockCircle size={24} weight="BoldDuotone" className="shrink-0 text-primary sm:size-6" />
               <div>
                 <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
-                  Time Remaining
+                  {t('timeRemaining')}
                 </p>
                 <p className="font-mono text-xl font-bold text-foreground sm:text-2xl">
                   {formatTime(timeRemaining)}
@@ -66,10 +61,9 @@ const VocabExamHeader: React.FC<VocabExamHeaderProps> = ({
 
       <div className="mx-auto max-w-4xl">
         <div className="flex justify-between text-xs font-medium tracking-wide text-muted-foreground uppercase">
-          <span>Progress</span>
+          <span>{t('progress')}</span>
           <span>
-            {Math.round(progressPercentage)}
-            % COMPLETE
+            {t('percentComplete', { percent: Math.round(progressPercentage) })}
           </span>
         </div>
         <div className="mt-2 h-2 overflow-hidden rounded-full bg-muted">

@@ -4,10 +4,12 @@ import { AddCircle, Lock } from '@solar-icons/react/ssr';
 import React, { useCallback, useState } from 'react';
 import { cn } from '@/libs/utils';
 import { UpsellModal } from '@/components/premium';
+import { useTranslations } from 'next-intl';
 
 import type { CreateFolderCardProps } from '@/types/language-folder';
 
 const CreateFolderCard: React.FC<CreateFolderCardProps> = ({ onCreateFolder, canCreateFolder = true }) => {
+  const t = useTranslations('library');
   const [upsellOpen, setUpsellOpen] = useState(false);
 
   const handleClick = useCallback(() => {
@@ -45,17 +47,17 @@ const CreateFolderCard: React.FC<CreateFolderCardProps> = ({ onCreateFolder, can
               )}
         </div>
         <h3 className="mt-4 text-base font-bold text-foreground">
-          Create New Folder
+          {t('card.createTitle')}
         </h3>
         <p className="mt-1 text-sm text-muted-foreground">
-          {canCreateFolder ? 'Start a new language journey' : 'Upgrade to create more folders'}
+          {canCreateFolder ? t('card.startJourney') : t('card.upgradeMore')}
         </p>
       </div>
       <UpsellModal
         open={upsellOpen}
         onOpenChange={setUpsellOpen}
-        featureName="Create language folder"
-        description="Create more language folders on the Member plan. Upgrade to unlock unlimited folders."
+        featureName={t('header.featureName')}
+        description={t('header.featureDescription')}
       />
     </>
   );

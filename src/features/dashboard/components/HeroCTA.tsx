@@ -1,6 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { buildHeroCtaContent } from '../utils/heroCtaContent';
 import { Danger } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 
 type THeroCTAProps = {
   criticalCount: number;
@@ -9,6 +10,7 @@ type THeroCTAProps = {
 };
 
 export function HeroCTA({ criticalCount, warningCount, lastPracticeAt }: THeroCTAProps) {
+  const t = useTranslations('dashboard.hero');
   const content = buildHeroCtaContent({ criticalCount, warningCount, lastPracticeAt });
   const iconBgClass = content.priority === 'critical'
     ? 'bg-destructive/15'
@@ -41,31 +43,24 @@ export function HeroCTA({ criticalCount, warningCount, lastPracticeAt }: THeroCT
               content.badge.className,
             ].join(' ')}
           >
-            {content.badge.label}
+            {t(content.badge.labelKey)}
           </span>
         </div>
 
         <h2 className="mt-5 text-2xl leading-tight font-extrabold text-pretty text-foreground sm:text-3xl">
-          {content.title.count !== null
-            ? (
-                <>
-                  <span className="text-destructive">{`${content.title.count} words`}</span>
-                  <span>{content.title.rest}</span>
-                </>
-              )
-            : content.title.rest}
+          {t.rich(content.title.messageKey, {
+            count: content.title.count ?? 0,
+            hl: chunks => <span className="text-destructive">{chunks}</span>,
+          })}
         </h2>
 
         <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
           {content.body.kind === 'noSessions'
-            ? 'No practice sessions yet. Start your first session today.'
-            : (
-                <>
-                  {`It’s been `}
-                  <strong className="font-semibold text-foreground">{`${content.body.days} day${content.body.days === 1 ? '' : 's'}`}</strong>
-                  {` since your last practice session.`}
-                </>
-              )}
+            ? t('noSessions')
+            : t.rich('daysSince', {
+                days: content.body.days,
+                strong: chunks => <strong className="font-semibold text-foreground">{chunks}</strong>,
+              })}
         </p>
       </CardContent>
     </Card>

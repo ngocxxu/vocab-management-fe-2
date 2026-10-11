@@ -1,6 +1,7 @@
 'use client';
 
 import { TrashBin2 } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import React from 'react';
 import { toast } from 'sonner';
 import {
@@ -26,6 +27,8 @@ const DeleteActionButton: React.FC<DeleteActionButtonProps> = ({
   successMessage,
   errorMessage,
 }) => {
+  const t = useTranslations('shared');
+
   const handleDelete = async () => {
     try {
       // `false` means the item was not deleted and the caller already told the user why (e.g. a conflict dialog).
@@ -34,13 +37,13 @@ const DeleteActionButton: React.FC<DeleteActionButtonProps> = ({
         return;
       }
       await onSuccess?.();
-      toast.success(successMessage || `${itemName} deleted successfully!`);
+      toast.success(successMessage || t('deleted', { name: itemName }));
     } catch (error) {
       console.error(`Failed to delete ${itemName}:`, error);
       toast.error(
         error instanceof Error
           ? error.message
-          : errorMessage || `Failed to delete ${itemName}. Please try again.`,
+          : errorMessage || t('deleteFailed', { name: itemName }),
       );
     }
   };
@@ -52,29 +55,25 @@ const DeleteActionButton: React.FC<DeleteActionButtonProps> = ({
           variant="ghost"
           size="icon"
           className="h-8 w-8 rounded-lg hover:bg-destructive/10"
-          aria-label={`Delete ${itemName}`}
+          aria-label={t('deleteAria', { name: itemName })}
         >
           <TrashBin2 size={16} weight="BoldDuotone" className="text-destructive" />
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogTitle>{t('confirmTitle')}</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete this
-            {' '}
-            {itemName}
-            {' '}
-            and remove it from your list.
+            {t('deleteDescription', { name: itemName })}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
           <AlertDialogAction
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             onClick={handleDelete}
           >
-            Delete
+            {t('delete')}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

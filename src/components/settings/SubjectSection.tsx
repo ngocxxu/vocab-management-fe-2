@@ -7,6 +7,7 @@ import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSo
 import { AddCircle, InfoCircle, Reorder } from '@solar-icons/react/ssr';
 import { useRouter } from 'next/navigation';
 import React, { useMemo, useState, useTransition } from 'react';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { createSubject, deleteSubject, reorderSubjects, updateSubject } from '@/actions/subjects';
 import { SubjectDeleteConflictDialog } from '@/components/settings/SubjectDeleteConflictDialog';
@@ -21,6 +22,8 @@ import { SubjectsPagination } from '@/components/settings/SubjectsPagination';
 import { SettingsPageShell } from '@/components/settings/SettingsPageShell';
 
 export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsData }) => {
+  const t = useTranslations('subjects');
+  const tErrors = useTranslations('errors');
   const subjects = initialSubjectsData?.items || [];
   const isLoading = false;
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -66,10 +69,10 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
       await createSubject(data);
       setPage(1);
       setIsCreateDialogOpen(false);
-      toast.success('Subject created successfully');
+      toast.success(t('toast.created'));
       startTransition(() => router.refresh());
     } catch (error) {
-      toast.error('Failed to create subject');
+      toast.error(tErrors('createSubject'));
       console.error('Create subject error:', error);
     } finally {
       setIsSubmitting(false);
@@ -87,10 +90,10 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
         order: editingSubject.order,
       });
       setEditingSubject(null);
-      toast.success('Subject updated successfully');
+      toast.success(t('toast.updated'));
       startTransition(() => router.refresh());
     } catch (error) {
-      toast.error('Failed to update subject');
+      toast.error(tErrors('updateSubject'));
       console.error('Update subject error:', error);
     } finally {
       setIsSubmitting(false);
@@ -108,10 +111,10 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
         });
         return;
       }
-      toast.success('Subject deleted successfully');
+      toast.success(t('toast.deleted'));
       startTransition(() => router.refresh());
     } catch (error) {
-      toast.error('Failed to delete subject');
+      toast.error(tErrors('deleteSubject'));
       console.error('Delete subject error:', error);
     }
   };
@@ -133,10 +136,10 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
       await reorderSubjects(
         newOrder.map((s, i) => ({ id: s.id, order: i + 1 })),
       );
-      toast.success('Subjects reordered successfully');
+      toast.success(t('toast.reordered'));
       startTransition(() => router.refresh());
     } catch (error) {
-      toast.error('Failed to reorder subjects');
+      toast.error(tErrors('reorderSubjects'));
       console.error('Reorder subjects error:', error);
     }
   };
@@ -146,12 +149,12 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
       <DialogTrigger asChild>
         <Button>
           <AddCircle size={16} weight="BoldDuotone" className="mr-2" />
-          Add New Subject
+          {t('list.addNew')}
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create New Subject</DialogTitle>
+          <DialogTitle>{t('createNew')}</DialogTitle>
         </DialogHeader>
         <SubjectForm
           onSubmit={handleCreate}
@@ -165,8 +168,8 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
   if (isLoading) {
     return (
       <SettingsPageShell
-        title="Subjects"
-        description="Manage and reorder your learning categories to personalize your vocabulary study path."
+        title={t('title')}
+        description={t('description')}
       >
         <Card className="overflow-hidden border-0 bg-card/80 shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
           <CardContent className="p-0">
@@ -202,8 +205,8 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
 
   return (
     <SettingsPageShell
-      title="Subjects"
-      description="Manage and reorder your learning categories to personalize your vocabulary study path."
+      title={t('title')}
+      description={t('description')}
       headerAction={headerAction}
     >
       <div className="space-y-6">
@@ -212,14 +215,14 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
               <Card>
                 <CardContent className="py-12 text-center">
                   <h4 className="mb-2 text-lg font-medium text-foreground">
-                    No subjects yet
+                    {t('list.emptyTitle')}
                   </h4>
                   <p className="mb-4 text-muted-foreground">
-                    Create your first subject to get started
+                    {t('list.emptyBody')}
                   </p>
                   <Button onClick={() => setIsCreateDialogOpen(true)}>
                     <AddCircle size={16} weight="BoldDuotone" className="mr-2" />
-                    Add New Subject
+                    {t('list.addNew')}
                   </Button>
                 </CardContent>
               </Card>
@@ -233,19 +236,19 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
                         <thead>
                           <tr className="border-b border-border">
                             <th className="bg-muted/30 px-3 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:px-6 sm:py-4">
-                              Reorder
+                              {t('list.columnReorder')}
                             </th>
                             <th className="bg-muted/30 px-3 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:px-6 sm:py-4">
-                              Subject Details
+                              {t('list.columnDetails')}
                             </th>
                             <th className="bg-muted/30 px-3 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:px-6 sm:py-4">
-                              Word Count
+                              {t('list.columnWordCount')}
                             </th>
                             <th className="bg-muted/30 px-3 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:px-6 sm:py-4">
-                              Created Date
+                              {t('list.columnCreated')}
                             </th>
                             <th className="bg-muted/30 px-3 py-3 text-right text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:px-6 sm:py-4">
-                              Actions
+                              {t('list.columnActions')}
                             </th>
                           </tr>
                         </thead>
@@ -290,13 +293,13 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
                 <Alert className="border-border bg-accent/40">
                   <InfoCircle className="size-5 text-primary" />
                   <AlertDescription>
-                    You can drag the
+                    {t('list.dragHintBefore')}
                     {' '}
                     <span className="inline-flex rounded p-0.5 text-muted-foreground" aria-hidden>
                       <Reorder className="translate-y-1" size={16} weight="BoldDuotone" />
                     </span>
                     {' '}
-                    handle to reorder how subjects appear in your dashboard.
+                    {t('list.dragHintAfter')}
                   </AlertDescription>
                 </Alert>
               </>
@@ -306,7 +309,7 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
       <Dialog open={!!editingSubject} onOpenChange={() => setEditingSubject(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Edit Subject</DialogTitle>
+            <DialogTitle>{t('editSubject')}</DialogTitle>
           </DialogHeader>
           <SubjectForm
             subject={editingSubject}

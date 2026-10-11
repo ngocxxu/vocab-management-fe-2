@@ -5,6 +5,7 @@ import type { TPlan } from '@/types/plan';
 import type { TUserProfile } from '@/types/settings';
 import { User } from '@solar-icons/react/ssr';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -12,6 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { getPlanBadgeClassName, getPlanDisplayName } from '@/constants/plan';
 import { cn } from '@/libs/utils';
+import { LocaleSwitcher } from './LocaleSwitcher';
 
 type ProfileIdentityProps = {
   currentUser?: TUser | null;
@@ -42,9 +44,9 @@ function toProfile(user: TUser): TUserProfile {
   };
 }
 
-function getPlanLabel(role: string, plan?: TPlan | null): string {
+function getPlanLabel(role: string, adminLabel: string, plan?: TPlan | null): string {
   if (role === 'ADMIN') {
-    return 'Admin';
+    return adminLabel;
   }
   if (plan) {
     const priceSuffix = Number(plan.priceLabel) ? ` — ${plan.priceLabel}` : '';
@@ -55,11 +57,13 @@ function getPlanLabel(role: string, plan?: TPlan | null): string {
 
 /** Header of the profile page: avatar, name, email and plan. The details are shown read-only for now. */
 export const ProfileIdentity: React.FC<ProfileIdentityProps> = ({ currentUser, currentPlan }) => {
+  const t = useTranslations('settings.identity');
+  const tShell = useTranslations('shell');
   const profile = currentUser ? toProfile(currentUser) : EMPTY_PROFILE;
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
   const fullName = `${profile.firstName} ${profile.lastName}`.trim();
-  const planLabel = getPlanLabel(profile.role, currentPlan);
+  const planLabel = getPlanLabel(profile.role, tShell('roles.admin'), currentPlan);
 
   return (
     <section id="account" aria-labelledby="account-title" className="scroll-mt-24 rounded-2xl border border-border bg-card p-6 shadow-sm">
@@ -68,7 +72,7 @@ export const ProfileIdentity: React.FC<ProfileIdentityProps> = ({ currentUser, c
           ? (
               <Image
                 src={profile.avatar}
-                alt="Profile"
+                alt={t('photoAlt')}
                 width={80}
                 height={80}
                 className="h-20 w-20 shrink-0 rounded-2xl border border-border object-cover"
@@ -82,7 +86,7 @@ export const ProfileIdentity: React.FC<ProfileIdentityProps> = ({ currentUser, c
 
         <div className="min-w-0 flex-1">
           <h2 id="account-title" className="truncate text-xl font-semibold text-foreground">
-            {fullName || 'Your name'}
+            {fullName || t('yourName')}
           </h2>
           <p className="truncate text-sm text-muted-foreground">{profile.email}</p>
           {planLabel && (
@@ -93,38 +97,40 @@ export const ProfileIdentity: React.FC<ProfileIdentityProps> = ({ currentUser, c
         </div>
 
         <Button variant="outline" className="shrink-0" onClick={() => setIsDetailsOpen(true)}>
-          View details
+          {t('viewDetails')}
         </Button>
       </div>
+
+      <LocaleSwitcher />
 
       <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>Account details</DialogTitle>
-            <DialogDescription>Editing your details is not available yet.</DialogDescription>
+            <DialogTitle>{t('detailsTitle')}</DialogTitle>
+            <DialogDescription>{t('detailsUnavailable')}</DialogDescription>
           </DialogHeader>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="firstName" className="text-sm font-medium text-foreground">First name</Label>
+              <Label htmlFor="firstName" className="text-sm font-medium text-foreground">{t('firstName')}</Label>
               <Input id="firstName" value={profile.firstName} readOnly className="h-10 rounded-lg" />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="lastName" className="text-sm font-medium text-foreground">Last name</Label>
+              <Label htmlFor="lastName" className="text-sm font-medium text-foreground">{t('lastName')}</Label>
               <Input id="lastName" value={profile.lastName} readOnly className="h-10 rounded-lg" />
             </div>
             <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="email" className="text-sm font-medium text-foreground">Email</Label>
+              <Label htmlFor="email" className="text-sm font-medium text-foreground">{t('email')}</Label>
               <Input id="email" value={profile.email} readOnly className="h-10 rounded-lg" />
             </div>
             <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="phone" className="text-sm font-medium text-foreground">Phone number</Label>
+              <Label htmlFor="phone" className="text-sm font-medium text-foreground">{t('phone')}</Label>
               <Input id="phone" type="tel" value={profile.phone} readOnly className="h-10 rounded-lg" />
             </div>
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDetailsOpen(false)}>Close</Button>
+            <Button variant="outline" onClick={() => setIsDetailsOpen(false)}>{t('close')}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

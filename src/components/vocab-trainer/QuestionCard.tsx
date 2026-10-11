@@ -2,6 +2,7 @@
 
 import type { QuestionCardProps } from '@/types/vocab-trainer';
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 
 const QuestionCard: React.FC<QuestionCardProps> = ({
@@ -10,15 +11,14 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
   selectedAnswer,
   onAnswerSelect,
 }) => {
+  const t = useTranslations('trainer.question');
   const optionLabels = ['A', 'B', 'C', 'D'];
 
   return (
     <div className="mx-auto max-w-6xl space-y-5 sm:space-y-8">
       <div className="space-y-3 text-center sm:space-y-6">
         <div className="inline-flex rounded-full bg-accent px-4 py-1.5 text-sm font-bold text-primary">
-          • QUESTION
-          {' '}
-          {questionNumber}
+          {t('label', { number: questionNumber })}
         </div>
         <h2 className="text-lg leading-relaxed font-bold text-foreground sm:text-2xl lg:text-3xl">
           {question.content}
@@ -27,7 +27,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
 
       <div className="space-y-3">
         <p className="block text-center text-xs font-medium tracking-wide text-muted-foreground uppercase">
-          Choose your answer
+          {t('chooseAnswer')}
         </p>
         <div className="grid auto-rows-fr grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
           {question.options && question.options.map((option, index) => {

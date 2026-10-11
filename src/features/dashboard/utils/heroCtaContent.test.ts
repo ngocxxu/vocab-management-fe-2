@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { buildHeroCtaContent, formatDaysBody } from './heroCtaContent';
+import { buildHeroCtaContent } from './heroCtaContent';
 
 beforeEach(() => {
   vi.useFakeTimers();
@@ -15,22 +15,22 @@ describe('buildHeroCtaContent', () => {
     const result = buildHeroCtaContent({ criticalCount: 2, warningCount: 3, lastPracticeAt: null });
     expect(result.priority).toBe('critical');
     expect(result.totalNeedReview).toBe(5);
-    expect(result.title).toEqual({ count: 5, rest: ' need your urgent review' });
-    expect(result.badge.label).toBe('HIGH PRIORITY');
+    expect(result.title).toEqual({ count: 5, messageKey: 'urgent' });
+    expect(result.badge.labelKey).toBe('badge.critical');
   });
 
   it('is warning when only warnings exist', () => {
     const result = buildHeroCtaContent({ criticalCount: 0, warningCount: 4, lastPracticeAt: null });
     expect(result.priority).toBe('warning');
-    expect(result.title).toEqual({ count: 4, rest: ' need review' });
-    expect(result.badge.label).toBe('NEEDS ATTENTION');
+    expect(result.title).toEqual({ count: 4, messageKey: 'review' });
+    expect(result.badge.labelKey).toBe('badge.warning');
   });
 
   it('is on track with no count when nothing needs review', () => {
     const result = buildHeroCtaContent({ criticalCount: 0, warningCount: 0, lastPracticeAt: null });
     expect(result.priority).toBe('onTrack');
-    expect(result.title.count).toBeNull();
-    expect(result.badge.label).toBe('ALL GOOD');
+    expect(result.title).toEqual({ count: null, messageKey: 'onTrack' });
+    expect(result.badge.labelKey).toBe('badge.onTrack');
   });
 
   it('reports noSessions when there was no practice', () => {
@@ -45,13 +45,5 @@ describe('buildHeroCtaContent', () => {
   it('never reports negative days for a future date', () => {
     const result = buildHeroCtaContent({ criticalCount: 1, warningCount: 0, lastPracticeAt: '2026-03-20T12:00:00Z' });
     expect(result.body).toEqual({ kind: 'daysSince', days: 0 });
-  });
-});
-
-describe('formatDaysBody', () => {
-  it('uses singular for one day and plural otherwise', () => {
-    expect(formatDaysBody(1)).toContain('1 day since');
-    expect(formatDaysBody(3)).toContain('3 days since');
-    expect(formatDaysBody(0)).toContain('0 days since');
   });
 });

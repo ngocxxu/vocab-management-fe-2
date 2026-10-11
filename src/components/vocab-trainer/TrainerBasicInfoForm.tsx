@@ -2,6 +2,7 @@
 
 import { Archive, CloseCircle, Lock } from '@solar-icons/react/ssr';
 import React, { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { useFormContext } from 'react-hook-form';
 import {
   FormControl,
@@ -28,15 +29,17 @@ type TrainerBasicInfoFormProps = Readonly<{
   srsDefaults?: TSrsDefaults;
 }>;
 
+// titleKey and hintKey are translation keys under `modes`.
 const MODE_OPTIONS = [
-  { value: ETrainerMode.CLASSIC, title: 'Classic', hint: 'A timed test of the words you pick, every time.' },
-  { value: ETrainerMode.FSRS, title: 'Spaced repetition', hint: 'Short daily reviews; each word returns just before you would forget it.' },
+  { value: ETrainerMode.CLASSIC, titleKey: 'modes.classic.title', hintKey: 'modes.classic.hint' },
+  { value: ETrainerMode.FSRS, titleKey: 'modes.spacedRepetition.title', hintKey: 'modes.spacedRepetition.hint' },
 ];
 
 const MAX_VISIBLE_SELECTED_WORDS = 20;
 const EMPTY_SELECTED_WORDS: TrainerBasicInfoFormProps['selectedWords'] = [];
 
 const TrainerBasicInfoForm: React.FC<TrainerBasicInfoFormProps> = ({ userRole, selectedWords = EMPTY_SELECTED_WORDS, editMode = false, srsDefaults }) => {
+  const t = useTranslations();
   const form = useFormContext();
   const isFsrs = form.watch('mode') === ETrainerMode.FSRS;
   const [upsellOpen, setUpsellOpen] = useState(false);
@@ -73,7 +76,7 @@ const TrainerBasicInfoForm: React.FC<TrainerBasicInfoFormProps> = ({ userRole, s
   return (
     <div className="space-y-4">
       <h3 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-        Basic Information
+        {t('trainer.form.basicInfo')}
       </h3>
       <div className="grid grid-cols-1 gap-4">
         <FormField
@@ -81,10 +84,10 @@ const TrainerBasicInfoForm: React.FC<TrainerBasicInfoFormProps> = ({ userRole, s
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Trainer Name</FormLabel>
+              <FormLabel>{t('trainer.form.name')}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="e.g., Morning Review #4"
+                  placeholder={t('trainer.form.namePlaceholder')}
                   {...field}
                   onChange={(e) => {
                     field.onChange(e);
@@ -103,8 +106,8 @@ const TrainerBasicInfoForm: React.FC<TrainerBasicInfoFormProps> = ({ userRole, s
           name="mode"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Learning Mode</FormLabel>
-              <div className="mt-1 grid grid-cols-1 gap-2 sm:grid-cols-2" role="radiogroup" aria-label="Learning mode">
+              <FormLabel>{t('trainer.form.mode')}</FormLabel>
+              <div className="mt-1 grid grid-cols-1 gap-2 sm:grid-cols-2" role="radiogroup" aria-label={t('trainer.form.modeAria')}>
                 {MODE_OPTIONS.map(option => (
                   <button
                     key={option.value}
@@ -119,15 +122,15 @@ const TrainerBasicInfoForm: React.FC<TrainerBasicInfoFormProps> = ({ userRole, s
                       editMode && field.value !== option.value && 'opacity-50',
                     )}
                   >
-                    <span className="block text-sm font-semibold text-foreground">{option.title}</span>
-                    <span className="mt-1 block text-xs text-muted-foreground">{option.hint}</span>
+                    <span className="block text-sm font-semibold text-foreground">{t(option.titleKey)}</span>
+                    <span className="mt-1 block text-xs text-muted-foreground">{t(option.hintKey)}</span>
                   </button>
                 ))}
               </div>
               {editMode && (
                 <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   <Lock size={12} weight="BoldDuotone" />
-                  The mode is fixed after the trainer is created.
+                  {t('trainer.form.modeFixed')}
                 </p>
               )}
               <FormMessage />
@@ -140,7 +143,7 @@ const TrainerBasicInfoForm: React.FC<TrainerBasicInfoFormProps> = ({ userRole, s
           name="questionType"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Question Type</FormLabel>
+              <FormLabel>{t('trainer.form.questionType')}</FormLabel>
               <Select
                 onValueChange={(value) => {
                   if (value === EQuestionType.TRANSLATION_AUDIO && isGuest) {
@@ -154,7 +157,7 @@ const TrainerBasicInfoForm: React.FC<TrainerBasicInfoFormProps> = ({ userRole, s
               >
                 <FormControl>
                   <SelectTrigger className="mt-1 w-full">
-                    <SelectValue placeholder="Select question type" />
+                    <SelectValue placeholder={t('trainer.form.questionTypePlaceholder')} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -163,14 +166,14 @@ const TrainerBasicInfoForm: React.FC<TrainerBasicInfoFormProps> = ({ userRole, s
                       {option.value === EQuestionType.TRANSLATION_AUDIO && isGuest
                         ? (
                             <span className="flex w-full items-center justify-between gap-3">
-                              <span>{option.label}</span>
+                              <span>{t(option.labelKey)}</span>
                               <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-muted px-2.5 py-0.5 font-sans text-xs font-medium text-muted-foreground">
                                 <Lock size={12} weight="BoldDuotone" />
-                                Upgrade
+                                {t('trainer.form.upgrade')}
                               </span>
                             </span>
                           )
-                        : option.label}
+                        : t(option.labelKey)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -178,8 +181,8 @@ const TrainerBasicInfoForm: React.FC<TrainerBasicInfoFormProps> = ({ userRole, s
               <UpsellModal
                 open={upsellOpen}
                 onOpenChange={setUpsellOpen}
-                featureName="Translation Audio"
-                description="Translation Audio exam is available on the Member plan. Upgrade to unlock it."
+                featureName={t('trainer.form.upsellFeature')}
+                description={t('trainer.form.upsellDescription')}
               />
               <FormMessage />
             </FormItem>
@@ -189,19 +192,17 @@ const TrainerBasicInfoForm: React.FC<TrainerBasicInfoFormProps> = ({ userRole, s
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-3">
             <FormLabel className="tracking-wide">
-              Selected Words
+              {t('trainer.form.selectedWords')}
             </FormLabel>
             <span className={cn('inline-flex items-center rounded-full bg-primary/15 px-2.5 py-0.5 text-xs font-medium text-primary', selectedWords.length === 0 && 'opacity-50')}>
-              {selectedWords.length}
-              {' '}
-              Selected
+              {t('trainer.form.selectedCount', { count: selectedWords.length })}
             </span>
           </div>
           {selectedWords.length === 0
             ? (
                 <div className="flex items-center gap-2 rounded-xl border border-dashed border-border px-3 py-2.5 text-sm text-muted-foreground">
                   <Archive weight="BoldDuotone" size={16} className="shrink-0" />
-                  <span>Pick words from the list to start training.</span>
+                  <span>{t('trainer.form.pickWords')}</span>
                 </div>
               )
             : (
@@ -219,7 +220,7 @@ const TrainerBasicInfoForm: React.FC<TrainerBasicInfoFormProps> = ({ userRole, s
                         type="button"
                         className="inline-flex h-5 w-5 items-center justify-center rounded-full text-primary transition-colors hover:bg-primary/15"
                         onClick={() => removeSelectedWord(id)}
-                        aria-label={label ? `Remove ${label}` : 'Remove selected word'}
+                        aria-label={label ? t('trainer.form.removeWord', { label }) : t('trainer.form.removeWordGeneric')}
                       >
                         <CloseCircle size={14} weight="BoldDuotone" />
                       </button>
@@ -227,10 +228,7 @@ const TrainerBasicInfoForm: React.FC<TrainerBasicInfoFormProps> = ({ userRole, s
                   ))}
                   {selectedWords.length > MAX_VISIBLE_SELECTED_WORDS && (
                     <span className="inline-flex items-center rounded-full bg-muted px-3 py-1 text-sm font-medium text-muted-foreground">
-                      +
-                      {selectedWords.length - MAX_VISIBLE_SELECTED_WORDS}
-                      {' '}
-                      more
+                      {t('trainer.form.more', { count: selectedWords.length - MAX_VISIBLE_SELECTED_WORDS })}
                     </span>
                   )}
                 </div>
@@ -245,7 +243,7 @@ const TrainerBasicInfoForm: React.FC<TrainerBasicInfoFormProps> = ({ userRole, s
             return (
               <FormItem>
                 <div className="flex w-full items-center justify-between">
-                  <FormLabel id={reminderLabelId}>Reminders</FormLabel>
+                  <FormLabel id={reminderLabelId}>{t('trainer.form.reminders')}</FormLabel>
                   <FormControl>
                     <button
                       type="button"

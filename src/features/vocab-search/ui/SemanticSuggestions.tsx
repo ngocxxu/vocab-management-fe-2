@@ -1,5 +1,6 @@
 import type { TVocab } from '@/types/vocab-list';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import React from 'react';
 import { Card, CardContent } from '@/shared/ui/card';
 
@@ -44,6 +45,7 @@ function SuggestionRow({ vocab }: { vocab: TVocab }) {
  * and there is no client-side route to the backend for this to call anyway.
  */
 const SemanticSuggestions: React.FC<SemanticSuggestionsProps> = ({ vocabs, excludeIds, query }) => {
+  const t = useTranslations('search.related');
   const excluded = new Set(excludeIds);
   const suggestions = vocabs.filter(vocab => !excluded.has(vocab.id)).slice(0, SUGGESTION_LIMIT);
 
@@ -58,8 +60,8 @@ const SemanticSuggestions: React.FC<SemanticSuggestionsProps> = ({ vocabs, exclu
     <Card className="mt-4">
       <CardContent className="p-4">
         <div className="mb-2 flex items-center gap-2">
-          <h3 className="text-sm font-medium text-foreground">Related by meaning</h3>
-          <span className="text-xs text-muted-foreground">Matched by meaning, not spelling</span>
+          <h3 className="text-sm font-medium text-foreground">{t('title')}</h3>
+          <span className="text-xs text-muted-foreground">{t('hint')}</span>
         </div>
 
         <div className="flex flex-col">
@@ -70,7 +72,7 @@ const SemanticSuggestions: React.FC<SemanticSuggestionsProps> = ({ vocabs, exclu
           href={`/search?q=${encodeURIComponent(query.trim())}`}
           className="mt-3 inline-block px-3 text-sm text-primary hover:underline"
         >
-          Search across all folders
+          {t('searchAll')}
         </Link>
       </CardContent>
     </Card>

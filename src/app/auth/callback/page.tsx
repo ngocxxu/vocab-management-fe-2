@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { Suspense, useEffect, useState } from 'react';
 import { LoadingComponent } from '@/shared/ui/shared';
 import { Alert, AlertDescription } from '@/shared/ui/alert';
@@ -21,6 +22,7 @@ function getSafeRedirectPath(value: string | null, fallback: string): string {
 }
 
 function AuthCallbackContent() {
+  const t = useTranslations('authCallback');
   const router = useRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
@@ -67,8 +69,9 @@ function AuthCallbackContent() {
         const redirectTo = getSafeRedirectPath(searchParams.get('redirect'), '/dashboard');
         router.push(redirectTo);
       } catch (err) {
+        // Details go to the log only; the user sees a translated message.
         logger.error('Auth callback error:', { error: err });
-        setError(err instanceof Error ? err.message : 'Failed to complete sign in');
+        setError(t('failed'));
         setIsLoading(false);
 
         timeoutId = setTimeout(() => {
@@ -84,7 +87,7 @@ function AuthCallbackContent() {
         clearTimeout(timeoutId);
       }
     };
-  }, [router, searchParams]);
+  }, [router, searchParams, t]);
 
   if (error) {
     return (
@@ -94,7 +97,7 @@ function AuthCallbackContent() {
             <AlertDescription>{error}</AlertDescription>
           </Alert>
           <p className="mt-4 text-center text-sm text-muted-foreground">
-            Redirecting to sign in page...
+            {t('redirecting')}
           </p>
         </div>
       </div>
@@ -103,17 +106,19 @@ function AuthCallbackContent() {
 
   return (
     <LoadingComponent
-      title="Completing sign in..."
+      title={t('completing')}
     />
   );
 }
 
 export default function AuthCallbackPage() {
+  const t = useTranslations('authCallback');
+
   return (
     <Suspense
       fallback={(
         <LoadingComponent
-          title="Loading..."
+          title={t('loading')}
         />
       )}
     >

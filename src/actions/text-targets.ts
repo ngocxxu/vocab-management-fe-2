@@ -16,7 +16,7 @@ export async function getTextTargets(vocabId: string, params?: TextTargetQueryPa
   try {
     return await textTargetApi.getAll(vocabId, params);
   } catch (error) {
-    throw toActionError(error, 'Failed to fetch text targets');
+    throw await toActionError(error, 'fetchTextTargets');
   }
 }
 
@@ -28,7 +28,7 @@ export async function getTextTargetById(vocabId: string, id: string): Promise<TT
   try {
     return await textTargetApi.getById(vocabId, id);
   } catch (error) {
-    throw toActionError(error, 'Failed to fetch text target');
+    throw await toActionError(error, 'fetchTextTarget');
   }
 }
 
@@ -42,7 +42,7 @@ export async function createTextTarget(vocabId: string, data: TCreateTextTarget)
     revalidatePath('/vocab-list');
     return result;
   } catch (error) {
-    throw toActionError(error, 'Failed to create text target');
+    throw await toActionError(error, 'createTextTarget');
   }
 }
 
@@ -56,7 +56,7 @@ export async function updateTextTarget(vocabId: string, id: string, data: TUpdat
     revalidatePath('/vocab-list');
     return result;
   } catch (error) {
-    throw toActionError(error, 'Failed to update text target');
+    throw await toActionError(error, 'updateTextTarget');
   }
 }
 
@@ -69,6 +69,6 @@ export async function deleteTextTarget(vocabId: string, id: string): Promise<voi
     await textTargetApi.delete(vocabId, id);
     revalidatePath('/vocab-list');
   } catch (error) {
-    throw toActionError(error, 'Failed to delete text target');
+    throw await toActionError(error, 'deleteTextTarget');
   }
 }

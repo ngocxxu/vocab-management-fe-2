@@ -1,6 +1,7 @@
 'use client';
 
 import { CloseCircle } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { Button } from '@/shared/ui/button';
 
@@ -18,6 +19,7 @@ function isStandalone(): boolean {
 }
 
 export function InstallPrompt() {
+  const t = useTranslations('install');
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -39,13 +41,9 @@ export function InstallPrompt() {
   return (
     <div className="fixed inset-x-4 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-50 flex items-center gap-3 rounded-xl border border-border bg-card p-4 shadow-lg">
       <p className="flex-1 text-sm text-foreground">
-        Install this app: tap
-        {' '}
-        <span aria-hidden="true">⬆️</span>
-        {' '}
-        Share, then "Add to Home Screen".
+        {t('body')}
       </p>
-      <Button size="icon" variant="ghost" onClick={dismiss} aria-label="Dismiss install prompt">
+      <Button size="icon" variant="ghost" onClick={dismiss} aria-label={t('dismiss')}>
         <CloseCircle className="size-4" />
       </Button>
     </div>

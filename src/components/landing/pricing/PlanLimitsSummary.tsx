@@ -1,12 +1,16 @@
 import type { TPlan } from '@/types/plan';
+import { useTranslations } from 'next-intl';
 
-function formatLimit(value: number, suffix: string): string {
-  return value === -1 ? 'Unlimited' : `${value} ${suffix}`;
-}
+type LimitKey = 'vocabsPerDay' | 'folders' | 'subjects';
 
 export function PlanLimitsSummary({ limits }: Readonly<{ limits: TPlan['limits'] }>) {
+  const t = useTranslations('landing.plan');
+
+  const formatLimit = (value: number, key: LimitKey): string =>
+    value === -1 ? t('unlimited') : t(key, { value });
+
   const parts = [
-    formatLimit(limits.vocabPerDay, 'vocabs/day'),
+    formatLimit(limits.vocabPerDay, 'vocabsPerDay'),
     formatLimit(limits.languageFolders, 'folders'),
     formatLimit(limits.subjects, 'subjects'),
   ];

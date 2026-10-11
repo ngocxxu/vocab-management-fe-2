@@ -18,7 +18,7 @@ describe('signInSchema', () => {
   it('rejects a password shorter than 6 characters', () => {
     const result = signInSchema.safeParse({ email: 'a@b.co', password: 'abc' });
     expect(result.success).toBe(false);
-    expect(result.error?.issues[0]?.message).toBe('Password must be at least 6 characters');
+    expect(result.error?.issues[0]?.message).toBe('validation.passwordTooShort');
   });
 
   it('rejects an invalid email', () => {
@@ -27,7 +27,7 @@ describe('signInSchema', () => {
 
   it('rejects an empty email with the required message', () => {
     const result = signInSchema.safeParse({ email: '', password: 'secret1' });
-    expect(result.error?.issues[0]?.message).toBe('Email is required');
+    expect(result.error?.issues[0]?.message).toBe('validation.emailRequired');
   });
 });
 
@@ -40,7 +40,7 @@ describe('signUpSchema', () => {
   it('puts the password mismatch error on confirmPassword', () => {
     const result = signUpSchema.safeParse({ ...validSignUp, confirmPassword: 'different' });
     expect(result.success).toBe(false);
-    const issue = result.error?.issues.find(i => i.message === 'Passwords do not match');
+    const issue = result.error?.issues.find(i => i.message === 'validation.passwordsDoNotMatch');
     expect(issue?.path).toEqual(['confirmPassword']);
   });
 
@@ -51,7 +51,7 @@ describe('signUpSchema', () => {
   it('rejects a non-numeric phone', () => {
     const result = signUpSchema.safeParse({ ...validSignUp, phone: 'abc' });
     expect(result.success).toBe(false);
-    expect(result.error?.issues[0]?.message).toBe('Please enter a valid phone number');
+    expect(result.error?.issues[0]?.message).toBe('validation.invalidPhone');
   });
 
   it('rejects a one-letter first name', () => {

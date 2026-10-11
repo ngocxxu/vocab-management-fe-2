@@ -5,6 +5,7 @@ import { defineChart } from '@tanstack/charts';
 import { polar, radialArc } from '@tanstack/charts/polar';
 import { tooltip } from '@tanstack/charts/tooltip';
 import { Chart } from '@tanstack/react-charts/tooltip';
+import { useTranslations } from 'next-intl';
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { renderChartTooltipBody } from '@/features/dashboard/ui/ChartTooltipBody';
@@ -16,14 +17,15 @@ const PAD_ANGLE_RADIANS = 0.02;
 type TDonutSlice = { name: string; value: number; color: string };
 
 export const AnswerDistributionCard: React.FC<AnswerDistributionCardProps> = ({ data }) => {
+  const t = useTranslations('dashboard.answers');
   const total = data.totalCorrect + data.totalIncorrect;
   const successPct = total > 0 ? ((data.totalCorrect / total) * 100).toFixed(1) : '0';
   const correctPct = total > 0 ? ((data.totalCorrect / total) * 100).toFixed(1) : '0.0';
   const incorrectPct = total > 0 ? ((data.totalIncorrect / total) * 100).toFixed(1) : '0.0';
 
   const donutData: TDonutSlice[] = [
-    { name: 'Correct', value: data.totalCorrect, color: CORRECT_COLOR },
-    { name: 'Incorrect', value: data.totalIncorrect, color: INCORRECT_COLOR },
+    { name: t('correct'), value: data.totalCorrect, color: CORRECT_COLOR },
+    { name: t('incorrect'), value: data.totalIncorrect, color: INCORRECT_COLOR },
   ];
 
   const cumulativeAngle = (index: number): number => {
@@ -58,7 +60,7 @@ export const AnswerDistributionCard: React.FC<AnswerDistributionCardProps> = ({ 
         }
         return {
           title: point.datum.name,
-          rows: [{ label: 'Answers', value: String(point.datum.value) }],
+          rows: [{ label: t('answers'), value: String(point.datum.value) }],
         };
       },
     },
@@ -67,7 +69,7 @@ export const AnswerDistributionCard: React.FC<AnswerDistributionCardProps> = ({ 
   return (
     <Card className="flex h-full flex-col overflow-visible border-0 bg-card shadow-sm">
       <CardHeader className="pb-4">
-        <CardTitle className="text-xl font-bold text-foreground">Answer Distribution</CardTitle>
+        <CardTitle className="text-xl font-bold text-foreground">{t('title')}</CardTitle>
       </CardHeader>
       <CardContent className="p-6">
         <div className="flex flex-col items-center">
@@ -75,7 +77,7 @@ export const AnswerDistributionCard: React.FC<AnswerDistributionCardProps> = ({ 
             <Chart
               definition={answerDistributionChart}
               height={320}
-              ariaLabel="Correct versus incorrect answer distribution"
+              ariaLabel={t('aria')}
               renderTooltipBody={renderChartTooltipBody}
             />
             <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
@@ -83,14 +85,14 @@ export const AnswerDistributionCard: React.FC<AnswerDistributionCardProps> = ({ 
                 {successPct}
                 %
               </span>
-              <span className="text-xs font-medium text-muted-foreground">SUCCESS</span>
+              <span className="text-xs font-medium text-muted-foreground">{t('success')}</span>
             </div>
           </div>
           <div className="mt-4 flex w-full max-w-[180px] flex-col gap-2">
             <div className="flex items-center justify-between text-sm">
               <div className="flex items-center gap-2">
                 <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: CORRECT_COLOR }} />
-                <span className="text-muted-foreground">Correct</span>
+                <span className="text-muted-foreground">{t('correct')}</span>
               </div>
               <span className="font-medium text-foreground">
                 {correctPct}
@@ -100,7 +102,7 @@ export const AnswerDistributionCard: React.FC<AnswerDistributionCardProps> = ({ 
             <div className="flex items-center justify-between text-sm">
               <div className="flex items-center gap-2">
                 <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: INCORRECT_COLOR }} />
-                <span className="text-muted-foreground">Incorrect</span>
+                <span className="text-muted-foreground">{t('incorrect')}</span>
               </div>
               <span className="font-medium text-foreground">
                 {incorrectPct}

@@ -7,6 +7,7 @@ import type {
 import React, { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useTranslations } from 'next-intl';
 import LanguageFolderForm from './LanguageFolderForm';
 
 const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
@@ -15,22 +16,23 @@ const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
   onCreateFolder,
   initialLanguagesData,
 }) => {
+  const t = useTranslations('library');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = useCallback(async (formData: LanguageFolderFormData) => {
     try {
       setIsSubmitting(true);
       await onCreateFolder(formData);
-      toast.success('Language folder created successfully!');
+      toast.success(t('toast.created'));
       onClose();
     } catch (error) {
       console.error('Error creating folder:', error);
-      toast.error('Failed to create language folder. Please try again.');
+      toast.error(t('toast.createFailed'));
       throw error; // Re-throw to let the form handle the error state
     } finally {
       setIsSubmitting(false);
     }
-  }, [onCreateFolder, onClose]);
+  }, [onCreateFolder, onClose, t]);
 
   const handleClose = useCallback(() => {
     if (!isSubmitting) {
@@ -43,14 +45,14 @@ const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
-            Create New Language Folder
+            {t('modal.createTitle')}
           </DialogTitle>
         </DialogHeader>
 
         <LanguageFolderForm
           onSubmit={handleSubmit}
           onCancel={handleClose}
-          submitButtonText="Create Folder"
+          submitButtonText={t('modal.createSubmit')}
           isSubmitting={isSubmitting}
           showAutoGenerate={true}
           initialLanguagesData={initialLanguagesData}

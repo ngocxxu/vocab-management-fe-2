@@ -4,6 +4,7 @@ import type { SubjectTableRowProps } from '@/types/subject';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Pen, Reorder, TrashBin2 } from '@solar-icons/react/ssr';
+import { useLocale, useTranslations } from 'next-intl';
 import React from 'react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
@@ -11,6 +12,8 @@ import { Button } from '@/components/ui/button';
 import { formatCreatedDate, getSubjectColor, getSubjectInitials } from '@/utils/subject';
 
 export const SubjectTableRow: React.FC<SubjectTableRowProps> = ({ subject, index, onEdit, onDelete }) => {
+  const t = useTranslations('subjects');
+  const locale = useLocale();
   const {
     attributes,
     listeners,
@@ -36,7 +39,7 @@ export const SubjectTableRow: React.FC<SubjectTableRowProps> = ({ subject, index
           {...attributes}
           {...listeners}
           className="inline-flex cursor-grab touch-none rounded p-1 text-muted-foreground hover:bg-accent hover:text-foreground active:cursor-grabbing"
-          aria-label="Drag to reorder"
+          aria-label={t('table.dragReorder')}
         >
           <Reorder size={20} />
         </div>
@@ -64,7 +67,7 @@ export const SubjectTableRow: React.FC<SubjectTableRowProps> = ({ subject, index
         </Badge>
       </td>
       <td className="px-3 py-3 text-sm text-muted-foreground sm:px-6 sm:py-4">
-        {formatCreatedDate(subject.createdAt)}
+        {formatCreatedDate(subject.createdAt, locale)}
       </td>
       <td className="px-3 py-3 text-right sm:px-6 sm:py-4">
         <div className="flex items-center justify-end gap-1">
@@ -73,7 +76,7 @@ export const SubjectTableRow: React.FC<SubjectTableRowProps> = ({ subject, index
             size="sm"
             onClick={() => onEdit(subject)}
             className="h-8 w-8 p-0"
-            aria-label="Edit subject"
+            aria-label={t('table.editAria')}
           >
             <Pen size={16} weight="BoldDuotone" />
           </Button>
@@ -83,27 +86,25 @@ export const SubjectTableRow: React.FC<SubjectTableRowProps> = ({ subject, index
                 variant="ghost"
                 size="sm"
                 className="h-8 w-8 p-0 text-destructive hover:bg-destructive/10 hover:text-destructive"
-                aria-label="Delete subject"
+                aria-label={t('table.deleteAria')}
               >
                 <TrashBin2 size={16} weight="BoldDuotone" />
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Delete Subject</AlertDialogTitle>
+                <AlertDialogTitle>{t('table.deleteTitle')}</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Are you sure you want to delete &quot;
-                  {subject.name}
-                  &quot;? This action cannot be undone.
+                  {t('table.deleteDescription', { name: subject.name })}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
                 <AlertDialogAction
                   onClick={() => onDelete(subject.id)}
                   className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                 >
-                  Delete
+                  {t('delete')}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>

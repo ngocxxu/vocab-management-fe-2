@@ -26,7 +26,7 @@ describe('srsSettingsFormSchema', () => {
     const result = srsSettingsFormSchema.safeParse({ ...valid, directions: [] });
 
     expect(result.success).toBe(false);
-    expect(result.error?.issues[0]?.message).toBe('Pick at least one direction');
+    expect(result.error?.issues[0]?.message).toBe('validation.directionRequired');
   });
 
   it('rejects a repeated direction and an unknown one', () => {

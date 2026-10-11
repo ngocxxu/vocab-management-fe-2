@@ -8,6 +8,7 @@ import type { VisibilityState } from '@tanstack/react-table';
 import { AddCircle, Filter } from '@solar-icons/react/ssr';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import React, { useCallback, useMemo, useState, useTransition } from 'react';
 import { getLanguageName } from '@/shared/utils/language';
 import {
@@ -54,6 +55,7 @@ const TextTargetsContent: React.FC<TextTargetsContentProps> = ({
   initialSubjectsData,
   initialWordTypesData,
 }) => {
+  const t = useTranslations('vocabList.textTargetsContent');
   const router = useRouter();
   const searchParams = useSearchParams();
   const [, startTransition] = useTransition();
@@ -141,18 +143,18 @@ const TextTargetsContent: React.FC<TextTargetsContentProps> = ({
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link href="/library">Library</Link>
+                <Link href="/library">{t('breadcrumbLibrary')}</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link href={`/vocab-list?sourceLanguageCode=${vocab.sourceLanguageCode}&targetLanguageCode=${vocab.targetLanguageCode}${vocab.languageFolderId ? `&languageFolderId=${vocab.languageFolderId}` : ''}`}>Vocab List</Link>
+                <Link href={`/vocab-list?sourceLanguageCode=${vocab.sourceLanguageCode}&targetLanguageCode=${vocab.targetLanguageCode}${vocab.languageFolderId ? `&languageFolderId=${vocab.languageFolderId}` : ''}`}>{t('breadcrumbVocabList')}</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>Text Targets</BreadcrumbPage>
+              <BreadcrumbPage>{t('breadcrumbTextTargets')}</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
@@ -161,11 +163,11 @@ const TextTargetsContent: React.FC<TextTargetsContentProps> = ({
           <div>
             <h1 className="text-3xl font-bold text-foreground">{vocab.textSource}</h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              Detailed breakdown of semantic mappings and contextual translations.
+              {t('subtitle')}
             </p>
             <div className="mt-4 flex items-center gap-4">
-              <LanguageBadge label="Source" code={vocab.sourceLanguageCode} />
-              <LanguageBadge label="Target" code={vocab.targetLanguageCode} />
+              <LanguageBadge label={t('sourceLabel')} code={vocab.sourceLanguageCode} />
+              <LanguageBadge label={t('targetLabel')} code={vocab.targetLanguageCode} />
             </div>
           </div>
 
@@ -174,7 +176,7 @@ const TextTargetsContent: React.FC<TextTargetsContentProps> = ({
               <PopoverTrigger asChild>
                 <Button variant="outline" className="h-10 bg-card/80 backdrop-blur-sm">
                   <Filter size={16} weight="BoldDuotone" className="mr-2" />
-                  <span className="hidden sm:inline">Filter</span>
+                  <span className="hidden sm:inline">{t('filter')}</span>
                   {hasActiveFilters && (
                     <span className="ml-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground">
                       !
@@ -185,20 +187,20 @@ const TextTargetsContent: React.FC<TextTargetsContentProps> = ({
               <PopoverContent className="w-[calc(100vw-2rem)] sm:w-80" align="end">
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <h4 className="font-medium text-foreground">Filter by Subjects</h4>
+                    <h4 className="font-medium text-foreground">{t('filterBySubjects')}</h4>
                     <MultiSelect
                       id="subject-filter"
                       options={subjectFilterOptions}
                       defaultValue={selectedSubjectIds}
                       onValueChange={handleSubjectFilterChange}
-                      placeholder="Choose subjects to filter by..."
+                      placeholder={t('chooseSubjectsFilter')}
                       maxCount={5}
                       className="w-full"
                     />
                   </div>
                   <div className="flex justify-end space-x-2">
                     <Button variant="outline" size="sm" onClick={clearFilters} disabled={!hasActiveFilters}>
-                      Clear Filters
+                      {t('clearFilters')}
                     </Button>
                   </div>
                 </div>
@@ -212,7 +214,7 @@ const TextTargetsContent: React.FC<TextTargetsContentProps> = ({
 
             <Button onClick={handleOpenAdd} className="h-10 bg-primary text-primary-foreground shadow-lg hover:opacity-90">
               <AddCircle size={16} weight="BoldDuotone" className="mr-2" />
-              <span className="hidden sm:inline">Add Target</span>
+              <span className="hidden sm:inline">{t('addTarget')}</span>
             </Button>
           </div>
         </div>

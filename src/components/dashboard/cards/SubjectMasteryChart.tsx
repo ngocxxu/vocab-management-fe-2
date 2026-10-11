@@ -3,19 +3,22 @@
 import { getMasteryBarClass } from '@/features/dashboard/utils/masteryThresholds';
 import { cn } from '@/libs/utils';
 import type { SubjectMasteryChartProps } from '@/types';
+import { useTranslations } from 'next-intl';
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export const SubjectMasteryChart: React.FC<SubjectMasteryChartProps> = ({ data }) => {
+  const t = useTranslations('dashboard');
+
   if (!data || data.length === 0) {
     return (
       <Card className="h-full overflow-hidden border-0 bg-card shadow-sm">
         <CardHeader className="pb-4">
-          <CardTitle className="text-xl font-bold text-foreground">Mastery by Subject</CardTitle>
+          <CardTitle className="text-xl font-bold text-foreground">{t('subjectMastery.title')}</CardTitle>
         </CardHeader>
         <CardContent className="p-6">
           <div className="flex h-64 items-center justify-center text-muted-foreground">
-            No data available
+            {t('noData')}
           </div>
         </CardContent>
       </Card>
@@ -27,7 +30,7 @@ export const SubjectMasteryChart: React.FC<SubjectMasteryChartProps> = ({ data }
   return (
     <Card className="h-full overflow-hidden border-0 bg-card shadow-sm">
       <CardHeader className="pb-4">
-        <CardTitle className="text-xl font-bold text-foreground">Mastery by Subject</CardTitle>
+        <CardTitle className="text-xl font-bold text-foreground">{t('subjectMastery.title')}</CardTitle>
       </CardHeader>
       <CardContent className="p-6">
         <div className="space-y-4">

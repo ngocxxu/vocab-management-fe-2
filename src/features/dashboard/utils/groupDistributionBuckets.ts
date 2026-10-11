@@ -4,7 +4,7 @@ export type TDistributionGroup = 'low' | 'mid' | 'high';
 
 export type TGroupedDistributionBar = {
   key: TDistributionGroup;
-  label: string;
+  labelKey: string;
   count: number;
   barClass: string;
 };
@@ -28,10 +28,10 @@ function scoreRangeToGroup(scoreRange: string): TDistributionGroup {
   return 'high';
 }
 
-const GROUP_META: Record<TDistributionGroup, { label: string; barClass: string }> = {
-  low: { label: 'LOW (0–3)', barClass: 'bg-destructive' },
-  mid: { label: 'MID (4–6)', barClass: 'bg-warning' },
-  high: { label: 'HIGH (7–10)', barClass: 'bg-success' },
+const GROUP_META: Record<TDistributionGroup, { labelKey: string; barClass: string }> = {
+  low: { labelKey: 'distribution.low', barClass: 'bg-destructive' },
+  mid: { labelKey: 'distribution.mid', barClass: 'bg-warning' },
+  high: { labelKey: 'distribution.high', barClass: 'bg-success' },
 };
 
 export function groupDistributionBuckets(
@@ -46,7 +46,7 @@ export function groupDistributionBuckets(
 
   return (['low', 'mid', 'high'] as const).map(key => ({
     key,
-    label: GROUP_META[key].label,
+    labelKey: GROUP_META[key].labelKey,
     count: counts[key],
     barClass: GROUP_META[key].barClass,
   }));

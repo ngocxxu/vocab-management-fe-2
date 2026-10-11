@@ -3,6 +3,7 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import type { TVocab } from '@/types/vocab-list';
 import { Eye, Pen, VolumeLoud } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import React from 'react';
 import { DeleteActionButton } from '@/shared/ui/shared';
 import { Button } from '@/shared/ui/button';
@@ -51,11 +52,13 @@ const VocabFeedView: React.FC<VocabFeedViewProps> = ({
   onView,
   onAddFreeTextWord,
 }) => {
+  const t = useTranslations('vocabList');
+
   return (
     <DataTable
       columns={FEED_COLUMNS}
       data={vocabs}
-      searchPlaceholder="Search vocab..."
+      searchPlaceholder={t('searchPlaceholder')}
       searchValue={searchValue}
       onSearchChangeAction={onSearchChangeAction}
       showSearch={true}
@@ -78,7 +81,7 @@ const VocabFeedView: React.FC<VocabFeedViewProps> = ({
           ? (
               <tr>
                 <td className="px-3 py-6 text-center text-sm text-muted-foreground" colSpan={1}>
-                  No results
+                  {t('noResults')}
                 </td>
               </tr>
             )
@@ -100,7 +103,7 @@ const VocabFeedView: React.FC<VocabFeedViewProps> = ({
                         size="icon"
                         className="h-7 w-7 shrink-0 p-0"
                         onClick={() => onSpeak(vocab)}
-                        aria-label="Play pronunciation"
+                        aria-label={t('columns.playPronunciation')}
                       >
                         <VolumeLoud size={16} weight="BoldDuotone" className="text-muted-foreground" />
                       </Button>
@@ -114,11 +117,11 @@ const VocabFeedView: React.FC<VocabFeedViewProps> = ({
                       </Button>
                       <DeleteActionButton
                         itemId={vocab.id}
-                        itemName="vocabulary item"
+                        itemName={t('itemName')}
                         onDelete={onDeleteVocab}
                         onSuccess={onDeleteSuccess}
-                        successMessage="Vocabulary deleted successfully!"
-                        errorMessage="Failed to delete vocabulary. Please try again."
+                        successMessage={t('toast.deleted')}
+                        errorMessage={t('toast.deleteFailed')}
                       />
                     </div>
                   </div>

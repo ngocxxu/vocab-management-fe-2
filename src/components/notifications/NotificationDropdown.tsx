@@ -4,6 +4,7 @@ import type { NotificationDropdownProps } from '@/types/notification';
 import { Bell } from '@solar-icons/react/ssr';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import React, { useCallback, useEffect, useRef, useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { markAllNotificationsAsRead } from '@/actions/notifications';
@@ -25,6 +26,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
   error = null,
   onNotificationsChanged,
 }) => {
+  const t = useTranslations('notifications');
   const [displayedCount, setDisplayedCount] = useState(5);
   const [activeTab, setActiveTab] = useState<'all' | 'unread'>('all');
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -53,11 +55,11 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
   const handleMarkAllAsRead = async () => {
     try {
       await markAllNotificationsAsRead();
-      toast.success('All notifications marked as read');
+      toast.success(t('markAllReadToast'));
       await refreshNotifications();
     } catch (error) {
       console.error('Failed to mark all notifications as read:', error);
-      toast.error('Failed to mark all notifications as read');
+      toast.error(t('markAllReadFailed'));
     }
   };
 
@@ -113,7 +115,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
           {count > 0 && (
             <span
               className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-primary"
-              aria-label={`${count} unread notifications`}
+              aria-label={t('unreadAria', { count })}
             />
           )}
         </Button>
@@ -122,14 +124,14 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
       <DropdownMenuContent className="w-96 p-0" align="end">
         <div className="flex items-center justify-between border-b border-border px-4 py-3">
           <h3 className="text-lg font-semibold text-foreground">
-            Notifications
+            {t('title')}
           </h3>
           <button
             type="button"
             className="text-sm text-muted-foreground hover:text-foreground"
             onClick={handleMarkAllAsRead}
           >
-            Mark all as read
+            {t('markAllRead')}
           </button>
         </div>
 
@@ -140,7 +142,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
         )}
 
         <div className="border-b border-border px-4">
-          <div className="flex items-end gap-0" role="tablist" aria-label="Notification filters">
+          <div className="flex items-end gap-0" role="tablist" aria-label={t('filtersAria')}>
             <button
               type="button"
               role="tab"
@@ -154,7 +156,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                   : 'text-muted-foreground',
               )}
             >
-              All
+              {t('all')}
               {activeTab === 'all' && (
                 <span
                   className="absolute bottom-0 left-0 h-0.5 w-5 rounded-full bg-primary"
@@ -175,7 +177,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                   : 'text-muted-foreground',
               )}
             >
-              Unread
+              {t('unread')}
               {' '}
               <span className="rounded-full bg-muted px-1.5 py-0.5 text-xs font-medium text-muted-foreground">
                 (
@@ -226,7 +228,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
             href="/notifications"
             className="text-sm text-muted-foreground hover:text-foreground"
           >
-            {notifications.length === 0 ? 'View notification history' : 'View all notifications'}
+            {notifications.length === 0 ? t('viewHistory') : t('viewAll')}
           </Link>
         </div>
       </DropdownMenuContent>

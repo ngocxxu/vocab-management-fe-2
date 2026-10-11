@@ -3,6 +3,7 @@
 import type { EQuestionType } from '@/enum/vocab-trainer';
 import type { NotificationItemProps } from '@/types/notification';
 import { RefreshCircle } from '@solar-icons/react/ssr';
+import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
@@ -28,13 +29,15 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
   variant = 'dropdown',
   onDelete: _onDelete,
 }) => {
+  const t = useTranslations('notifications');
+  const locale = useLocale();
   const router = useRouter();
   const [isLoadingExam, setIsLoadingExam] = useState(false);
   const IconComponent = getNotificationIcon(notification.type);
   const iconBg = getNotificationIconBg(notification.type);
-  const message = formatNotificationMessage(notification);
-  const timeAgo = formatTimeAgo(notification.createdAt);
-  const listDate = formatNotificationListDate(notification.createdAt);
+  const message = formatNotificationMessage(notification, t);
+  const timeAgo = formatTimeAgo(notification.createdAt, t);
+  const listDate = formatNotificationListDate(notification.createdAt, t, locale);
   const description = (notification.data && typeof notification.data.message === 'string')
     ? notification.data.message
     : '';
@@ -46,10 +49,10 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
       try {
         await markNotificationAsRead(notification.id);
         await onMarkAsRead();
-        toast.success('Notification marked as read');
+        toast.success(t('markedRead'));
       } catch (error) {
         console.error('Failed to mark notification as read:', error);
-        toast.error('Failed to mark notification as read');
+        toast.error(t('markReadFailed'));
       }
     }
   };
@@ -63,7 +66,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
 
     if (!trainerId || !questionType) {
       logger.error('Missing trainerId or questionType:', { trainerId, questionType, data });
-      toast.error('Invalid notification data');
+      toast.error(t('invalidData'));
       return;
     }
 
@@ -85,7 +88,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
       }
     } catch (error) {
       console.error('Failed to load exam data:', error);
-      toast.error('Failed to load exam. Please try again.');
+      toast.error(t('examFailed'));
       setIsLoadingExam(false);
     }
   };
@@ -178,7 +181,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
               void handleStartExam();
             }}
           >
-            Start Exam
+            {t('startExam')}
           </button>
         )}
       </div>

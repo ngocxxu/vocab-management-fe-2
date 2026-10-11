@@ -9,6 +9,7 @@ import type {
   TQuestionAPI,
 } from '@/types/vocab-trainer';
 import { AltArrowLeft, AltArrowRight } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSpeechSynthesis } from 'react-speech-kit';
@@ -25,6 +26,8 @@ const isTQuestionAPI = (data: TQuestionAPI | TFlipCardExamData): data is TQuesti
 };
 
 const FlipCardExam: React.FC<FlipCardExamProps> = ({ trainerId, examData }) => {
+  const t = useTranslations('trainer.exam');
+  const tFlip = useTranslations('trainer.flip');
   const router = useRouter();
   const { speak, cancel, voices } = useSpeechSynthesis();
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
@@ -92,8 +95,8 @@ const FlipCardExam: React.FC<FlipCardExamProps> = ({ trainerId, examData }) => {
     const currentResults = JSON.parse(localStorage.getItem(storageKey) || '[]');
     const result: TFlipCardResult = {
       cardIndex: currentCardIndex,
-      frontText: currentQuestion?.frontText || ['No text'],
-      backText: currentQuestion?.backText || ['No text'],
+      frontText: currentQuestion?.frontText || [tFlip('noTextShort')],
+      backText: currentQuestion?.backText || [tFlip('noTextShort')],
       frontLanguageCode: currentQuestion?.frontLanguageCode || 'EN',
       backLanguageCode: currentQuestion?.backLanguageCode || 'VI',
       assessment,
@@ -109,7 +112,7 @@ const FlipCardExam: React.FC<FlipCardExamProps> = ({ trainerId, examData }) => {
     }
 
     localStorage.setItem(storageKey, JSON.stringify(currentResults));
-  }, [currentCardIndex, currentQuestion, trainerId, cardStartTime]);
+  }, [currentCardIndex, currentQuestion, trainerId, cardStartTime, tFlip]);
 
   const handleCardFlip = useCallback(() => {
     setIsFlipped(prev => !prev);
@@ -147,8 +150,8 @@ const FlipCardExam: React.FC<FlipCardExamProps> = ({ trainerId, examData }) => {
 
       results.push({
         cardIndex: i,
-        frontText: question?.frontText || ['No text'],
-        backText: question?.backText || ['No text'],
+        frontText: question?.frontText || [tFlip('noTextShort')],
+        backText: question?.backText || [tFlip('noTextShort')],
         frontLanguageCode: question?.frontLanguageCode || 'EN',
         backLanguageCode: question?.backLanguageCode || 'VI',
         assessment,
@@ -158,7 +161,7 @@ const FlipCardExam: React.FC<FlipCardExamProps> = ({ trainerId, examData }) => {
 
     const finalExamData: TFlipCardExamData = {
       trainerId,
-      trainerName: trainerName || 'FlipCard Exam',
+      trainerName: trainerName || t('flipUntitled'),
       questions,
       results,
       totalTimeElapsed: timeElapsed,
@@ -216,7 +219,7 @@ const FlipCardExam: React.FC<FlipCardExamProps> = ({ trainerId, examData }) => {
       <ExamErrorState
         error={error}
         onBackToTrainers={handleBackToTrainers}
-        fallbackMessage="An error occurred during the exam."
+        fallbackMessage={t('examErrorFallback')}
       />
     );
   }
@@ -225,7 +228,7 @@ const FlipCardExam: React.FC<FlipCardExamProps> = ({ trainerId, examData }) => {
     return (
       <Alert>
         <AlertDescription>
-          No cards available for this exam.
+          {t('noCards')}
         </AlertDescription>
       </Alert>
     );
@@ -235,7 +238,7 @@ const FlipCardExam: React.FC<FlipCardExamProps> = ({ trainerId, examData }) => {
     <div className="min-h-screen bg-background px-4 py-4 sm:px-6 sm:py-8">
       <div className="mx-auto max-w-6xl space-y-5 sm:space-y-8">
         <VocabExamHeader
-          trainerName={trainerName || 'FlipCard Exam'}
+          trainerName={trainerName || t('flipUntitled')}
           currentQuestion={currentCardIndex + 1}
           totalQuestions={totalCards}
           timeRemaining={timeRemaining}
@@ -258,12 +261,12 @@ const FlipCardExam: React.FC<FlipCardExamProps> = ({ trainerId, examData }) => {
             className="w-full border-border bg-secondary text-foreground hover:bg-secondary/80 sm:w-auto"
           >
             <AltArrowLeft size={20} weight="BoldDuotone" className="mr-2" />
-            Previous
+            {t('previous')}
           </Button>
 
           <div className="text-center">
             <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
-              Card
+              {t('card')}
             </p>
             <p className="text-2xl font-bold text-foreground">
               {currentCardIndex + 1}
@@ -280,7 +283,7 @@ const FlipCardExam: React.FC<FlipCardExamProps> = ({ trainerId, examData }) => {
                   onClick={handleComplete}
                   className="w-full bg-primary text-primary-foreground hover:bg-primary/90 sm:w-auto"
                 >
-                  Complete Exam
+                  {t('complete')}
                 </Button>
               )
             : (
@@ -289,7 +292,7 @@ const FlipCardExam: React.FC<FlipCardExamProps> = ({ trainerId, examData }) => {
                   onClick={handleNext}
                   className="w-full border-border bg-secondary text-foreground hover:bg-secondary/80 sm:w-auto"
                 >
-                  Next
+                  {t('next')}
                   <AltArrowRight size={20} weight="BoldDuotone" className="ml-2" />
                 </Button>
               )}

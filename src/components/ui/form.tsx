@@ -13,7 +13,9 @@ import {
   useFormState,
 } from 'react-hook-form';
 
+import { useTranslations } from 'next-intl';
 import { Label } from '@/components/ui/label';
+import { toDisplayMessage } from '@/i18n/validation';
 import { cn } from '@/libs/utils';
 
 const Form = FormProvider;
@@ -138,7 +140,8 @@ function FormDescription({ className, ...props }: React.ComponentProps<'p'>) {
 
 function FormMessage({ className, ...props }: React.ComponentProps<'p'>) {
   const { error, formMessageId } = useFormField();
-  const body = error ? String(error?.message ?? '') : props.children;
+  const t = useTranslations();
+  const body = error ? toDisplayMessage(String(error?.message ?? ''), t) : props.children;
 
   if (!body) {
     return null;

@@ -1,6 +1,7 @@
 'use client';
 
 import { Download } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import React from 'react';
 import * as XLSXStyle from 'xlsx-js-style';
 import { Button } from '@/shared/ui/button';
@@ -41,6 +42,8 @@ const SAMPLE_ROWS = [
 ];
 
 const DownloadTemplateButton: React.FC = () => {
+  const t = useTranslations('vocabList.export');
+
   const handleDownload = () => {
     const wb = XLSXStyle.utils.book_new();
     const ws = XLSXStyle.utils.aoa_to_sheet([COLUMNS, ...SAMPLE_ROWS]);
@@ -61,7 +64,7 @@ const DownloadTemplateButton: React.FC = () => {
   return (
     <Button variant="outline" onClick={handleDownload} className="bg-card/80 backdrop-blur-sm">
       <Download size={16} weight="BoldDuotone" className="mr-2" />
-      Sample Template
+      {t('sampleTemplate')}
     </Button>
   );
 };

@@ -2,6 +2,7 @@
 
 import type { ExamplesSectionProps } from '@/types/vocab-list';
 import { AddCircle, CloseCircle } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import React from 'react';
 import { Button } from '@/shared/ui/button';
 import { Label } from '@/shared/ui/label';
@@ -14,10 +15,12 @@ const ExamplesSection: React.FC<ExamplesSectionProps> = ({
   onAddExample,
   onRemoveExample,
 }) => {
+  const t = useTranslations('vocabList.examples');
+
   return (
     <div className="space-y-4">
       <div className="mb-3 flex items-center justify-between border-b pb-2">
-        <h4 className="text-sm font-medium">Examples</h4>
+        <h4 className="text-sm font-medium">{t('title')}</h4>
         <Button
           type="button"
           variant="outline"
@@ -26,7 +29,7 @@ const ExamplesSection: React.FC<ExamplesSectionProps> = ({
           className="h-7 gap-1.5 text-xs"
         >
           <AddCircle size={14} weight="BoldDuotone" />
-          Add Example
+          {t('addExample')}
         </Button>
       </div>
 
@@ -36,11 +39,11 @@ const ExamplesSection: React.FC<ExamplesSectionProps> = ({
             <div className="grid flex-1 grid-cols-2 gap-3">
               <div>
                 <Label htmlFor={`example-source-${targetIndex}-${exampleIndex}`} className="text-xs tracking-wide uppercase">
-                  Source
+                  {t('source')}
                 </Label>
                 <Textarea
                   id={`example-source-${targetIndex}-${exampleIndex}`}
-                  placeholder="Source text example..."
+                  placeholder={t('sourcePlaceholder')}
                   value={example.source}
                   onChange={e => onExampleChange(exampleIndex, 'source', e.target.value, targetIndex)}
                   className="mt-1"
@@ -48,11 +51,11 @@ const ExamplesSection: React.FC<ExamplesSectionProps> = ({
               </div>
               <div>
                 <Label htmlFor={`example-target-${targetIndex}-${exampleIndex}`} className="text-xs tracking-wide uppercase">
-                  Target
+                  {t('target')}
                 </Label>
                 <Textarea
                   id={`example-target-${targetIndex}-${exampleIndex}`}
-                  placeholder="Target text example..."
+                  placeholder={t('targetPlaceholder')}
                   value={example.target}
                   onChange={e => onExampleChange(exampleIndex, 'target', e.target.value, targetIndex)}
                   className="mt-1"

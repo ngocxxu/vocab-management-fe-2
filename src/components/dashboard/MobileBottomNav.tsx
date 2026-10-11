@@ -15,6 +15,7 @@ import {
 } from '@solar-icons/react/ssr';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { signoutClient } from '@/utils/auth-utils';
 import { logger } from '@/libs/Logger';
@@ -27,16 +28,16 @@ import {
 } from '@/components/ui/drawer';
 
 const tabItems: MenuItem[] = [
-  { id: 'dashboard', path: '/dashboard', label: 'Dashboard', icon: <HomeSmile size={22} weight="BoldDuotone" /> },
-  { id: 'library', path: '/library', label: 'Library', icon: <Library size={22} weight="BoldDuotone" /> },
-  { id: 'vocab-trainer', path: '/vocab-trainer', label: 'Trainer', icon: <SquareAcademicCap size={22} weight="BoldDuotone" /> },
-  { id: 'profile', path: '/profile', label: 'Profile', icon: <User size={22} weight="BoldDuotone" /> },
+  { id: 'dashboard', path: '/dashboard', labelKey: 'nav.dashboard', icon: <HomeSmile size={22} weight="BoldDuotone" /> },
+  { id: 'library', path: '/library', labelKey: 'nav.library', icon: <Library size={22} weight="BoldDuotone" /> },
+  { id: 'vocab-trainer', path: '/vocab-trainer', labelKey: 'nav.trainer', icon: <SquareAcademicCap size={22} weight="BoldDuotone" /> },
+  { id: 'profile', path: '/profile', labelKey: 'nav.profile', icon: <User size={22} weight="BoldDuotone" /> },
 ];
 
 const moreItems: MenuItem[] = [
-  { id: 'subjects', path: '/subjects', label: 'Subjects', icon: <Bookmark size={20} weight="BoldDuotone" /> },
-  { id: 'notifications', path: '/notifications', label: 'Notifications', icon: <Bell size={20} weight="BoldDuotone" /> },
-  { id: 'api-keys', path: '/api-keys', label: 'API Keys', icon: <Key size={20} weight="BoldDuotone" /> },
+  { id: 'subjects', path: '/subjects', labelKey: 'nav.subjects', icon: <Bookmark size={20} weight="BoldDuotone" /> },
+  { id: 'notifications', path: '/notifications', labelKey: 'nav.notifications', icon: <Bell size={20} weight="BoldDuotone" /> },
+  { id: 'api-keys', path: '/api-keys', labelKey: 'nav.apiKeys', icon: <Key size={20} weight="BoldDuotone" /> },
 ];
 
 // ponytail: exam routes get full-screen real estate, tab bar would eat the tight mobile viewport
@@ -47,6 +48,7 @@ type MobileBottomNavProps = {
 };
 
 export function MobileBottomNav({ user }: MobileBottomNavProps) {
+  const t = useTranslations('shell');
   const pathname = usePathname();
   const [moreOpen, setMoreOpen] = useState(false);
 
@@ -72,7 +74,7 @@ export function MobileBottomNav({ user }: MobileBottomNavProps) {
   return (
     <nav
       className="fixed inset-x-0 bottom-0 z-40 flex items-stretch border-t border-border bg-card pt-1.5 pb-[calc(0.375rem+env(safe-area-inset-bottom))] shadow-lg md:hidden"
-      aria-label="Primary"
+      aria-label={t('nav.primary')}
     >
       {tabItems.map((item) => {
         const isActive = isActivePath(item.path);
@@ -85,7 +87,7 @@ export function MobileBottomNav({ user }: MobileBottomNavProps) {
             }`}
           >
             {item.icon}
-            <span className="text-[10px] leading-tight font-medium">{item.label}</span>
+            <span className="text-[10px] leading-tight font-medium">{t(item.labelKey)}</span>
           </Link>
         );
       })}
@@ -99,11 +101,11 @@ export function MobileBottomNav({ user }: MobileBottomNavProps) {
           }`}
         >
           <MenuDots size={20} weight="BoldDuotone" />
-          <span className="text-[10px] leading-tight font-medium">More</span>
+          <span className="text-[10px] leading-tight font-medium">{t('nav.more')}</span>
         </button>
         <DrawerContent side="bottom">
           <DrawerHeader>
-            <DrawerTitle>More</DrawerTitle>
+            <DrawerTitle>{t('nav.more')}</DrawerTitle>
           </DrawerHeader>
           <div className="space-y-1 px-4 pb-4">
             {visibleMoreItems.map(item => (
@@ -115,7 +117,7 @@ export function MobileBottomNav({ user }: MobileBottomNavProps) {
                   }`}
                 >
                   {item.icon}
-                  {item.label}
+                  {t(item.labelKey)}
                 </Link>
               </DrawerClose>
             ))}
@@ -125,7 +127,7 @@ export function MobileBottomNav({ user }: MobileBottomNavProps) {
               className="flex min-h-[48px] w-full items-center gap-3 rounded-xl px-4 text-base font-medium text-destructive hover:bg-destructive/10"
             >
               <Power size={20} weight="BoldDuotone" />
-              Sign out
+              {t('sidebar.signOut')}
             </button>
           </div>
         </DrawerContent>

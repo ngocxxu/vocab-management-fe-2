@@ -13,7 +13,7 @@ export async function markNotificationAsRead(id: string) {
     revalidatePath('/notifications');
     return result;
   } catch (error) {
-    throw toActionError(error, 'Failed to mark notification as read');
+    throw await toActionError(error, 'markNotificationAsRead');
   }
 }
 
@@ -24,7 +24,7 @@ export async function markAllNotificationsAsRead() {
     revalidatePath('/notifications');
     return result;
   } catch (error) {
-    throw toActionError(error, 'Failed to mark all notifications as read');
+    throw await toActionError(error, 'markAllNotificationsAsRead');
   }
 }
 
@@ -35,7 +35,7 @@ export async function deleteNotification(id: string) {
     revalidatePath('/notifications');
     return result;
   } catch (error) {
-    throw toActionError(error, 'Failed to delete notification');
+    throw await toActionError(error, 'deleteNotification');
   }
 }
 
@@ -46,7 +46,7 @@ export async function createNotification(notificationData: TNotificationInput) {
     revalidatePath('/notifications');
     return result;
   } catch (error) {
-    throw toActionError(error, 'Failed to create notification');
+    throw await toActionError(error, 'createNotification');
   }
 }
 
@@ -57,7 +57,7 @@ export async function updateNotification(id: string, notificationData: Partial<T
     revalidatePath('/notifications');
     return result;
   } catch (error) {
-    throw toActionError(error, 'Failed to update notification');
+    throw await toActionError(error, 'updateNotification');
   }
 }
 
@@ -68,6 +68,6 @@ export async function updateNotificationStatus(id: string, statusData: TUpdateNo
     revalidatePath('/notifications');
     return result;
   } catch (error) {
-    throw toActionError(error, 'Failed to update notification status');
+    throw await toActionError(error, 'updateNotificationStatus');
   }
 }

@@ -4,6 +4,7 @@ import type { TVocabSearchGroup } from '@/types/vocab-search';
 import { CloseCircle, Magnifer, RefreshCircle } from '@solar-icons/react/ssr';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import React, { useEffect, useState, useTransition } from 'react';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { Card, CardContent } from '@/shared/ui/card';
@@ -33,6 +34,7 @@ function groupLabel(group: TVocabSearchGroup): { name: string | null; pair: stri
 }
 
 function GroupSection({ group, query }: { group: TVocabSearchGroup; query: string }) {
+  const t = useTranslations('search');
   const first = group.vocabs[0];
   const { name, pair } = groupLabel(group);
 
@@ -55,11 +57,11 @@ function GroupSection({ group, query }: { group: TVocabSearchGroup; query: strin
               results span every folder, so the name alone still leaves the
               reader guessing which languages a folder like "IT" actually holds.
             */}
-            <h3 className="text-sm font-semibold text-foreground">{name ?? pair ?? 'Folder'}</h3>
+            <h3 className="text-sm font-semibold text-foreground">{name ?? pair ?? t('folderFallback')}</h3>
             {name && pair && <span className="text-xs font-medium tracking-wide text-muted-foreground uppercase">{pair}</span>}
           </div>
           <Link href={viewAllHref} className="text-sm text-primary hover:underline">
-            View all
+            {t('viewAll')}
           </Link>
         </div>
 
@@ -97,6 +99,7 @@ function GroupSection({ group, query }: { group: TVocabSearchGroup; query: strin
  * and renders whatever `initialGroups` the Server Component fetched for it.
  */
 const GlobalVocabSearch: React.FC<GlobalVocabSearchProps> = ({ initialQuery, initialGroups, failed }) => {
+  const t = useTranslations('search');
   const router = useRouter();
   const [input, setInput] = useState(initialQuery);
   const debouncedQuery = useDebouncedValue(input, SEARCH_DEBOUNCE_MS);
@@ -125,9 +128,9 @@ const GlobalVocabSearch: React.FC<GlobalVocabSearchProps> = ({ initialQuery, ini
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-4 p-4 md:p-6">
       <div>
-        <h1 className="text-2xl font-semibold text-foreground">Search by meaning</h1>
+        <h1 className="text-2xl font-semibold text-foreground">{t('title')}</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Search across every folder and language. Type &ldquo;cat&rdquo; to also find &ldquo;mèo&rdquo;, &ldquo;猫&rdquo;, &ldquo;chat&rdquo;.
+          {t('intro')}
         </p>
       </div>
 
@@ -139,15 +142,15 @@ const GlobalVocabSearch: React.FC<GlobalVocabSearchProps> = ({ initialQuery, ini
           value={input}
           onChange={event => setInput(event.target.value)}
           maxLength={MAX_SEMANTIC_QUERY_LENGTH}
-          placeholder="Type a word or meaning..."
-          aria-label="Search vocab by meaning"
+          placeholder={t('placeholder')}
+          aria-label={t('inputAria')}
           className="h-12 flex-1 border-0 bg-transparent pr-4 pl-3 focus-visible:ring-0 focus-visible:ring-offset-0"
         />
         {input.length > 0 && (
           <button
             type="button"
             onClick={() => setInput('')}
-            aria-label="Clear search"
+            aria-label={t('clearAria')}
             className="mr-3 shrink-0 text-muted-foreground hover:text-foreground"
           >
             <CloseCircle size={18} weight="BoldDuotone" />
@@ -172,26 +175,22 @@ const GlobalVocabSearch: React.FC<GlobalVocabSearchProps> = ({ initialQuery, ini
 
       {!isPending && isTooShort && (
         <p className="text-sm text-muted-foreground">
-          Type at least
-          {' '}
-          {MIN_SEMANTIC_QUERY_LENGTH}
-          {' '}
-          characters — a shorter query carries no meaning to search on.
+          {t('tooShort', { count: MIN_SEMANTIC_QUERY_LENGTH })}
         </p>
       )}
 
       {!isPending && !isTooShort && trimmedInput.length === 0 && (
         <p className="text-sm text-muted-foreground">
-          Type a word, phrase, or meaning above — matches come from every folder and language, not just what you typed.
+          {t('emptyHint')}
         </p>
       )}
 
       {!isPending && !isTooShort && failed && (
-        <p className="text-sm text-destructive">Search failed. Try again in a moment.</p>
+        <p className="text-sm text-destructive">{t('failed')}</p>
       )}
 
       {!isPending && !isTooShort && !failed && hasQueriedLength && initialGroups.length === 0 && (
-        <p className="text-sm text-muted-foreground">No related words found.</p>
+        <p className="text-sm text-muted-foreground">{t('noResults')}</p>
       )}
 
       {!isPending && initialGroups.length > 0 && (

@@ -2,6 +2,7 @@
 
 import type { TTextTarget, TUpdateTextTarget } from '@/types/vocab-list';
 import { Pen, TrashBinMinimalistic } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import { useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
@@ -29,6 +30,7 @@ type TextTargetBalloonProps = {
 };
 
 export function TextTargetBalloon({ vocabId, target }: TextTargetBalloonProps) {
+  const t = useTranslations('vocabList.textTargetBalloon');
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -45,17 +47,17 @@ export function TextTargetBalloon({ vocabId, target }: TextTargetBalloonProps) {
 
   function handleSave() {
     if (!form.textTarget?.trim()) {
-      toast.error('Text target cannot be empty');
+      toast.error(t('emptyError'));
       return;
     }
     startTransition(async () => {
       try {
         await updateTextTarget(vocabId, target.id, form);
-        toast.success('Text target updated');
+        toast.success(t('updated'));
         setOpen(false);
         router.refresh();
       } catch {
-        toast.error('Failed to update text target');
+        toast.error(t('updateFailed'));
       }
     });
   }
@@ -64,10 +66,10 @@ export function TextTargetBalloon({ vocabId, target }: TextTargetBalloonProps) {
     startTransition(async () => {
       try {
         await deleteTextTarget(vocabId, target.id);
-        toast.success('Text target deleted');
+        toast.success(t('deleted'));
         router.refresh();
       } catch {
-        toast.error('Failed to delete text target');
+        toast.error(t('deleteFailed'));
       }
     });
   }
@@ -80,17 +82,17 @@ export function TextTargetBalloon({ vocabId, target }: TextTargetBalloonProps) {
             variant="ghost"
             size="icon"
             className="h-8 w-8 rounded-full p-0"
-            aria-label="Edit text target"
-            title="Edit"
+            aria-label={t('editAria')}
+            title={t('edit')}
           >
             <Pen size={16} weight="BoldDuotone" className="text-muted-foreground" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-80 space-y-3 p-4" align="end">
-          <p className="text-sm font-semibold text-foreground">Edit Text Target</p>
+          <p className="text-sm font-semibold text-foreground">{t('editTitle')}</p>
 
           <div className="space-y-1">
-            <Label htmlFor={`tt-text-${target.id}`} className="text-xs">Text</Label>
+            <Label htmlFor={`tt-text-${target.id}`} className="text-xs">{t('text')}</Label>
             <Input
               id={`tt-text-${target.id}`}
               value={form.textTarget ?? ''}
@@ -100,7 +102,7 @@ export function TextTargetBalloon({ vocabId, target }: TextTargetBalloonProps) {
           </div>
 
           <div className="space-y-1">
-            <Label htmlFor={`tt-grammar-${target.id}`} className="text-xs">Grammar</Label>
+            <Label htmlFor={`tt-grammar-${target.id}`} className="text-xs">{t('grammar')}</Label>
             <Input
               id={`tt-grammar-${target.id}`}
               value={form.grammar ?? ''}
@@ -110,7 +112,7 @@ export function TextTargetBalloon({ vocabId, target }: TextTargetBalloonProps) {
           </div>
 
           <div className="space-y-1">
-            <Label htmlFor={`tt-src-${target.id}`} className="text-xs">Explanation (source)</Label>
+            <Label htmlFor={`tt-src-${target.id}`} className="text-xs">{t('explanationSource')}</Label>
             <Textarea
               id={`tt-src-${target.id}`}
               value={form.explanationSource ?? ''}
@@ -120,7 +122,7 @@ export function TextTargetBalloon({ vocabId, target }: TextTargetBalloonProps) {
           </div>
 
           <div className="space-y-1">
-            <Label htmlFor={`tt-tgt-${target.id}`} className="text-xs">Explanation (target)</Label>
+            <Label htmlFor={`tt-tgt-${target.id}`} className="text-xs">{t('explanationTarget')}</Label>
             <Textarea
               id={`tt-tgt-${target.id}`}
               value={form.explanationTarget ?? ''}
@@ -131,10 +133,10 @@ export function TextTargetBalloon({ vocabId, target }: TextTargetBalloonProps) {
 
           <div className="flex justify-end gap-2 pt-1">
             <Button variant="outline" size="sm" onClick={() => setOpen(false)} disabled={isPending}>
-              Cancel
+              {t('cancel')}
             </Button>
             <Button size="sm" onClick={handleSave} disabled={isPending}>
-              {isPending ? 'Saving…' : 'Save'}
+              {isPending ? t('saving') : t('save')}
             </Button>
           </div>
         </PopoverContent>
@@ -146,8 +148,8 @@ export function TextTargetBalloon({ vocabId, target }: TextTargetBalloonProps) {
             variant="ghost"
             size="icon"
             className="h-8 w-8 rounded-full p-0"
-            aria-label="Delete text target"
-            title="Delete"
+            aria-label={t('deleteAria')}
+            title={t('delete')}
             disabled={isPending}
           >
             <TrashBinMinimalistic size={16} weight="BoldDuotone" className="text-destructive" />
@@ -155,15 +157,15 @@ export function TextTargetBalloon({ vocabId, target }: TextTargetBalloonProps) {
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete text target?</AlertDialogTitle>
+            <AlertDialogTitle>{t('deleteTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
-              {`This will permanently delete "${target.textTarget}" and cannot be undone.`}
+              {t('deleteDescription', { text: target.textTarget })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} disabled={isPending}>
-              Delete
+              {t('delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

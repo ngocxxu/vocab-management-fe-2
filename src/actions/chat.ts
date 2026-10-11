@@ -16,7 +16,7 @@ export async function getChatUnreadCount(): Promise<number> {
     const data = await serverApi.get<{ unreadCount: number }>(endpoint);
     return data.unreadCount ?? 0;
   } catch (error) {
-    throw toActionError(error, 'Failed to fetch chat unread count');
+    throw await toActionError(error, 'fetchChatUnreadCount');
   }
 }
 
@@ -28,7 +28,7 @@ export async function getChatMessages(cursor?: string): Promise<{ messages: TMes
     const messages: TMessage[] = data.items ?? [];
     return { messages, nextCursor: data.nextCursor ?? null };
   } catch (error) {
-    throw toActionError(error, 'Failed to fetch chat messages');
+    throw await toActionError(error, 'fetchChatMessages');
   }
 }
 
@@ -38,6 +38,6 @@ export async function markChatRead(): Promise<void> {
     const { endpoint } = API_METHODS.chat.markRead();
     await serverApi.patch<void>(endpoint, {});
   } catch (error) {
-    throw toActionError(error, 'Failed to mark chat as read');
+    throw await toActionError(error, 'markChatAsRead');
   }
 }

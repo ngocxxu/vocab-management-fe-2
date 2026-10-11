@@ -1,6 +1,7 @@
 'use client';
 
 import type { BulkDeleteDialogProps } from '@/types';
+import { useTranslations } from 'next-intl';
 import React from 'react';
 import {
   AlertDialog,
@@ -22,6 +23,7 @@ const BulkDeleteDialog: React.FC<BulkDeleteDialogProps> = ({
   onConfirm,
   onCancel,
 }) => {
+  const t = useTranslations('shared');
   const displayName = itemCount === 1 ? itemName : (itemNamePlural || `${itemName}s`);
 
   const handleCancel = () => {
@@ -33,30 +35,24 @@ const BulkDeleteDialog: React.FC<BulkDeleteDialogProps> = ({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogTitle>{t('confirmTitle')}</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete
-            {' '}
-            {itemCount}
-            {' '}
-            {displayName}
-            {' '}
-            and remove
-            {' '}
-            {itemCount === 1 ? 'it' : 'them'}
-            {' '}
-            from your list.
+            {t('bulkDescription', {
+              count: itemCount,
+              name: displayName,
+              pronoun: itemCount === 1 ? t('pronounIt') : t('pronounThem'),
+            })}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel onClick={handleCancel}>
-            Cancel
+            {t('cancel')}
           </AlertDialogCancel>
           <AlertDialogAction
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             onClick={onConfirm}
           >
-            Delete
+            {t('delete')}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

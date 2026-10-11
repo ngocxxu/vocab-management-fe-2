@@ -1,6 +1,7 @@
 'use client';
 
-import { getQuestionTypeLabel } from '@/constants/vocab-trainer';
+import { useLocale, useTranslations } from 'next-intl';
+import { getQuestionTypeLabelKey } from '@/constants/vocab-trainer';
 import { EQuestionType } from '@/enum/vocab-trainer';
 import type { ExamResultsProps, TExamResult } from '@/types/vocab-trainer';
 import {
@@ -48,6 +49,8 @@ const ExamResults: React.FC<ExamResultsProps> = ({
   durationFasterText,
   questionType,
 }) => {
+  const t = useTranslations();
+  const locale = useLocale();
   const [cooldownRemaining, setCooldownRemaining] = useState(0);
   const isFlipCard = questionType === EQuestionType.FLIP_CARD;
 
@@ -85,7 +88,7 @@ const ExamResults: React.FC<ExamResultsProps> = ({
   const accuracyPercentage = scorePercentage;
   const scoreStrokeDashoffset = CIRCLE_CIRCUMFERENCE * (1 - scorePercentage / 100);
   const scorePassed = scorePercentage >= PASS_TARGET_PERCENT;
-  const avgPerQuestionText = formatAvgPerQuestion(timeElapsed, totalQuestions);
+  const avgPerQuestionText = formatAvgPerQuestion(timeElapsed, totalQuestions, t);
 
   return (
     <div className="min-h-screen bg-background px-4 py-4 sm:px-6 sm:py-8">
@@ -98,18 +101,18 @@ const ExamResults: React.FC<ExamResultsProps> = ({
             className="border-border bg-secondary !p-0 text-foreground hover:bg-secondary/80"
           >
             <AltArrowLeft size={20} weight="BoldDuotone" className="mr-2" />
-            Back to Trainers
+            {t('shared.backToTrainers')}
           </Button>
           <div>
 
             <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
-              Exam Results
+              {t('trainer.results.title')}
             </h1>
             <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
               {jobId && (
                 <span className="flex items-center gap-1.5 text-muted-foreground">
                   <Target size={14} weight="BoldDuotone" />
-                  Job ID:
+                  {t('trainer.results.jobId')}
                   {' '}
                   <span className="text-primary underline">
                     {jobId}
@@ -118,9 +121,9 @@ const ExamResults: React.FC<ExamResultsProps> = ({
               )}
               <span className="flex items-center gap-1.5 text-muted-foreground">
                 <Calendar size={14} weight="BoldDuotone" />
-                Completed:
+                {t('trainer.results.completed')}
                 {' '}
-                {formatCompletedAt(completedAt)}
+                {formatCompletedAt(completedAt, locale)}
               </span>
             </div>
           </div>
@@ -133,7 +136,7 @@ const ExamResults: React.FC<ExamResultsProps> = ({
                 className="border-border text-foreground"
               >
                 <Document size={18} weight="BoldDuotone" className="mr-2" />
-                Export PDF
+                {t('trainer.results.exportPdf')}
               </Button>
             )}
             {onRetryExam && (
@@ -144,7 +147,7 @@ const ExamResults: React.FC<ExamResultsProps> = ({
                 className="bg-primary text-primary-foreground hover:bg-primary/90"
               >
                 <RefreshCircle size={18} weight="BoldDuotone" className="mr-2" />
-                {canRetry ? 'Retry Exam' : `Retry in ${cooldownRemaining}s`}
+                {canRetry ? t('trainer.results.retry') : t('trainer.results.retryIn', { seconds: cooldownRemaining })}
               </Button>
             )}
           </div>
@@ -187,7 +190,7 @@ const ExamResults: React.FC<ExamResultsProps> = ({
                     %
                   </span>
                   <span className="text-xs font-medium text-muted-foreground uppercase">
-                    SCORE
+                    {t('trainer.results.score')}
                   </span>
                 </span>
               </div>
@@ -198,12 +201,12 @@ const ExamResults: React.FC<ExamResultsProps> = ({
                     : 'border-destructive/50 bg-destructive/10 text-destructive'
                 }`}
               >
-                {scorePassed ? 'PASSED' : 'FAILED'}
+                {scorePassed ? t('trainer.results.passed') : t('trainer.results.failed')}
               </span>
               <p className="text-center text-xs text-muted-foreground">
                 {scorePassed
-                  ? `Great job! You exceeded the ${PASS_TARGET_PERCENT}% target.`
-                  : `Keep practicing to reach the ${PASS_TARGET_PERCENT}% target.`}
+                  ? t('trainer.results.greatJob', { target: PASS_TARGET_PERCENT })
+                  : t('trainer.results.keepPracticing', { target: PASS_TARGET_PERCENT })}
               </p>
               {scoreDelta && (
                 <p className="flex items-center justify-center gap-1.5 text-xs text-success">
@@ -218,7 +221,7 @@ const ExamResults: React.FC<ExamResultsProps> = ({
             <CardContent className="flex flex-1 flex-col p-5">
               <div className="mb-3 flex items-center justify-between">
                 <span className="text-sm font-bold tracking-wide text-foreground uppercase">
-                  Accuracy
+                  {t('trainer.results.accuracy')}
                 </span>
                 <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10">
                   <Target size={20} weight="BoldDuotone" className="text-primary" />
@@ -230,11 +233,7 @@ const ExamResults: React.FC<ExamResultsProps> = ({
                   %
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  {correctAnswers}
-                  /
-                  {totalQuestions}
-                  {' '}
-                  items
+                  {t('trainer.results.items', { correct: correctAnswers, total: totalQuestions })}
                 </p>
               </div>
               <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
@@ -244,8 +243,8 @@ const ExamResults: React.FC<ExamResultsProps> = ({
                 />
               </div>
               <div className="mt-1 flex items-center justify-between text-xs text-muted-foreground uppercase">
-                <span>Performance</span>
-                <span>Target: 90%</span>
+                <span>{t('trainer.results.performance')}</span>
+                <span>{t('trainer.results.target', { target: 90 })}</span>
               </div>
             </CardContent>
           </Card>
@@ -254,7 +253,7 @@ const ExamResults: React.FC<ExamResultsProps> = ({
             <CardContent className="flex flex-1 flex-col p-5">
               <div className="mb-3 flex items-center justify-between">
                 <span className="text-sm font-bold tracking-wide text-foreground uppercase">
-                  Duration
+                  {t('trainer.results.duration')}
                 </span>
                 <div className="flex size-9 items-center justify-center rounded-lg bg-warning/10">
                   <ClockCircle size={20} weight="BoldDuotone" className="text-warning" />
@@ -264,7 +263,7 @@ const ExamResults: React.FC<ExamResultsProps> = ({
                 {formatDurationColon(timeElapsed)}
               </p>
               <p className="mt-1 text-sm text-muted-foreground italic">
-                &quot;Efficiency is key&quot;
+                {t('trainer.results.efficiency')}
               </p>
               <p className="mt-2 text-xs text-muted-foreground uppercase">
                 {avgPerQuestionText}
@@ -282,13 +281,13 @@ const ExamResults: React.FC<ExamResultsProps> = ({
         <section className="space-y-4">
           <h2 className="flex items-center gap-2 text-lg font-bold text-foreground">
             <ChartSquare size={22} weight="BoldDuotone" className="text-primary" />
-            Detailed Performance Review
+            {t('trainer.results.detailed')}
           </h2>
 
           <div className="space-y-4">
             {questions.map((question, index) => {
               const result = examResults[index] as TExamResult | undefined;
-              const userAnswer = result?.userSelected ?? selectedAnswers.get(index) ?? 'Not answered';
+              const userAnswer = result?.userSelected ?? selectedAnswers.get(index) ?? t('trainer.results.notAnswered');
               const isCorrect = result
                 ? result.status === 'PASSED'
                 : (selectedAnswers.get(index)?.trim() === question.correctAnswer);
@@ -305,30 +304,28 @@ const ExamResults: React.FC<ExamResultsProps> = ({
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
-                          Question
-                          {' '}
-                          {index + 1}
+                          {t('trainer.results.question', { number: index + 1 })}
                         </span>
                         <span className="flex items-center gap-1.5">
                           {isCorrect
                             ? (
                                 <>
                                   <CheckCircle size={18} weight="BoldDuotone" className="text-success" />
-                                  <span className="text-sm font-semibold text-success">Correct</span>
+                                  <span className="text-sm font-semibold text-success">{t('trainer.results.correct')}</span>
                                 </>
                               )
                             : (
                                 <>
                                   <CloseCircle size={18} weight="BoldDuotone" className="text-destructive" />
-                                  <span className="text-sm font-semibold text-destructive">Incorrect</span>
+                                  <span className="text-sm font-semibold text-destructive">{t('trainer.results.incorrect')}</span>
                                 </>
                               )}
                         </span>
                       </div>
                       <span className="text-xs text-muted-foreground">
                         {questionType
-                          ? `Vocabulary: ${getQuestionTypeLabel(questionType)}`
-                          : 'Vocabulary'}
+                          ? `${t('questionTypes.vocabulary')}: ${getQuestionTypeLabelKey(questionType) ? t(getQuestionTypeLabelKey(questionType)!) : questionType}`
+                          : t('questionTypes.vocabulary')}
                       </span>
                     </div>
 
@@ -339,7 +336,7 @@ const ExamResults: React.FC<ExamResultsProps> = ({
                     <div className="grid gap-4 sm:grid-cols-2">
                       <div className="space-y-1.5">
                         <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
-                          Your answer
+                          {t('trainer.results.yourAnswer')}
                         </p>
                         <div
                           className={`min-h-[2.75rem] rounded-lg border px-3 py-2 font-semibold text-foreground ${
@@ -353,7 +350,7 @@ const ExamResults: React.FC<ExamResultsProps> = ({
                       </div>
                       <div className="space-y-1.5">
                         <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
-                          Correct answer
+                          {t('trainer.results.correctAnswer')}
                         </p>
                         <div className="min-h-[2.75rem] rounded-lg border border-success/50 bg-success/10 px-3 py-2 font-semibold text-foreground">
                           {correctAnswer}
@@ -365,7 +362,7 @@ const ExamResults: React.FC<ExamResultsProps> = ({
                       <div className="rounded-lg border-l-4 border-primary bg-primary/5 p-4">
                         <p className="mb-2 flex items-center gap-2 text-sm font-bold text-primary">
                           <MagicStick size={18} weight="BoldDuotone" />
-                          AI Explanation
+                          {t('trainer.results.aiExplanation')}
                         </p>
                         <p className="text-sm text-foreground">
                           {explanation}
@@ -387,7 +384,7 @@ const ExamResults: React.FC<ExamResultsProps> = ({
             className="border-border bg-secondary text-foreground hover:bg-secondary/80"
           >
             <AltArrowLeft size={20} weight="BoldDuotone" className="mr-2" />
-            Back to Trainers
+            {t('shared.backToTrainers')}
           </Button>
         </div>
       </div>

@@ -31,6 +31,6 @@ export async function DashboardChartsZone() {
     if (isUnauthorizedError(error)) {
       redirect(getExpiredSessionRedirect('/dashboard'));
     }
-    return <ZoneError sectionName="charts" />;
+    return <ZoneError section="charts" />;
   }
 }

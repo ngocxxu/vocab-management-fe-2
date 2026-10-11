@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server';
 import { notFound, redirect } from 'next/navigation';
 import FsrsStats from '@/components/vocab-trainer/fsrs-stats/FsrsStats';
 import { ETrainerMode } from '@/enum/vocab-trainer';
@@ -30,9 +31,11 @@ export default async function StatsPage({ params }: PageProps) {
 
     logger.error('Failed to load the stats page:', { error });
 
+    const t = await getTranslations('trainer.fsrs.page');
+
     return (
       <div className="flex min-h-full items-center justify-center p-8 text-lg text-destructive">
-        Unable to load these statistics right now. Please refresh the page or try again later.
+        {t('statsLoadError')}
       </div>
     );
   }

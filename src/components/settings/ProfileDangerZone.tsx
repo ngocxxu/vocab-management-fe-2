@@ -2,12 +2,15 @@
 
 import { deleteAccount } from '@/actions/auth';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { DeleteAccountDialog } from '@/shared/ui/DeleteAccountDialog';
 
 export const ProfileDangerZone: React.FC = () => {
+  const t = useTranslations('settings.danger');
+  const tErrors = useTranslations('errors');
   const router = useRouter();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -17,10 +20,10 @@ export const ProfileDangerZone: React.FC = () => {
     try {
       await deleteAccount();
       setIsDialogOpen(false);
-      toast.success('Account deleted');
+      toast.success(t('deleted'));
       router.push('/signin');
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to delete account');
+      toast.error(error instanceof Error ? error.message : tErrors('deleteAccount'));
     } finally {
       setIsDeleting(false);
     }
@@ -30,13 +33,13 @@ export const ProfileDangerZone: React.FC = () => {
     <section id="danger" aria-labelledby="danger-title" className="scroll-mt-24 rounded-2xl border border-destructive/40 bg-card p-6 shadow-sm">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 id="danger-title" className="text-lg font-semibold text-foreground">Delete account</h2>
+          <h2 id="danger-title" className="text-lg font-semibold text-foreground">{t('title')}</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Permanently remove your account and all associated data. This cannot be undone.
+            {t('description')}
           </p>
         </div>
         <Button variant="destructive" className="shrink-0" onClick={() => setIsDialogOpen(true)}>
-          Delete Permanently
+          {t('button')}
         </Button>
       </div>
 

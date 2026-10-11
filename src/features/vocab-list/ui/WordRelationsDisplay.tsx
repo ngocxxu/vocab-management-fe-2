@@ -2,6 +2,7 @@
 
 import type { TRelatedWordItem, TRelatedWordsGroupedResponse } from '@/types/vocab-related-word';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import React from 'react';
 import { AddSquare } from '@solar-icons/react/ssr';
 import {
@@ -49,6 +50,8 @@ const WordRelationsDisplay: React.FC<WordRelationsDisplayProps> = ({
   relatedWords,
   onAddFreeTextWord,
 }) => {
+  const t = useTranslations('vocabList.wordRelations');
+
   if (!relatedWords) {
     return null;
   }
@@ -62,7 +65,7 @@ const WordRelationsDisplay: React.FC<WordRelationsDisplayProps> = ({
     <TooltipProvider>
       <div className="mt-4">
         <p className="mb-2 text-xs font-medium tracking-wide text-muted-foreground uppercase">
-          Word Relations
+          {t('title')}
         </p>
         <div className="flex flex-wrap gap-2">
           {items.map(item =>
@@ -87,14 +90,14 @@ const WordRelationsDisplay: React.FC<WordRelationsDisplayProps> = ({
                           type="button"
                           onClick={() => onAddFreeTextWord(item.word)}
                           className="inline-flex h-5 w-5 cursor-pointer items-center justify-center rounded-full bg-muted-foreground/15 text-muted-foreground transition-colors hover:bg-primary/20 hover:text-primary"
-                          aria-label={`Add "${item.word}" to your list`}
+                          aria-label={t('addAria', { word: item.word })}
                         >
                           <AddSquare size={13} weight="Bold" />
                         </button>
                       </span>
                     </TooltipTrigger>
                     <TooltipContent side="bottom">
-                      <p className="text-xs">This word is not yet in your list. Click (+) to add it quickly</p>
+                      <p className="text-xs">{t('notInListTip')}</p>
                     </TooltipContent>
                   </Tooltip>
                 ),

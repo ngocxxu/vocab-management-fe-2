@@ -18,7 +18,7 @@ import { getRefreshLock, getRefreshLockKey, invalidateRefreshLock, performRefres
 import { clearAuthCookies, getAccessToken, getRefreshToken, setAuthCookies } from '@/utils/auth-cookies';
 import { isUnauthorizedError } from '@/utils/auth-error';
 import { authApi } from '@/utils/server-api';
-import { toActionError } from './utils';
+import { toActionError, translateError } from './utils';
 
 export async function signin(signinData: TSigninData): Promise<TAuthResponse> {
   try {
@@ -35,7 +35,7 @@ export async function signin(signinData: TSigninData): Promise<TAuthResponse> {
       message: 'Signed in successfully',
     };
   } catch (error) {
-    throw toActionError(error, 'Failed to sign in');
+    throw await toActionError(error, 'signIn');
   }
 }
 
@@ -56,7 +56,7 @@ export async function signup(signupData: TSignupData): Promise<TSignUpResult> {
       message: 'Signed up successfully',
     };
   } catch (error) {
-    throw toActionError(error, 'Failed to sign up');
+    throw await toActionError(error, 'signUp');
   }
 }
 
@@ -68,7 +68,7 @@ export async function signout(): Promise<{ message: string }> {
     const result = await authApi.signout();
     return result;
   } catch (error) {
-    throw toActionError(error, 'Failed to sign out');
+    throw await toActionError(error, 'signOut');
   } finally {
     invalidateRefreshLock(accessToken, refreshToken);
     await clearAuthCookies();
@@ -83,14 +83,14 @@ export async function refresh(refreshData: TRefreshData): Promise<{ message: str
     );
 
     if (!result) {
-      throw new Error('Failed to refresh token');
+      throw new Error(await translateError('refreshToken'));
     }
 
     await setAuthCookies(result.access_token, result.refresh_token);
 
     return { message: 'Token refreshed successfully' };
   } catch (error) {
-    throw toActionError(error, 'Failed to refresh token');
+    throw await toActionError(error, 'refreshToken');
   }
 }
 
@@ -99,7 +99,7 @@ export async function resetPassword(resetData: TResetPasswordData): Promise<{ me
     const result = await authApi.resetPassword(resetData);
     return result;
   } catch (error) {
-    throw toActionError(error, 'Failed to reset password');
+    throw await toActionError(error, 'resetPassword');
   }
 }
 
@@ -116,7 +116,7 @@ export async function verifyOtp(verifyOtpData: TVerifyOtpData): Promise<TAuthRes
       message: 'OTP verified successfully',
     };
   } catch (error) {
-    throw toActionError(error, 'Failed to verify OTP');
+    throw await toActionError(error, 'verifyOTP');
   }
 }
 
@@ -125,7 +125,7 @@ export async function resendConfirmation(data: TResendConfirmationData): Promise
     const result = await authApi.resendConfirmation(data);
     return result;
   } catch (error) {
-    throw toActionError(error, 'Failed to resend confirmation');
+    throw await toActionError(error, 'resendConfirmation');
   }
 }
 
@@ -188,7 +188,7 @@ export async function deleteAccount(): Promise<{ message: string }> {
     await authApi.deleteAccount();
     return { message: 'Account deleted successfully' };
   } catch (error) {
-    throw toActionError(error, 'Failed to delete account');
+    throw await toActionError(error, 'deleteAccount');
   } finally {
     invalidateRefreshLock(accessToken, refreshToken);
     await clearAuthCookies();
@@ -206,14 +206,14 @@ export async function changePassword(data: TChangePasswordData): Promise<{ messa
     return { message: result.message };
   } catch (error) {
     if (!isUnauthorizedError(error)) {
-      throw toActionError(error, 'Failed to update password');
+      throw await toActionError(error, 'updatePassword');
     }
 
     // Access token expired between page load and submit — refresh and retry once (mirrors verifyUserImpl).
     const token = await getAccessToken();
     const refreshToken = await getRefreshToken();
     if (!refreshToken) {
-      throw toActionError(error, 'Failed to update password');
+      throw await toActionError(error, 'updatePassword');
     }
 
     const lockKey = getRefreshLockKey(token, refreshToken);
@@ -221,7 +221,7 @@ export async function changePassword(data: TChangePasswordData): Promise<{ messa
       () => performRefresh(refreshToken),
     );
     if (!session) {
-      throw toActionError(error, 'Failed to update password');
+      throw await toActionError(error, 'updatePassword');
     }
 
     await setAuthCookies(session.access_token, session.refresh_token);
@@ -231,7 +231,7 @@ export async function changePassword(data: TChangePasswordData): Promise<{ messa
       await setAuthCookies(result.session.access_token, result.session.refresh_token);
       return { message: result.message };
     } catch (retryError) {
-      throw toActionError(retryError, 'Failed to update password');
+      throw await toActionError(retryError, 'updatePassword');
     }
   }
 }

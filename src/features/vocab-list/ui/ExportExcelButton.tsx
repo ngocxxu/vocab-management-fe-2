@@ -2,6 +2,7 @@
 
 import type { ExportExcelButtonProps } from '@/types/vocab-list';
 import { Download } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import * as XLSX from 'xlsx';
@@ -24,6 +25,7 @@ const applyHeaderStyles = (worksheet: XLSX.WorkSheet): void => {
 };
 
 const ExportExcelButton: React.FC<ExportExcelButtonProps> = ({ queryParams, disabled }) => {
+  const t = useTranslations('vocabList.export');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleExport = async () => {
@@ -48,9 +50,9 @@ const ExportExcelButton: React.FC<ExportExcelButtonProps> = ({ queryParams, disa
       const filename = `vocabs-export-${timestamp}.xlsx`;
 
       XLSXStyle.writeFile(workbook, filename);
-      toast.success('Vocabularies exported successfully');
+      toast.success(t('success'));
     } catch {
-      toast.error('Failed to export vocabularies. Please try again.');
+      toast.error(t('failed'));
     } finally {
       setIsLoading(false);
     }
@@ -64,7 +66,7 @@ const ExportExcelButton: React.FC<ExportExcelButtonProps> = ({ queryParams, disa
       className="bg-card/80 backdrop-blur-sm"
     >
       <Download size={16} weight="BoldDuotone" className="mr-2" />
-      {isLoading ? 'Exporting...' : 'Export Excel'}
+      {isLoading ? t('exporting') : t('button')}
     </Button>
   );
 };

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ArrowRight, Microphone2, StopCircle } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import { useChat } from '@/providers/ChatProvider';
 import { cn } from '@/libs/utils';
 import { useMic } from '../hooks/useMic';
@@ -11,6 +12,7 @@ const COUNTER_THRESHOLD = 250;
 const DRAFT_KEY = 'chat-draft';
 
 export function ChatInput() {
+  const t = useTranslations('chat.input');
   const { sendMessage, cancelGeneration, state, onInputFocus, onInputBlur } = useChat();
   const [value, setValue] = useState(() => {
     if (typeof window === 'undefined') {
@@ -89,7 +91,7 @@ export function ChatInput() {
           onFocus={onInputFocus}
           onBlur={onInputBlur}
           readOnly={state.isQueued}
-          placeholder="Type your message…"
+          placeholder={t('placeholder')}
           rows={1}
           maxLength={MAX_CHARS}
           className={cn(
@@ -116,7 +118,7 @@ export function ChatInput() {
               <button
                 type="button"
                 onClick={toggleMic}
-                aria-label={isRecording ? 'Stop recording' : 'Start voice input'}
+                aria-label={isRecording ? t('stopRecording') : t('startVoice')}
                 aria-pressed={isRecording}
                 className={cn(
                   'relative flex size-8 items-center justify-center rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
@@ -134,7 +136,7 @@ export function ChatInput() {
                 <button
                   type="button"
                   onClick={handleCancel}
-                  aria-label="Cancel generation"
+                  aria-label={t('cancelGeneration')}
                   className="flex size-8 items-center justify-center rounded-xl bg-muted text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                 >
                   <StopCircle size={18} weight="BoldDuotone" />
@@ -145,7 +147,7 @@ export function ChatInput() {
                   type="button"
                   onClick={handleSend}
                   disabled={!value.trim()}
-                  aria-label="Send message"
+                  aria-label={t('send')}
                   className="flex size-8 items-center justify-center rounded-xl bg-primary text-primary-foreground transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:opacity-40"
                 >
                   <ArrowRight size={18} weight="Bold" />

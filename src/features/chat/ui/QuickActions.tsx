@@ -1,15 +1,17 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useChat } from '@/providers/ChatProvider';
 
-const QUICK_ACTIONS = [
-  { label: 'Take a Quiz', message: 'Create a quiz for my vocabulary' },
-  { label: 'Review Words', message: 'Review my vocabulary words' },
-  { label: 'Ask a Question', message: 'I have a question about my vocab' },
-] as const;
-
 export function QuickActions() {
+  const t = useTranslations('chat.quick');
   const { sendMessage, state } = useChat();
+
+  const QUICK_ACTIONS = [
+    { label: t('quiz'), message: t('quizMessage') },
+    { label: t('review'), message: t('reviewMessage') },
+    { label: t('question'), message: t('questionMessage') },
+  ];
 
   if (state.messages.length > 0) {
     return null;
@@ -18,7 +20,7 @@ export function QuickActions() {
   return (
     <div className="px-4 pb-3">
       <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-        Quick Actions
+        {t('title')}
       </p>
       <div className="flex flex-wrap gap-2">
         {QUICK_ACTIONS.map(action => (

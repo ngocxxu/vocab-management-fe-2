@@ -12,7 +12,7 @@ export async function createWordType(wordTypeData: { name: string; description: 
     revalidatePath('/vocab-list');
     return result;
   } catch (error) {
-    throw toActionError(error, 'Failed to create word type');
+    throw await toActionError(error, 'createWordType');
   }
 }
 
@@ -23,7 +23,7 @@ export async function updateWordType(id: string, wordTypeData: { name: string; d
     revalidatePath('/vocab-list');
     return result;
   } catch (error) {
-    throw toActionError(error, 'Failed to update word type');
+    throw await toActionError(error, 'updateWordType');
   }
 }
 
@@ -34,6 +34,6 @@ export async function deleteWordType(id: string) {
     revalidatePath('/vocab-list');
     return result;
   } catch (error) {
-    throw toActionError(error, 'Failed to delete word type');
+    throw await toActionError(error, 'deleteWordType');
   }
 }

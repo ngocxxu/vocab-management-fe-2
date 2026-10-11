@@ -1,3 +1,18 @@
+import en from '@/locales/en.json';
+import vi from '@/locales/vi.json';
+import { DEFAULT_LOCALE, isLocale, LOCALE_COOKIE_NAME } from '@/i18n/config';
+
+/**
+ * Reads the locale cookie directly: this runs outside React, so next-intl hooks are not available.
+ */
+function getSessionExpiredCopy() {
+  const cookie = document.cookie.split('; ').find(item => item.startsWith(`${LOCALE_COOKIE_NAME}=`));
+  const value = cookie?.slice(LOCALE_COOKIE_NAME.length + 1);
+  const locale = isLocale(value) ? value : DEFAULT_LOCALE;
+
+  return (locale === 'vi' ? vi : en).auth.sessionExpired;
+}
+
 /**
  * Handles token expiration by showing a toast notification and redirecting to signin
  * This function is safe to use in both client and server environments
@@ -10,8 +25,9 @@ export const handleTokenExpiration = () => {
 
   // Show toast notification for outdated token
   import('sonner').then(({ toast }) => {
-    toast.error('Session expired', {
-      description: 'Your session has expired. Please sign in again.',
+    const copy = getSessionExpiredCopy();
+    toast.error(copy.title, {
+      description: copy.description,
       duration: 5000,
     });
   });

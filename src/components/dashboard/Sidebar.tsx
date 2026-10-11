@@ -16,22 +16,24 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import React, { useEffect } from 'react';
 
 const mainMenuItems: MenuItem[] = [
-  { id: 'dashboard', path: '/dashboard', label: 'Dashboard', icon: <HomeSmile size={20} weight="BoldDuotone" /> },
-  { id: 'library', path: '/library', label: 'Library', icon: <Library size={20} weight="BoldDuotone" /> },
-  { id: 'vocab-trainer', path: '/vocab-trainer', label: 'Vocab Trainer', icon: <SquareAcademicCap size={20} weight="BoldDuotone" /> },
+  { id: 'dashboard', path: '/dashboard', labelKey: 'nav.dashboard', icon: <HomeSmile size={20} weight="BoldDuotone" /> },
+  { id: 'library', path: '/library', labelKey: 'nav.library', icon: <Library size={20} weight="BoldDuotone" /> },
+  { id: 'vocab-trainer', path: '/vocab-trainer', labelKey: 'nav.vocabTrainer', icon: <SquareAcademicCap size={20} weight="BoldDuotone" /> },
 ];
 
 const settingsMenuItems: MenuItem[] = [
-  { id: 'profile', path: '/profile', label: 'Profile', icon: <User size={20} weight="BoldDuotone" /> },
-  { id: 'subjects', path: '/subjects', label: 'Subjects', icon: <Bookmark size={20} weight="BoldDuotone" /> },
-  { id: 'notifications', path: '/notifications', label: 'Notifications', icon: <Bell size={20} weight="BoldDuotone" /> },
-  { id: 'api-keys', path: '/api-keys', label: 'API Keys', icon: <Key size={20} weight="BoldDuotone" /> },
+  { id: 'profile', path: '/profile', labelKey: 'nav.profile', icon: <User size={20} weight="BoldDuotone" /> },
+  { id: 'subjects', path: '/subjects', labelKey: 'nav.subjects', icon: <Bookmark size={20} weight="BoldDuotone" /> },
+  { id: 'notifications', path: '/notifications', labelKey: 'nav.notifications', icon: <Bell size={20} weight="BoldDuotone" /> },
+  { id: 'api-keys', path: '/api-keys', labelKey: 'nav.apiKeys', icon: <Key size={20} weight="BoldDuotone" /> },
 ];
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, isExpanded = true, user }) => {
+  const t = useTranslations('shell');
   const collapsed = !isExpanded;
   const router = useRouter();
   const pathname = usePathname();
@@ -101,13 +103,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, isExpanded = 
       <div className={`flex-1 space-y-6 overflow-y-auto transition-all duration-300 ${collapsed ? 'space-y-2 p-3' : 'p-6'}`}>
         <div className="space-y-2">
           {!collapsed && (
-            <p className="px-4 text-xs font-medium tracking-wide text-muted-foreground uppercase">Main Menu</p>
+            <p className="px-4 text-xs font-medium tracking-wide text-muted-foreground uppercase">{t('sidebar.mainMenu')}</p>
           )}
           {mainMenuItems.map((item) => {
             const isActive = isActivePath(item.path);
+            const label = t(item.labelKey);
             return (
               <Button
-                key={`${item.id}-${item.label}`}
+                key={item.id}
                 variant="ghost"
                 asChild
                 className={`w-full cursor-pointer transition-all duration-300 ease-in-out hover:bg-accent ${
@@ -115,11 +118,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, isExpanded = 
                 } ${
                   isActive ? 'bg-accent text-primary hover:bg-accent hover:text-primary' : 'text-foreground hover:bg-accent hover:text-foreground'
                 }`}
-                title={collapsed ? item.label : undefined}
+                title={collapsed ? label : undefined}
               >
                 <Link href={item.path} onClick={handleNav}>
                   <span className={isActive ? 'text-primary' : 'text-muted-foreground'}>{item.icon}</span>
-                  {!collapsed && <span className="font-medium">{item.label}</span>}
+                  {!collapsed && <span className="font-medium">{label}</span>}
                 </Link>
               </Button>
             );
@@ -128,13 +131,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, isExpanded = 
         {collapsed && <div className="border-t border-border" />}
         <div className="space-y-2">
           {!collapsed && (
-            <p className="px-4 text-xs font-medium tracking-wide text-muted-foreground uppercase">Settings</p>
+            <p className="px-4 text-xs font-medium tracking-wide text-muted-foreground uppercase">{t('sidebar.settings')}</p>
           )}
           {visibleSettingsMenuItems.map((item) => {
             const isActive = isActivePath(item.path);
+            const label = t(item.labelKey);
             return (
               <Button
-                key={`${item.id}-${item.label}`}
+                key={item.id}
                 variant="ghost"
                 asChild
                 className={`w-full cursor-pointer transition-all duration-300 ease-in-out hover:bg-accent ${
@@ -142,11 +146,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, isExpanded = 
                 } ${
                   isActive ? 'bg-accent text-primary hover:bg-accent hover:text-primary' : 'text-foreground hover:bg-accent hover:text-foreground'
                 }`}
-                title={collapsed ? item.label : undefined}
+                title={collapsed ? label : undefined}
               >
                 <Link href={item.path} onClick={handleNav}>
                   <span className={isActive ? 'text-primary' : 'text-muted-foreground'}>{item.icon}</span>
-                  {!collapsed && <span className="font-medium">{item.label}</span>}
+                  {!collapsed && <span className="font-medium">{label}</span>}
                 </Link>
               </Button>
             );
@@ -163,7 +167,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, isExpanded = 
                   size="icon"
                   className="h-10 w-10 rounded-lg hover:bg-accent"
                   onClick={handleSignOut}
-                  title="Sign out"
+                  title={t('sidebar.signOut')}
                 >
                   <Power size={20} weight="BoldDuotone" className="text-muted-foreground" />
                 </Button>
@@ -191,7 +195,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, isExpanded = 
                     ? (
                         <Image
                           src={user.avatar}
-                          alt={`${user?.firstName ?? ''} ${user?.lastName ?? ''}`.trim() || 'Avatar'}
+                          alt={`${user?.firstName ?? ''} ${user?.lastName ?? ''}`.trim() || t('sidebar.avatar')}
                           width={40}
                           height={40}
                           className="h-10 w-10 rounded-full object-cover"
@@ -206,7 +210,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, isExpanded = 
                     <p className="font-semibold text-foreground">
                       {user?.firstName && user?.lastName
                         ? `${user.firstName} ${user.lastName}`
-                        : 'User'}
+                        : t('sidebar.user')}
                     </p>
                     <p className="max-w-36 truncate text-sm text-muted-foreground" title={user?.email || 'user@example.com'}>
                       {user?.email || 'user@example.com'}
@@ -218,6 +222,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, isExpanded = 
                   size="sm"
                   className="h-8 w-8 p-0 hover:bg-secondary"
                   onClick={handleSignOut}
+                  title={t('sidebar.signOut')}
                 >
                   <Power size={16} weight="BoldDuotone" className="text-muted-foreground" />
                 </Button>

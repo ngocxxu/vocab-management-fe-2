@@ -1,5 +1,7 @@
 import type { Viewport } from 'next';
 import { Lexend } from 'next/font/google';
+import { NextIntlClientProvider } from 'next-intl';
+import { getLocale, getMessages } from 'next-intl/server';
 import { PostHogProvider } from '@/components/analytics/PostHogProvider';
 import { InstallPrompt } from '@/components/pwa/InstallPrompt';
 import { ServiceWorkerRegister } from '@/components/pwa/ServiceWorkerRegister';
@@ -36,17 +38,22 @@ export const viewport: Viewport = {
 export default async function RootLayout(props: {
   children: React.ReactNode;
 }) {
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   return (
-    <html lang="en" suppressHydrationWarning className={lexend.variable}>
+    <html lang={locale} suppressHydrationWarning className={lexend.variable}>
       <body suppressHydrationWarning className="font-sans">
-        <ThemeProvider>
-          <PostHogProvider>
-            {props.children}
-            <Toaster />
-            <InstallPrompt />
-            <ServiceWorkerRegister />
-          </PostHogProvider>
-        </ThemeProvider>
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <ThemeProvider>
+            <PostHogProvider>
+              {props.children}
+              <Toaster />
+              <InstallPrompt />
+              <ServiceWorkerRegister />
+            </PostHogProvider>
+          </ThemeProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

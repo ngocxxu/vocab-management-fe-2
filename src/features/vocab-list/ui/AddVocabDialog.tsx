@@ -2,6 +2,7 @@
 
 import type { AddVocabDialogProps } from '@/types/vocab-list';
 import { MagicStick, RefreshCircle } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import React, { useState } from 'react';
 import { PremiumFeatureGate } from '@/components/premium';
 import { UserRole } from '@/constants/auth';
@@ -54,6 +55,7 @@ const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
   hasInvalidRelationDrafts,
   userRole,
 }) => {
+  const t = useTranslations('vocabList.addDialog');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const activeTargetIndex = Math.min(
@@ -94,16 +96,16 @@ const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[1100px]">
         <div className="mx-auto w-full">
           <DialogHeader>
-            <DialogTitle>{editMode ? 'Edit Vocabulary' : 'Add New Vocabulary'}</DialogTitle>
+            <DialogTitle>{editMode ? t('editTitle') : t('addTitle')}</DialogTitle>
             <DialogDescription>
-              {editMode ? 'Update the details for your vocabulary item' : 'Enter the details for your new vocabulary item'}
+              {editMode ? t('editDescription') : t('addDescription')}
             </DialogDescription>
           </DialogHeader>
           <div className="grid grid-cols-1 gap-4 p-6 pb-0 lg:grid-cols-[minmax(0,300px)_1fr]">
             <div className="flex flex-col gap-4">
               <div className="rounded-lg border bg-card">
                 <div className="border-b bg-muted px-4 py-3">
-                  <h3 className="text-sm font-semibold">Basic Information</h3>
+                  <h3 className="text-sm font-semibold">{t('basicInfo')}</h3>
                 </div>
                 <div className="p-4">
                   <VocabLanguageForm
@@ -128,7 +130,7 @@ const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
               </div>
               <div className="rounded-lg border bg-card">
                 <div className="flex items-center justify-between border-b bg-muted px-4 py-3">
-                  <h3 className="text-sm font-semibold">Text Targets</h3>
+                  <h3 className="text-sm font-semibold">{t('textTargets')}</h3>
                   {onAddTextTarget && (
                     <Button
                       type="button"
@@ -138,7 +140,7 @@ const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
                       onClick={onAddTextTarget}
                       disabled={formData.textTargets.length >= 5}
                     >
-                      + Add New
+                      {t('addNew')}
                     </Button>
                   )}
                 </div>
@@ -158,20 +160,20 @@ const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
             <div className="min-w-0">
               <div className="rounded-lg border bg-card">
                 <div className="flex items-center justify-between border-b bg-muted px-4 py-3">
-                  <h3 className="text-sm font-semibold">Meaning and Context</h3>
+                  <h3 className="text-sm font-semibold">{t('meaningContext')}</h3>
                   {userRole === UserRole.GUEST
                     ? (
                         <PremiumFeatureGate
                           userRole={userRole}
-                          featureName="AI Generate (text target)"
-                          description="Auto-generate target text and examples with AI. Upgrade to Member to unlock."
+                          featureName={t('aiFeatureName')}
+                          description={t('aiDescription')}
                           onClick={handleGenerateAI}
                           variant="outline"
                           size="sm"
                           className="h-7 gap-1.5 text-xs"
                         >
                           <MagicStick size={12} weight="BoldDuotone" />
-                          AI Generate
+                          {t('aiGenerate')}
                         </PremiumFeatureGate>
                       )
                     : (
@@ -187,23 +189,20 @@ const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
                             ? (
                                 <>
                                   <RefreshCircle size={12} weight="BoldDuotone" className="animate-spin" />
-                                  Generating...
+                                  {t('generating')}
                                 </>
                               )
                             : isCooldownActive
                               ? (
                                   <>
                                     <RefreshCircle size={12} weight="BoldDuotone" />
-                                    Wait
-                                    {' '}
-                                    {cooldownRemaining}
-                                    s
+                                    {t('wait', { seconds: cooldownRemaining })}
                                   </>
                                 )
                               : (
                                   <>
                                     <MagicStick size={12} weight="BoldDuotone" />
-                                    AI Generate
+                                    {t('aiGenerate')}
                                   </>
                                 )}
                         </Button>
@@ -234,7 +233,7 @@ const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
           <DialogFooter className="pt-4">
             <DialogClose asChild>
               <Button variant="outline" disabled={isSubmitting}>
-                Cancel
+                {t('cancel')}
               </Button>
             </DialogClose>
             <Button
@@ -246,10 +245,10 @@ const AddVocabDialog: React.FC<AddVocabDialogProps> = ({
                 ? (
                     <>
                       <RefreshCircle size={16} weight="BoldDuotone" className="mr-2 animate-spin" />
-                      {editMode ? 'Updating...' : 'Validating...'}
+                      {editMode ? t('updating') : t('validating')}
                     </>
                   )
-                : (editMode ? 'Update Vocabulary' : 'Add Vocabulary')}
+                : (editMode ? t('updateVocab') : t('addVocab'))}
             </Button>
           </DialogFooter>
         </div>
