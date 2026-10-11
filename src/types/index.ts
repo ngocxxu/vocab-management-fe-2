@@ -97,24 +97,6 @@ export type ProgressChartProps = {
   data: import('@/types/statistics').ProgressOverTime[];
 };
 
-export type TrendConfig = {
-  text: string;
-  icon: 'arrowUp' | 'arrowDown' | 'clock';
-  color: 'success' | 'muted' | 'destructive';
-};
-
-export type SummaryStatsMetricCardProps = {
-  title: string;
-  value: React.ReactNode;
-  icon: React.ReactNode;
-  iconBgClass: string;
-  trend?: TrendConfig;
-};
-
-export type SummaryStatsCardProps = {
-  data: import('@/types/statistics').MasterySummary;
-};
-
 export type SubjectMasteryChartProps = {
   data: import('@/types/statistics').MasteryBySubject[];
 };
@@ -130,27 +112,6 @@ export type ProblematicVocabsTableProps = {
 
 export type AnswerDistributionCardProps = {
   data: import('@/types/statistics').MasterySummary;
-};
-
-export type MetricsGridMetricCardProps = {
-  title: string;
-  value: string;
-  icon: React.ReactNode;
-  iconColor: string;
-  trend?: string;
-  trendColor?: string;
-};
-
-export type DashboardTask = {
-  id: string;
-  name: string;
-  description: string;
-  logo: string;
-  logoColor: string;
-  status?: string;
-  progress?: string;
-  dueDate?: string;
-  teamMembers: number;
 };
 
 export type LoadingComponentProps = {
