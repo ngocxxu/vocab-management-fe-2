@@ -934,5 +934,104 @@
       "tryAgain": "Try Again",
       "close": "Close"
     }
+  },
+  "landing": {
+    "header": {
+      "features": "Features",
+      "solutions": "Solutions",
+      "pricing": "Pricing",
+      "signIn": "Sign In",
+      "getStarted": "Get Started",
+      "languageLabel": "Language"
+    },
+    "hero": {
+      "badge": "Professional vocabulary management",
+      "titleLine1": "Master Your Vocabulary",
+      "titleLine2": "with",
+      "titleAccent": "Precision",
+      "subtitle": "Track, learn, and practice words efficiently with our intelligent management system. Built for professionals who demand excellence.",
+      "createAccount": "Create Account",
+      "signIn": "Sign In"
+    },
+    "features": {
+      "title": "The Precision Toolkit",
+      "subtitle": "Everything you need to move from “learning” to “mastery”.",
+      "libraryTitle": "Smart Library",
+      "libraryBody": "Organize your journey with dedicated folders for specific language pairs. Source to Target, managed with surgical precision.",
+      "pairVi": "English to Vietnamese",
+      "pairJa": "English to Japanese",
+      "pairKo": "English to Korean",
+      "trainerTitle": "Adaptive Trainer",
+      "trainerBody": "Flip cards, MCQs, and AI-powered Speaking evaluation that listens to your accent.",
+      "listening": "AI listening...",
+      "analyticsTitle": "Mastery Analytics",
+      "analyticsBody": "Track your progress on a 0-10 scale across various subjects and disciplines.",
+      "contextTitle": "AI-Generated Context",
+      "contextBody": "Vocab doesn't just store words; it understands them. Get sentences that match your <accent>current proficiency level</accent> automatically.",
+      "level": "Intermediate B2",
+      "question": "What's an example for 'Persistence'?",
+      "answer": "“Her <hl>persistence</hl> in practicing the piano finally led to a flawless performance.”",
+      "tailored": "AI tailored context"
+    },
+    "methodology": {
+      "title": "The Science of Learning",
+      "srsTitle": "Spaced Repetition (SRS)",
+      "srsBody": "Our algorithm predicts when you're about to forget a word and prompts a review at the perfect psychological moment for maximum retention.",
+      "aiTitle": "AI Evaluation",
+      "aiBody": "Beyond written tests, our AI analyzes your pronunciation and cadence, providing instant feedback on how to sound like a native speaker.",
+      "curveTitle": "Retention Curve",
+      "retentionBadge": "95% Retention",
+      "caption": "Vocab maintains retention at <b>95%</b> even after weeks of inactivity, thanks to science-backed spacing."
+    },
+    "pricing": {
+      "tagline": "• FLEXIBLE PLANS FOR EVERY LEARNER",
+      "headingPlain": "Unlock Your",
+      "headingAccent": "Full Potential",
+      "subtitle": "Choose the role that fits your journey. From casual explorers to dedicated polyglots, we have the tools you need to master any language."
+    },
+    "plan": {
+      "currentPlan": "Current plan",
+      "comingSoon": "COMING SOON",
+      "features": "FEATURES",
+      "yourPlan": "Your plan",
+      "onList": "You're on the list!",
+      "getNotified": "Get Notified",
+      "upgrade": "Upgrade",
+      "startFree": "Start for Free",
+      "unlimited": "Unlimited",
+      "vocabsPerDay": "{value} vocabs/day",
+      "folders": "{value} folders",
+      "subjects": "{value} subjects"
+    },
+    "waitlist": {
+      "title": "Be the first to know",
+      "body": "Join our exclusive waitlist for early access to Member features",
+      "emailPlaceholder": "Enter your email address",
+      "notify": "Notify Me",
+      "noSpam": "No spam, only precision updates."
+    },
+    "cta": {
+      "title": "Ready to Master Your Vocabulary?",
+      "body": "Join 10,000+ polyglots, students, and professionals elevating their language game with data-driven precision.",
+      "getStarted": "Get Started for Free",
+      "viewPricing": "View Pricing",
+      "note": "No credit card required. 14-day free trial of Pro features."
+    },
+    "footer": {
+      "tagline": "The premier destination for professional vocabulary management and high-performance language learning.",
+      "product": "Product",
+      "features": "Features",
+      "methodology": "Methodology",
+      "api": "API",
+      "support": "Support",
+      "helpCenter": "Help Center",
+      "community": "Community",
+      "contact": "Contact",
+      "stayUpdated": "Stay Updated",
+      "emailPlaceholder": "Enter your email",
+      "copyright": "© {year} Ngoc Quach. All rights reserved.",
+      "privacy": "Privacy",
+      "terms": "Terms"
+    }
   }
 }

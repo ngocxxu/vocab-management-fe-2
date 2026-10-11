@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { ShieldCheck } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -21,6 +22,7 @@ export function WaitlistModal({
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
 }>) {
+  const t = useTranslations('landing.waitlist');
   const [email, setEmail] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -35,20 +37,18 @@ export function WaitlistModal({
       <DialogContent className="rounded-2xl sm:max-w-md">
         <DialogHeader className="text-center">
           <DialogTitle className="text-xl font-bold">
-            Be the first to know
+            {t('title')}
           </DialogTitle>
           <DialogDescription asChild>
             <p className="mt-2 text-center font-sans text-sm text-muted-foreground">
-              Join our exclusive waitlist for early access to
-              <br />
-              Member features
+              {t('body')}
             </p>
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-3">
           <Input
             type="email"
-            placeholder="Enter your email address"
+            placeholder={t('emailPlaceholder')}
             value={email}
             onChange={e => setEmail(e.target.value)}
             className="rounded-xl border-border"
@@ -58,12 +58,12 @@ export function WaitlistModal({
             type="submit"
             className="w-full rounded-xl bg-primary font-semibold text-primary-foreground hover:bg-primary/90"
           >
-            Notify Me
+            {t('notify')}
           </Button>
         </form>
         <p className="mt-4 flex items-center justify-center gap-2 font-sans text-xs text-muted-foreground">
           <ShieldCheck size={14} weight="BoldDuotone" className="shrink-0" />
-          No spam, only precision updates.
+          {t('noSpam')}
         </p>
       </DialogContent>
     </Dialog>

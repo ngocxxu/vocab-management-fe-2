@@ -5,6 +5,7 @@ import { getPlanBadgeClassName, getPlanTextClassName } from '@/constants/plan';
 import { cn } from '@/libs/utils';
 import Link from 'next/link';
 import { CheckCircle } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { PlanLimitsSummary } from './PlanLimitsSummary';
 import { CheckItem } from './CheckItem';
@@ -24,6 +25,7 @@ export function PlanCard({
   onGetNotified?: () => void;
   isOnList?: boolean;
 }>) {
+  const t = useTranslations('landing.plan');
   const isGuest = plan.role === 'GUEST';
   const isMember = plan.role === 'MEMBER';
 
@@ -62,7 +64,7 @@ export function PlanCard({
         </p>
         {isCurrentPlan && (
           <span className={currentPlanBadgeClass}>
-            Current plan
+            {t('currentPlan')}
           </span>
         )}
       </div>
@@ -72,7 +74,7 @@ export function PlanCard({
         </h3>
         {isMember && !isCurrentPlan && (
           <span className="rounded-full bg-primary/10 px-2.5 py-0.5 font-sans text-xs font-semibold text-primary">
-            COMING SOON
+            {t('comingSoon')}
           </span>
         )}
       </div>
@@ -81,7 +83,7 @@ export function PlanCard({
       </p>
       <PlanLimitsSummary limits={plan.limits} />
       <p className="mt-6 font-sans text-xs font-medium tracking-wide text-muted-foreground uppercase">
-        FEATURES
+        {t('features')}
       </p>
       <ul className="mt-3 space-y-2">
         {plan.features.map((f, i) => {
@@ -119,7 +121,7 @@ export function PlanCard({
                 role="status"
               >
                 <CheckCircle size={18} weight="BoldDuotone" className="shrink-0" />
-                Your plan
+                {t('yourPlan')}
               </div>
             )
           : isMember && isOnList
@@ -130,7 +132,7 @@ export function PlanCard({
                   aria-live="polite"
                 >
                   <CheckCircle size={20} weight="BoldDuotone" className="shrink-0 text-success" />
-                  You're on the list!
+                  {t('onList')}
                 </div>
               )
             : isMember && onGetNotified
@@ -141,7 +143,7 @@ export function PlanCard({
                     className="w-full rounded-xl bg-primary font-semibold text-primary-foreground shadow hover:bg-primary/90"
                     size="lg"
                   >
-                    Get Notified
+                    {t('getNotified')}
                   </Button>
                 )
               : (
@@ -155,7 +157,7 @@ export function PlanCard({
                       }
                       size={isRecommended ? 'lg' : undefined}
                     >
-                      {isRecommended ? 'Upgrade' : 'Start for Free'}
+                      {isRecommended ? t('upgrade') : t('startFree')}
                     </Button>
                   </Link>
                 )}

@@ -934,5 +934,104 @@
       "tryAgain": "Thử lại",
       "close": "Đóng"
     }
+  },
+  "landing": {
+    "header": {
+      "features": "Tính năng",
+      "solutions": "Giải pháp",
+      "pricing": "Bảng giá",
+      "signIn": "Đăng nhập",
+      "getStarted": "Bắt đầu",
+      "languageLabel": "Ngôn ngữ"
+    },
+    "hero": {
+      "badge": "Quản lý từ vựng chuyên nghiệp",
+      "titleLine1": "Làm chủ từ vựng",
+      "titleLine2": "với",
+      "titleAccent": "Độ chính xác",
+      "subtitle": "Theo dõi, học và luyện từ vựng hiệu quả với hệ thống quản lý thông minh. Được xây dựng cho những người đòi hỏi sự xuất sắc.",
+      "createAccount": "Tạo tài khoản",
+      "signIn": "Đăng nhập"
+    },
+    "features": {
+      "title": "Bộ công cụ chính xác",
+      "subtitle": "Mọi thứ bạn cần để đi từ “học” đến “thành thạo”.",
+      "libraryTitle": "Thư viện thông minh",
+      "libraryBody": "Sắp xếp hành trình học với các thư mục riêng cho từng cặp ngôn ngữ. Từ nguồn đến đích, quản lý chính xác từng chi tiết.",
+      "pairVi": "Tiếng Anh sang tiếng Việt",
+      "pairJa": "Tiếng Anh sang tiếng Nhật",
+      "pairKo": "Tiếng Anh sang tiếng Hàn",
+      "trainerTitle": "Trình luyện thích ứng",
+      "trainerBody": "Thẻ lật, trắc nghiệm, và đánh giá phát âm bằng AI lắng nghe giọng của bạn.",
+      "listening": "AI đang nghe...",
+      "analyticsTitle": "Phân tích thành thạo",
+      "analyticsBody": "Theo dõi tiến độ trên thang điểm 0-10 ở nhiều chủ đề và lĩnh vực khác nhau.",
+      "contextTitle": "Ngữ cảnh do AI tạo",
+      "contextBody": "Vocab không chỉ lưu từ; nó hiểu từ. Nhận các câu phù hợp với <accent>trình độ hiện tại</accent> của bạn một cách tự động.",
+      "level": "Trung cấp B2",
+      "question": "Có ví dụ nào cho 'Persistence' không?",
+      "answer": "“Her <hl>persistence</hl> in practicing the piano finally led to a flawless performance.”",
+      "tailored": "Ngữ cảnh do AI cá nhân hóa"
+    },
+    "methodology": {
+      "title": "Khoa học của việc học",
+      "srsTitle": "Lặp lại ngắt quãng (SRS)",
+      "srsBody": "Thuật toán của chúng tôi dự đoán thời điểm bạn sắp quên một từ và nhắc ôn đúng lúc để ghi nhớ tối đa.",
+      "aiTitle": "Đánh giá bằng AI",
+      "aiBody": "Ngoài bài kiểm tra viết, AI của chúng tôi phân tích cách phát âm và nhịp điệu, đưa ra phản hồi tức thì để bạn nói như người bản xứ.",
+      "curveTitle": "Đường cong ghi nhớ",
+      "retentionBadge": "95% ghi nhớ",
+      "caption": "Vocab giữ tỷ lệ ghi nhớ ở mức <b>95%</b> ngay cả sau nhiều tuần không học, nhờ cách lặp lại dựa trên khoa học."
+    },
+    "pricing": {
+      "tagline": "• GÓI LINH HOẠT CHO MỌI NGƯỜI HỌC",
+      "headingPlain": "Mở khóa",
+      "headingAccent": "Toàn bộ tiềm năng",
+      "subtitle": "Chọn vai trò phù hợp với hành trình của bạn. Từ người khám phá đến người học ngôn ngữ chuyên sâu, chúng tôi có công cụ để bạn làm chủ mọi ngôn ngữ."
+    },
+    "plan": {
+      "currentPlan": "Gói hiện tại",
+      "comingSoon": "SẮP RA MẮT",
+      "features": "TÍNH NĂNG",
+      "yourPlan": "Gói của bạn",
+      "onList": "Bạn đã có tên trong danh sách!",
+      "getNotified": "Nhận thông báo",
+      "upgrade": "Nâng cấp",
+      "startFree": "Bắt đầu miễn phí",
+      "unlimited": "Không giới hạn",
+      "vocabsPerDay": "{value} từ/ngày",
+      "folders": "{value} thư mục",
+      "subjects": "{value} chủ đề"
+    },
+    "waitlist": {
+      "title": "Hãy là người đầu tiên biết",
+      "body": "Tham gia danh sách chờ độc quyền để dùng sớm các tính năng Member",
+      "emailPlaceholder": "Nhập địa chỉ email của bạn",
+      "notify": "Thông báo cho tôi",
+      "noSpam": "Không spam, chỉ có cập nhật chính xác."
+    },
+    "cta": {
+      "title": "Sẵn sàng làm chủ từ vựng của bạn?",
+      "body": "Tham gia cùng hơn 10.000 người học ngôn ngữ, sinh viên và chuyên gia đang nâng tầm việc học bằng sự chính xác dựa trên dữ liệu.",
+      "getStarted": "Bắt đầu miễn phí",
+      "viewPricing": "Xem bảng giá",
+      "note": "Không cần thẻ tín dụng. Dùng thử 14 ngày các tính năng Pro."
+    },
+    "footer": {
+      "tagline": "Nền tảng hàng đầu để quản lý từ vựng chuyên nghiệp và học ngôn ngữ hiệu suất cao.",
+      "product": "Sản phẩm",
+      "features": "Tính năng",
+      "methodology": "Phương pháp",
+      "api": "API",
+      "support": "Hỗ trợ",
+      "helpCenter": "Trung tâm trợ giúp",
+      "community": "Cộng đồng",
+      "contact": "Liên hệ",
+      "stayUpdated": "Cập nhật thông tin",
+      "emailPlaceholder": "Nhập email của bạn",
+      "copyright": "© {year} Ngoc Quach. Bảo lưu mọi quyền.",
+      "privacy": "Quyền riêng tư",
+      "terms": "Điều khoản"
+    }
   }
 }

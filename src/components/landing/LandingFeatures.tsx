@@ -10,19 +10,21 @@ import {
   StarFall,
   User,
 } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function LandingFeatures() {
+  const t = useTranslations('landing.features');
+
   return (
     <section id="features" className="border-t border-border/80 bg-muted/50 py-20 dark:bg-muted/20">
       <div className="container mx-auto px-4">
         <div className="mx-auto max-w-2xl text-center 2xl:max-w-4xl">
           <h2 className="font-sans text-2xl font-bold tracking-tight text-foreground sm:text-3xl 2xl:text-[4rem] 2xl:leading-tight">
-            The Precision Toolkit
+            {t('title')}
           </h2>
           <p className="mt-3 font-sans text-[15px] leading-relaxed text-muted-foreground 2xl:mt-4 2xl:text-2xl">
-            Everything you need to move from &quot;learning&quot; to
-            &quot;mastery&quot;.
+            {t('subtitle')}
           </p>
         </div>
 
@@ -43,19 +45,17 @@ export default function LandingFeatures() {
                   />
                 </div>
                 <CardTitle className="font-sans text-lg font-bold tracking-tight text-card-foreground 2xl:text-3xl">
-                  Smart Library
+                  {t('libraryTitle')}
                 </CardTitle>
                 <p className="mt-2 font-sans text-[13px] leading-relaxed text-muted-foreground 2xl:mt-3 2xl:text-lg">
-                  Organize your journey with dedicated folders for specific
-                  language pairs. Source to Target, managed with surgical
-                  precision.
+                  {t('libraryBody')}
                 </p>
               </div>
               <div className="mt-auto min-w-0 flex-1 space-y-2 rounded-lg bg-muted/40 p-3 md:min-w-[50%]">
                 {[
-                  { from: '🇺🇸', to: '🇻🇳', label: 'English to Vietnamese', active: true, opacity: 100 },
-                  { from: '🇺🇸', to: '🇯🇵', label: 'English to Japanese', active: false, opacity: 80 },
-                  { from: '🇺🇸', to: '🇰🇷', label: 'English to Korean', active: false, opacity: 60 },
+                  { from: '🇺🇸', to: '🇻🇳', label: t('pairVi'), active: true, opacity: 100 },
+                  { from: '🇺🇸', to: '🇯🇵', label: t('pairJa'), active: false, opacity: 80 },
+                  { from: '🇺🇸', to: '🇰🇷', label: t('pairKo'), active: false, opacity: 60 },
                 ].map(({ from, to, label, active, opacity }) => (
                   <div
                     key={label}
@@ -85,18 +85,17 @@ export default function LandingFeatures() {
                 />
               </div>
               <CardTitle className="font-sans text-lg font-bold tracking-tight text-card-foreground 2xl:text-3xl">
-                Adaptive Trainer
+                {t('trainerTitle')}
               </CardTitle>
               <p className="font-sans text-[13px] leading-relaxed text-muted-foreground 2xl:text-lg">
-                Flip cards, MCQs, and AI-powered Speaking evaluation that
-                listens to your accent.
+                {t('trainerBody')}
               </p>
               <div className="mt-3 flex items-center gap-3 rounded-lg bg-warning px-4 py-3 2xl:mt-4">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-warning/90">
                   <Microphone size={20} weight="BoldDuotone" className="text-warning-foreground" />
                 </div>
                 <span className="text-sm font-medium tracking-wide text-warning-foreground uppercase">
-                  AI LISTENING...
+                  {t('listening')}
                 </span>
                 <div className="ml-auto flex items-end gap-0.5">
                   {['h-3', 'h-5', 'h-7', 'h-5', 'h-3'].map((h, i) => (
@@ -119,11 +118,10 @@ export default function LandingFeatures() {
                 />
               </div>
               <CardTitle className="font-sans text-lg font-bold tracking-tight text-card-foreground 2xl:text-3xl">
-                Mastery Analytics
+                {t('analyticsTitle')}
               </CardTitle>
               <p className="font-sans text-[13px] leading-relaxed text-muted-foreground 2xl:text-lg">
-                Track your progress on a 0-10 scale across various subjects
-                and disciplines.
+                {t('analyticsBody')}
               </p>
               <div className="mt-4 flex items-end gap-1">
                 {['h-2', 'h-4', 'h-6', 'h-8', 'h-10'].map(h => (
@@ -143,22 +141,19 @@ export default function LandingFeatures() {
                   <StarFall size={24} weight="BoldDuotone" className="text-primary-foreground" />
                 </div>
                 <h3 className="font-sans text-2xl font-bold tracking-tight text-foreground 2xl:text-3xl">
-                  AI-Generated Context
+                  {t('contextTitle')}
                 </h3>
                 <p className="font-sans text-base leading-relaxed text-muted-foreground 2xl:text-lg">
-                  Vocab doesn&apos;t just store words; it understands
-                  them. Get sentences that match your
-                  {' '}
-                  <span className="text-primary underline">
-                    current proficiency level
-                  </span>
-                  {' '}
-                  automatically.
+                  {t.rich('contextBody', {
+                    accent: chunks => (
+                      <span className="text-primary underline">{chunks}</span>
+                    ),
+                  })}
                 </p>
                 <div className="inline-flex items-center gap-2 rounded-full bg-primary/15 px-3 py-1">
                   <span className="h-2 w-2 rounded-full bg-primary" />
                   <span className="font-sans text-sm font-normal text-foreground">
-                    Intermediate B2
+                    {t('level')}
                   </span>
                 </div>
               </div>
@@ -169,24 +164,23 @@ export default function LandingFeatures() {
                   </div>
                   <div className="rounded-lg bg-muted px-4 py-3">
                     <p className="font-sans text-base text-foreground">
-                      What&apos;s an example for &apos;Persistence&apos;?
+                      {t('question')}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
                   <div className="flex flex-1 flex-col overflow-hidden rounded-lg bg-primary">
                     <p className="px-4 py-3 font-sans text-base text-primary-foreground">
-                      &quot;Her
-                      {' '}
-                      <span className="text-primary-foreground/80 underline">persistence</span>
-                      {' '}
-                      in practicing the piano finally led to a flawless
-                      performance.&quot;
+                      {t.rich('answer', {
+                        hl: chunks => (
+                          <span className="text-primary-foreground/80 underline">{chunks}</span>
+                        ),
+                      })}
                     </p>
                     <div className="border-t border-primary-foreground/20 px-4 py-2">
                       <div className="flex items-center gap-2 text-xs font-medium tracking-wide text-primary-foreground uppercase">
                         <Bolt size={12} weight="BoldDuotone" />
-                        AI TAILORED CONTEXT
+                        {t('tailored')}
                       </div>
                     </div>
                   </div>

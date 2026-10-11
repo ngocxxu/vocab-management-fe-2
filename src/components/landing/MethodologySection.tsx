@@ -1,16 +1,19 @@
 'use client';
 
 import { RefreshCircle, VolumeLoud } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function MethodologySection() {
+  const t = useTranslations('landing.methodology');
+
   return (
     <section id="methodology" className="py-20">
       <div className="container mx-auto max-w-7xl">
         <div className="mt-12 grid gap-12 lg:grid-cols-2">
           <div className="space-y-8">
             <h2 className="text-3xl font-bold text-foreground sm:text-4xl">
-              The Science of Learning
+              {t('title')}
             </h2>
             <div className="flex gap-4">
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary/15">
@@ -22,12 +25,10 @@ export default function MethodologySection() {
               </div>
               <div>
                 <h3 className="text-lg font-bold text-foreground">
-                  Spaced Repetition (SRS)
+                  {t('srsTitle')}
                 </h3>
                 <p className="mt-1 text-base text-muted-foreground">
-                  Our algorithm predicts when you&apos;re about to forget a
-                  word and prompts a review at the perfect psychological
-                  moment for maximum retention.
+                  {t('srsBody')}
                 </p>
               </div>
             </div>
@@ -41,12 +42,10 @@ export default function MethodologySection() {
               </div>
               <div>
                 <h3 className="text-lg font-bold text-foreground">
-                  AI Evaluation
+                  {t('aiTitle')}
                 </h3>
                 <p className="mt-1 text-base text-muted-foreground">
-                  Beyond written tests, our AI analyzes your pronunciation
-                  and cadence, providing instant feedback on how to sound
-                  like a native speaker.
+                  {t('aiBody')}
                 </p>
               </div>
             </div>
@@ -54,7 +53,7 @@ export default function MethodologySection() {
           <Card className="rounded-xl border border-border bg-card shadow-sm">
             <CardHeader>
               <CardTitle className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                Retention Curve
+                {t('curveTitle')}
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
@@ -92,19 +91,16 @@ export default function MethodologySection() {
                 >
                   <span className="h-1.5 w-1.5 rounded-full bg-primary-foreground" />
                   <span className="text-sm font-semibold text-primary-foreground">
-                    95% Retention
+                    {t('retentionBadge')}
                   </span>
                 </div>
               </div>
               <p className="mt-4 text-base text-muted-foreground">
-                Vocab maintains retention at
-                {' '}
-                <span className="font-bold text-primary">
-                  95%
-                </span>
-                {' '}
-                even after weeks of inactivity, thanks to science-backed
-                spacing.
+                {t.rich('caption', {
+                  b: chunks => (
+                    <span className="font-bold text-primary">{chunks}</span>
+                  ),
+                })}
               </p>
             </CardContent>
           </Card>
