@@ -21,7 +21,7 @@ import { Checkbox } from '@/shared/ui/checkbox';
 import { Form } from '@/shared/ui/form';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { DataTable } from '@/shared/ui/table';
-import { QUESTION_TYPE_OPTIONS } from '@/constants/vocab-trainer';
+import { getQuestionTypeLabelKey, QUESTION_TYPE_OPTIONS } from '@/constants/vocab-trainer';
 import { EFsrsDirection, EQuestionType, ETrainerMode } from '@/enum/vocab-trainer';
 import { createTrainerFormSchema, dateInputToEndsAt, endsAtToDateInput, FSRS_MAX_INTERVAL_DAYS } from '@/libs/validations/vocab-trainer';
 import { useApiPagination, useBulkDelete, useDialogState } from '@/hooks';
@@ -62,6 +62,12 @@ const QUESTION_TYPE_BADGE_CLASSES: Record<string, string> = {
 };
 
 const MAX_PASS_COUNT = 6;
+
+const STATUS_LABEL_KEYS: Record<string, string> = {
+  PENDING: 'trainer.status.pending',
+  PASSED: 'trainer.status.passed',
+  FAILED: 'trainer.status.failed',
+};
 
 const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initialLanguagesData, currentUser, loadError }) => {
   const t = useTranslations();
@@ -420,9 +426,10 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
         }
         const status = row.original.status;
         const passCount = row.original.reminderRepeat;
+        const statusLabel = STATUS_LABEL_KEYS[status] ? t(STATUS_LABEL_KEYS[status]) : status;
         const displayStatus = status === 'PASSED'
-          ? `${status} ${Number.isFinite(passCount) ? passCount : 0}/${MAX_PASS_COUNT}`
-          : status;
+          ? `${statusLabel} ${Number.isFinite(passCount) ? passCount : 0}/${MAX_PASS_COUNT}`
+          : statusLabel;
         const statusColors = {
           PENDING: 'bg-warning/20 text-warning-foreground',
           PASSED: 'bg-success/15 text-success',
@@ -446,7 +453,7 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
         const badgeClass = QUESTION_TYPE_BADGE_CLASSES[type] ?? QUESTION_TYPE_BADGE_CLASSES.default;
         return (
           <Badge className={badgeClass}>
-            {type.replaceAll('_', ' ')}
+            {t(getQuestionTypeLabelKey(type))}
           </Badge>
         );
       },

@@ -701,7 +701,10 @@
     },
     "view": {
       "viewVocab": "Xem từ vựng",
-      "editVocab": "Sửa từ vựng"
+      "editVocab": "Sửa từ vựng",
+      "table": "Bảng",
+      "collapse": "Thu gọn",
+      "feed": "Thẻ"
     },
     "related": {
       "synonyms": "Từ đồng nghĩa",
@@ -1795,5 +1798,47 @@
     "beginner": "Mới bắt đầu",
     "learning": "Đang học",
     "mastered": "Thành thạo"
+  },
+  "dataTable": {
+    "showing": "Hiển thị {shown} trên {total} kết quả",
+    "rowsPerPage": "Số dòng mỗi trang",
+    "previous": "Trước",
+    "next": "Sau",
+    "noResults": "Không có kết quả",
+    "selected": "{count} đã chọn",
+    "bulkReassign": "Gán hàng loạt",
+    "bulkDelete": "Xóa hàng loạt",
+    "deleteCount": "Xóa ({count})",
+    "sortAsc": "Sắp xếp tăng dần",
+    "sortDesc": "Sắp xếp giảm dần",
+    "sortClear": "Bỏ sắp xếp",
+    "resizeHint": "Kéo để đổi kích thước, nhấp đúp để đặt lại"
+  },
+  "multiSelect": {
+    "defaultPlaceholder": "Chọn tùy chọn",
+    "noResults": "Không tìm thấy kết quả.",
+    "helpDescription": "Danh sách chọn nhiều. Dùng phím mũi tên để di chuyển, Enter để chọn và Escape để đóng.",
+    "noneSelected": "Chưa chọn tùy chọn nào",
+    "selectedSummary": "Đã chọn {count} tùy chọn: {labels}",
+    "triggerAria": "Chọn nhiều: đã chọn {selected} trên {total} tùy chọn. {placeholder}",
+    "announceAdded": "Đã chọn {label}. {selected} trên {total} tùy chọn đã chọn.",
+    "announceAddedMany": "Đã chọn {count} tùy chọn. {selected} trên tổng {total} đã chọn.",
+    "announceRemoved": "Đã bỏ chọn một tùy chọn. {selected} trên {total} tùy chọn đã chọn.",
+    "announceOpened": "Đã mở danh sách. Có {total} tùy chọn. Dùng phím mũi tên để di chuyển.",
+    "announceClosed": "Đã đóng danh sách.",
+    "announceFound": "Tìm thấy {count} tùy chọn cho “{query}”",
+    "removeOption": "Bỏ {label} khỏi lựa chọn",
+    "moreCount": "+ {count} nữa",
+    "clearAll": "Xóa tất cả {count} tùy chọn đã chọn",
+    "listboxAria": "Tùy chọn có sẵn",
+    "searchPlaceholder": "Tìm tùy chọn...",
+    "searchAria": "Tìm trong tùy chọn có sẵn",
+    "searchHelp": "Gõ để lọc tùy chọn. Dùng phím mũi tên để di chuyển trong kết quả.",
+    "selectAllAria": "Chọn tất cả {count} tùy chọn",
+    "selectAllLabel": "Chọn tất cả",
+    "optionsCount": "{count} tùy chọn",
+    "itemSelected": ", đã chọn",
+    "itemNotSelected": ", chưa chọn",
+    "itemDisabled": ", đã vô hiệu hóa"
   }
 }

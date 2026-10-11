@@ -701,7 +701,10 @@
     },
     "view": {
       "viewVocab": "View vocabulary",
-      "editVocab": "Edit vocabulary"
+      "editVocab": "Edit vocabulary",
+      "table": "Table",
+      "collapse": "Collapse",
+      "feed": "Feed"
     },
     "related": {
       "synonyms": "Synonyms",
@@ -1795,5 +1798,47 @@
     "beginner": "Beginner",
     "learning": "Learning",
     "mastered": "Mastered"
+  },
+  "dataTable": {
+    "showing": "Showing {shown} of {total} results",
+    "rowsPerPage": "Rows per page",
+    "previous": "Previous",
+    "next": "Next",
+    "noResults": "No results",
+    "selected": "{count} selected",
+    "bulkReassign": "Bulk reassign",
+    "bulkDelete": "Bulk delete",
+    "deleteCount": "Delete ({count})",
+    "sortAsc": "Sort ascending",
+    "sortDesc": "Sort descending",
+    "sortClear": "Clear sort",
+    "resizeHint": "Drag to resize, double-click to reset"
+  },
+  "multiSelect": {
+    "defaultPlaceholder": "Select options",
+    "noResults": "No results found.",
+    "helpDescription": "Multi-select dropdown. Use arrow keys to navigate, Enter to select, and Escape to close.",
+    "noneSelected": "No options selected",
+    "selectedSummary": "{count, plural, one {# option} other {# options}} selected: {labels}",
+    "triggerAria": "Multi-select: {selected} of {total} options selected. {placeholder}",
+    "announceAdded": "{label} selected. {selected} of {total} options selected.",
+    "announceAddedMany": "{count} options selected. {selected} of {total} total selected.",
+    "announceRemoved": "Option removed. {selected} of {total} options selected.",
+    "announceOpened": "Dropdown opened. {total} options available. Use arrow keys to navigate.",
+    "announceClosed": "Dropdown closed.",
+    "announceFound": "{count, plural, one {# option} other {# options}} found for “{query}”",
+    "removeOption": "Remove {label} from selection",
+    "moreCount": "+ {count} more",
+    "clearAll": "Clear all {count} selected options",
+    "listboxAria": "Available options",
+    "searchPlaceholder": "Search options...",
+    "searchAria": "Search through available options",
+    "searchHelp": "Type to filter options. Use arrow keys to navigate results.",
+    "selectAllAria": "Select all {count} options",
+    "selectAllLabel": "Select All",
+    "optionsCount": "{count} options",
+    "itemSelected": ", selected",
+    "itemNotSelected": ", not selected",
+    "itemDisabled": ", disabled"
   }
 }
