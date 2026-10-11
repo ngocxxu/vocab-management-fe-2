@@ -7,6 +7,7 @@ import type {
   TTranslationAudioDialogue,
 } from '@/types/vocab-trainer';
 import { CheckCircle, RefreshCircle } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { submitExam } from '@/actions/vocab-trainers';
@@ -22,6 +23,8 @@ import DialogueDisplay from './DialogueDisplay';
 import VocabExamHeader from './VocabExamHeader';
 
 const TranslationAudioExam: React.FC<TranslationAudioExamProps> = ({ trainerId, examData }) => {
+  const t = useTranslations('trainer.audioExam');
+  const tSubmit = useTranslations('trainer.fillInSubmit');
   const router = useRouter();
   const [timeRemaining, setTimeRemaining] = useState(() => examData.setCountTime || 900);
   const [timeElapsed, setTimeElapsed] = useState(0);
@@ -101,7 +104,7 @@ const TranslationAudioExam: React.FC<TranslationAudioExamProps> = ({ trainerId, 
           setFileId(currentFileId);
         } catch (uploadErr) {
           logger.error('Failed to upload audio:', { error: uploadErr, trainerId });
-          setError(uploadErr instanceof Error ? uploadErr.message : 'Failed to upload audio. Please try again.');
+          setError(uploadErr instanceof Error ? uploadErr.message : t('uploadFailed'));
           setExamState('error');
           return;
         }
@@ -120,7 +123,7 @@ const TranslationAudioExam: React.FC<TranslationAudioExamProps> = ({ trainerId, 
       if (result && typeof result === 'object' && 'error' in result) {
         const errorMessage = result.error as string;
         logger.error('Server error:', { error: errorMessage, trainerId });
-        setError(errorMessage || 'Failed to submit exam. Please try again.');
+        setError(errorMessage || tSubmit('failed'));
         setExamState('error');
         return;
       }
@@ -147,13 +150,13 @@ const TranslationAudioExam: React.FC<TranslationAudioExamProps> = ({ trainerId, 
         router.push(`/vocab-trainer/${trainerId}/exam/translation-audio/result`);
       } else {
         logger.error('Response does not contain jobId:', { result, trainerId });
-        setError('Failed to get evaluation job ID. The server response was invalid.');
+        setError(tSubmit('noJobId'));
         setExamState('error');
       }
     } catch (err: unknown) {
       logger.error('Failed to submit exam:', { error: err, trainerId });
 
-      let errorMessage = 'Failed to submit exam. Please try again.';
+      let errorMessage = tSubmit('failed');
 
       if (err && typeof err === 'object' && 'response' in err) {
         const apiError = err as { response?: { data?: unknown } };
@@ -170,7 +173,7 @@ const TranslationAudioExam: React.FC<TranslationAudioExamProps> = ({ trainerId, 
       setError(errorMessage);
       setExamState('error');
     }
-  }, [canSubmit, audioBlob, fileId, timeElapsed, trainerId, router]);
+  }, [canSubmit, audioBlob, fileId, timeElapsed, trainerId, router, t, tSubmit]);
 
   const handleBackToTrainers = () => {
     router.push('/vocab-trainer');
@@ -201,10 +204,10 @@ const TranslationAudioExam: React.FC<TranslationAudioExamProps> = ({ trainerId, 
           <RefreshCircle size={64} weight="BoldDuotone" className="mx-auto animate-spin text-primary" />
           <div className="space-y-2">
             <h2 className="text-2xl font-bold text-foreground">
-              Uploading your recording...
+              {t('uploadingTitle')}
             </h2>
             <p className="text-muted-foreground">
-              Please wait while we upload your audio file
+              {t('uploadingBody')}
             </p>
           </div>
         </div>
@@ -219,10 +222,10 @@ const TranslationAudioExam: React.FC<TranslationAudioExamProps> = ({ trainerId, 
           <RefreshCircle size={64} weight="BoldDuotone" className="mx-auto animate-spin text-primary" />
           <div className="space-y-2">
             <h2 className="text-2xl font-bold text-foreground">
-              Submitting your exam...
+              {tSubmit('title')}
             </h2>
             <p className="text-muted-foreground">
-              Please wait while we process your submission
+              {t('submittingBody')}
             </p>
           </div>
         </div>
@@ -243,7 +246,7 @@ const TranslationAudioExam: React.FC<TranslationAudioExamProps> = ({ trainerId, 
     <div className="min-h-screen bg-background px-4 py-4 sm:px-6 sm:py-8">
       <div className="mx-auto max-w-6xl space-y-5 sm:space-y-8">
         <VocabExamHeader
-          trainerName={examData.name || 'Translation Audio Exam'}
+          trainerName={examData.name || t('untitled')}
           currentQuestion={1}
           totalQuestions={1}
           timeRemaining={timeRemaining}
@@ -259,7 +262,7 @@ const TranslationAudioExam: React.FC<TranslationAudioExamProps> = ({ trainerId, 
               <CardContent className="p-6">
                 <div className="space-y-4">
                   <p className="text-center text-foreground">
-                    Recording complete! Submit your exam to continue.
+                    {t('recordingDone')}
                   </p>
                   <div className="flex justify-center">
                     <Button
@@ -268,7 +271,7 @@ const TranslationAudioExam: React.FC<TranslationAudioExamProps> = ({ trainerId, 
                       className="bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
                     >
                       <CheckCircle size={20} weight="BoldDuotone" className="mr-2" />
-                      Submit Exam
+                      {t('submitExam')}
                     </Button>
                   </div>
                 </div>

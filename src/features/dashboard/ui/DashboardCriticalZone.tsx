@@ -3,28 +3,27 @@ import { KpiGrid } from '../components/KpiGrid';
 import { SectionLabel } from '../components/SectionLabel';
 import { getDashboardCriticalData } from '../services/server/getDashboardCriticalData';
 import { getExpiredSessionRedirect, isUnauthorizedError } from '@/utils/auth-error';
+import { getTranslations } from 'next-intl/server';
 import { redirect } from 'next/navigation';
 
 export async function DashboardCriticalZone() {
   try {
+    const t = await getTranslations('dashboard');
     const { user, summary } = await getDashboardCriticalData();
-    const firstName = user?.firstName ?? 'there';
+    const firstName = user?.firstName ?? t('welcomeFallbackName');
 
     return (
       <>
         <header className="space-y-1">
           <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
-            Welcome back,
-            {' '}
-            {firstName}
-            !
+            {t('welcome', { name: firstName })}
           </h1>
           <p className="text-sm text-muted-foreground sm:text-base">
-            Track your language learning progress and improve your skills with our AI-powered tools.
+            {t('subtitle')}
           </p>
         </header>
 
-        <SectionLabel>Overview</SectionLabel>
+        <SectionLabel>{t('section.overview')}</SectionLabel>
         <KpiGrid summary={summary} />
         <FsrsSummaryCard summary={summary} />
       </>

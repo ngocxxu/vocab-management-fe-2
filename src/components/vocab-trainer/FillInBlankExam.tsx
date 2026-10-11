@@ -12,6 +12,7 @@ import {
   CheckCircle,
   RefreshCircle,
 } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { submitExam } from '@/actions/vocab-trainers';
@@ -26,6 +27,7 @@ import FillInBlankCard from './FillInBlankCard';
 import VocabExamHeader from './VocabExamHeader';
 
 const FillInBlankExam: React.FC<FillInBlankExamProps> = ({ trainerId, examData }) => {
+  const t = useTranslations();
   const router = useRouter();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Map<number, string>>(() => new Map());
@@ -92,7 +94,7 @@ const FillInBlankExam: React.FC<FillInBlankExamProps> = ({ trainerId, examData }
 
       if (result && typeof result === 'object' && 'error' in result) {
         const errorMessage = result.error as string;
-        setError(errorMessage || 'Failed to submit exam. Please try again.');
+        setError(errorMessage || t('trainer.fillInSubmit.failed'));
         setExamState('error');
         return;
       }
@@ -117,13 +119,13 @@ const FillInBlankExam: React.FC<FillInBlankExamProps> = ({ trainerId, examData }
         router.push(`/vocab-trainer/${trainerId}/exam/fill-in-blank/result`);
       } else {
         logger.error('Response does not contain jobId:', { result, trainerId });
-        setError('Failed to get evaluation job ID. The server response was invalid.');
+        setError(t('trainer.fillInSubmit.noJobId'));
         setExamState('error');
       }
     } catch (err: unknown) {
       logger.error('Failed to submit exam:', { error: err, trainerId });
 
-      let errorMessage = 'Failed to submit exam. Please try again.';
+      let errorMessage = t('trainer.fillInSubmit.failed');
 
       if (err && typeof err === 'object' && 'response' in err) {
         const apiError = err as { response?: { data?: unknown } };
@@ -140,7 +142,7 @@ const FillInBlankExam: React.FC<FillInBlankExamProps> = ({ trainerId, examData }
       setError(errorMessage);
       setExamState('error');
     }
-  }, [totalQuestions, questions, questionType, timeElapsed, trainerId, router]);
+  }, [totalQuestions, questions, questionType, timeElapsed, trainerId, router, t]);
 
   const handleBackToTrainers = () => {
     router.push('/vocab-trainer');
@@ -192,10 +194,10 @@ const FillInBlankExam: React.FC<FillInBlankExamProps> = ({ trainerId, examData }
           <RefreshCircle size={64} weight="BoldDuotone" className="mx-auto animate-spin text-primary" />
           <div className="space-y-2">
             <h2 className="text-2xl font-bold text-foreground">
-              Submitting your exam...
+              {t('trainer.fillInSubmit.title')}
             </h2>
             <p className="text-muted-foreground">
-              Please wait while we process your answers
+              {t('trainer.fillInSubmit.body')}
             </p>
           </div>
         </div>
@@ -208,7 +210,7 @@ const FillInBlankExam: React.FC<FillInBlankExamProps> = ({ trainerId, examData }
       <ExamErrorState
         error={error}
         onBackToTrainers={handleBackToTrainers}
-        fallbackMessage="An error occurred while submitting the exam."
+        fallbackMessage={t('trainer.exam.submitErrorFallback')}
       />
     );
   }
@@ -217,7 +219,7 @@ const FillInBlankExam: React.FC<FillInBlankExamProps> = ({ trainerId, examData }
     return (
       <Alert>
         <AlertDescription>
-          No questions available for this exam.
+          {t('trainer.exam.noQuestions')}
         </AlertDescription>
       </Alert>
     );
@@ -229,7 +231,7 @@ const FillInBlankExam: React.FC<FillInBlankExamProps> = ({ trainerId, examData }
     <div className="min-h-screen bg-background px-4 py-4 sm:px-6 sm:py-8">
       <div className="mx-auto max-w-6xl space-y-5 sm:space-y-8">
         <VocabExamHeader
-          trainerName={examData.name || 'Vocabulary Exam'}
+          trainerName={examData.name || t('trainer.fillInSubmit.untitled')}
           currentQuestion={currentQuestionIndex + 1}
           totalQuestions={totalQuestions}
           timeRemaining={timeRemaining}
@@ -253,7 +255,7 @@ const FillInBlankExam: React.FC<FillInBlankExamProps> = ({ trainerId, examData }
                 className="w-full border-border bg-secondary text-foreground hover:bg-secondary/80 sm:w-auto"
               >
                 <AltArrowLeft size={20} weight="BoldDuotone" className="mr-2" />
-                Previous
+                {t('trainer.exam.previous')}
               </Button>
             </TooltipTrigger>
             <TooltipContent side="bottom" align="center">
@@ -266,7 +268,7 @@ const FillInBlankExam: React.FC<FillInBlankExamProps> = ({ trainerId, examData }
 
           <div className="text-center">
             <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
-              Answered
+              {t('trainer.exam.answered')}
             </p>
             <p className="text-2xl font-bold text-foreground">
               {answeredCount}
@@ -285,7 +287,7 @@ const FillInBlankExam: React.FC<FillInBlankExamProps> = ({ trainerId, examData }
                   className="w-full bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 sm:w-auto"
                 >
                   <CheckCircle size={20} weight="BoldDuotone" className="mr-2" />
-                  Submit Exam
+                  {t('trainer.exam.submit')}
                 </Button>
               )
             : (
@@ -296,7 +298,7 @@ const FillInBlankExam: React.FC<FillInBlankExamProps> = ({ trainerId, examData }
                       onClick={handleNext}
                       className="w-full border-border bg-secondary text-foreground hover:bg-secondary/80 sm:w-auto"
                     >
-                      Next
+                      {t('trainer.exam.next')}
                       <AltArrowRight size={20} weight="BoldDuotone" className="ml-2" />
                     </Button>
                   </TooltipTrigger>

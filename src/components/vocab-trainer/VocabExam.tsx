@@ -12,6 +12,7 @@ import {
   AltArrowRight,
   CheckCircle,
 } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
 import { submitExam } from '@/actions/vocab-trainers';
@@ -25,6 +26,7 @@ import QuestionCard from './QuestionCard';
 import VocabExamHeader from './VocabExamHeader';
 
 const VocabExam: React.FC<VocabExamProps> = ({ trainerId, examData }) => {
+  const t = useTranslations('trainer.exam');
   const router = useRouter();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Map<number, string>>(() => new Map());
@@ -93,10 +95,10 @@ const VocabExam: React.FC<VocabExamProps> = ({ trainerId, examData }) => {
       setExamState('completed');
     } catch (err) {
       console.error('Failed to submit exam:', err);
-      setError('Failed to submit exam. Please try again.');
+      setError(t('submitFailed'));
       setExamState('error');
     }
-  }, [selectedAnswers, totalQuestions, questions, trainerId, examData.questionType, timeElapsed]);
+  }, [selectedAnswers, totalQuestions, questions, trainerId, examData.questionType, timeElapsed, t]);
 
   const handleBackToTrainers = () => {
     router.push('/vocab-trainer');
@@ -145,7 +147,7 @@ const VocabExam: React.FC<VocabExamProps> = ({ trainerId, examData }) => {
       <ExamErrorState
         error={error}
         onBackToTrainers={handleBackToTrainers}
-        fallbackMessage="An error occurred while submitting the exam."
+        fallbackMessage={t('submitErrorFallback')}
       />
     );
   }
@@ -154,7 +156,7 @@ const VocabExam: React.FC<VocabExamProps> = ({ trainerId, examData }) => {
     return (
       <Alert>
         <AlertDescription>
-          No questions available for this exam.
+          {t('noQuestions')}
         </AlertDescription>
       </Alert>
     );
@@ -164,7 +166,7 @@ const VocabExam: React.FC<VocabExamProps> = ({ trainerId, examData }) => {
     <div className="min-h-screen bg-background px-4 py-4 sm:px-6 sm:py-8">
       <div className="mx-auto max-w-6xl space-y-5 sm:space-y-8">
         <VocabExamHeader
-          trainerName={examData.name || 'Vocabulary Exam'}
+          trainerName={examData.name || t('untitled')}
           currentQuestion={currentQuestionIndex + 1}
           totalQuestions={totalQuestions}
           timeRemaining={timeRemaining}
@@ -185,12 +187,12 @@ const VocabExam: React.FC<VocabExamProps> = ({ trainerId, examData }) => {
             className="w-full border-border bg-secondary text-foreground hover:bg-secondary/80 sm:w-auto"
           >
             <AltArrowLeft size={20} weight="BoldDuotone" className="mr-2" />
-            Previous
+            {t('previous')}
           </Button>
 
           <div className="text-center">
             <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
-              Answered
+              {t('answered')}
             </p>
             <p className="text-2xl font-bold text-foreground">
               {selectedAnswers.size}
@@ -209,7 +211,7 @@ const VocabExam: React.FC<VocabExamProps> = ({ trainerId, examData }) => {
                   className="w-full bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 sm:w-auto"
                 >
                   <CheckCircle size={20} weight="BoldDuotone" className="mr-2" />
-                  {examState === 'submitting' ? 'Submitting...' : 'Submit Exam'}
+                  {examState === 'submitting' ? t('submitting') : t('submit')}
                 </Button>
               )
             : (
@@ -218,7 +220,7 @@ const VocabExam: React.FC<VocabExamProps> = ({ trainerId, examData }) => {
                   onClick={handleNext}
                   className="w-full border-border bg-secondary text-foreground hover:bg-secondary/80 sm:w-auto"
                 >
-                  Next
+                  {t('next')}
                   <AltArrowRight size={20} weight="BoldDuotone" className="ml-2" />
                 </Button>
               )}

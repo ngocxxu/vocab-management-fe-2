@@ -1,6 +1,7 @@
 'use client';
 
 import type { FillInBlankCardProps } from '@/types/vocab-trainer';
+import { useTranslations } from 'next-intl';
 import React, { useMemo } from 'react';
 import { Input } from '@/components/ui/input';
 
@@ -30,6 +31,7 @@ const FillInBlankCard: React.FC<FillInBlankCardProps> = ({
   onAnswerSelect,
   handleKeyDown,
 }) => {
+  const t = useTranslations('trainer.fillIn');
   const answer = selectedAnswer || '';
 
   const handleInputChange = (value: string) => {
@@ -45,9 +47,7 @@ const FillInBlankCard: React.FC<FillInBlankCardProps> = ({
     <div className="mx-auto max-w-6xl space-y-5 sm:space-y-8">
       <div className="space-y-3 text-center sm:space-y-6">
         <div className="inline-flex rounded-full bg-accent px-4 py-1.5 text-sm font-bold text-primary">
-          • QUESTION
-          {' '}
-          {questionNumber}
+          {t('question', { number: questionNumber })}
         </div>
         <h2 className="text-lg leading-relaxed font-bold text-foreground sm:text-2xl lg:text-3xl">
           {questionContent}
@@ -56,14 +56,14 @@ const FillInBlankCard: React.FC<FillInBlankCardProps> = ({
 
       <div className="space-y-3">
         <label htmlFor="fill-in-blank-answer" className="block text-center text-xs font-medium tracking-wide text-muted-foreground uppercase">
-          Type your answer
+          {t('typeAnswer')}
         </label>
         <Input
           id="fill-in-blank-answer"
           type="text"
           value={answer}
           onChange={e => handleInputChange(e.target.value)}
-          placeholder="Enter your answer here..."
+          placeholder={t('placeholder')}
           className="h-14 rounded-xl border border-input bg-card px-5 text-lg text-foreground placeholder:text-muted-foreground placeholder:italic focus-visible:ring-ring"
           onKeyDown={handleKeyDown}
         />

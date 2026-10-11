@@ -1,6 +1,7 @@
 'use client';
 
 import type { TQuestionAPI } from '@/types/vocab-trainer';
+import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
 import React from 'react';
 import { toast } from 'sonner';
@@ -11,6 +12,8 @@ import FlipCardExam from '@/components/vocab-trainer/FlipCardExam';
 import { useExamData } from '@/hooks/useExamData';
 
 const FlipCardExamPage: React.FC = () => {
+  const t = useTranslations('trainer.exam');
+  const tShared = useTranslations('shared');
   const params = useParams();
   const router = useRouter();
   const trainerId = params.id as string;
@@ -26,8 +29,8 @@ const FlipCardExamPage: React.FC = () => {
     autoLoad: true,
     onErrorAction: (err) => {
       console.error('Failed to load exam:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load exam';
-      toast.error('Failed to load exam', {
+      const errorMessage = err instanceof Error ? err.message : t('loadFailed');
+      toast.error(t('loadFailed'), {
         description: errorMessage,
         duration: 5000,
       });
@@ -43,7 +46,7 @@ const FlipCardExamPage: React.FC = () => {
       ? error.message
       : typeof error === 'string'
         ? error
-        : 'Failed to load exam. Please try again.';
+        : t('loadFailedDetail');
 
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
@@ -55,7 +58,7 @@ const FlipCardExamPage: React.FC = () => {
           </Alert>
           <div className="flex justify-center">
             <Button onClick={handleBackToTrainers} variant="outline">
-              Back to Trainers
+              {tShared('backToTrainers')}
             </Button>
           </div>
         </div>
@@ -65,13 +68,13 @@ const FlipCardExamPage: React.FC = () => {
 
   if (isLoading || !examData?.questionAnswers?.length) {
     const loadingMessage = generationStatus === 'generating'
-      ? 'Generating questions...'
-      : 'Loading exam...';
+      ? t('generating')
+      : t('loading');
 
     return (
       <LoadingComponent
         title={loadingMessage}
-        description="This may take a few moments. Please wait."
+        description={t('waitMoments')}
       />
     );
   }

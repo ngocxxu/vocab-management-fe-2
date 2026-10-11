@@ -3,6 +3,7 @@
 import { EQuestionType } from '@/enum/vocab-trainer';
 import type { TExamSubmitResponse, TFillInBlankEvaluationProgress } from '@/types/vocab-trainer';
 import { RefreshCircle } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
 import { ExamErrorState } from '@/shared/ui/shared';
@@ -16,6 +17,7 @@ import {
 import { SOCKET_EVENTS } from '@/utils/socket-config';
 
 const FillInBlankResultPage: React.FC = () => {
+  const t = useTranslations('trainer.evaluation');
   const params = useParams();
   const router = useRouter();
   const trainerId = params.id as string;
@@ -101,7 +103,7 @@ const FillInBlankResultPage: React.FC = () => {
         }
         setIsLoading(false);
       } else if (data.status === 'failed') {
-        setError(data.data?.error || 'Evaluation failed');
+        setError(data.data?.error || t('failed'));
         setIsLoading(false);
       }
     };
@@ -111,7 +113,7 @@ const FillInBlankResultPage: React.FC = () => {
     return () => {
       socket.off(SOCKET_EVENTS.FILL_IN_BLANK_EVALUATION_PROGRESS, handleFillInBlankEvaluationProgress);
     };
-  }, [socket, jobId, isConnected]);
+  }, [socket, jobId, isConnected, t]);
 
   const handleBackToTrainers = () => {
     const storageKey = `fill_in_blank_result_${trainerId}`;
@@ -129,10 +131,10 @@ const FillInBlankResultPage: React.FC = () => {
           <RefreshCircle size={64} weight="BoldDuotone" className="mx-auto animate-spin text-primary" />
           <div className="space-y-2">
             <h2 className="text-2xl font-bold text-foreground">
-              Evaluating answers with AI...
+              {t('fillInTitle')}
             </h2>
             <p className="text-muted-foreground">
-              This may take a few moments. Please wait.
+              {t('wait')}
             </p>
           </div>
         </div>

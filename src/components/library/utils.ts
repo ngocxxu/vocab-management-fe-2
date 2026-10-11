@@ -1,7 +1,7 @@
 type TTranslateTime = (key: string, values?: Record<string, number | string>) => string;
 
 /** Relative time for a folder's last update; `t` is the `library.time` translator. */
-export function formatEditedAgo(updatedAt: string | null | undefined, t: TTranslateTime): string {
+export function formatEditedAgo(updatedAt: string | null | undefined, t: TTranslateTime, locale: string): string {
   if (updatedAt == null || updatedAt === '') {
     return '—';
   }
@@ -26,7 +26,7 @@ export function formatEditedAgo(updatedAt: string | null | undefined, t: TTransl
   if (diffDays < 7) {
     return t('daysAgo', { count: diffDays });
   }
-  return date.toLocaleDateString();
+  return date.toLocaleDateString(locale);
 }
 
 export { getLanguageName } from '@/shared/utils/language';

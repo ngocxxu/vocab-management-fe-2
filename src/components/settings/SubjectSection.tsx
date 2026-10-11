@@ -149,7 +149,7 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
       <DialogTrigger asChild>
         <Button>
           <AddCircle size={16} weight="BoldDuotone" className="mr-2" />
-          Add New Subject
+          {t('list.addNew')}
         </Button>
       </DialogTrigger>
       <DialogContent>
@@ -215,14 +215,14 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
               <Card>
                 <CardContent className="py-12 text-center">
                   <h4 className="mb-2 text-lg font-medium text-foreground">
-                    No subjects yet
+                    {t('list.emptyTitle')}
                   </h4>
                   <p className="mb-4 text-muted-foreground">
-                    Create your first subject to get started
+                    {t('list.emptyBody')}
                   </p>
                   <Button onClick={() => setIsCreateDialogOpen(true)}>
                     <AddCircle size={16} weight="BoldDuotone" className="mr-2" />
-                    Add New Subject
+                    {t('list.addNew')}
                   </Button>
                 </CardContent>
               </Card>
@@ -236,19 +236,19 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
                         <thead>
                           <tr className="border-b border-border">
                             <th className="bg-muted/30 px-3 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:px-6 sm:py-4">
-                              Reorder
+                              {t('list.columnReorder')}
                             </th>
                             <th className="bg-muted/30 px-3 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:px-6 sm:py-4">
-                              Subject Details
+                              {t('list.columnDetails')}
                             </th>
                             <th className="bg-muted/30 px-3 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:px-6 sm:py-4">
-                              Word Count
+                              {t('list.columnWordCount')}
                             </th>
                             <th className="bg-muted/30 px-3 py-3 text-left text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:px-6 sm:py-4">
-                              Created Date
+                              {t('list.columnCreated')}
                             </th>
                             <th className="bg-muted/30 px-3 py-3 text-right text-xs font-semibold tracking-wider text-muted-foreground uppercase sm:px-6 sm:py-4">
-                              Actions
+                              {t('list.columnActions')}
                             </th>
                           </tr>
                         </thead>
@@ -293,13 +293,13 @@ export const SubjectSection: React.FC<SubjectSectionProps> = ({ initialSubjectsD
                 <Alert className="border-border bg-accent/40">
                   <InfoCircle className="size-5 text-primary" />
                   <AlertDescription>
-                    You can drag the
+                    {t('list.dragHintBefore')}
                     {' '}
                     <span className="inline-flex rounded p-0.5 text-muted-foreground" aria-hidden>
                       <Reorder className="translate-y-1" size={16} weight="BoldDuotone" />
                     </span>
                     {' '}
-                    handle to reorder how subjects appear in your dashboard.
+                    {t('list.dragHintAfter')}
                   </AlertDescription>
                 </Alert>
               </>

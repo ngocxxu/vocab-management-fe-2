@@ -7,41 +7,45 @@ import { scalePoint } from '@tanstack/charts-scales/point';
 import { tooltip } from '@tanstack/charts/tooltip';
 import { Chart } from '@tanstack/react-charts/tooltip';
 import { curveMonotoneX } from 'd3-shape';
+import { useLocale, useTranslations } from 'next-intl';
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { renderChartTooltipBody } from '@/features/dashboard/ui/ChartTooltipBody';
 
-const formatDate = (dateString: string): string => {
+const formatDate = (dateString: string, locale: string): string => {
   const date = new Date(dateString);
-  const month = date.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
+  const month = date.toLocaleDateString(locale, { month: 'short' }).toUpperCase();
   const day = date.getDate().toString().padStart(2, '0');
   return `${month} ${day}`;
 };
 
 export const ProgressChart: React.FC<ProgressChartProps> = ({ data }) => {
+  const t = useTranslations('dashboard');
+  const locale = useLocale();
+
   if (!data || data.length === 0) {
     return (
       <Card className="h-full overflow-hidden border-0 bg-card shadow-sm">
         <CardHeader className="pb-4">
           <div className="flex flex-wrap items-start justify-between gap-2">
             <div>
-              <CardTitle className="text-xl font-bold text-foreground">Mastery Progress</CardTitle>
-              <p className="text-sm text-muted-foreground">Average mastery score trend over time.</p>
+              <CardTitle className="text-xl font-bold text-foreground">{t('progress.title')}</CardTitle>
+              <p className="text-sm text-muted-foreground">{t('progress.subtitle')}</p>
             </div>
             <Select value="weekly">
               <SelectTrigger className="h-9 w-[130px] rounded-lg border-border bg-muted/50">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="weekly">Weekly View</SelectItem>
+                <SelectItem value="weekly">{t('progress.weekly')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </CardHeader>
         <CardContent className="p-6">
           <div className="flex h-64 items-center justify-center text-muted-foreground">
-            No data available
+            {t('noData')}
           </div>
         </CardContent>
       </Card>
@@ -50,7 +54,7 @@ export const ProgressChart: React.FC<ProgressChartProps> = ({ data }) => {
 
   const chartData = data.map(item => ({
     ...item,
-    formattedDate: formatDate(item.date),
+    formattedDate: formatDate(item.date, locale),
   }));
 
   const progressChart = defineChart({
@@ -82,7 +86,7 @@ export const ProgressChart: React.FC<ProgressChartProps> = ({ data }) => {
         }
         return {
           title: String(point.xValue),
-          rows: [{ label: 'Average Mastery', value: point.datum.averageMastery.toFixed(1) }],
+          rows: [{ label: t('progress.averageMastery'), value: point.datum.averageMastery.toFixed(1) }],
         };
       },
     },
@@ -93,15 +97,15 @@ export const ProgressChart: React.FC<ProgressChartProps> = ({ data }) => {
       <CardHeader className="pb-4">
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div>
-            <CardTitle className="text-xl font-bold text-foreground">Mastery Progress</CardTitle>
-            <p className="text-sm text-muted-foreground">Average mastery score trend over time.</p>
+            <CardTitle className="text-xl font-bold text-foreground">{t('progress.title')}</CardTitle>
+            <p className="text-sm text-muted-foreground">{t('progress.subtitle')}</p>
           </div>
           <Select value="weekly">
             <SelectTrigger className="h-9 w-[130px] rounded-lg border-border bg-muted/50">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="weekly">Weekly View</SelectItem>
+              <SelectItem value="weekly">{t('progress.weekly')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -110,7 +114,7 @@ export const ProgressChart: React.FC<ProgressChartProps> = ({ data }) => {
         <Chart
           definition={progressChart}
           height={300}
-          ariaLabel="Average mastery score over time"
+          ariaLabel={t('progress.aria')}
           renderTooltipBody={renderChartTooltipBody}
         />
       </CardContent>

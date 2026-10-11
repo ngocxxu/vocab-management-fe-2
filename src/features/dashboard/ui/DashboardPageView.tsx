@@ -8,11 +8,14 @@ import { DashboardCriticalZone } from './DashboardCriticalZone';
 import { DashboardHeatmapZone } from './DashboardHeatmapZone';
 import { DashboardNextActionZone } from './DashboardNextActionZone';
 import { DashboardProblematicZone } from './DashboardProblematicZone';
+import { useTranslations } from 'next-intl';
 import { Suspense } from 'react';
 
 const OVERVIEW_SKELETON_KEYS = ['total-words', 'average-mastery', 'accuracy', 'need-review'];
 
 export function DashboardPageView() {
+  const t = useTranslations('dashboard.section');
+
   return (
     <main className="flex-1 overflow-y-auto bg-background p-4 md:p-6 lg:p-8">
       <div className="container mx-auto space-y-6 md:space-y-8">
@@ -33,7 +36,7 @@ export function DashboardPageView() {
 
         <div className="grid grid-cols-1 items-stretch gap-6 lg:grid-cols-3 lg:gap-8">
           <div className="flex min-w-0 flex-col gap-3 lg:col-span-1">
-            <SectionLabel>Next action</SectionLabel>
+            <SectionLabel>{t('nextAction')}</SectionLabel>
             <div className="flex min-h-0 flex-1 flex-col">
               <Suspense fallback={<HeroCTASkeleton />}>
                 <DashboardNextActionZone />
@@ -41,7 +44,7 @@ export function DashboardPageView() {
             </div>
           </div>
           <div className="flex min-w-0 flex-col gap-3 lg:col-span-2">
-            <SectionLabel>Activity</SectionLabel>
+            <SectionLabel>{t('activity')}</SectionLabel>
             <div className="flex min-h-0 flex-1 flex-col">
               <Suspense fallback={<HeatmapSkeleton />}>
                 <DashboardHeatmapZone />
@@ -50,12 +53,12 @@ export function DashboardPageView() {
           </div>
         </div>
 
-        <SectionLabel>Words to review</SectionLabel>
+        <SectionLabel>{t('wordsToReview')}</SectionLabel>
         <Suspense fallback={<TableSkeleton />}>
           <DashboardProblematicZone />
         </Suspense>
 
-        <SectionLabel>Charts</SectionLabel>
+        <SectionLabel>{t('charts')}</SectionLabel>
         <Suspense fallback={<ChartsSkeleton />}>
           <DashboardChartsZone />
         </Suspense>

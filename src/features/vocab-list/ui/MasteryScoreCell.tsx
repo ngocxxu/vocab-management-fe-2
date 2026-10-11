@@ -1,6 +1,7 @@
 'use client';
 
-import { clampMasteryPercent, getMasteryColors, getMasteryDisplay } from '@/utils/vocab-mastery';
+import { useTranslations } from 'next-intl';
+import { clampMasteryPercent, getMasteryColors, getMasteryDisplay, MASTERY_LABEL_KEYS } from '@/utils/vocab-mastery';
 
 const CIRCLE_SIZE = 32;
 const CIRCLE_R = 14;
@@ -8,6 +9,7 @@ const CIRCLE_STROKE = 3;
 const CIRCLE_CIRCUMFERENCE = 2 * Math.PI * CIRCLE_R;
 
 function MasteryScoreCell({ score }: Readonly<{ score?: number }>) {
+  const t = useTranslations('mastery');
   const percent = clampMasteryPercent(score);
   const { label, kind } = getMasteryDisplay(score);
   const colors = getMasteryColors(kind);
@@ -48,7 +50,7 @@ function MasteryScoreCell({ score }: Readonly<{ score?: number }>) {
         </span>
       </div>
       <span className={`inline-flex items-center rounded-full px-3 py-0.5 text-xs font-medium ${colors.pill}`}>
-        {label}
+        {t(MASTERY_LABEL_KEYS[label])}
       </span>
     </div>
   );

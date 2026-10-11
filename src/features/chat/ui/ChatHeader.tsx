@@ -2,9 +2,11 @@
 
 import Image from 'next/image';
 import { CloseCircle } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import { useChat } from '@/providers/ChatProvider';
 
 export function ChatHeader() {
+  const t = useTranslations('chat.header');
   const { toggleOpen } = useChat();
 
   return (
@@ -12,7 +14,7 @@ export function ChatHeader() {
       <div className="relative shrink-0">
         <Image
           src="/assets/images/head_ai.png"
-          alt="AI Assistant"
+          alt={t('title')}
           width={42}
           height={42}
           className="rounded-full object-cover"
@@ -20,13 +22,13 @@ export function ChatHeader() {
         <span className="absolute right-0 bottom-0 size-3 rounded-full bg-success ring-2 ring-card" />
       </div>
       <div className="flex-1">
-        <p className="text-sm font-semibold text-foreground">AI Assistant</p>
-        <p className="text-xs font-medium text-success">Online</p>
+        <p className="text-sm font-semibold text-foreground">{t('title')}</p>
+        <p className="text-xs font-medium text-success">{t('online')}</p>
       </div>
       <button
         type="button"
         onClick={() => void toggleOpen(false)}
-        aria-label="Close chat"
+        aria-label={t('close')}
         className="flex size-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         <CloseCircle size={18} weight="BoldDuotone" />

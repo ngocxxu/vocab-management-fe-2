@@ -5,6 +5,8 @@ import { act, createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { EFsrsDirection, EFsrsState, EQuestionType } from '@/enum/vocab-trainer';
+import en from '@/locales/en.json';
+import { NextIntlClientProvider } from 'next-intl';
 import FsrsReviewSession from './FsrsReviewSession';
 
 const { submitReviewAnswer, checkReviewAnswer, toastError } = vi.hoisted(() => ({
@@ -45,16 +47,20 @@ async function mount(items: TFsrsQueueItem[], questionType: EQuestionType.FLIP_C
   const root = createRoot(container);
   unmount = () => root.unmount();
   await act(async () => {
-    root.render(createElement(FsrsReviewSession, {
-      trainerId: 'trainer-1',
-      questionType,
-      items,
-      pendingAfter: 0,
-      moreCount: 0,
-      isLoadingMore: false,
-      onMore: vi.fn(),
-      onStop: vi.fn(),
-      onEnded: vi.fn(),
+    root.render(createElement(NextIntlClientProvider, {
+      locale: 'en',
+      messages: en,
+      children: createElement(FsrsReviewSession, {
+        trainerId: 'trainer-1',
+        questionType,
+        items,
+        pendingAfter: 0,
+        moreCount: 0,
+        isLoadingMore: false,
+        onMore: vi.fn(),
+        onStop: vi.fn(),
+        onEnded: vi.fn(),
+      }),
     }));
   });
 }

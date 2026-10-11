@@ -1,41 +1,38 @@
 'use client';
 
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { useFormContext } from 'react-hook-form';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
 import { Slider } from '@/shared/ui/slider';
 
 const SECONDS_PER_MINUTE = 60;
 
-function formatMinutes(seconds: number): string {
-  const minutes = Math.floor(seconds / SECONDS_PER_MINUTE);
-  return minutes === 1 ? '1 minute' : `${minutes} minutes`;
-}
-
 /** Shown in the dialog footer for Classic trainers, so both modes summarise the same way. */
 export const ClassicCardSummary: React.FC<{ wordCount: number }> = ({ wordCount }) => {
+  const t = useTranslations('trainer.classic');
   const form = useFormContext();
   const seconds = form.watch('setCountTime') as number;
 
   return (
     <p className="text-sm text-muted-foreground">
-      {wordCount}
-      {' '}
-      {wordCount === 1 ? 'word' : 'words'}
-      {' · '}
-      <span className="font-semibold text-foreground">{formatMinutes(seconds)}</span>
-      {' time limit'}
+      {t.rich('cardSummary', {
+        count: wordCount,
+        time: t('minutes', { count: Math.floor(seconds / SECONDS_PER_MINUTE) }),
+        strong: chunks => <span className="font-semibold text-foreground">{chunks}</span>,
+      })}
     </p>
   );
 };
 
 const ClassicSettingsFields: React.FC = () => {
+  const t = useTranslations('trainer.classic');
   const form = useFormContext();
 
   return (
     <div className="space-y-5">
       <h3 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-        Timed test
+        {t('timedTest')}
       </h3>
 
       <FormField
@@ -44,9 +41,9 @@ const ClassicSettingsFields: React.FC = () => {
         render={({ field }) => (
           <FormItem>
             <div className="flex items-center justify-between gap-3">
-              <FormLabel>Time Limit</FormLabel>
+              <FormLabel>{t('timeLimit')}</FormLabel>
               <span className="inline-flex rounded-full bg-primary/15 px-3 py-1 text-sm font-medium text-primary">
-                {formatMinutes(field.value)}
+                {t('minutes', { count: Math.floor(field.value / SECONDS_PER_MINUTE) })}
               </span>
             </div>
             <FormControl>
@@ -59,7 +56,7 @@ const ClassicSettingsFields: React.FC = () => {
                   field.onChange(value[0]);
                   form.clearErrors('setCountTime');
                 }}
-                aria-label="Time limit"
+                aria-label={t('timeLimitAria')}
               />
             </FormControl>
             <FormMessage />

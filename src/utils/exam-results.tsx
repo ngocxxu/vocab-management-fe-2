@@ -25,23 +25,26 @@ export function formatDurationColon(seconds: number): string {
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
-export function formatAvgPerQuestion(totalSeconds: number, count: number): string {
+/** Translator that takes a full message key, e.g. `trainer.results.avgNone`. */
+export type TExamResultsTranslator = (key: string, values?: Record<string, string | number>) => string;
+
+export function formatAvgPerQuestion(totalSeconds: number, count: number, t: TExamResultsTranslator): string {
   if (count <= 0) {
-    return 'AVG. — PER QUESTION';
+    return t('trainer.results.avgNone');
   }
   const avg = Math.round(totalSeconds / count);
   if (avg < 60) {
-    return `AVG. ${avg}S PER QUESTION`;
+    return t('trainer.results.avgSeconds', { seconds: avg });
   }
   const mm = Math.floor(avg / 60);
   const ss = avg % 60;
-  return `AVG. ${mm}M ${ss}S PER QUESTION`;
+  return t('trainer.results.avgMinutes', { minutes: mm, seconds: ss });
 }
 
-export function formatCompletedAt(value: string | Date | undefined): string {
+export function formatCompletedAt(value: string | Date | undefined, locale: string): string {
   if (!value) {
-    return new Date().toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+    return new Date().toLocaleString(locale, { dateStyle: 'medium', timeStyle: 'short' });
   }
   const d = typeof value === 'string' ? new Date(value) : value;
-  return d.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+  return d.toLocaleString(locale, { dateStyle: 'medium', timeStyle: 'short' });
 }

@@ -1,6 +1,6 @@
 import type { VocabTrainerContentProps } from '@/types/vocab-trainer';
 import Link from 'next/link';
-import React from 'react';
+import { getTranslations } from 'next-intl/server';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -11,7 +11,9 @@ import {
 } from '@/components/ui/breadcrumb';
 import { VocabTrainerList } from './index';
 
-const VocabTrainerContent: React.FC<VocabTrainerContentProps> = ({ initialData, initialLanguagesData, currentUser, loadError }) => {
+const VocabTrainerContent = async ({ initialData, initialLanguagesData, currentUser, loadError }: VocabTrainerContentProps) => {
+  const t = await getTranslations('trainer.breadcrumb');
+
   return (
     <div
       className="min-h-screen bg-background"
@@ -25,12 +27,12 @@ const VocabTrainerContent: React.FC<VocabTrainerContentProps> = ({ initialData, 
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link href="/dashboard">Dashboard</Link>
+                <Link href="/dashboard">{t('dashboard')}</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>Vocab Trainer</BreadcrumbPage>
+              <BreadcrumbPage>{t('trainer')}</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>

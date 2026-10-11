@@ -3,6 +3,7 @@
 import type { TCloneFormData } from '@/libs/validations/vocab-trainer';
 import type { TVocabTrainer } from '@/types/vocab-trainer';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
 import React, { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -22,12 +23,13 @@ type CloneTrainerDialogProps = Readonly<{
 }>;
 
 function CloneForm({ trainer, onClose, onCloned }: Readonly<{ trainer: TVocabTrainer; onClose: () => void; onCloned: () => void }>) {
+  const t = useTranslations();
   const schema = useMemo(() => createCloneFormSchema(), []);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useForm<TCloneFormData>({
     resolver: zodResolver(schema),
     mode: 'onChange',
-    defaultValues: { name: `${trainer.name} (new cycle)`, endsAt: '' },
+    defaultValues: { name: t('trainer.clone.defaultName', { name: trainer.name }), endsAt: '' },
   });
   const wordCount = trainer.vocabAssignments?.length ?? 0;
 
@@ -36,13 +38,13 @@ function CloneForm({ trainer, onClose, onCloned }: Readonly<{ trainer: TVocabTra
     try {
       const created = await cloneVocabTrainer(trainer.id, { name: values.name.trim(), endsAt: dateInputToEndsAt(values.endsAt) });
       const skipped = created.fsrsSkippedVocabIds?.length ?? 0;
-      toast.success('New cycle started');
+      toast.success(t('trainer.clone.started'));
       if (skipped > 0) {
-        toast.info(`${skipped} ${skipped === 1 ? 'word has' : 'words have'} no translation yet and got no questions.`);
+        toast.info(t('trainer.toast.skipped', { count: skipped }));
       }
       onCloned();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to start a new cycle');
+      toast.error(error instanceof Error ? error.message : t('trainer.clone.startFailed'));
     } finally {
       setIsSubmitting(false);
     }
@@ -52,18 +54,9 @@ function CloneForm({ trainer, onClose, onCloned }: Readonly<{ trainer: TVocabTra
     <Form {...form}>
       <form onSubmit={handleSubmit} className="space-y-5">
         <DialogHeader>
-          <DialogTitle>Start a new cycle</DialogTitle>
+          <DialogTitle>{t('trainer.clone.title')}</DialogTitle>
           <DialogDescription>
-            A new trainer with the same
-            {' '}
-            {wordCount}
-            {' '}
-            {wordCount === 1 ? 'word' : 'words'}
-            , directions and settings. Every question starts as new.
-            {' '}
-            {trainer.name}
-            {' '}
-            stays as it is, with its history.
+            {t('trainer.clone.description', { count: wordCount, name: trainer.name })}
           </DialogDescription>
         </DialogHeader>
 
@@ -72,7 +65,7 @@ function CloneForm({ trainer, onClose, onCloned }: Readonly<{ trainer: TVocabTra
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Name</FormLabel>
+              <FormLabel>{t('trainer.clone.name')}</FormLabel>
               <FormControl>
                 <Input className="mt-1" autoComplete="off" {...field} />
               </FormControl>
@@ -87,22 +80,22 @@ function CloneForm({ trainer, onClose, onCloned }: Readonly<{ trainer: TVocabTra
           render={({ field }) => (
             <FormItem>
               <FormLabel>
-                Deadline
+                {t('trainer.clone.deadline')}
                 {' '}
-                <span className="font-normal text-muted-foreground">(optional)</span>
+                <span className="font-normal text-muted-foreground">{t('trainer.clone.optional')}</span>
               </FormLabel>
               <FormControl>
                 <Input type="date" className="mt-1" {...field} />
               </FormControl>
-              <p className="text-sm text-muted-foreground">Every word will be asked again before this date, for example an exam.</p>
+              <p className="text-sm text-muted-foreground">{t('trainer.clone.deadlineHint')}</p>
               <FormMessage />
             </FormItem>
           )}
         />
 
         <DialogFooter className="flex-row justify-end gap-2 sm:justify-end">
-          <Button type="button" variant="outline" disabled={isSubmitting} onClick={onClose}>Cancel</Button>
-          <Button type="submit" disabled={isSubmitting || !form.formState.isValid}>{isSubmitting ? 'Starting…' : 'Start new cycle'}</Button>
+          <Button type="button" variant="outline" disabled={isSubmitting} onClick={onClose}>{t('trainer.clone.cancel')}</Button>
+          <Button type="submit" disabled={isSubmitting || !form.formState.isValid}>{isSubmitting ? t('trainer.clone.starting') : t('trainer.clone.startButton')}</Button>
         </DialogFooter>
       </form>
     </Form>

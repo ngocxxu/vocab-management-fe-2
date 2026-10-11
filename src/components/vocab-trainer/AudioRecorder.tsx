@@ -8,12 +8,14 @@ import {
   Stop,
   TrashBin2,
 } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
 const AudioRecorder: React.FC<AudioRecorderProps> = ({ onRecordingComplete, onReset }) => {
+  const t = useTranslations('trainer.recorder');
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
@@ -76,9 +78,9 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onRecordingComplete, onRe
       }, 100);
     } catch (error) {
       console.error('Error accessing microphone:', error);
-      toast.error('Failed to access microphone. Please check permissions.');
+      toast.error(t('micError'));
     }
-  }, [onRecordingComplete]);
+  }, [onRecordingComplete, t]);
 
   const pauseRecording = useCallback(() => {
     if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
@@ -169,7 +171,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onRecordingComplete, onRe
                     </div>
                     {!isRecording && (
                       <p className="text-sm text-muted-foreground">
-                        Click the button below to start recording
+                        {t('hint')}
                       </p>
                     )}
                   </div>
@@ -182,7 +184,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onRecordingComplete, onRe
                             className="bg-primary text-primary-foreground hover:bg-primary/90"
                           >
                             <Microphone size={20} weight="BoldDuotone" className="mr-2" />
-                            Start Recording
+                            {t('start')}
                           </Button>
                         )
                       : (
@@ -194,7 +196,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onRecordingComplete, onRe
                                     className="bg-primary text-primary-foreground hover:bg-primary/90"
                                   >
                                     <Play size={20} weight="BoldDuotone" className="mr-2" />
-                                    Resume
+                                    {t('resume')}
                                   </Button>
                                 )
                               : (
@@ -204,7 +206,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onRecordingComplete, onRe
                                     className="border-border bg-secondary text-foreground hover:bg-secondary/80"
                                   >
                                     <Pause size={20} weight="BoldDuotone" className="mr-2" />
-                                    Pause
+                                    {t('pause')}
                                   </Button>
                                 )}
                             <Button
@@ -212,7 +214,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onRecordingComplete, onRe
                               onClick={stopRecording}
                             >
                               <Stop size={20} weight="BoldDuotone" className="mr-2" />
-                              Stop
+                              {t('stop')}
                             </Button>
                           </>
                         )}
@@ -223,11 +225,11 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onRecordingComplete, onRe
                 <div className="space-y-4">
                   <div className="text-center">
                     <p className="mb-2 text-lg font-semibold text-foreground">
-                      Recording Complete
+                      {t('complete')}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      Duration:
-                      {' '}
+                      {t('duration')}
+                      {': '}
                       {formatTime(duration)}
                     </p>
                   </div>
@@ -238,7 +240,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onRecordingComplete, onRe
                     src={audioUrl || undefined}
                     onEnded={() => setIsPlaying(false)}
                     className="w-full"
-                    aria-label="Recorded audio playback"
+                    aria-label={t('playbackAria')}
                   />
 
                   <div className="flex justify-center gap-4">
@@ -251,13 +253,13 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onRecordingComplete, onRe
                         ? (
                             <>
                               <Pause size={20} weight="BoldDuotone" className="mr-2" />
-                              Pause
+                              {t('pause')}
                             </>
                           )
                         : (
                             <>
                               <Play size={20} weight="BoldDuotone" className="mr-2" />
-                              Play
+                              {t('play')}
                             </>
                           )}
                     </Button>
@@ -267,7 +269,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onRecordingComplete, onRe
                       className="border-border bg-secondary text-foreground hover:bg-secondary/80"
                     >
                       <TrashBin2 size={20} weight="BoldDuotone" className="mr-2" />
-                      Record Again
+                      {t('recordAgain')}
                     </Button>
                   </div>
                 </div>

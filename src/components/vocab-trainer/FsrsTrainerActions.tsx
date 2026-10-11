@@ -2,6 +2,7 @@
 
 import type { TVocabTrainer } from '@/types/vocab-trainer';
 import { Chart } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import React from 'react';
 import { Button } from '@/shared/ui/button';
@@ -20,6 +21,7 @@ type FsrsTrainerActionsProps = Readonly<{
 
 /** Review, or Extend and New cycle once the cycle has ended, and the Stats page. */
 const FsrsTrainerActions: React.FC<FsrsTrainerActionsProps> = ({ trainer, onExtend, onStartNewCycle }) => {
+  const t = useTranslations('trainer.fsrs.actions');
   const ended = isCycleEnded(trainer.fsrsEndsAt, new Date());
 
   return (
@@ -27,20 +29,20 @@ const FsrsTrainerActions: React.FC<FsrsTrainerActionsProps> = ({ trainer, onExte
       {ended
         ? (
             <>
-              <Button type="button" variant="outline" size="sm" className="h-8 rounded-lg" onClick={() => onExtend(trainer)}>Extend</Button>
-              <Button type="button" size="sm" className="h-8 rounded-lg" onClick={() => onStartNewCycle(trainer)}>New cycle</Button>
+              <Button type="button" variant="outline" size="sm" className="h-8 rounded-lg" onClick={() => onExtend(trainer)}>{t('extend')}</Button>
+              <Button type="button" size="sm" className="h-8 rounded-lg" onClick={() => onStartNewCycle(trainer)}>{t('newCycle')}</Button>
             </>
           )
         : <ExamLauncher trainerId={trainer.id} questionType={trainer.questionType} mode={ETrainerMode.FSRS} />}
       <Tooltip>
         <TooltipTrigger asChild>
           <Button asChild variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-accent">
-            <Link href={`/vocab-trainer/${trainer.id}/stats`} aria-label={`Stats of ${trainer.name}`}>
+            <Link href={`/vocab-trainer/${trainer.id}/stats`} aria-label={t('statsOf', { name: trainer.name })}>
               <Chart size={16} weight="BoldDuotone" className="text-muted-foreground" />
             </Link>
           </Button>
         </TooltipTrigger>
-        <TooltipContent side="bottom" align="center">Stats</TooltipContent>
+        <TooltipContent side="bottom" align="center">{t('stats')}</TooltipContent>
       </Tooltip>
     </>
   );

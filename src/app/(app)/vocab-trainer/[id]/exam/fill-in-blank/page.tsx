@@ -1,6 +1,7 @@
 'use client';
 
 import type { TQuestionAPI } from '@/types/vocab-trainer';
+import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
 import React from 'react';
 import { toast } from 'sonner';
@@ -9,6 +10,7 @@ import FillInBlankExam from '@/components/vocab-trainer/FillInBlankExam';
 import { useExamData } from '@/hooks/useExamData';
 
 const FillInBlankExamPage: React.FC = () => {
+  const t = useTranslations('trainer.exam');
   const params = useParams();
   const router = useRouter();
   const trainerId = params.id as string;
@@ -23,8 +25,8 @@ const FillInBlankExamPage: React.FC = () => {
     autoLoad: true,
     onErrorAction: (err) => {
       console.error('Failed to load exam:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load exam';
-      toast.error('Failed to load exam', {
+      const errorMessage = err instanceof Error ? err.message : t('loadFailed');
+      toast.error(t('loadFailed'), {
         description: errorMessage,
         duration: 5000,
       });
@@ -38,13 +40,13 @@ const FillInBlankExamPage: React.FC = () => {
 
   if (isLoading || !examData?.questionAnswers?.length) {
     const loadingMessage = generationStatus === 'generating'
-      ? 'Generating questions...'
-      : 'Loading exam...';
+      ? t('generating')
+      : t('loading');
 
     return (
       <LoadingComponent
         title={loadingMessage}
-        description="This may take a few moments. Please wait."
+        description={t('waitMoments')}
       />
     );
   }

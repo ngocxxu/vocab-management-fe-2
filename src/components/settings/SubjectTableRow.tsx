@@ -4,7 +4,7 @@ import type { SubjectTableRowProps } from '@/types/subject';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Pen, Reorder, TrashBin2 } from '@solar-icons/react/ssr';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import React from 'react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
@@ -13,6 +13,7 @@ import { formatCreatedDate, getSubjectColor, getSubjectInitials } from '@/utils/
 
 export const SubjectTableRow: React.FC<SubjectTableRowProps> = ({ subject, index, onEdit, onDelete }) => {
   const t = useTranslations('subjects');
+  const locale = useLocale();
   const {
     attributes,
     listeners,
@@ -66,7 +67,7 @@ export const SubjectTableRow: React.FC<SubjectTableRowProps> = ({ subject, index
         </Badge>
       </td>
       <td className="px-3 py-3 text-sm text-muted-foreground sm:px-6 sm:py-4">
-        {formatCreatedDate(subject.createdAt)}
+        {formatCreatedDate(subject.createdAt, locale)}
       </td>
       <td className="px-3 py-3 text-right sm:px-6 sm:py-4">
         <div className="flex items-center justify-end gap-1">

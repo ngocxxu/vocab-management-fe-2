@@ -4,17 +4,12 @@ import type { NotificationsPageContentProps, NotificationWithRead } from '@/type
 import { Bell, VolumeLoud } from '@solar-icons/react/ssr';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import React, { useCallback, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
 import { NotificationItem } from './NotificationItem';
 import { NotificationsSidebar } from './NotificationsSidebar';
 import { groupNotificationsByDate } from './utils';
-
-const SECTION_LABELS = {
-  today: 'TODAY',
-  yesterday: 'YESTERDAY',
-  lastWeek: 'LAST WEEK',
-} as const;
 
 function Section({
   label,
@@ -53,6 +48,7 @@ function Section({
 export const NotificationsPageContent: React.FC<NotificationsPageContentProps> = ({
   notificationsWithRead,
 }) => {
+  const t = useTranslations('notifications.page');
   const router = useRouter();
   const [, startTransition] = useTransition();
 
@@ -70,15 +66,15 @@ export const NotificationsPageContent: React.FC<NotificationsPageContentProps> =
                 <Bell size={64} weight="BoldDuotone" className="text-primary/60" />
               </div>
               <div className="absolute -top-4 right-0 rounded-2xl bg-card px-6 py-3 text-xl font-semibold text-primary shadow-lg">
-                Zzz...
+                {t('zzz')}
               </div>
             </div>
 
             <h2 className="text-2xl font-bold text-foreground sm:text-3xl">
-              All clear! You're completely up to date.
+              {t('clearTitle')}
             </h2>
             <p className="mt-4 max-w-xl text-muted-foreground">
-              We'll let you know when you hit new milestones or need a reminder to keep your streak alive.
+              {t('clearBody')}
             </p>
 
             <Button
@@ -87,7 +83,7 @@ export const NotificationsPageContent: React.FC<NotificationsPageContentProps> =
             >
               <Link href="/vocab-trainer">
                 <VolumeLoud size={18} weight="BoldDuotone" className="mr-2" />
-                Start Learning
+                {t('startLearning')}
               </Link>
             </Button>
           </div>
@@ -117,17 +113,17 @@ export const NotificationsPageContent: React.FC<NotificationsPageContentProps> =
     <div className="mt-8 flex flex-col gap-8 lg:flex-row">
       <div className="min-w-0 flex-1">
         <Section
-          label={SECTION_LABELS.today}
+          label={t('today')}
           items={todayWithRead}
           onMarkAsRead={handleMarkAsRead}
         />
         <Section
-          label={SECTION_LABELS.yesterday}
+          label={t('yesterday')}
           items={yesterdayWithRead}
           onMarkAsRead={handleMarkAsRead}
         />
         <Section
-          label={SECTION_LABELS.lastWeek}
+          label={t('lastWeek')}
           items={lastWeekWithRead}
           onMarkAsRead={handleMarkAsRead}
         />

@@ -2,6 +2,7 @@
 
 import type { NotificationListProps } from '@/types/notification';
 import { Bell } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import React from 'react';
 import { NotificationItem } from './NotificationItem';
 
@@ -11,11 +12,13 @@ export const NotificationList: React.FC<NotificationListProps> = ({
   onMarkAsRead,
   onDelete,
 }) => {
+  const t = useTranslations('notifications');
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-8">
         <div className="text-sm text-muted-foreground">
-          Loading notifications...
+          {t('loading')}
         </div>
       </div>
     );
@@ -29,9 +32,9 @@ export const NotificationList: React.FC<NotificationListProps> = ({
           <span className="absolute top-6 right-6 h-1 w-1 rounded-full bg-primary/60" />
           <Bell size={52} weight="BoldDuotone" className="text-primary" />
         </div>
-        <h4 className="mt-4 font-semibold text-foreground">All caught up!</h4>
+        <h4 className="mt-4 font-semibold text-foreground">{t('caughtUp')}</h4>
         <p className="mt-1 text-sm text-muted-foreground">
-          Check back later for progress updates and reminders.
+          {t('caughtUpBody')}
         </p>
       </div>
     );

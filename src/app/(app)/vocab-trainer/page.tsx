@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server';
 import VocabTrainerLayout from '@/components/vocab-trainer/VocabTrainerLayout';
 import { getVocabTrainerPageData } from '@/features/vocab-trainer/services/server/getVocabTrainerPageData';
 import { logger } from '@/libs/Logger';
@@ -24,6 +25,8 @@ export default async function VocabTrainerPage({ searchParams }: PageProps) {
     }
 
     logger.error('Failed to fetch vocab trainers:', { error });
-    return <VocabTrainerLayout loadError="Unable to load vocab trainers right now. Please refresh the page or try again later." />;
+    const t = await getTranslations('trainer');
+
+    return <VocabTrainerLayout loadError={t('loadError')} />;
   }
 }

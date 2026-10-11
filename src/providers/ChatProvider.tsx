@@ -4,6 +4,7 @@ import type { TChatContext, TChatState, TConfirmRequest, TMessage, TToolActivity
 import React, { createContext, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import { io } from 'socket.io-client';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 import { getChatMessages, getChatUnreadCount, markChatRead } from '@/actions/chat';
 import { Env } from '@/libs/Env';
 import { refreshAccessTokenOnce } from '@/libs/auth-refresh-client';
@@ -134,6 +135,7 @@ export function ChatProvider({ children, initialUnreadCount = 0, initialMessages
     nextCursor: initialNextCursor ?? null,
     historyLoaded: (initialMessages?.length ?? 0) > 0,
   });
+  const t = useTranslations('chat');
   const socketRef = useRef<ReturnType<typeof io> | null>(null);
   const inputFocusedRef = useRef(false);
 
@@ -270,7 +272,7 @@ export function ChatProvider({ children, initialUnreadCount = 0, initialMessages
         return;
       }
       toast.error(errMsg, {
-        description: retryable ? 'You can try sending your message again.' : undefined,
+        description: retryable ? t('retryHint') : undefined,
       });
     });
 
@@ -284,7 +286,7 @@ export function ChatProvider({ children, initialUnreadCount = 0, initialMessages
       socket.disconnect();
       socketRef.current = null;
     };
-  }, [fetchUnreadCount]);
+  }, [fetchUnreadCount, t]);
 
   const sendMessage = useCallback((message: string) => {
     dispatch({ type: 'SEND_OPTIMISTIC', message });

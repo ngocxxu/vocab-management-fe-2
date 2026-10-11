@@ -1,10 +1,12 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
 import { getExamUrl } from '@/constants/vocab-trainer';
 
 const ExamPage: React.FC = () => {
+  const t = useTranslations('trainer.exam');
   const params = useParams();
   const router = useRouter();
   const trainerId = params.id as string;
@@ -42,7 +44,7 @@ const ExamPage: React.FC = () => {
   // Show loading while checking localStorage and redirecting
   return (
     <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-lg text-foreground">Loading exam...</div>
+      <div className="text-lg text-foreground">{t('loading')}</div>
     </div>
   );
 };

@@ -2,6 +2,7 @@
 
 import type { TranslationAudioResultsProps } from '@/types/vocab-trainer';
 import { AltArrowLeft, CheckCircle, ClockCircle } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,6 +15,9 @@ const TranslationAudioResults: React.FC<TranslationAudioResultsProps> = ({
   timeElapsed,
   onBackToTrainers,
 }) => {
+  const t = useTranslations('trainer.audioResults');
+  const tShared = useTranslations('shared');
+
   const handleBackToTrainers = () => {
     const storageKey = `exam_data_${trainerId}`;
     localStorage.removeItem(storageKey);
@@ -35,7 +39,7 @@ const TranslationAudioResults: React.FC<TranslationAudioResultsProps> = ({
               <div className="flex items-center justify-center gap-2">
                 <CheckCircle size={32} weight="BoldDuotone" className="text-success" />
                 <CardTitle className="text-3xl font-bold text-foreground">
-                  Evaluation Complete!
+                  {t('evaluationComplete')}
                 </CardTitle>
               </div>
             </CardHeader>
@@ -43,7 +47,7 @@ const TranslationAudioResults: React.FC<TranslationAudioResultsProps> = ({
               <div className="rounded-xl border border-border bg-muted p-4 text-center">
                 <div className="mb-2 flex items-center justify-center gap-2 text-muted-foreground">
                   <ClockCircle size={20} weight="BoldDuotone" />
-                  <span className="text-sm font-medium">Time Taken</span>
+                  <span className="text-sm font-medium">{t('timeTaken')}</span>
                 </div>
                 <p className="font-mono text-2xl font-bold text-foreground">
                   {formatTime(timeElapsed)}
@@ -56,7 +60,7 @@ const TranslationAudioResults: React.FC<TranslationAudioResultsProps> = ({
                   className="bg-primary text-primary-foreground hover:bg-primary/90"
                 >
                   <AltArrowLeft size={20} weight="BoldDuotone" className="mr-2" />
-                  Back to Trainers
+                  {tShared('backToTrainers')}
                 </Button>
               </div>
             </CardContent>
@@ -66,7 +70,7 @@ const TranslationAudioResults: React.FC<TranslationAudioResultsProps> = ({
             <Card className="border border-border bg-card">
               <CardHeader>
                 <CardTitle className="text-xl font-semibold text-foreground">
-                  Your Transcript
+                  {t('transcript')}
                 </CardTitle>
               </CardHeader>
               <CardContent>

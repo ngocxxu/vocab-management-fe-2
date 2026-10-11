@@ -7,6 +7,7 @@ import { scaleBand } from '@tanstack/charts-scales/band';
 import { scaleLinear } from '@tanstack/charts-scales/linear';
 import { tooltip } from '@tanstack/charts/tooltip';
 import { Chart } from '@tanstack/react-charts/tooltip';
+import { useTranslations } from 'next-intl';
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { renderChartTooltipBody } from '@/features/dashboard/ui/ChartTooltipBody';
@@ -18,15 +19,17 @@ const BAR_FILL: Record<string, string> = {
 };
 
 export const DistributionChart: React.FC<DistributionChartProps> = ({ data }) => {
+  const t = useTranslations('dashboard');
+
   if (!data || data.length === 0) {
     return (
       <Card className="overflow-hidden border-0 bg-card shadow-sm">
         <CardHeader className="pb-4">
-          <CardTitle className="text-xl font-bold text-foreground">Mastery Distribution</CardTitle>
+          <CardTitle className="text-xl font-bold text-foreground">{t('distribution.title')}</CardTitle>
         </CardHeader>
         <CardContent className="p-6">
           <div className="flex h-64 items-center justify-center text-muted-foreground">
-            No data available
+            {t('noData')}
           </div>
         </CardContent>
       </Card>
@@ -34,7 +37,7 @@ export const DistributionChart: React.FC<DistributionChartProps> = ({ data }) =>
   }
 
   const barData = groupDistributionBuckets(data).map(bar => ({
-    name: bar.label,
+    name: t(bar.labelKey),
     count: bar.count,
     color: BAR_FILL[bar.barClass] ?? 'var(--muted)',
   }));
@@ -59,7 +62,7 @@ export const DistributionChart: React.FC<DistributionChartProps> = ({ data }) =>
         }
         return {
           title: String(point.xValue),
-          rows: [{ label: 'Count', value: String(point.datum.count) }],
+          rows: [{ label: t('distribution.count'), value: String(point.datum.count) }],
         };
       },
     },
@@ -68,13 +71,13 @@ export const DistributionChart: React.FC<DistributionChartProps> = ({ data }) =>
   return (
     <Card className="overflow-hidden border-0 bg-card shadow-sm">
       <CardHeader className="pb-4">
-        <CardTitle className="text-xl font-bold text-foreground">Mastery Distribution</CardTitle>
+        <CardTitle className="text-xl font-bold text-foreground">{t('distribution.title')}</CardTitle>
       </CardHeader>
       <CardContent className="p-6">
         <Chart
           definition={distributionChart}
           height={280}
-          ariaLabel="Vocabulary count by mastery level"
+          ariaLabel={t('distribution.aria')}
           renderTooltipBody={renderChartTooltipBody}
         />
       </CardContent>

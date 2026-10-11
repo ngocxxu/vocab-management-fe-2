@@ -2,11 +2,13 @@
 
 import type { SubjectsPaginationProps } from '@/types/subject';
 import { AltArrowLeft, AltArrowRight } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { PAGE_SIZE_OPTIONS } from '@/constants/pagination';
 
 export function SubjectsPagination({ currentPage, totalItems, pageSize, onPageChange, onPageSizeChange, pageSizeOptions = PAGE_SIZE_OPTIONS as unknown as number[] }: SubjectsPaginationProps) {
+  const t = useTranslations('subjects.pagination');
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
   const start = (currentPage - 1) * pageSize + 1;
   const end = Math.min(currentPage * pageSize, totalItems);
@@ -16,19 +18,11 @@ export function SubjectsPagination({ currentPage, totalItems, pageSize, onPageCh
     <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
       <div className="flex items-center gap-3">
         <div className="text-sm text-muted-foreground">
-          Showing
-          {' '}
-          {showing}
-          {' '}
-          of
-          {' '}
-          {totalItems}
-          {' '}
-          subjects
+          {t('showing', { shown: showing, total: totalItems })}
         </div>
         {onPageSizeChange && (
           <div className="flex items-center gap-1.5">
-            <span className="text-xs text-muted-foreground">Rows per page</span>
+            <span className="text-xs text-muted-foreground">{t('rowsPerPage')}</span>
             <Select value={String(pageSize)} onValueChange={v => onPageSizeChange(Number(v))}>
               <SelectTrigger className="h-7 w-[70px] border-border bg-background text-xs">
                 <SelectValue />

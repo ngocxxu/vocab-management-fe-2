@@ -225,6 +225,10 @@
       "provider": "Failed to sign in with provider. Please try again.",
       "originUnavailable": "Origin URL could not be determined.",
       "resetPassword": "Failed to send reset email. Please try again."
+    },
+    "sessionExpired": {
+      "title": "Session expired",
+      "description": "Your session has expired. Please sign in again."
     }
   },
   "shell": {
@@ -266,7 +270,8 @@
       "admin": "Admin"
     },
     "errors": {
-      "loadNotifications": "Unable to load notifications"
+      "loadNotifications": "Unable to load notifications",
+      "loadDashboard": "Failed to load dashboard"
     }
   },
   "settings": {
@@ -605,6 +610,22 @@
     "vocabInUse": {
       "single": "This vocab is used by {count} trainers. Remove it from the trainers first.",
       "bulk": "{count, plural, one {# vocab is} other {# vocabs are}} used by trainers. Remove {count, plural, one {it} other {them}} from the trainers first. Nothing was deleted."
+    },
+    "pagination": {
+      "showing": "Showing {shown} of {total} subjects",
+      "rowsPerPage": "Rows per page"
+    },
+    "list": {
+      "addNew": "Add New Subject",
+      "emptyTitle": "No subjects yet",
+      "emptyBody": "Create your first subject to get started",
+      "columnReorder": "Reorder",
+      "columnDetails": "Subject Details",
+      "columnWordCount": "Word Count",
+      "columnCreated": "Created Date",
+      "columnActions": "Actions",
+      "dragHintBefore": "You can drag the",
+      "dragHintAfter": "handle to reorder how subjects appear in your dashboard."
     }
   },
   "trainerConflicts": {
@@ -1033,5 +1054,746 @@
       "privacy": "Privacy",
       "terms": "Terms"
     }
+  },
+  "authCallback": {
+    "failed": "Failed to complete sign in",
+    "redirecting": "Redirecting to sign in page...",
+    "completing": "Completing sign in...",
+    "loading": "Loading..."
+  },
+  "support": {
+    "trigger": "Support",
+    "openAria": "Open support",
+    "inlineTitle": "Contact support",
+    "title": "Contact Support",
+    "category": "Category",
+    "selectCategory": "Select a category",
+    "yourEmail": "Your Email",
+    "subject": "Subject",
+    "subjectPlaceholder": "Brief description of your issue",
+    "message": "Message",
+    "messagePlaceholder": "Describe your issue in detail (minimum 20 characters)",
+    "cancel": "Cancel",
+    "sending": "Sending…",
+    "send": "Send Message",
+    "sent": "Message sent! We'll get back to you soon.",
+    "sendFailed": "Failed to send message. Please try again."
+  },
+  "search": {
+    "title": "Search by meaning",
+    "intro": "Search across every folder and language. Type “cat” to also find “mèo”, “猫”, “chat”.",
+    "placeholder": "Type a word or meaning...",
+    "inputAria": "Search vocab by meaning",
+    "clearAria": "Clear search",
+    "tooShort": "Type at least {count} characters — a shorter query carries no meaning to search on.",
+    "emptyHint": "Type a word, phrase, or meaning above — matches come from every folder and language, not just what you typed.",
+    "failed": "Search failed. Try again in a moment.",
+    "noResults": "No related words found.",
+    "folderFallback": "Folder",
+    "viewAll": "View all",
+    "related": {
+      "title": "Related by meaning",
+      "hint": "Matched by meaning, not spelling",
+      "searchAll": "Search across all folders"
+    }
+  },
+  "chat": {
+    "retryHint": "You can try sending your message again.",
+    "bubble": {
+      "openAria": "Open AI Assistant chat",
+      "dismissAria": "Dismiss preview",
+      "openAi": "Open AI Assistant",
+      "tooltip": "Chat with AI Assistant",
+      "aiAlt": "AI",
+      "assistantAlt": "AI Assistant"
+    },
+    "header": {
+      "title": "AI Assistant",
+      "online": "Online",
+      "close": "Close chat"
+    },
+    "input": {
+      "placeholder": "Type your message…",
+      "stopRecording": "Stop recording",
+      "startVoice": "Start voice input",
+      "cancelGeneration": "Cancel generation",
+      "send": "Send message"
+    },
+    "confirm": {
+      "title": "Action Confirmation Required",
+      "about": "The AI is about to perform: ",
+      "countdown": "Confirming action in {seconds}s…",
+      "confirm": "Confirm Now",
+      "cancel": "Cancel"
+    },
+    "message": {
+      "sending": "Sending",
+      "retryAria": "Retry sending message",
+      "failed": "Failed · Tap to retry",
+      "aiAlt": "AI"
+    },
+    "quick": {
+      "title": "Quick Actions",
+      "quiz": "Take a Quiz",
+      "quizMessage": "Create a quiz for my vocabulary",
+      "review": "Review Words",
+      "reviewMessage": "Review my vocabulary words",
+      "question": "Ask a Question",
+      "questionMessage": "I have a question about my vocab"
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "subtitle": "Stay updated with your learning progress and achievements.",
+    "markAllRead": "Mark all as read",
+    "markAllReadToast": "All notifications marked as read",
+    "markAllReadFailed": "Failed to mark all notifications as read",
+    "markedRead": "Notification marked as read",
+    "markReadFailed": "Failed to mark notification as read",
+    "invalidData": "Invalid notification data",
+    "examFailed": "Failed to load exam. Please try again.",
+    "startExam": "Start Exam",
+    "loading": "Loading notifications...",
+    "caughtUp": "All caught up!",
+    "caughtUpBody": "Check back later for progress updates and reminders.",
+    "filtersAria": "Notification filters",
+    "all": "All",
+    "unread": "Unread",
+    "unreadAria": "{count} unread notifications",
+    "viewHistory": "View notification history",
+    "viewAll": "View all notifications",
+    "showing": "Showing {displayed} of {total} notifications",
+    "multiple": "Multiple",
+    "fallback": {
+      "item": "item",
+      "trainer": "trainer",
+      "subject": "subject"
+    },
+    "time": {
+      "justNow": "Just now",
+      "minutes": "{count, plural, one {# min ago} other {# mins ago}}",
+      "hours": "{count, plural, one {# hour ago} other {# hours ago}}",
+      "days": "{count, plural, one {# day ago} other {# days ago}}",
+      "weeks": "{count, plural, one {# week ago} other {# weeks ago}}",
+      "months": "{count, plural, one {# month ago} other {# months ago}}",
+      "years": "{count, plural, one {# year ago} other {# years ago}}",
+      "yesterdayAt": "Yesterday, {time}"
+    },
+    "message": {
+      "vocabCreate": "New vocabulary \"{name}\" has been added",
+      "vocabUpdate": "Vocabulary \"{name}\" has been updated",
+      "vocabDelete": "Vocabulary \"{name}\" has been deleted",
+      "vocabMultiCreate": "{count} vocabularies have been added",
+      "vocabMultiDelete": "{count} vocabularies have been deleted",
+      "vocabRemind": "Reminder: Review vocabulary \"{name}\"",
+      "vocabFallback": "Vocabulary \"{name}\" {action}",
+      "trainerComplete": "Trainer \"{name}\" has been completed",
+      "trainerUpdate": "Trainer \"{name}\" has been updated",
+      "trainerDelete": "Trainer \"{name}\" has been deleted",
+      "trainerRemind": "Reminder: Complete trainer \"{name}\"",
+      "trainerFallback": "Trainer \"{name}\" {action}",
+      "subjectCreate": "New subject \"{name}\" has been added",
+      "subjectUpdate": "Subject \"{name}\" has been updated",
+      "subjectDelete": "Subject \"{name}\" has been deleted",
+      "subjectFallback": "Subject {action}",
+      "systemCreate": "New system notification",
+      "systemUpdate": "System notification updated",
+      "systemRemind": "System reminder",
+      "systemDefault": "System notification",
+      "typeFallback": "{type} {action}"
+    },
+    "settings": {
+      "title": "Settings",
+      "learningReminders": "Learning Reminders",
+      "learningRemindersHint": "Daily practice nudges",
+      "achievements": "Achievements",
+      "achievementsHint": "When you hit milestones",
+      "productUpdates": "Product Updates",
+      "productUpdatesHint": "New features & tips",
+      "clearAll": "Clear All Notifications",
+      "clearAllFailed": "Failed to clear notifications",
+      "upgradeTitle": "Level up your learning with Pro",
+      "upgradeBody": "Unlock advanced analytics and offline mode.",
+      "upgradeCta": "Upgrade Now"
+    },
+    "page": {
+      "zzz": "Zzz...",
+      "clearTitle": "All clear! You're completely up to date.",
+      "clearBody": "We'll let you know when you hit new milestones or need a reminder to keep your streak alive.",
+      "startLearning": "Start Learning",
+      "today": "TODAY",
+      "yesterday": "YESTERDAY",
+      "lastWeek": "LAST WEEK"
+    }
+  },
+  "shared": {
+    "deleteAria": "Delete {name}",
+    "confirmTitle": "Are you absolutely sure?",
+    "deleteDescription": "This action cannot be undone. This will permanently delete this {name} and remove it from your list.",
+    "bulkDescription": "This action cannot be undone. This will permanently delete {count} {name} and remove {pronoun} from your list.",
+    "pronounIt": "it",
+    "pronounThem": "them",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "deleted": "{name} deleted successfully!",
+    "deleteFailed": "Failed to delete {name}. Please try again.",
+    "examErrorFallback": "An error occurred. Please try again.",
+    "backToTrainers": "Back to Trainers"
+  },
+  "install": {
+    "body": "Install this app: tap ⬆️ Share, then \"Add to Home Screen\".",
+    "dismiss": "Dismiss install prompt"
+  },
+  "trainer": {
+    "title": "Vocab Trainers",
+    "total": "Total",
+    "subtitle": "Create and manage your vocabulary training sessions to improve your language skills.",
+    "filter": "Filter",
+    "filterTitle": "Filter Trainers",
+    "filterStatus": "Filter by Status",
+    "statusPlaceholder": "Choose statuses to filter by...",
+    "filterQuestionType": "Filter by Question Type",
+    "questionTypePlaceholder": "Choose question types to filter by...",
+    "clearFilters": "Clear Filters",
+    "create": "Create Trainer",
+    "searchPlaceholder": "Search trainers...",
+    "loadError": "Error loading vocab trainers. Please try again.",
+    "spacedRepetition": "Spaced repetition",
+    "status": {
+      "pending": "Pending",
+      "passed": "Passed",
+      "failed": "Failed"
+    },
+    "columns": {
+      "selectAll": "Select all",
+      "selectRow": "Select row",
+      "name": "Name",
+      "status": "Status",
+      "questionType": "Question Type",
+      "vocabularies": "Vocabularies"
+    },
+    "vocabCount": "{count, plural, one {# vocab} other {# vocabs}}",
+    "toast": {
+      "skipped": "{count, plural, one {# word has} other {# words have}} no translation yet and got no questions.",
+      "saveFailed": "Failed to save the trainer",
+      "deleted": "Vocab trainer deleted successfully!",
+      "deleteFailed": "Failed to delete vocab trainer. Please try again.",
+      "noPractice": "No words need practice right now.",
+      "problematicName": "Problematic {language} words practice",
+      "problematicNameGeneric": "Problematic words practice"
+    },
+    "bulk": {
+      "name": "vocabulary trainer",
+      "namePlural": "vocabulary trainers"
+    },
+    "cooldown": {
+      "title": "Take a quick 60s break",
+      "body": "AI is preparing your next exam (<strong>{seconds}s</strong> left). Feel free to jump into <strong>Flip Cards</strong> right now—they’re always ready for you!"
+    },
+    "breadcrumb": {
+      "dashboard": "Dashboard",
+      "trainer": "Vocab Trainer"
+    },
+    "launcher": {
+      "waitBeforeExam": "Please wait before starting another exam",
+      "startReview": "Start review",
+      "startExam": "Start exam"
+    },
+    "form": {
+      "basicInfo": "Basic Information",
+      "name": "Trainer Name",
+      "namePlaceholder": "e.g., Morning Review #4",
+      "mode": "Learning Mode",
+      "modeAria": "Learning mode",
+      "modeFixed": "The mode is fixed after the trainer is created.",
+      "questionType": "Question Type",
+      "questionTypePlaceholder": "Select question type",
+      "upgrade": "Upgrade",
+      "upsellFeature": "Translation Audio",
+      "upsellDescription": "Translation Audio exam is available on the Member plan. Upgrade to unlock it.",
+      "selectedWords": "Selected Words",
+      "selectedCount": "{count} Selected",
+      "pickWords": "Pick words from the list to start training.",
+      "removeWord": "Remove {label}",
+      "removeWordGeneric": "Remove selected word",
+      "more": "+{count} more",
+      "reminders": "Reminders"
+    },
+    "dialog": {
+      "editTitle": "Edit Vocab Trainer",
+      "createTitle": "Create New Vocab Trainer",
+      "editDescription": "Update the details for your vocabulary trainer",
+      "createDescription": "Configure your session and select words to practice.",
+      "cancel": "Cancel",
+      "creating": "Creating...",
+      "update": "Update Trainer",
+      "create": "Create Trainer",
+      "removeTitle": "{count, plural, one {# word} other {# words}} will lose their review schedule",
+      "removeDescription": "Removing a word deletes its review schedule in this trainer. Its review history is kept. Adding the word back later starts it as new.",
+      "removeConfirm": "Remove and update"
+    },
+    "clone": {
+      "title": "Start a new cycle",
+      "description": "A new trainer with the same {count, plural, one {# word} other {# words}}, directions and settings. Every question starts as new. {name} stays as it is, with its history.",
+      "defaultName": "{name} (new cycle)",
+      "name": "Name",
+      "deadline": "Deadline",
+      "optional": "(optional)",
+      "deadlineHint": "Every word will be asked again before this date, for example an exam.",
+      "started": "New cycle started",
+      "startFailed": "Failed to start a new cycle",
+      "starting": "Starting…",
+      "startButton": "Start new cycle",
+      "cancel": "Cancel"
+    },
+    "selection": {
+      "scopeLabel": "Language scope",
+      "sourceLanguage": "Source language",
+      "targetLanguage": "Target language",
+      "all": "All",
+      "allLanguages": "All languages",
+      "outOfScope": "{count, plural, one {# selected word is} other {# selected words are}} outside {scope}",
+      "removeThem": "Remove them",
+      "quickFilters": "Quick filters",
+      "allWords": "All Words",
+      "recent": "Recently Added",
+      "difficult": "Difficult",
+      "unstarted": "Unstarted",
+      "searchPlaceholder": "Search across all folders...",
+      "folder": "Folder:",
+      "count": "Count",
+      "decreaseCount": "Decrease count",
+      "increaseCount": "Increase count",
+      "randomize": "Randomize",
+      "overMax": "Only {max} words in this scope. Will use {max}.",
+      "selectAll": "Select all",
+      "selectRow": "Select row",
+      "textSource": "Text Source",
+      "textTargets": "Text Targets",
+      "status": "Status",
+      "vocabularies": "Vocabularies"
+    },
+    "exam": {
+      "loadFailed": "Failed to load exam",
+      "loadFailedDetail": "Failed to load exam. Please try again.",
+      "generating": "Generating questions...",
+      "loading": "Loading exam...",
+      "waitMoments": "This may take a few moments. Please wait.",
+      "submitFailed": "Failed to submit exam. Please try again.",
+      "submitErrorFallback": "An error occurred while submitting the exam.",
+      "examErrorFallback": "An error occurred during the exam.",
+      "untitled": "Vocabulary Exam",
+      "flipUntitled": "FlipCard Exam",
+      "noQuestions": "No questions available for this exam.",
+      "noCards": "No cards available for this exam.",
+      "answered": "Answered",
+      "submitting": "Submitting...",
+      "submit": "Submit Exam",
+      "next": "Next",
+      "previous": "Previous",
+      "complete": "Complete Exam",
+      "card": "Card"
+    },
+    "header": {
+      "questionOf": "QUESTION {current} OF {total}",
+      "level": "{level} LEVEL",
+      "timeRemaining": "Time Remaining",
+      "progress": "Progress",
+      "percentComplete": "{percent}% COMPLETE"
+    },
+    "flip": {
+      "clickFlip": "Click to flip",
+      "clickFlipBack": "Click to flip back",
+      "noText": "No text available",
+      "noTextShort": "No text"
+    },
+    "fillIn": {
+      "question": "• QUESTION {number}",
+      "typeAnswer": "Type your answer",
+      "placeholder": "Enter your answer here..."
+    },
+    "results": {
+      "title": "Exam Results",
+      "jobId": "Job ID:",
+      "completed": "Completed:",
+      "justNow": "Just now",
+      "exportPdf": "Export PDF",
+      "retry": "Retry Exam",
+      "retryIn": "Retry in {seconds}s",
+      "score": "SCORE",
+      "passed": "PASSED",
+      "failed": "FAILED",
+      "greatJob": "Great job! You exceeded the {target}% target.",
+      "keepPracticing": "Keep practicing to reach the {target}% target.",
+      "accuracy": "Accuracy",
+      "items": "{correct}/{total} items",
+      "performance": "Performance",
+      "target": "Target: {target}%",
+      "duration": "Duration",
+      "efficiency": "“Efficiency is key”",
+      "averagePerCard": "Average: {time} per card",
+      "detailed": "Detailed Performance Review",
+      "question": "Question {number}",
+      "correct": "Correct",
+      "incorrect": "Incorrect",
+      "notAnswered": "Not answered",
+      "yourAnswer": "Your answer",
+      "correctAnswer": "Correct answer",
+      "aiExplanation": "AI Explanation",
+      "frontText": "Front text",
+      "backText": "Back text",
+      "known": "Known",
+      "needsPractice": "Needs practice",
+      "cardNumber": "Card {number}",
+      "vocabFlipCard": "Vocabulary: Flip Card",
+      "needPracticeCount": "Need practice: {count}",
+      "avgNone": "AVG. — PER QUESTION",
+      "avgSeconds": "AVG. {seconds}S PER QUESTION",
+      "avgMinutes": "AVG. {minutes}M {seconds}S PER QUESTION"
+    },
+    "fillInSubmit": {
+      "title": "Submitting your exam...",
+      "body": "Please wait while we process your answers",
+      "noJobId": "Failed to get evaluation job ID. The server response was invalid.",
+      "failed": "Failed to submit exam. Please try again.",
+      "untitled": "Vocabulary Exam"
+    },
+    "classic": {
+      "timedTest": "Timed test",
+      "timeLimit": "Time Limit",
+      "timeLimitAria": "Time limit",
+      "minutes": "{count, plural, one {# minute} other {# minutes}}",
+      "cardSummary": "{count, plural, one {# word} other {# words}} · <strong>{time}</strong> time limit"
+    },
+    "fsrs": {
+      "rating": {
+        "again": "Again",
+        "hard": "Hard",
+        "good": "Good",
+        "easy": "Easy"
+      },
+      "interval": {
+        "lessThanDay": "<1d",
+        "day": "d",
+        "month": "mo",
+        "year": "y"
+      },
+      "direction": {
+        "sourceToTarget": "Word → Meaning",
+        "targetToSource": "Meaning → Word"
+      },
+      "deadline": {
+        "cycleEnded": "Cycle ended",
+        "endsToday": "Ends today",
+        "daysLeft": "{days} days left"
+      },
+      "status": {
+        "allCaughtUp": "All caught up",
+        "overdue": "{count} overdue",
+        "today": "{count} today",
+        "new": "{count} new",
+        "countsUnavailable": "Counts unavailable",
+        "loading": "Loading"
+      },
+      "actions": {
+        "extend": "Extend",
+        "newCycle": "New cycle",
+        "stats": "Stats",
+        "statsOf": "Stats of {name}"
+      },
+      "review": {
+        "back": "Back to trainers",
+        "nothingToReview": "Nothing to review right now.",
+        "loadFailed": "Failed to load the review session",
+        "saveFailed": "Failed to save the answer",
+        "saveRetry": "Press the button again to retry.",
+        "checkFailed": "Failed to check the answer",
+        "ratingGroup": "How well did you remember it?",
+        "ratingAria": "{rating}, comes back in {interval}",
+        "suggestedSuffix": ", suggested",
+        "suggestedBadge": "Suggested · "
+      },
+      "start": {
+        "endedTitle": "This cycle has ended",
+        "endedBody": "Nothing is scheduled anymore and your progress is kept. Extend the deadline in the trainer settings, or start a new trainer to learn these words again.",
+        "endedBodyWithDate": "The deadline was {date}. Nothing is scheduled anymore and your progress is kept. Extend the deadline in the trainer settings, or start a new trainer to learn these words again.",
+        "shortSessions": "Short sessions work better than long ones.",
+        "welcomeBack": "Welcome back!",
+        "backlogBody": "{count} questions are overdue. That is normal after a break, so there is no need to rush.",
+        "backlogPace": "At {size} questions a day you will be caught up in about {days, plural, one {# day} other {# days}}.",
+        "overdue": "Overdue",
+        "dueToday": "Due today",
+        "newToLearn": "New to learn",
+        "allCaughtUp": "You are all caught up. Come back later, or look ahead below.",
+        "sessionSize": "Questions in this session",
+        "startSession": "Start {count, plural, one {# question} other {# questions}} (about {minutes} min)",
+        "waiting": "{count, plural, one {# question waits} other {# questions wait}} for later sessions.",
+        "reviewAhead": "Review the next {days} days"
+      },
+      "summary": {
+        "complete": "Session complete",
+        "answered": "You answered {count, plural, one {# question} other {# questions}}. Each one is already scheduled for its next review.",
+        "yourAnswers": "Your answers",
+        "retryOutcome": "This time you remembered <strong>{recalled} of {total}</strong>. The retry round is only practice: it was not saved and your schedule did not change.",
+        "pendingAfter": "{count, plural, one {# question waits} other {# questions wait}} for later sessions.",
+        "retry": "Retry {count} missed (practice only)",
+        "reviewMore": "Review {count} more",
+        "stopToday": "Stop for today"
+      },
+      "card": {
+        "new": "New",
+        "yourAnswer": "Your answer ({language})",
+        "comparedWith": "Compared with the closest answer",
+        "accepted": "Accepted: {answers}",
+        "check": "Check",
+        "iDontKnow": "I don't know",
+        "showAnswer": "Show answer",
+        "spaceHint": "Space",
+        "missingHint": " (missing)",
+        "extraHint": " (not needed)",
+        "retryGroup": "Did you remember it this time?",
+        "stillMissed": "Still missed",
+        "gotIt": "Got it"
+      },
+      "progress": {
+        "retryMissed": "Retry missed",
+        "question": "Question",
+        "counter": "{label} {current} of {total}"
+      },
+      "stats": {
+        "subtitle": "Spaced repetition statistics",
+        "endedBody": "Nothing is scheduled anymore, so there is no forecast. Your progress is kept.",
+        "noReviewsTitle": "No reviews yet",
+        "noReviewsBody": "Your statistics appear after your first session.",
+        "startReviewing": "Start reviewing",
+        "summaryAria": "Summary",
+        "new": "New",
+        "newHint": "Questions not seen yet",
+        "inReview": "In review",
+        "inReviewHint": "Questions on a schedule",
+        "mastered": "Mastered",
+        "masteredHint": "Remembered for about 6 months, no recent miss",
+        "leeches": "Leeches",
+        "leechesHint": "Missed 8 times or more",
+        "retention": "Retention",
+        "retentionNoData": "No reviews yet",
+        "retentionHint": "{reviews} reviews in {days} days",
+        "forecastTitle": "Next 30 days",
+        "forecastDescription": "Questions that come due each day. Overdue ones count on the first day.",
+        "forecastAria": "Questions due in each of the next 30 days",
+        "due": "Due",
+        "forecastEnded": "The cycle has ended.",
+        "forecastEmpty": "Nothing is due in the next 30 days.",
+        "stabilityTitle": "How long you remember",
+        "stabilityDescription": "Questions grouped by how long they stay in memory.",
+        "stabilityAria": "Questions by memory stability",
+        "questions": "Questions",
+        "stabilityEmpty": "Appears after your first reviews.",
+        "byDirection": "By direction",
+        "colDirection": "Direction",
+        "colQuestions": "Questions",
+        "colNew": "New",
+        "colInReview": "In review",
+        "colMastered": "Mastered",
+        "colLeeches": "Leeches",
+        "leechesTitle": "Leeches",
+        "leechesDescription": "Words you keep forgetting. A new example or a mnemonic often helps.",
+        "leechesEmpty": "No leeches. Nothing is being forgotten over and over.",
+        "misses": "{count} misses"
+      },
+      "page": {
+        "reviewLoadError": "Unable to load this review right now. Please refresh the page or try again later.",
+        "statsLoadError": "Unable to load these statistics right now. Please refresh the page or try again later."
+      }
+    },
+    "settings": {
+      "spacedRepetition": "Spaced repetition",
+      "noTranslationTitle": "{count, plural, one {# word has} other {# words have}} no translation yet",
+      "noTranslationBody": "They get no questions until you add a translation: {words}{more}.",
+      "moreWords": " and {count} more",
+      "directions": "Directions to learn",
+      "directionRecognise": "Recognise",
+      "directionRecogniseHint": "See the word, know the meaning",
+      "directionRecall": "Recall",
+      "directionRecallHint": "See the meaning, produce the word",
+      "directionsNote": "Each word is asked once per direction, then comes back on a schedule until you know it. Over time you will see more questions than this.",
+      "directionsLocked": "Directions are fixed after the trainer is created.",
+      "deadline": "Deadline",
+      "optional": "(optional)",
+      "deadlineHelp": "Every word will be asked again before this date, for example an exam.",
+      "advanced": "Advanced",
+      "retention": "Desired retention",
+      "retentionBody": "About {recall} of 10 words still remembered when they come back. {hint}",
+      "retentionHintHigh": "Very few misses, but many more reviews every day.",
+      "retentionHintMid": "A good balance between remembering and workload.",
+      "retentionHintLow": "Fewer reviews, but you will forget more words.",
+      "newPerDay": "New questions per day",
+      "noLimit": "(empty = no limit)",
+      "noLimitPlaceholder": "No limit",
+      "suggestion": "{perDay, plural, one {# new question} other {# new questions}} a day brings all {cards} in before the deadline.",
+      "suggestionUse": "Use {count}",
+      "maxInterval": "Longest gap between reviews (days)",
+      "longTerm": "Long term: no practical limit.",
+      "comeBack": "Cards come back at least every {days, plural, one {# day} other {# days}}.",
+      "cardSummary": "{words, plural, one {# word} other {# words}} × {directions, plural, one {# direction} other {# directions}} = <strong>{cards, plural, one {# question} other {# questions}}</strong> to learn"
+    },
+    "recorder": {
+      "hint": "Click the button below to start recording",
+      "micError": "Failed to access microphone. Please check permissions.",
+      "start": "Start Recording",
+      "resume": "Resume",
+      "pause": "Pause",
+      "stop": "Stop",
+      "complete": "Recording Complete",
+      "duration": "Duration",
+      "playbackAria": "Recorded audio playback",
+      "play": "Play",
+      "recordAgain": "Record Again"
+    },
+    "audioResults": {
+      "evaluationComplete": "Evaluation Complete!",
+      "timeTaken": "Time Taken",
+      "transcript": "Your Transcript"
+    },
+    "markdown": {
+      "copiedToast": "Markdown report copied to clipboard",
+      "copyFailed": "Failed to copy markdown",
+      "title": "Evaluation Report",
+      "copied": "Copied!",
+      "copy": "Copy"
+    },
+    "audioExam": {
+      "uploadFailed": "Failed to upload audio. Please try again.",
+      "uploadingTitle": "Uploading your recording...",
+      "uploadingBody": "Please wait while we upload your audio file",
+      "submittingBody": "Please wait while we process your submission",
+      "untitled": "Translation Audio Exam",
+      "recordingDone": "Recording complete! Submit your exam to continue.",
+      "submitExam": "Submit Exam"
+    },
+    "question": {
+      "label": "• QUESTION {number}",
+      "chooseAnswer": "Choose your answer"
+    },
+    "dialogue": {
+      "empty": "No dialogue available"
+    },
+    "evaluation": {
+      "fillInTitle": "Evaluating answers with AI...",
+      "audioTitle": "Evaluating your translation...",
+      "wait": "This may take a few moments. Please wait.",
+      "failed": "Evaluation failed"
+    }
+  },
+  "dashboard": {
+    "welcome": "Welcome back, {name}!",
+    "welcomeFallbackName": "there",
+    "subtitle": "Track your language learning progress and improve your skills with our AI-powered tools.",
+    "noData": "No data available",
+    "section": {
+      "overview": "Overview",
+      "nextAction": "Next action",
+      "activity": "Activity",
+      "wordsToReview": "Words to review",
+      "charts": "Charts"
+    },
+    "kpi": {
+      "totalWords": "Total words",
+      "avgMastery": "Avg. mastery",
+      "accuracy": "Accuracy",
+      "needReview": "Need review"
+    },
+    "fsrs": {
+      "title": "Spaced repetition",
+      "dueToday": "due today",
+      "mastered": "mastered",
+      "reviewNow": "Review now",
+      "openTrainers": "Open trainers"
+    },
+    "hero": {
+      "badge": {
+        "critical": "HIGH PRIORITY",
+        "warning": "NEEDS ATTENTION",
+        "onTrack": "ALL GOOD"
+      },
+      "urgent": "<hl>{count, plural, one {# word} other {# words}}</hl> need your urgent review",
+      "review": "<hl>{count, plural, one {# word} other {# words}}</hl> need review",
+      "onTrack": "You’re on track — nothing needs review.",
+      "noSessions": "No practice sessions yet. Start your first session today.",
+      "daysSince": "It’s been <strong>{days, plural, one {# day} other {# days}}</strong> since your last practice session."
+    },
+    "heatmap": {
+      "title": "Activity",
+      "subtitle": "Practice activity in {year}.",
+      "total": "{count, plural, one {# practice session} other {# practice sessions}} in {year}",
+      "none": "{date} — no practice",
+      "session": "{date} — {count, plural, one {# practice session} other {# practice sessions}}",
+      "less": "Less",
+      "more": "More"
+    },
+    "distribution": {
+      "title": "Mastery Distribution",
+      "low": "LOW (0–3)",
+      "mid": "MID (4–6)",
+      "high": "HIGH (7–10)",
+      "count": "Count",
+      "aria": "Vocabulary count by mastery level"
+    },
+    "answers": {
+      "title": "Answer Distribution",
+      "correct": "Correct",
+      "incorrect": "Incorrect",
+      "success": "SUCCESS",
+      "answers": "Answers",
+      "aria": "Correct versus incorrect answer distribution"
+    },
+    "progress": {
+      "title": "Mastery Progress",
+      "subtitle": "Average mastery score trend over time.",
+      "weekly": "Weekly View",
+      "averageMastery": "Average Mastery",
+      "aria": "Average mastery score over time"
+    },
+    "subjectMastery": {
+      "title": "Mastery by Subject"
+    },
+    "problematic": {
+      "title": "Top 10 Problematic Vocabs",
+      "subtitle": "Words requiring immediate attention based on error rate.",
+      "showing": "Showing top {shown} of {total}.",
+      "practice": "Practice These {count} Words →",
+      "empty": "No words need review right now. Keep practicing!",
+      "emptyLanguage": "No words need review for this language.",
+      "word": "Word",
+      "errorRate": "Error rate",
+      "status": "Status"
+    },
+    "status": {
+      "critical": "CRITICAL",
+      "warning": "WARNING",
+      "normal": "NORMAL"
+    },
+    "zoneError": {
+      "message": "Could not load {section}. Try refreshing the page.",
+      "sections": {
+        "nextAction": "next action",
+        "charts": "charts",
+        "activity": "activity",
+        "problematic": "problematic words"
+      }
+    }
+  },
+  "premium": {
+    "upsell": {
+      "title": "Upgrade to Pro",
+      "description": "{feature} is available on the Pro plan. Upgrade to unlock it.",
+      "action": "Upgrade"
+    }
+  },
+  "mastery": {
+    "unstarted": "Unstarted",
+    "beginner": "Beginner",
+    "learning": "Learning",
+    "mastered": "Mastered"
   }
 }

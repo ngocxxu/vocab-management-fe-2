@@ -2,6 +2,7 @@
 
 import type { TConfirmRequest } from '@/types/chat';
 import { ClockCircle } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import { useChat } from '@/providers/ChatProvider';
 import { useConfirmTimeout } from '../hooks/useConfirmTimeout';
 
@@ -10,6 +11,7 @@ type ConfirmOverlayProps = {
 };
 
 export function ConfirmOverlay({ confirmRequest }: ConfirmOverlayProps) {
+  const t = useTranslations('chat.confirm');
   const { confirmResponse } = useChat();
 
   const remaining = useConfirmTimeout(
@@ -29,16 +31,16 @@ export function ConfirmOverlay({ confirmRequest }: ConfirmOverlayProps) {
       </div>
 
       <div className="space-y-2 text-center">
-        <p className="text-base font-semibold text-foreground">Action Confirmation Required</p>
+        <p className="text-base font-semibold text-foreground">{t('title')}</p>
         <p className="text-sm text-muted-foreground">
-          {`The AI is about to perform: `}
+          {t('about')}
           <span className="font-medium text-foreground">{confirmRequest.action}</span>
           {paramsSummary ? `. ${paramsSummary}` : ''}
         </p>
       </div>
 
       <p className="text-sm font-semibold text-primary">
-        {`Confirming action in ${remaining}s…`}
+        {t('countdown', { seconds: remaining })}
       </p>
 
       <div className="flex w-full flex-col gap-2">
@@ -47,14 +49,14 @@ export function ConfirmOverlay({ confirmRequest }: ConfirmOverlayProps) {
           onClick={() => confirmResponse(confirmRequest.requestId, true)}
           className="w-full rounded-2xl bg-primary py-3 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
-          Confirm Now
+          {t('confirm')}
         </button>
         <button
           type="button"
           onClick={() => confirmResponse(confirmRequest.requestId, false)}
           className="w-full rounded-2xl bg-muted py-3 text-sm font-semibold text-foreground transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
-          Cancel
+          {t('cancel')}
         </button>
       </div>
     </div>

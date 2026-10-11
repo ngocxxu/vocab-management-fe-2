@@ -6,7 +6,8 @@ import { getCalendarYearDateRange } from '../utils/dateRange';
 import { mapProgressToCalendarActivities } from '../utils/mapProgressToCalendarActivities';
 import { useTheme } from '@/hooks/useTheme';
 import type { TProgressOverTime } from '@/types/statistics';
-import { format, parseISO } from 'date-fns';
+import { parseISO } from 'date-fns';
+import { useLocale, useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 import { ActivityCalendar } from 'react-activity-calendar';
 
@@ -29,16 +30,9 @@ function withYearBoundaries(activities: ReturnType<typeof mapProgressToCalendarA
   return [...byDate.values()].sort((a, b) => a.date.localeCompare(b.date));
 }
 
-function formatActivityTooltip(date: string, count: number): string {
-  const label = format(parseISO(date), 'MMM d, yyyy');
-  if (count === 0) {
-    return `${label} — no practice`;
-  }
-  const sessionLabel = count === 1 ? 'session' : 'sessions';
-  return `${label} — ${count} practice ${sessionLabel}`;
-}
-
 export function ActivityHeatmap({ progress }: TActivityHeatmapProps) {
+  const t = useTranslations('dashboard.heatmap');
+  const locale = useLocale();
   const { year } = getCalendarYearDateRange();
   const { theme, mounted } = useTheme();
 
@@ -47,14 +41,22 @@ export function ActivityHeatmap({ progress }: TActivityHeatmapProps) {
     [progress, year],
   );
 
+  const totalSessions = activities.reduce((sum, activity) => sum + activity.count, 0);
   const colorScheme = mounted && theme === 'dark' ? 'dark' : 'light';
+
+  const formatActivityTooltip = (date: string, count: number): string => {
+    const label = parseISO(date).toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric' });
+    return count === 0
+      ? t('none', { date: label })
+      : t('session', { date: label, count });
+  };
 
   return (
     <Card className="flex h-full flex-col overflow-hidden border-0 bg-card shadow-sm">
       <CardHeader className="pb-4">
-        <CardTitle className="text-xl font-bold text-foreground">Activity</CardTitle>
+        <CardTitle className="text-xl font-bold text-foreground">{t('title')}</CardTitle>
         <p className="text-sm text-muted-foreground">
-          {`Practice activity in ${year}.`}
+          {t('subtitle', { year })}
         </p>
       </CardHeader>
       <CardContent className="p-6 pt-0">
@@ -72,8 +74,8 @@ export function ActivityHeatmap({ progress }: TActivityHeatmapProps) {
             showColorLegend
             showTotalCount
             labels={{
-              totalCount: '{{count}} practice sessions in {{year}}',
-              legend: { less: 'Less', more: 'More' },
+              totalCount: t('total', { count: totalSessions, year }),
+              legend: { less: t('less'), more: t('more') },
             }}
             tooltips={{
               activity: {

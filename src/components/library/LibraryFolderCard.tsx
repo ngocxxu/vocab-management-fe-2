@@ -20,7 +20,7 @@ import {
 import { cn } from '@/libs/utils';
 import type { LibraryFolderCardProps } from '@/types/language-folder';
 import { Folder, MenuDots, NotebookMinimalistic, Pen, TrashBin2 } from '@solar-icons/react/ssr';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import React, { useCallback, useState } from 'react';
 import { formatEditedAgo } from './utils';
 
@@ -60,6 +60,7 @@ const LibraryFolderCard: React.FC<LibraryFolderCardProps> = ({
 }) => {
   const t = useTranslations('library.card');
   const tTime = useTranslations('library.time');
+  const locale = useLocale();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const handleCardClick = useCallback(() => {
@@ -133,7 +134,7 @@ const LibraryFolderCard: React.FC<LibraryFolderCardProps> = ({
               <p className="mt-0.5 text-sm font-normal text-muted-foreground">
                 {t('created')}
                 {' '}
-                {formatEditedAgo(folder.updatedAt, tTime)}
+                {formatEditedAgo(folder.updatedAt, tTime, locale)}
               </p>
             </div>
           </div>

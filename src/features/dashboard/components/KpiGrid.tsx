@@ -9,6 +9,7 @@ import {
   Star,
 } from '@solar-icons/react/ssr';
 import type { ReactNode } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
 
 type TKpiGridProps = {
   summary: TMasterySummary;
@@ -68,6 +69,8 @@ function MetricCard({ title, value, icon, cardClassName, iconBgClass, valueClass
 }
 
 export function KpiGrid({ summary }: TKpiGridProps) {
+  const t = useTranslations('dashboard.kpi');
+  const locale = useLocale();
   const totalAnswers = summary.totalCorrect + summary.totalIncorrect;
   const accuracyPct = totalAnswers > 0 ? Math.round((summary.totalCorrect / totalAnswers) * 100) : 0;
   const needReview = summary.criticalCount + summary.warningCount;
@@ -79,15 +82,15 @@ export function KpiGrid({ summary }: TKpiGridProps) {
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
       <MetricCard
-        title="Total words"
-        value={formatCount(summary.totalVocabs)}
+        title={t('totalWords')}
+        value={formatCount(summary.totalVocabs, locale)}
         icon={<Book size={32} weight="BoldDuotone" className="text-primary" />}
         cardClassName="border-primary/15 bg-primary/5"
         iconBgClass="bg-primary/15"
         trend={formatTrend(summary.trends.totalVocabsPercentDelta, '%')}
       />
       <MetricCard
-        title="Avg. mastery"
+        title={t('avgMastery')}
         value={(
           <span className="inline-flex items-baseline gap-0.5">
             <span>{summary.averageMastery.toFixed(1)}</span>
@@ -101,7 +104,7 @@ export function KpiGrid({ summary }: TKpiGridProps) {
         trend={formatTrend(summary.trends.averageMasteryDelta)}
       />
       <MetricCard
-        title="Accuracy"
+        title={t('accuracy')}
         value={`${accuracyPct}%`}
         valueClassName={accuracyClass}
         icon={<CheckCircle size={32} weight="BoldDuotone" className="text-success" />}
@@ -110,8 +113,8 @@ export function KpiGrid({ summary }: TKpiGridProps) {
         trend={formatTrend(summary.trends.accuracyPercentDelta, '%')}
       />
       <MetricCard
-        title="Need review"
-        value={formatCount(needReview)}
+        title={t('needReview')}
+        value={formatCount(needReview, locale)}
         valueClassName={needReviewClass}
         icon={<DangerTriangle size={32} weight="BoldDuotone" className="text-destructive" />}
         cardClassName="border-destructive/20 bg-destructive/5"

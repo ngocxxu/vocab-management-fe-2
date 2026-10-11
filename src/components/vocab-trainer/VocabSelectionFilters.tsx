@@ -2,18 +2,14 @@
 
 import type { QuickFilter, VocabSelectionFiltersProps } from '@/types/vocab-trainer';
 import { AddCircle, Folder, Magnifer, MinusCircle, Shuffle } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import React, { useId, useState } from 'react';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { cn } from '@/libs/utils';
 
-const QUICK_FILTERS: { id: QuickFilter; label: string }[] = [
-  { id: 'all', label: 'All Words' },
-  { id: 'recent', label: 'Recently Added' },
-  { id: 'difficult', label: 'Difficult' },
-  { id: 'unstarted', label: 'Unstarted' },
-];
+const QUICK_FILTER_IDS: QuickFilter[] = ['all', 'recent', 'difficult', 'unstarted'];
 
 const MIN_RANDOM_COUNT = 1;
 
@@ -36,6 +32,7 @@ const VocabSelectionFilters: React.FC<VocabSelectionFiltersProps> = ({
   onRandomize,
   isRandomizeDisabled,
 }) => {
+  const t = useTranslations('trainer.selection');
   const countId = useId();
   const hintId = useId();
   // The field holds text while it is being edited, so it can be empty or briefly out of range.
@@ -74,7 +71,7 @@ const VocabSelectionFilters: React.FC<VocabSelectionFiltersProps> = ({
             className="absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground"
           />
           <Input
-            placeholder="Search across all folders..."
+            placeholder={t('searchPlaceholder')}
             value={globalFilter}
             onChange={e => onGlobalFilterChange(e.target.value)}
             className="pl-9"
@@ -84,13 +81,13 @@ const VocabSelectionFilters: React.FC<VocabSelectionFiltersProps> = ({
           <SelectTrigger className="w-full sm:w-[180px]">
             <Folder size={16} weight="BoldDuotone" className="mr-2 shrink-0" />
             <span className="flex-1 text-left">
-              Folder:
+              {t('folder')}
               {' '}
-              <SelectValue placeholder="All" />
+              <SelectValue placeholder={t('all')} />
             </span>
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="ALL">All</SelectItem>
+            <SelectItem value="ALL">{t('all')}</SelectItem>
             {languageFolders.map(f => (
               <SelectItem key={f.id} value={f.id}>{f.name}</SelectItem>
             ))}
@@ -101,16 +98,16 @@ const VocabSelectionFilters: React.FC<VocabSelectionFiltersProps> = ({
       <div className="space-y-2">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-            Quick filters
+            {t('quickFilters')}
           </p>
 
           <div className="flex h-9 w-full items-center rounded-md border border-input bg-card shadow-xs sm:w-auto">
             <label htmlFor={countId} className="pr-1 pl-3 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-              Count
+              {t('count')}
             </label>
             <button
               type="button"
-              aria-label="Decrease count"
+              aria-label={t('decreaseCount')}
               disabled={draftValue <= MIN_RANDOM_COUNT}
               onClick={() => commitCount(draftValue - 1)}
               className="flex size-7 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
@@ -132,7 +129,7 @@ const VocabSelectionFilters: React.FC<VocabSelectionFiltersProps> = ({
             />
             <button
               type="button"
-              aria-label="Increase count"
+              aria-label={t('increaseCount')}
               disabled={maxRandomCount !== undefined && draftValue >= maxRandomCount}
               onClick={() => commitCount(draftValue + 1)}
               className="flex size-7 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
@@ -153,19 +150,19 @@ const VocabSelectionFilters: React.FC<VocabSelectionFiltersProps> = ({
               <span className="flex size-5 items-center justify-center rounded-sm bg-background/15">
                 <Shuffle size={14} weight="BoldDuotone" />
               </span>
-              Randomize
+              {t('randomize')}
             </Button>
           </div>
         </div>
 
         {isOverMax && (
           <p id={hintId} className="text-right text-xs text-destructive">
-            {`Only ${maxRandomCount} words in this scope. Will use ${maxRandomCount}.`}
+            {t('overMax', { max: maxRandomCount ?? 0 })}
           </p>
         )}
 
         <div className="flex flex-wrap gap-2">
-          {QUICK_FILTERS.map(({ id, label }) => (
+          {QUICK_FILTER_IDS.map(id => (
             <button
               key={id}
               type="button"
@@ -177,7 +174,10 @@ const VocabSelectionFilters: React.FC<VocabSelectionFiltersProps> = ({
                   : 'bg-accent text-accent-foreground hover:bg-accent hover:text-accent-foreground',
               )}
             >
-              {label}
+              {id === 'all' && t('allWords')}
+              {id === 'recent' && t('recent')}
+              {id === 'difficult' && t('difficult')}
+              {id === 'unstarted' && t('unstarted')}
             </button>
           ))}
         </div>

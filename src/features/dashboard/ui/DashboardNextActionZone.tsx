@@ -20,6 +20,6 @@ export async function DashboardNextActionZone() {
     if (isUnauthorizedError(error)) {
       redirect(getExpiredSessionRedirect('/dashboard'));
     }
-    return <ZoneError sectionName="next action" />;
+    return <ZoneError section="nextAction" />;
   }
 }

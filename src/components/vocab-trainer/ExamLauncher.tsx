@@ -1,6 +1,7 @@
 'use client';
 
 import { PlayCircle } from '@solar-icons/react/ssr';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useReducer } from 'react';
 import { Button } from '@/components/ui/button';
@@ -11,6 +12,7 @@ import type { ExamLauncherProps } from '@/types/vocab-trainer';
 import { getExamCooldownRemainingSeconds, markExamCooldownNow } from '@/utils/exam-cooldown';
 
 const ExamLauncher: React.FC<ExamLauncherProps> = ({ trainerId, questionType, mode }) => {
+  const t = useTranslations('trainer.launcher');
   const router = useRouter();
   const [, forceTick] = useReducer((value: number) => value + 1, 0);
 
@@ -58,7 +60,7 @@ const ExamLauncher: React.FC<ExamLauncherProps> = ({ trainerId, questionType, mo
         </span>
       </TooltipTrigger>
       <TooltipContent side="bottom" align="center">
-        {isDisabled ? 'Please wait before starting another exam' : isFsrs ? 'Start review' : 'Start exam'}
+        {isDisabled ? t('waitBeforeExam') : isFsrs ? t('startReview') : t('startExam')}
       </TooltipContent>
     </Tooltip>
   );

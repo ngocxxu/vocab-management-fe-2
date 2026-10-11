@@ -7,7 +7,7 @@ import type { TVocabConflictListResponse } from '@/types/vocab-conflict';
 import { AltArrowLeft, CloseCircle, DangerTriangle, Filter, InfoCircle } from '@solar-icons/react/ssr';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import React, { useCallback, useMemo, useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { bulkUpdateVocabs, deleteVocab, deleteVocabsBulk, getVocabsByIds, updateVocab } from '@/actions/vocabs';
@@ -50,12 +50,12 @@ import { RowReassignSubjectsPopover } from './RowReassignSubjectsPopover';
 
 const PREVIEW_PAGE_SIZE = 10;
 
-function formatConflictDate(iso?: string): string {
+function formatConflictDate(iso: string | undefined, locale: string): string {
   if (!iso) {
     return '—';
   }
   try {
-    return new Date(iso).toLocaleDateString(undefined, {
+    return new Date(iso).toLocaleDateString(locale, {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
@@ -81,6 +81,7 @@ export default function ConflictVocabulariesContent({
   loadFailed,
 }: ConflictVocabulariesContentProps) {
   const t = useTranslations('subjects');
+  const locale = useLocale();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [, startTransition] = useTransition();
@@ -376,7 +377,7 @@ export default function ConflictVocabulariesContent({
         header: t('vocabs.columns.dateAdded'),
         cell: ({ row }) => (
           <span className="text-sm text-muted-foreground">
-            {formatConflictDate(row.original.createdAt)}
+            {formatConflictDate(row.original.createdAt, locale)}
           </span>
         ),
         enableSorting: true,
@@ -395,7 +396,7 @@ export default function ConflictVocabulariesContent({
         enableSorting: false,
       },
     ],
-    [reassignOptions, rowBusyId, handleRowReassign, handleEditNavigate, handleDeleteVocab, startTransition, router, t],
+    [reassignOptions, rowBusyId, handleRowReassign, handleEditNavigate, handleDeleteVocab, startTransition, router, t, locale],
   );
 
   const filterTrigger = (

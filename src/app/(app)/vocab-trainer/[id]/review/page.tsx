@@ -1,4 +1,5 @@
 import type { TSrsQuestionType } from '@/types/srs-settings';
+import { getTranslations } from 'next-intl/server';
 import { notFound, redirect } from 'next/navigation';
 import FsrsReview from '@/components/vocab-trainer/fsrs-review/FsrsReview';
 import { ETrainerMode } from '@/enum/vocab-trainer';
@@ -32,9 +33,11 @@ export default async function ReviewPage({ params }: PageProps) {
 
     logger.error('Failed to load the review page:', { error });
 
+    const t = await getTranslations('trainer.fsrs.page');
+
     return (
       <div className="flex min-h-full items-center justify-center p-8 text-lg text-destructive">
-        Unable to load this review right now. Please refresh the page or try again later.
+        {t('reviewLoadError')}
       </div>
     );
   }

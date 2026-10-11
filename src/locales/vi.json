@@ -225,6 +225,10 @@
       "provider": "Không thể đăng nhập bằng nhà cung cấp. Vui lòng thử lại.",
       "originUnavailable": "Không xác định được địa chỉ gốc.",
       "resetPassword": "Không thể gửi email đặt lại mật khẩu. Vui lòng thử lại."
+    },
+    "sessionExpired": {
+      "title": "Phiên đăng nhập đã hết hạn",
+      "description": "Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại."
     }
   },
   "shell": {
@@ -266,7 +270,8 @@
       "admin": "Quản trị viên"
     },
     "errors": {
-      "loadNotifications": "Không tải được thông báo"
+      "loadNotifications": "Không tải được thông báo",
+      "loadDashboard": "Không tải được trang tổng quan"
     }
   },
   "settings": {
@@ -605,6 +610,22 @@
     "vocabInUse": {
       "single": "Từ này đang được {count} bộ luyện sử dụng. Hãy gỡ khỏi các bộ luyện trước.",
       "bulk": "{count} từ đang được bộ luyện sử dụng. Hãy gỡ chúng khỏi bộ luyện trước. Chưa có gì bị xóa."
+    },
+    "pagination": {
+      "showing": "Hiển thị {shown} trên {total} môn học",
+      "rowsPerPage": "Số dòng mỗi trang"
+    },
+    "list": {
+      "addNew": "Thêm môn học mới",
+      "emptyTitle": "Chưa có môn học nào",
+      "emptyBody": "Tạo môn học đầu tiên để bắt đầu",
+      "columnReorder": "Sắp xếp",
+      "columnDetails": "Thông tin môn học",
+      "columnWordCount": "Số từ",
+      "columnCreated": "Ngày tạo",
+      "columnActions": "Thao tác",
+      "dragHintBefore": "Bạn có thể kéo nút",
+      "dragHintAfter": "để sắp xếp thứ tự môn học hiển thị trên trang tổng quan."
     }
   },
   "trainerConflicts": {
@@ -1033,5 +1054,746 @@
       "privacy": "Quyền riêng tư",
       "terms": "Điều khoản"
     }
+  },
+  "authCallback": {
+    "failed": "Không thể hoàn tất đăng nhập",
+    "redirecting": "Đang chuyển đến trang đăng nhập...",
+    "completing": "Đang hoàn tất đăng nhập...",
+    "loading": "Đang tải..."
+  },
+  "support": {
+    "trigger": "Hỗ trợ",
+    "openAria": "Mở hỗ trợ",
+    "inlineTitle": "Liên hệ hỗ trợ",
+    "title": "Liên hệ hỗ trợ",
+    "category": "Danh mục",
+    "selectCategory": "Chọn danh mục",
+    "yourEmail": "Email của bạn",
+    "subject": "Tiêu đề",
+    "subjectPlaceholder": "Mô tả ngắn gọn vấn đề của bạn",
+    "message": "Nội dung",
+    "messagePlaceholder": "Mô tả chi tiết vấn đề của bạn (tối thiểu 20 ký tự)",
+    "cancel": "Hủy",
+    "sending": "Đang gửi…",
+    "send": "Gửi tin nhắn",
+    "sent": "Đã gửi tin nhắn! Chúng tôi sẽ phản hồi sớm.",
+    "sendFailed": "Gửi tin nhắn thất bại. Vui lòng thử lại."
+  },
+  "search": {
+    "title": "Tìm theo nghĩa",
+    "intro": "Tìm trong mọi thư mục và ngôn ngữ. Nhập “cat” để tìm thêm “mèo”, “猫”, “chat”.",
+    "placeholder": "Nhập từ hoặc nghĩa...",
+    "inputAria": "Tìm từ vựng theo nghĩa",
+    "clearAria": "Xóa tìm kiếm",
+    "tooShort": "Nhập ít nhất {count} ký tự — truy vấn ngắn hơn không đủ nghĩa để tìm.",
+    "emptyHint": "Nhập một từ, cụm từ hoặc nghĩa ở trên — kết quả đến từ mọi thư mục và ngôn ngữ, không chỉ những gì bạn gõ.",
+    "failed": "Tìm kiếm thất bại. Vui lòng thử lại sau.",
+    "noResults": "Không tìm thấy từ liên quan.",
+    "folderFallback": "Thư mục",
+    "viewAll": "Xem tất cả",
+    "related": {
+      "title": "Liên quan theo nghĩa",
+      "hint": "Khớp theo nghĩa, không theo chính tả",
+      "searchAll": "Tìm trong tất cả thư mục"
+    }
+  },
+  "chat": {
+    "retryHint": "Bạn có thể thử gửi lại tin nhắn.",
+    "bubble": {
+      "openAria": "Mở cuộc trò chuyện với Trợ lý AI",
+      "dismissAria": "Ẩn xem trước",
+      "openAi": "Mở Trợ lý AI",
+      "tooltip": "Trò chuyện với Trợ lý AI",
+      "aiAlt": "AI",
+      "assistantAlt": "Trợ lý AI"
+    },
+    "header": {
+      "title": "Trợ lý AI",
+      "online": "Đang hoạt động",
+      "close": "Đóng trò chuyện"
+    },
+    "input": {
+      "placeholder": "Nhập tin nhắn…",
+      "stopRecording": "Dừng ghi âm",
+      "startVoice": "Nhập bằng giọng nói",
+      "cancelGeneration": "Hủy phản hồi",
+      "send": "Gửi tin nhắn"
+    },
+    "confirm": {
+      "title": "Cần xác nhận hành động",
+      "about": "Trợ lý AI sắp thực hiện: ",
+      "countdown": "Sẽ xác nhận hành động sau {seconds}s…",
+      "confirm": "Xác nhận ngay",
+      "cancel": "Hủy"
+    },
+    "message": {
+      "sending": "Đang gửi",
+      "retryAria": "Gửi lại tin nhắn",
+      "failed": "Gửi thất bại · Nhấn để thử lại",
+      "aiAlt": "AI"
+    },
+    "quick": {
+      "title": "Thao tác nhanh",
+      "quiz": "Làm bài kiểm tra",
+      "quizMessage": "Tạo bài kiểm tra từ vựng cho tôi",
+      "review": "Ôn từ vựng",
+      "reviewMessage": "Ôn lại các từ vựng của tôi",
+      "question": "Đặt câu hỏi",
+      "questionMessage": "Tôi có một câu hỏi về từ vựng của mình"
+    }
+  },
+  "notifications": {
+    "title": "Thông báo",
+    "subtitle": "Cập nhật tiến độ học tập và thành tích của bạn.",
+    "markAllRead": "Đánh dấu tất cả đã đọc",
+    "markAllReadToast": "Đã đánh dấu tất cả thông báo là đã đọc",
+    "markAllReadFailed": "Đánh dấu tất cả thông báo là đã đọc thất bại",
+    "markedRead": "Đã đánh dấu thông báo là đã đọc",
+    "markReadFailed": "Đánh dấu thông báo là đã đọc thất bại",
+    "invalidData": "Dữ liệu thông báo không hợp lệ",
+    "examFailed": "Không tải được bài kiểm tra. Vui lòng thử lại.",
+    "startExam": "Bắt đầu kiểm tra",
+    "loading": "Đang tải thông báo...",
+    "caughtUp": "Bạn đã xem hết!",
+    "caughtUpBody": "Quay lại sau để xem cập nhật tiến độ và nhắc nhở.",
+    "filtersAria": "Bộ lọc thông báo",
+    "all": "Tất cả",
+    "unread": "Chưa đọc",
+    "unreadAria": "{count} thông báo chưa đọc",
+    "viewHistory": "Xem lịch sử thông báo",
+    "viewAll": "Xem tất cả thông báo",
+    "showing": "Đang hiển thị {displayed} trên {total} thông báo",
+    "multiple": "Nhiều",
+    "fallback": {
+      "item": "mục",
+      "trainer": "bộ luyện tập",
+      "subject": "chủ đề"
+    },
+    "time": {
+      "justNow": "Vừa xong",
+      "minutes": "{count} phút trước",
+      "hours": "{count} giờ trước",
+      "days": "{count} ngày trước",
+      "weeks": "{count} tuần trước",
+      "months": "{count} tháng trước",
+      "years": "{count} năm trước",
+      "yesterdayAt": "Hôm qua, {time}"
+    },
+    "message": {
+      "vocabCreate": "Từ vựng mới \"{name}\" đã được thêm",
+      "vocabUpdate": "Từ vựng \"{name}\" đã được cập nhật",
+      "vocabDelete": "Từ vựng \"{name}\" đã bị xóa",
+      "vocabMultiCreate": "{count} từ vựng đã được thêm",
+      "vocabMultiDelete": "{count} từ vựng đã bị xóa",
+      "vocabRemind": "Nhắc nhở: Ôn từ vựng \"{name}\"",
+      "vocabFallback": "Từ vựng \"{name}\" {action}",
+      "trainerComplete": "Bộ luyện tập \"{name}\" đã hoàn thành",
+      "trainerUpdate": "Bộ luyện tập \"{name}\" đã được cập nhật",
+      "trainerDelete": "Bộ luyện tập \"{name}\" đã bị xóa",
+      "trainerRemind": "Nhắc nhở: Hoàn thành bộ luyện tập \"{name}\"",
+      "trainerFallback": "Bộ luyện tập \"{name}\" {action}",
+      "subjectCreate": "Chủ đề mới \"{name}\" đã được thêm",
+      "subjectUpdate": "Chủ đề \"{name}\" đã được cập nhật",
+      "subjectDelete": "Chủ đề \"{name}\" đã bị xóa",
+      "subjectFallback": "Chủ đề {action}",
+      "systemCreate": "Thông báo hệ thống mới",
+      "systemUpdate": "Thông báo hệ thống đã được cập nhật",
+      "systemRemind": "Nhắc nhở từ hệ thống",
+      "systemDefault": "Thông báo hệ thống",
+      "typeFallback": "{type} {action}"
+    },
+    "settings": {
+      "title": "Cài đặt",
+      "learningReminders": "Nhắc nhở học tập",
+      "learningRemindersHint": "Nhắc luyện tập mỗi ngày",
+      "achievements": "Thành tích",
+      "achievementsHint": "Khi bạn đạt mốc quan trọng",
+      "productUpdates": "Cập nhật sản phẩm",
+      "productUpdatesHint": "Tính năng mới & mẹo hay",
+      "clearAll": "Xóa tất cả thông báo",
+      "clearAllFailed": "Xóa thông báo thất bại",
+      "upgradeTitle": "Nâng tầm việc học với Pro",
+      "upgradeBody": "Mở khóa phân tích nâng cao và chế độ ngoại tuyến.",
+      "upgradeCta": "Nâng cấp ngay"
+    },
+    "page": {
+      "zzz": "Zzz...",
+      "clearTitle": "Không còn thông báo nào! Bạn đã cập nhật đầy đủ.",
+      "clearBody": "Chúng tôi sẽ báo cho bạn khi bạn đạt mốc mới hoặc cần nhắc để giữ chuỗi học tập.",
+      "startLearning": "Bắt đầu học",
+      "today": "HÔM NAY",
+      "yesterday": "HÔM QUA",
+      "lastWeek": "TUẦN TRƯỚC"
+    }
+  },
+  "shared": {
+    "deleteAria": "Xóa {name}",
+    "confirmTitle": "Bạn có chắc chắn không?",
+    "deleteDescription": "Thao tác này không thể hoàn tác. {name} này sẽ bị xóa vĩnh viễn và được gỡ khỏi danh sách của bạn.",
+    "bulkDescription": "Thao tác này không thể hoàn tác. {count} {name} sẽ bị xóa vĩnh viễn và được gỡ khỏi danh sách của bạn.",
+    "cancel": "Hủy",
+    "delete": "Xóa",
+    "deleted": "Đã xóa {name} thành công!",
+    "deleteFailed": "Xóa {name} thất bại. Vui lòng thử lại.",
+    "examErrorFallback": "Đã xảy ra lỗi. Vui lòng thử lại.",
+    "backToTrainers": "Quay lại bộ luyện tập",
+    "pronounIt": "nó",
+    "pronounThem": "chúng"
+  },
+  "install": {
+    "body": "Cài đặt ứng dụng này: nhấn ⬆️ Chia sẻ, rồi chọn \"Thêm vào Màn hình chính\".",
+    "dismiss": "Đóng gợi ý cài đặt"
+  },
+  "trainer": {
+    "title": "Bộ luyện từ vựng",
+    "total": "tổng",
+    "subtitle": "Tạo và quản lý các phiên luyện từ vựng để nâng cao kỹ năng ngôn ngữ.",
+    "filter": "Lọc",
+    "filterTitle": "Lọc bộ luyện tập",
+    "filterStatus": "Lọc theo trạng thái",
+    "statusPlaceholder": "Chọn trạng thái để lọc...",
+    "filterQuestionType": "Lọc theo loại câu hỏi",
+    "questionTypePlaceholder": "Chọn loại câu hỏi để lọc...",
+    "clearFilters": "Xóa bộ lọc",
+    "create": "Tạo bộ luyện tập",
+    "searchPlaceholder": "Tìm bộ luyện tập...",
+    "loadError": "Không tải được bộ luyện tập. Vui lòng thử lại.",
+    "spacedRepetition": "Lặp lại ngắt quãng",
+    "status": {
+      "pending": "Chờ",
+      "passed": "Đạt",
+      "failed": "Chưa đạt"
+    },
+    "columns": {
+      "selectAll": "Chọn tất cả",
+      "selectRow": "Chọn dòng",
+      "name": "Tên",
+      "status": "Trạng thái",
+      "questionType": "Loại câu hỏi",
+      "vocabularies": "Từ vựng"
+    },
+    "vocabCount": "{count, plural, other {# từ}}",
+    "toast": {
+      "skipped": "{count} từ chưa có bản dịch nên không có câu hỏi.",
+      "saveFailed": "Lưu bộ luyện tập thất bại",
+      "deleted": "Đã xóa bộ luyện tập thành công!",
+      "deleteFailed": "Xóa bộ luyện tập thất bại. Vui lòng thử lại.",
+      "noPractice": "Hiện không có từ nào cần luyện thêm.",
+      "problematicName": "Luyện các từ khó {language}",
+      "problematicNameGeneric": "Luyện các từ khó"
+    },
+    "bulk": {
+      "name": "bộ luyện tập từ vựng",
+      "namePlural": "bộ luyện tập từ vựng"
+    },
+    "cooldown": {
+      "title": "Nghỉ ngắn 60 giây",
+      "body": "AI đang chuẩn bị bài kiểm tra tiếp theo (còn <strong>{seconds}s</strong>). Bạn có thể vào <strong>Thẻ lật</strong> ngay bây giờ—chúng luôn sẵn sàng!"
+    },
+    "breadcrumb": {
+      "dashboard": "Tổng quan",
+      "trainer": "Luyện từ vựng"
+    },
+    "launcher": {
+      "waitBeforeExam": "Vui lòng chờ trước khi bắt đầu bài kiểm tra khác",
+      "startReview": "Bắt đầu ôn tập",
+      "startExam": "Bắt đầu kiểm tra"
+    },
+    "form": {
+      "basicInfo": "Thông tin cơ bản",
+      "name": "Tên bộ luyện tập",
+      "namePlaceholder": "VD: Ôn buổi sáng #4",
+      "mode": "Chế độ học",
+      "modeAria": "Chế độ học",
+      "modeFixed": "Chế độ không đổi sau khi tạo bộ luyện tập.",
+      "questionType": "Loại câu hỏi",
+      "questionTypePlaceholder": "Chọn loại câu hỏi",
+      "upgrade": "Nâng cấp",
+      "upsellFeature": "Bài nghe dịch",
+      "upsellDescription": "Bài kiểm tra nghe dịch có trong gói Member. Nâng cấp để mở khóa.",
+      "selectedWords": "Từ đã chọn",
+      "selectedCount": "Đã chọn {count}",
+      "pickWords": "Chọn từ trong danh sách để bắt đầu luyện.",
+      "removeWord": "Xóa {label}",
+      "removeWordGeneric": "Xóa từ đã chọn",
+      "more": "+{count} nữa",
+      "reminders": "Nhắc nhở"
+    },
+    "dialog": {
+      "editTitle": "Sửa bộ luyện từ vựng",
+      "createTitle": "Tạo bộ luyện từ vựng mới",
+      "editDescription": "Cập nhật thông tin bộ luyện từ vựng của bạn",
+      "createDescription": "Cấu hình phiên học và chọn từ để luyện.",
+      "cancel": "Hủy",
+      "creating": "Đang tạo...",
+      "update": "Cập nhật bộ luyện tập",
+      "create": "Tạo bộ luyện tập",
+      "removeTitle": "{count, plural, other {# từ}} sẽ mất lịch ôn tập",
+      "removeDescription": "Gỡ một từ sẽ xóa lịch ôn tập của từ đó trong bộ luyện tập. Lịch sử ôn tập được giữ lại. Thêm lại từ sau này sẽ bắt đầu lại từ đầu.",
+      "removeConfirm": "Gỡ và cập nhật"
+    },
+    "clone": {
+      "title": "Bắt đầu chu kỳ mới",
+      "description": "Bộ luyện tập mới với cùng {count, plural, other {# từ}}, chiều học và cài đặt. Mọi câu hỏi bắt đầu lại từ đầu. {name} giữ nguyên, kèm lịch sử.",
+      "defaultName": "{name} (chu kỳ mới)",
+      "name": "Tên",
+      "deadline": "Hạn chót",
+      "optional": "(không bắt buộc)",
+      "deadlineHint": "Mọi từ sẽ được hỏi lại trước ngày này, ví dụ trước kỳ thi.",
+      "started": "Đã bắt đầu chu kỳ mới",
+      "startFailed": "Bắt đầu chu kỳ mới thất bại",
+      "starting": "Đang bắt đầu…",
+      "startButton": "Bắt đầu chu kỳ mới",
+      "cancel": "Hủy"
+    },
+    "selection": {
+      "scopeLabel": "Phạm vi ngôn ngữ",
+      "sourceLanguage": "Ngôn ngữ nguồn",
+      "targetLanguage": "Ngôn ngữ đích",
+      "all": "Tất cả",
+      "allLanguages": "Tất cả ngôn ngữ",
+      "outOfScope": "{count} từ đã chọn nằm ngoài {scope}",
+      "removeThem": "Gỡ các từ này",
+      "quickFilters": "Bộ lọc nhanh",
+      "allWords": "Tất cả từ",
+      "recent": "Mới thêm gần đây",
+      "difficult": "Khó",
+      "unstarted": "Chưa học",
+      "searchPlaceholder": "Tìm trong mọi thư mục...",
+      "folder": "Thư mục:",
+      "count": "Số lượng",
+      "decreaseCount": "Giảm số lượng",
+      "increaseCount": "Tăng số lượng",
+      "randomize": "Chọn ngẫu nhiên",
+      "overMax": "Chỉ có {max} từ trong phạm vi này. Sẽ dùng {max} từ.",
+      "selectAll": "Chọn tất cả",
+      "selectRow": "Chọn dòng",
+      "textSource": "Văn bản nguồn",
+      "textTargets": "Mục tiêu văn bản",
+      "status": "Trạng thái",
+      "vocabularies": "Từ vựng"
+    },
+    "exam": {
+      "loadFailed": "Không tải được bài kiểm tra",
+      "loadFailedDetail": "Không tải được bài kiểm tra. Vui lòng thử lại.",
+      "generating": "Đang tạo câu hỏi...",
+      "loading": "Đang tải bài kiểm tra...",
+      "waitMoments": "Quá trình này có thể mất vài phút. Vui lòng chờ.",
+      "submitFailed": "Nộp bài thất bại. Vui lòng thử lại.",
+      "submitErrorFallback": "Đã xảy ra lỗi khi nộp bài.",
+      "examErrorFallback": "Đã xảy ra lỗi trong bài kiểm tra.",
+      "untitled": "Bài kiểm tra từ vựng",
+      "flipUntitled": "Bài kiểm tra thẻ lật",
+      "noQuestions": "Không có câu hỏi nào cho bài kiểm tra này.",
+      "noCards": "Không có thẻ nào cho bài kiểm tra này.",
+      "answered": "Đã trả lời",
+      "submitting": "Đang nộp...",
+      "submit": "Nộp bài",
+      "next": "Tiếp",
+      "previous": "Trước",
+      "complete": "Hoàn thành bài kiểm tra",
+      "card": "Thẻ"
+    },
+    "header": {
+      "questionOf": "CÂU {current} / {total}",
+      "level": "TRÌNH ĐỘ {level}",
+      "timeRemaining": "Thời gian còn lại",
+      "progress": "Tiến độ",
+      "percentComplete": "{percent}% HOÀN THÀNH"
+    },
+    "flip": {
+      "clickFlip": "Nhấn để lật",
+      "clickFlipBack": "Nhấn để lật lại",
+      "noText": "Không có nội dung",
+      "noTextShort": "Không có nội dung"
+    },
+    "fillIn": {
+      "question": "• CÂU {number}",
+      "typeAnswer": "Nhập đáp án",
+      "placeholder": "Nhập đáp án của bạn tại đây..."
+    },
+    "results": {
+      "title": "Kết quả bài kiểm tra",
+      "jobId": "Mã công việc:",
+      "completed": "Hoàn thành:",
+      "justNow": "Vừa xong",
+      "exportPdf": "Xuất PDF",
+      "retry": "Làm lại bài kiểm tra",
+      "retryIn": "Làm lại sau {seconds}s",
+      "score": "ĐIỂM",
+      "passed": "ĐẠT",
+      "failed": "CHƯA ĐẠT",
+      "greatJob": "Tuyệt vời! Bạn đã vượt mục tiêu {target}%.",
+      "keepPracticing": "Hãy tiếp tục luyện để đạt mục tiêu {target}%.",
+      "accuracy": "Độ chính xác",
+      "items": "{correct}/{total} mục",
+      "performance": "Hiệu suất",
+      "target": "Mục tiêu: {target}%",
+      "duration": "Thời lượng",
+      "efficiency": "“Hiệu quả là chìa khóa”",
+      "averagePerCard": "Trung bình: {time} mỗi thẻ",
+      "detailed": "Đánh giá chi tiết",
+      "question": "Câu {number}",
+      "correct": "Đúng",
+      "incorrect": "Sai",
+      "notAnswered": "Chưa trả lời",
+      "yourAnswer": "Đáp án của bạn",
+      "correctAnswer": "Đáp án đúng",
+      "aiExplanation": "Giải thích từ AI",
+      "frontText": "Mặt trước",
+      "backText": "Mặt sau",
+      "known": "Đã nhớ",
+      "needsPractice": "Cần luyện thêm",
+      "cardNumber": "Thẻ {number}",
+      "vocabFlipCard": "Từ vựng: Thẻ lật",
+      "needPracticeCount": "Cần luyện: {count}",
+      "avgNone": "TB. — MỖI CÂU",
+      "avgSeconds": "TB. {seconds}G MỖI CÂU",
+      "avgMinutes": "TB. {minutes}P {seconds}G MỖI CÂU"
+    },
+    "fillInSubmit": {
+      "title": "Đang nộp bài kiểm tra...",
+      "body": "Vui lòng chờ trong khi chúng tôi xử lý câu trả lời",
+      "noJobId": "Không lấy được mã đánh giá. Phản hồi từ máy chủ không hợp lệ.",
+      "failed": "Nộp bài kiểm tra thất bại. Vui lòng thử lại.",
+      "untitled": "Bài kiểm tra từ vựng"
+    },
+    "classic": {
+      "timedTest": "Bài kiểm tra có giới hạn",
+      "timeLimit": "Giới hạn thời gian",
+      "timeLimitAria": "Giới hạn thời gian",
+      "minutes": "{count} phút",
+      "cardSummary": "{count} từ · <strong>{time}</strong> thời gian giới hạn"
+    },
+    "fsrs": {
+      "rating": {
+        "again": "Quên",
+        "hard": "Khó",
+        "good": "Nhớ",
+        "easy": "Dễ"
+      },
+      "interval": {
+        "lessThanDay": "< 1 ngày",
+        "day": " ngày",
+        "month": " tháng",
+        "year": " năm"
+      },
+      "direction": {
+        "sourceToTarget": "Từ → Nghĩa",
+        "targetToSource": "Nghĩa → Từ"
+      },
+      "deadline": {
+        "cycleEnded": "Chu kỳ đã kết thúc",
+        "endsToday": "Kết thúc hôm nay",
+        "daysLeft": "Còn {days} ngày"
+      },
+      "status": {
+        "allCaughtUp": "Đã hoàn thành",
+        "overdue": "{count} quá hạn",
+        "today": "{count} hôm nay",
+        "new": "{count} mới",
+        "countsUnavailable": "Không tải được số liệu",
+        "loading": "Đang tải"
+      },
+      "actions": {
+        "extend": "Gia hạn",
+        "newCycle": "Chu kỳ mới",
+        "stats": "Thống kê",
+        "statsOf": "Thống kê của {name}"
+      },
+      "review": {
+        "back": "Quay lại bộ luyện tập",
+        "nothingToReview": "Hiện không có gì cần ôn.",
+        "loadFailed": "Không tải được phiên ôn tập",
+        "saveFailed": "Không lưu được câu trả lời",
+        "saveRetry": "Nhấn lại nút để thử lại.",
+        "checkFailed": "Không kiểm tra được câu trả lời",
+        "ratingGroup": "Bạn nhớ câu này đến mức nào?",
+        "ratingAria": "{rating}, sẽ quay lại sau {interval}",
+        "suggestedSuffix": ", gợi ý",
+        "suggestedBadge": "Gợi ý · "
+      },
+      "start": {
+        "endedTitle": "Chu kỳ này đã kết thúc",
+        "endedBody": "Không còn lịch ôn nào nữa và tiến độ của bạn vẫn được giữ lại. Hãy gia hạn thời hạn trong cài đặt bộ luyện tập, hoặc tạo bộ luyện tập mới để học lại các từ này.",
+        "endedBodyWithDate": "Hạn chót là {date}. Không còn lịch ôn nào nữa và tiến độ của bạn vẫn được giữ lại. Hãy gia hạn thời hạn trong cài đặt bộ luyện tập, hoặc tạo bộ luyện tập mới để học lại các từ này.",
+        "shortSessions": "Phiên ngắn hiệu quả hơn phiên dài.",
+        "welcomeBack": "Chào mừng bạn trở lại!",
+        "backlogBody": "{count} câu đã quá hạn. Điều này là bình thường sau một thời gian nghỉ, không cần vội.",
+        "backlogPace": "Với {size} câu mỗi ngày, bạn sẽ theo kịp sau khoảng {days} ngày.",
+        "overdue": "Quá hạn",
+        "dueToday": "Đến hạn hôm nay",
+        "newToLearn": "Mới cần học",
+        "allCaughtUp": "Bạn đã hoàn thành hết. Quay lại sau, hoặc xem trước bên dưới.",
+        "sessionSize": "Số câu trong phiên này",
+        "startSession": "Bắt đầu {count} câu (khoảng {minutes} phút)",
+        "waiting": "Còn {count} câu chờ cho các phiên sau.",
+        "reviewAhead": "Ôn {days} ngày tới"
+      },
+      "summary": {
+        "complete": "Hoàn thành phiên",
+        "answered": "Bạn đã trả lời {count} câu. Mỗi câu đã được xếp lịch ôn tiếp theo.",
+        "yourAnswers": "Kết quả của bạn",
+        "retryOutcome": "Lần này bạn nhớ <strong>{recalled}/{total}</strong>. Vòng ôn lại chỉ để luyện tập: không được lưu và lịch của bạn không đổi.",
+        "pendingAfter": "Còn {count} câu chờ cho các phiên sau.",
+        "retry": "Ôn lại {count} câu đã sai (chỉ luyện tập)",
+        "reviewMore": "Ôn thêm {count} câu",
+        "stopToday": "Dừng hôm nay"
+      },
+      "card": {
+        "new": "Mới",
+        "yourAnswer": "Đáp án của bạn ({language})",
+        "comparedWith": "So với đáp án gần nhất",
+        "accepted": "Chấp nhận: {answers}",
+        "check": "Kiểm tra",
+        "iDontKnow": "Tôi không biết",
+        "showAnswer": "Hiện đáp án",
+        "spaceHint": "Space",
+        "missingHint": " (thiếu)",
+        "extraHint": " (không cần)",
+        "retryGroup": "Lần này bạn có nhớ không?",
+        "stillMissed": "Vẫn quên",
+        "gotIt": "Đã nhớ"
+      },
+      "progress": {
+        "retryMissed": "Ôn lại câu đã quên",
+        "question": "Câu hỏi",
+        "counter": "{label} {current}/{total}"
+      },
+      "stats": {
+        "subtitle": "Thống kê lặp lại ngắt quãng",
+        "endedBody": "Không còn lịch ôn nào nên không có dự báo. Tiến độ của bạn vẫn được giữ lại.",
+        "noReviewsTitle": "Chưa có lượt ôn nào",
+        "noReviewsBody": "Thống kê sẽ hiện sau phiên đầu tiên của bạn.",
+        "startReviewing": "Bắt đầu ôn tập",
+        "summaryAria": "Tổng quan",
+        "new": "Mới",
+        "newHint": "Câu chưa từng gặp",
+        "inReview": "Đang ôn",
+        "inReviewHint": "Câu đang theo lịch",
+        "mastered": "Đã thành thạo",
+        "masteredHint": "Nhớ khoảng 6 tháng, gần đây không quên",
+        "leeches": "Câu hay quên",
+        "leechesHint": "Quên từ 8 lần trở lên",
+        "retention": "Tỉ lệ nhớ",
+        "retentionNoData": "Chưa có lượt ôn nào",
+        "retentionHint": "{reviews} lượt ôn trong {days} ngày",
+        "forecastTitle": "30 ngày tới",
+        "forecastDescription": "Số câu đến hạn mỗi ngày. Câu quá hạn được tính vào ngày đầu tiên.",
+        "forecastAria": "Số câu đến hạn trong 30 ngày tới",
+        "due": "Đến hạn",
+        "forecastEnded": "Chu kỳ đã kết thúc.",
+        "forecastEmpty": "Không có câu nào đến hạn trong 30 ngày tới.",
+        "stabilityTitle": "Bạn nhớ được bao lâu",
+        "stabilityDescription": "Các câu được nhóm theo thời gian bạn nhớ.",
+        "stabilityAria": "Số câu theo độ bền trí nhớ",
+        "questions": "Số câu",
+        "stabilityEmpty": "Sẽ hiện sau các lượt ôn đầu tiên.",
+        "byDirection": "Theo chiều",
+        "colDirection": "Chiều",
+        "colQuestions": "Số câu",
+        "colNew": "Mới",
+        "colInReview": "Đang ôn",
+        "colMastered": "Đã thành thạo",
+        "colLeeches": "Câu hay quên",
+        "leechesTitle": "Câu hay quên",
+        "leechesDescription": "Những từ bạn hay quên. Thêm ví dụ hoặc mẹo ghi nhớ thường giúp ích.",
+        "leechesEmpty": "Không có câu hay quên nào.",
+        "misses": "{count} lần quên"
+      },
+      "page": {
+        "reviewLoadError": "Hiện không tải được phiên ôn tập này. Vui lòng làm mới trang hoặc thử lại sau.",
+        "statsLoadError": "Hiện không tải được thống kê này. Vui lòng làm mới trang hoặc thử lại sau."
+      }
+    },
+    "settings": {
+      "spacedRepetition": "Lặp lại ngắt quãng",
+      "noTranslationTitle": "{count} từ chưa có bản dịch",
+      "noTranslationBody": "Các từ này sẽ không có câu hỏi cho đến khi bạn thêm bản dịch: {words}{more}.",
+      "moreWords": " và {count} từ khác",
+      "directions": "Chiều học",
+      "directionRecognise": "Nhận biết",
+      "directionRecogniseHint": "Thấy từ, biết nghĩa",
+      "directionRecall": "Nhớ lại",
+      "directionRecallHint": "Thấy nghĩa, tự nhớ ra từ",
+      "directionsNote": "Mỗi từ được hỏi một lần cho mỗi chiều, sau đó quay lại theo lịch cho đến khi bạn nhớ. Theo thời gian bạn sẽ thấy nhiều câu hỏi hơn số này.",
+      "directionsLocked": "Các chiều được cố định sau khi tạo bộ luyện tập.",
+      "deadline": "Hạn chót",
+      "optional": "(không bắt buộc)",
+      "deadlineHelp": "Mỗi từ sẽ được hỏi lại trước ngày này, ví dụ trước một kỳ thi.",
+      "advanced": "Nâng cao",
+      "retention": "Tỉ lệ nhớ mong muốn",
+      "retentionBody": "Khoảng {recall} trên 10 từ vẫn còn nhớ khi quay lại. {hint}",
+      "retentionHintHigh": "Rất ít lần quên, nhưng mỗi ngày phải ôn nhiều hơn.",
+      "retentionHintMid": "Cân bằng tốt giữa việc ghi nhớ và khối lượng ôn.",
+      "retentionHintLow": "Ít lượt ôn hơn, nhưng bạn sẽ quên nhiều từ hơn.",
+      "newPerDay": "Số câu mới mỗi ngày",
+      "noLimit": "(để trống = không giới hạn)",
+      "noLimitPlaceholder": "Không giới hạn",
+      "suggestion": "{perDay} câu mới mỗi ngày sẽ đưa hết {cards} câu vào trước hạn chót.",
+      "suggestionUse": "Dùng {count}",
+      "maxInterval": "Khoảng cách ôn lại lâu nhất (ngày)",
+      "longTerm": "Dài hạn: không giới hạn thực tế.",
+      "comeBack": "Thẻ quay lại ít nhất mỗi {days} ngày.",
+      "cardSummary": "{words} từ × {directions} chiều = <strong>{cards} câu</strong> cần học"
+    },
+    "recorder": {
+      "hint": "Nhấn nút bên dưới để bắt đầu ghi âm",
+      "micError": "Không truy cập được micro. Vui lòng kiểm tra quyền truy cập.",
+      "start": "Bắt đầu ghi âm",
+      "resume": "Tiếp tục",
+      "pause": "Tạm dừng",
+      "stop": "Dừng",
+      "complete": "Đã ghi âm xong",
+      "duration": "Thời lượng",
+      "playbackAria": "Phát lại bản ghi âm",
+      "play": "Phát",
+      "recordAgain": "Ghi âm lại"
+    },
+    "audioResults": {
+      "evaluationComplete": "Đã chấm xong!",
+      "timeTaken": "Thời gian làm bài",
+      "transcript": "Bản ghi lời bạn nói"
+    },
+    "markdown": {
+      "copiedToast": "Đã sao chép báo cáo vào bộ nhớ tạm",
+      "copyFailed": "Không sao chép được báo cáo",
+      "title": "Báo cáo đánh giá",
+      "copied": "Đã sao chép!",
+      "copy": "Sao chép"
+    },
+    "audioExam": {
+      "uploadFailed": "Tải bản ghi lên thất bại. Vui lòng thử lại.",
+      "uploadingTitle": "Đang tải bản ghi của bạn lên...",
+      "uploadingBody": "Vui lòng chờ trong khi chúng tôi tải tệp âm thanh lên",
+      "submittingBody": "Vui lòng chờ trong khi chúng tôi xử lý bài nộp của bạn",
+      "untitled": "Bài kiểm tra dịch và ghi âm",
+      "recordingDone": "Đã ghi âm xong! Nộp bài để tiếp tục.",
+      "submitExam": "Nộp bài"
+    },
+    "question": {
+      "label": "• CÂU {number}",
+      "chooseAnswer": "Chọn đáp án của bạn"
+    },
+    "dialogue": {
+      "empty": "Chưa có hội thoại"
+    },
+    "evaluation": {
+      "fillInTitle": "AI đang chấm câu trả lời...",
+      "audioTitle": "Đang chấm bản dịch của bạn...",
+      "wait": "Việc này có thể mất vài giây. Vui lòng chờ.",
+      "failed": "Chấm bài thất bại"
+    }
+  },
+  "dashboard": {
+    "welcome": "Chào mừng bạn trở lại, {name}!",
+    "welcomeFallbackName": "bạn",
+    "subtitle": "Theo dõi tiến độ học ngoại ngữ và nâng cao kỹ năng với các công cụ AI của chúng tôi.",
+    "noData": "Chưa có dữ liệu",
+    "section": {
+      "overview": "Tổng quan",
+      "nextAction": "Việc cần làm tiếp",
+      "activity": "Hoạt động",
+      "wordsToReview": "Từ cần ôn",
+      "charts": "Biểu đồ"
+    },
+    "kpi": {
+      "totalWords": "Tổng số từ",
+      "avgMastery": "Mức thành thạo TB",
+      "accuracy": "Độ chính xác",
+      "needReview": "Cần ôn lại"
+    },
+    "fsrs": {
+      "title": "Lặp lại ngắt quãng",
+      "dueToday": "cần ôn hôm nay",
+      "mastered": "đã thành thạo",
+      "reviewNow": "Ôn ngay",
+      "openTrainers": "Mở bộ luyện tập"
+    },
+    "hero": {
+      "badge": {
+        "critical": "ƯU TIÊN CAO",
+        "warning": "CẦN CHÚ Ý",
+        "onTrack": "ỔN ĐỊNH"
+      },
+      "urgent": "<hl>{count} từ</hl> cần bạn ôn gấp",
+      "review": "<hl>{count} từ</hl> cần ôn lại",
+      "onTrack": "Bạn đang đi đúng hướng — không có từ nào cần ôn.",
+      "noSessions": "Chưa có buổi luyện tập nào. Hãy bắt đầu buổi đầu tiên hôm nay.",
+      "daysSince": "Đã <strong>{days} ngày</strong> kể từ buổi luyện tập gần nhất."
+    },
+    "heatmap": {
+      "title": "Hoạt động",
+      "subtitle": "Hoạt động luyện tập trong {year}.",
+      "total": "{count} buổi luyện tập trong {year}",
+      "none": "{date} — không luyện tập",
+      "session": "{date} — {count} buổi luyện tập",
+      "less": "Ít",
+      "more": "Nhiều"
+    },
+    "distribution": {
+      "title": "Phân bố mức thành thạo",
+      "low": "THẤP (0–3)",
+      "mid": "TRUNG BÌNH (4–6)",
+      "high": "CAO (7–10)",
+      "count": "Số lượng",
+      "aria": "Số lượng từ theo mức thành thạo"
+    },
+    "answers": {
+      "title": "Phân bố kết quả trả lời",
+      "correct": "Đúng",
+      "incorrect": "Sai",
+      "success": "THÀNH CÔNG",
+      "answers": "Số câu trả lời",
+      "aria": "Phân bố câu trả lời đúng và sai"
+    },
+    "progress": {
+      "title": "Tiến độ thành thạo",
+      "subtitle": "Xu hướng điểm thành thạo trung bình theo thời gian.",
+      "weekly": "Xem theo tuần",
+      "averageMastery": "Thành thạo TB",
+      "aria": "Điểm thành thạo trung bình theo thời gian"
+    },
+    "subjectMastery": {
+      "title": "Thành thạo theo chủ đề"
+    },
+    "problematic": {
+      "title": "10 từ khó nhất",
+      "subtitle": "Các từ cần chú ý ngay dựa trên tỉ lệ sai.",
+      "showing": "Hiển thị {shown} trên tổng {total} từ.",
+      "practice": "Luyện {count} từ này →",
+      "empty": "Hiện không có từ nào cần ôn. Tiếp tục luyện tập nhé!",
+      "emptyLanguage": "Không có từ nào cần ôn cho ngôn ngữ này.",
+      "word": "Từ",
+      "errorRate": "Tỉ lệ sai",
+      "status": "Trạng thái"
+    },
+    "status": {
+      "critical": "NGHIÊM TRỌNG",
+      "warning": "CẢNH BÁO",
+      "normal": "BÌNH THƯỜNG"
+    },
+    "zoneError": {
+      "message": "Không tải được {section}. Hãy thử làm mới trang.",
+      "sections": {
+        "nextAction": "phần việc tiếp theo",
+        "charts": "biểu đồ",
+        "activity": "hoạt động",
+        "problematic": "từ khó"
+      }
+    }
+  },
+  "premium": {
+    "upsell": {
+      "title": "Nâng cấp lên Pro",
+      "description": "{feature} có trong gói Pro. Nâng cấp để mở khóa tính năng này.",
+      "action": "Nâng cấp"
+    }
+  },
+  "mastery": {
+    "unstarted": "Chưa học",
+    "beginner": "Mới bắt đầu",
+    "learning": "Đang học",
+    "mastered": "Thành thạo"
   }
 }

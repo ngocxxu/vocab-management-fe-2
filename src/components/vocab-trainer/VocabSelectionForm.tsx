@@ -7,6 +7,7 @@ import type { QuickFilter, VocabSelectionFormProps } from '@/types/vocab-trainer
 import type { TVocab } from '@/types/vocab-list';
 import type { TLanguage } from '@/types/language';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { useFormContext } from 'react-hook-form';
 import {
   FormControl,
@@ -21,7 +22,7 @@ import { useLocalPagination, useVocabSelection } from '@/hooks';
 import { getRandomVocabsForSelection } from '@/actions';
 import { cn } from '@/libs/utils';
 import { folderMatchesScope, getLastTrainerScope, isAllScope, scopeParam, setLastTrainerScope } from '@/utils/trainer-scope';
-import { getMasteryColors, getMasteryDisplay, getMasteryStatus } from '@/utils/vocab-mastery';
+import { getMasteryColors, getMasteryDisplay, getMasteryStatus, MASTERY_LABEL_KEYS } from '@/utils/vocab-mastery';
 import VocabSelectionFilters from './VocabSelectionFilters';
 import VocabSelectionScope from './VocabSelectionScope';
 
@@ -58,6 +59,8 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
   initialLanguagesData,
   editMode = false,
 }) => {
+  const t = useTranslations('trainer.selection');
+  const tMastery = useTranslations('mastery');
   const form = useFormContext();
   const languages = useMemo(() => initialLanguagesData?.items || [], [initialLanguagesData]);
   const [quickFilter, setQuickFilter] = useState<QuickFilter>('all');
@@ -232,7 +235,7 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
         <Checkbox
           checked={areAllOnPageSelected}
           onCheckedChange={value => handleToggleAllOnPage(!!value)}
-          aria-label="Select all"
+          aria-label={t('selectAll')}
         />
       ),
       cell: ({ row }) => (
@@ -252,7 +255,7 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
                     field.onChange(newValue);
                     form.clearErrors('vocabAssignmentIds');
                   }}
-                  aria-label="Select row"
+                  aria-label={t('selectRow')}
                 />
               </FormControl>
             </FormItem>
@@ -264,7 +267,7 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
     },
     {
       accessorKey: 'textSource',
-      header: 'Text Source',
+      header: t('textSource'),
       cell: ({ row }) => (
         <span
           key={`${row.original.textSource}`}
@@ -280,17 +283,17 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
     },
     {
       accessorKey: 'textTargets',
-      header: 'Text Targets',
+      header: t('textTargets'),
       cell: ({ row }) => (
         <div className="flex flex-wrap gap-1">
-          {row.original.textTargets.map(t => (
+          {row.original.textTargets.map(target => (
             <span
-              key={`${t.textTarget}-${row.original.id}`}
+              key={`${target.textTarget}-${row.original.id}`}
               className="inline-flex max-w-32 min-w-0 shrink-0 items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground sm:max-w-40"
-              title={t.textTarget}
+              title={target.textTarget}
             >
               <span className="block min-w-0 truncate">
-                {t.textTarget}
+                {target.textTarget}
               </span>
             </span>
           ))}
@@ -300,20 +303,20 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
     },
     {
       id: 'status',
-      header: 'Status',
+      header: t('status'),
       cell: ({ row }) => {
         const status = getMasteryStatus(row.original.masteryScore);
         const { kind } = getMasteryDisplay(row.original.masteryScore);
         const colors = getMasteryColors(kind);
         return (
           <span className={cn('inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium', colors.pill)}>
-            {status}
+            {tMastery(MASTERY_LABEL_KEYS[status])}
           </span>
         );
       },
       enableSorting: false,
     },
-  ], [areAllOnPageSelected, form, handleToggleAllOnPage]);
+  ], [areAllOnPageSelected, form, handleToggleAllOnPage, t, tMastery]);
 
   return (
     <div className="space-y-4">
@@ -346,12 +349,12 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
         name="vocabAssignmentIds"
         render={() => (
           <FormItem>
-            <FormLabel className="sr-only">Vocabularies</FormLabel>
+            <FormLabel className="sr-only">{t('vocabularies')}</FormLabel>
             <FormControl>
               <DataTable<TVocab, unknown>
                 columns={columns}
                 data={data}
-                searchPlaceholder="Search across all folders..."
+                searchPlaceholder={t('searchPlaceholder')}
                 searchValue={filters.globalFilter}
                 onSearchChangeAction={value => handleFilterChange('globalFilter', value)}
                 showSearch={false}

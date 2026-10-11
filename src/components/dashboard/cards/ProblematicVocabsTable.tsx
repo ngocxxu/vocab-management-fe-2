@@ -8,6 +8,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import type { TProblematicLanguage } from '@/types/statistics';
 import type { TTextTarget } from '@/types/vocab-list';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 import type { ProblematicVocabsTableProps } from '@/types';
@@ -31,18 +32,19 @@ function languageLabel(language: TProblematicLanguage): string {
 }
 
 export function ProblematicVocabsTable({ languages, itemsByLang }: ProblematicVocabsTableProps) {
+  const t = useTranslations('dashboard');
   const [activeCode, setActiveCode] = useState(languages[0]?.sourceLanguageCode ?? '');
 
   if (languages.length === 0) {
     return (
       <Card className="overflow-hidden border-0 bg-card shadow-sm">
         <CardHeader className="pb-4">
-          <CardTitle className="text-xl font-bold text-foreground">Top 10 Problematic Vocabs</CardTitle>
-          <p className="text-sm text-muted-foreground">Words requiring immediate attention based on error rate.</p>
+          <CardTitle className="text-xl font-bold text-foreground">{t('problematic.title')}</CardTitle>
+          <p className="text-sm text-muted-foreground">{t('problematic.subtitle')}</p>
         </CardHeader>
         <CardContent className="p-6">
           <p className="text-center text-sm text-muted-foreground">
-            No words need review right now. Keep practicing!
+            {t('problematic.empty')}
           </p>
         </CardContent>
       </Card>
@@ -67,16 +69,16 @@ export function ProblematicVocabsTable({ languages, itemsByLang }: ProblematicVo
       <CardHeader className="pb-4">
         <div className="flex flex-col items-start justify-between gap-4 sm:flex-row">
           <div className="min-w-0 flex-1">
-            <CardTitle className="text-xl font-bold text-foreground">Top 10 Problematic Vocabs</CardTitle>
+            <CardTitle className="text-xl font-bold text-foreground">{t('problematic.title')}</CardTitle>
             <p className="text-sm text-muted-foreground">
-              Words requiring immediate attention based on error rate.
-              {showingSubset ? ` Showing top ${sortedData.length} of ${totalAvailable}.` : null}
+              {t('problematic.subtitle')}
+              {showingSubset ? ` ${t('problematic.showing', { shown: sortedData.length, total: totalAvailable })}` : null}
             </p>
           </div>
           {practiceCount > 0 && (
             <Button asChild className="shrink-0 rounded-xl font-semibold">
               <Link href={`/vocab-trainer?preset=problematic&sourceLanguageCode=${encodeURIComponent(activeCodeSafe)}`}>
-                {`Practice These ${practiceCount} Words →`}
+                {t('problematic.practice', { count: practiceCount })}
               </Link>
             </Button>
           )}
@@ -96,9 +98,9 @@ export function ProblematicVocabsTable({ languages, itemsByLang }: ProblematicVo
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border">
-                <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">Word</th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">Error rate</th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">Status</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">{t('problematic.word')}</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">{t('problematic.errorRate')}</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">{t('problematic.status')}</th>
               </tr>
             </thead>
             <tbody>
@@ -106,7 +108,7 @@ export function ProblematicVocabsTable({ languages, itemsByLang }: ProblematicVo
                 ? (
                     <tr>
                       <td colSpan={3} className="px-4 py-6 text-center text-sm text-muted-foreground">
-                        No words need review for this language.
+                        {t('problematic.emptyLanguage')}
                       </td>
                     </tr>
                   )
@@ -134,7 +136,7 @@ export function ProblematicVocabsTable({ languages, itemsByLang }: ProblematicVo
                         </td>
                         <td className="px-4 py-2.5">
                           <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${statusStyle.className}`}>
-                            {statusStyle.label}
+                            {t(statusStyle.labelKey)}
                           </span>
                         </td>
                       </tr>

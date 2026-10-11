@@ -3,13 +3,13 @@ import { differenceInDays } from 'date-fns';
 export type THeroCtaPriority = 'critical' | 'warning' | 'onTrack';
 
 export type THeroCtaBadge = {
-  label: string;
+  labelKey: string;
   className: string;
 };
 
 export type THeroCtaTitle = {
   count: number | null;
-  rest: string;
+  messageKey: 'urgent' | 'review' | 'onTrack';
 };
 
 export type THeroCtaContent = {
@@ -38,21 +38,12 @@ function toPriority(criticalCount: number, warningCount: number): THeroCtaPriori
 
 function buildBadge(priority: THeroCtaPriority): THeroCtaBadge {
   if (priority === 'critical') {
-    return { label: 'HIGH PRIORITY', className: 'bg-destructive/15 text-destructive' };
+    return { labelKey: 'badge.critical', className: 'bg-destructive/15 text-destructive' };
   }
   if (priority === 'warning') {
-    return { label: 'NEEDS ATTENTION', className: 'bg-warning/15 text-warning' };
+    return { labelKey: 'badge.warning', className: 'bg-warning/15 text-warning' };
   }
-  return { label: 'ALL GOOD', className: 'bg-success/15 text-success' };
-}
-
-function pluralize(value: number, singular: string): string {
-  return value === 1 ? singular : `${singular}s`;
-}
-
-export function formatDaysBody(days: number): string {
-  const dayLabel = pluralize(days, 'day');
-  return `It’s been ${days} ${dayLabel} since your last practice session.`;
+  return { labelKey: 'badge.onTrack', className: 'bg-success/15 text-success' };
 }
 
 function buildBody(lastPracticeAt: string | null): THeroCtaContent['body'] {
@@ -76,18 +67,16 @@ export function buildHeroCtaContent(input: TBuildHeroCtaContentInput): THeroCtaC
       priority,
       badge,
       totalNeedReview,
-      title: { count: null, rest: 'You’re on track — nothing needs review.' },
+      title: { count: null, messageKey: 'onTrack' },
       body,
     };
   }
-
-  const rest = priority === 'critical' ? ' need your urgent review' : ' need review';
 
   return {
     priority,
     badge,
     totalNeedReview,
-    title: { count: totalNeedReview, rest },
+    title: { count: totalNeedReview, messageKey: priority === 'critical' ? 'urgent' : 'review' },
     body,
   };
 }

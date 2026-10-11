@@ -3,22 +3,24 @@
 import type { MarkdownReportProps } from '@/types/vocab-trainer';
 import { CheckCircle, Copy } from '@solar-icons/react/ssr';
 import React, { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const MarkdownReport: React.FC<MarkdownReportProps> = ({ markdown }) => {
+  const t = useTranslations('trainer.markdown');
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(markdown);
       setCopied(true);
-      toast.success('Markdown report copied to clipboard');
+      toast.success(t('copiedToast'));
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
       console.error('Failed to copy:', error);
-      toast.error('Failed to copy markdown');
+      toast.error(t('copyFailed'));
     }
   };
 
@@ -231,7 +233,7 @@ const MarkdownReport: React.FC<MarkdownReportProps> = ({ markdown }) => {
     <Card className="border border-border bg-card">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
         <CardTitle className="text-2xl font-semibold text-foreground">
-          Evaluation Report
+          {t('title')}
         </CardTitle>
         <Button
           onClick={handleCopy}
@@ -243,13 +245,13 @@ const MarkdownReport: React.FC<MarkdownReportProps> = ({ markdown }) => {
             ? (
                 <>
                   <CheckCircle size={16} weight="BoldDuotone" className="mr-2 text-success" />
-                  Copied!
+                  {t('copied')}
                 </>
               )
             : (
                 <>
                   <Copy size={16} weight="BoldDuotone" className="mr-2" />
-                  Copy
+                  {t('copy')}
                 </>
               )}
         </Button>

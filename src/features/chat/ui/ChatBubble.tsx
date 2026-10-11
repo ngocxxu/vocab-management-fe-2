@@ -1,11 +1,14 @@
 'use client';
 
 import Image from 'next/image';
+import { useLocale, useTranslations } from 'next-intl';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/ui/tooltip';
 import { useChat } from '@/providers/ChatProvider';
 import { formatMessageTime } from './MessageBubble';
 
 export function ChatBubble() {
+  const t = useTranslations('chat.bubble');
+  const locale = useLocale();
   const { toggleOpen, dismissPreview, state } = useChat();
 
   const handleToggle = () => {
@@ -22,7 +25,7 @@ export function ChatBubble() {
         <div
           role="button"
           tabIndex={0}
-          aria-label="Open AI Assistant chat"
+          aria-label={t('openAria')}
           onClick={() => void toggleOpen(true)}
           onKeyDown={(e) => {
             if (e.key === 'Enter' || e.key === ' ') {
@@ -33,7 +36,7 @@ export function ChatBubble() {
         >
           <button
             type="button"
-            aria-label="Dismiss preview"
+            aria-label={t('dismissAria')}
             onClick={(e) => {
               e.stopPropagation();
               dismissPreview();
@@ -45,7 +48,7 @@ export function ChatBubble() {
           <div className="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary/20">
             <Image
               src="/assets/images/head_ai.png"
-              alt="AI"
+              alt={t('aiAlt')}
               width={28}
               height={28}
               className="rounded-full object-cover"
@@ -58,7 +61,7 @@ export function ChatBubble() {
             <p className="text-xs text-muted-foreground">
               BubbleBot
               {' • '}
-              {formatMessageTime(lastAssistantMsg.createdAt)}
+              {formatMessageTime(lastAssistantMsg.createdAt, locale)}
             </p>
           </div>
         </div>
@@ -68,13 +71,13 @@ export function ChatBubble() {
           <button
             type="button"
             onClick={handleToggle}
-            aria-label="Open AI Assistant"
+            aria-label={t('openAi')}
             className={`fixed right-8 bottom-6 z-50 flex size-14 items-center justify-center rounded-full bg-primary/70 shadow-xl transition-all duration-200 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none ${!state.isOpen ? 'hover:-translate-y-1 hover:shadow-xl' : ''} `}
           >
             <div className="relative">
               <Image
                 src="/assets/images/head_ai.png"
-                alt="AI Assistant"
+                alt={t('assistantAlt')}
                 width={40}
                 height={40}
                 className="rounded-full object-cover"
@@ -86,7 +89,7 @@ export function ChatBubble() {
           </button>
         </TooltipTrigger>
         <TooltipContent side="left">
-          <p>Chat with AI Assistant</p>
+          <p>{t('tooltip')}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

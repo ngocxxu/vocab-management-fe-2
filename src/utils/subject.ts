@@ -24,8 +24,8 @@ export function getSubjectColor(index: number): string {
   return color ?? SUBJECT_COLORS[0] ?? '';
 }
 
-export function formatCreatedDate(createdAt: string): string {
-  return new Date(createdAt).toLocaleDateString('en-US', {
+export function formatCreatedDate(createdAt: string, locale: string): string {
+  return new Date(createdAt).toLocaleDateString(locale, {
     month: 'short',
     day: 'numeric',
     year: 'numeric',

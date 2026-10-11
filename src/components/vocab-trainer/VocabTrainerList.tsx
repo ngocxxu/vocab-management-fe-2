@@ -191,13 +191,13 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
       }
 
       if (result.length === 0) {
-        toast.info('No words need practice right now.');
+        toast.info(t('trainer.toast.noPractice'));
         return;
       }
 
       const practiceName = sourceLanguageCode
-        ? `Problematic ${sourceLanguageCode.toUpperCase()} words practice`
-        : 'Problematic words practice';
+        ? t('trainer.toast.problematicName', { language: sourceLanguageCode.toUpperCase() })
+        : t('trainer.toast.problematicNameGeneric');
 
       form.setValue('vocabAssignmentIds', result, { shouldDirty: true, shouldValidate: true });
       form.setValue('name', practiceName, { shouldDirty: true });
@@ -208,7 +208,7 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
     return () => {
       cancelled = true;
     };
-  }, [isMounted, searchParams, form, setCreateDialogOpen, router]);
+  }, [isMounted, searchParams, form, setCreateDialogOpen, router, t]);
 
   const bulkDelete = useBulkDelete({
     deleteMutation: async (ids: string[]) => {
@@ -220,8 +220,8 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
         router.refresh();
       });
     },
-    itemName: 'vocabulary trainer',
-    itemNamePlural: 'vocabulary trainers',
+    itemName: t('trainer.bulk.name'),
+    itemNamePlural: t('trainer.bulk.namePlural'),
   });
 
   const handleStatusFilterChange = useCallback((statuses: string[]) => {
@@ -268,9 +268,9 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
 
   // Define filter options
   const statusOptions = [
-    { value: 'PENDING', label: 'Pending' },
-    { value: 'PASSED', label: 'Passed' },
-    { value: 'FAILED', label: 'Failed' },
+    { value: 'PENDING', label: t('trainer.status.pending') },
+    { value: 'PASSED', label: t('trainer.status.passed') },
+    { value: 'FAILED', label: t('trainer.status.failed') },
   ];
 
   const handleEdit = useCallback(
@@ -357,7 +357,7 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
           : apiData);
         const skipped = created.fsrsSkippedVocabIds?.length ?? 0;
         if (skipped > 0) {
-          toast.info(`${skipped} ${skipped === 1 ? 'word has' : 'words have'} no translation yet and got no questions.`);
+          toast.info(t('trainer.toast.skipped', { count: skipped }));
         }
         handlers.setPage(1);
       }
@@ -368,7 +368,7 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
       });
     } catch (error) {
       console.error('Failed to save vocab trainer:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to save the trainer');
+      toast.error(error instanceof Error ? error.message : t('trainer.toast.saveFailed'));
     }
   };
 
@@ -382,14 +382,14 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
         <Checkbox
           checked={table.getIsAllPageRowsSelected()}
           onCheckedChange={value => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
+          aria-label={t('trainer.columns.selectAll')}
         />
       ),
       cell: ({ row }) => (
         <Checkbox
           checked={row.getIsSelected()}
           onCheckedChange={value => row.toggleSelected(!!value)}
-          aria-label="Select row"
+          aria-label={t('trainer.columns.selectRow')}
         />
       ),
       enableSorting: false,
@@ -397,7 +397,7 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
     },
     {
       accessorKey: 'name',
-      header: 'Name',
+      header: t('trainer.columns.name'),
       cell: ({ row }) => {
         return (
           <div>
@@ -412,11 +412,11 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
     },
     {
       accessorKey: 'status',
-      header: 'Status',
+      header: t('trainer.columns.status'),
       cell: ({ row }) => {
         // Pass or fail and the six passes belong to Classic; a spaced repetition trainer never "passes".
         if (row.original.mode === ETrainerMode.FSRS) {
-          return <Badge className="bg-primary/15 text-primary">Spaced repetition</Badge>;
+          return <Badge className="bg-primary/15 text-primary">{t('trainer.spacedRepetition')}</Badge>;
         }
         const status = row.original.status;
         const passCount = row.original.reminderRepeat;
@@ -440,7 +440,7 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
     },
     {
       accessorKey: 'questionType',
-      header: 'Question Type',
+      header: t('trainer.columns.questionType'),
       cell: ({ row }) => {
         const type = row.original.questionType;
         const badgeClass = QUESTION_TYPE_BADGE_CLASSES[type] ?? QUESTION_TYPE_BADGE_CLASSES.default;
@@ -456,15 +456,12 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
     },
     {
       accessorKey: 'vocabAssignments',
-      header: 'Vocabularies',
+      header: t('trainer.columns.vocabularies'),
       cell: ({ row }) => {
         const count = row.original.vocabAssignments?.length || 0;
         return (
           <span className="text-muted-foreground">
-            {count}
-            {' '}
-            vocab
-            {count === 1 ? '' : 's'}
+            {t('trainer.vocabCount', { count })}
           </span>
         );
       },
@@ -490,7 +487,7 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
           </Button>
           <DeleteActionButton
             itemId={_row.original.id}
-            itemName="vocabulary trainer"
+            itemName={t('trainer.bulk.name')}
             onDelete={async (id: string) => {
               await deleteVocabTrainer(id);
             }}
@@ -499,8 +496,8 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
                 router.refresh();
               });
             }}
-            successMessage="Vocab trainer deleted successfully!"
-            errorMessage="Failed to delete vocab trainer. Please try again."
+            successMessage={t('trainer.toast.deleted')}
+            errorMessage={t('trainer.toast.deleteFailed')}
           />
         </div>
       ),
@@ -509,7 +506,7 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
       size: 50,
     },
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  ], [handleEdit]);
+  ], [handleEdit, t]);
 
   return (
     <Form {...form}>
@@ -529,7 +526,7 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
         />
 
         {isError && (
-          <ErrorState message={loadError || 'Error loading vocab trainers. Please try again.'} />
+          <ErrorState message={loadError || t('trainer.loadError')} />
         )}
 
         {isMounted && !isError && (
@@ -565,8 +562,8 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
               open={bulkDelete.bulkDeleteDialogOpen}
               onOpenChange={bulkDelete.setBulkDeleteDialogOpen}
               itemCount={bulkDelete.selectedIds.length}
-              itemName="vocabulary trainer"
-              itemNamePlural="vocabulary trainers"
+              itemName={t('trainer.bulk.name')}
+              itemNamePlural={t('trainer.bulk.namePlural')}
               onConfirm={bulkDelete.confirmBulkDelete}
               onCancel={() => bulkDelete.reset()}
             />
@@ -574,7 +571,7 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
             <DataTable
               columns={columns}
               data={data}
-              searchPlaceholder="Search trainers..."
+              searchPlaceholder={t('trainer.searchPlaceholder')}
               searchValue={name}
               onSearchChangeAction={handleSearchChange}
               showSearch={true}
@@ -601,23 +598,12 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
             {cooldownRemaining > 0 && (
               <Alert className="border-border bg-warning/15">
                 <DangerTriangle className="size-5 text-warning" />
-                <AlertTitle>Take a quick 60s break</AlertTitle>
+                <AlertTitle>{t('trainer.cooldown.title')}</AlertTitle>
                 <AlertDescription>
-                  AI is preparing your next exam
-                  {' '}
-                  (
-                  <strong>
-                    {cooldownRemaining}
-                    s
-                  </strong>
-                  {' '}
-                  left).
-                  {' '}
-                  Feel free to jump into
-                  {' '}
-                  <strong>Flip Cards</strong>
-                  {' '}
-                  right now—they’re always ready for you!
+                  {t.rich('trainer.cooldown.body', {
+                    seconds: cooldownRemaining,
+                    strong: chunks => <strong>{chunks}</strong>,
+                  })}
                 </AlertDescription>
               </Alert>
             )}

@@ -2,9 +2,10 @@
 
 import type { TFsrsReviewResult } from '@/types/vocab-trainer';
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/shared/ui/button';
 import { EFsrsRating } from '@/enum/vocab-trainer';
-import { countRatings, FSRS_RATING_LABELS, FSRS_RATINGS, missedItems } from '@/utils/fsrs-review';
+import { countRatings, FSRS_RATING_LABEL_KEYS, FSRS_RATINGS, missedItems } from '@/utils/fsrs-review';
 
 type FsrsSessionSummaryProps = Readonly<{
   results: readonly TFsrsReviewResult[];
@@ -28,78 +29,57 @@ const RATING_CHIP_CLASSES: Record<EFsrsRating, string> = {
 };
 
 const FsrsSessionSummary: React.FC<FsrsSessionSummaryProps> = ({ results, pendingAfter, moreCount, retryOutcome, isLoadingMore, onRetry, onMore, onStop }) => {
+  const t = useTranslations('trainer.fsrs');
   const counts = countRatings(results);
   const missed = missedItems(results).length;
 
   return (
     <div className="mx-auto w-full max-w-xl space-y-6 text-center">
       <div className="space-y-2">
-        <h2 className="text-2xl font-bold text-foreground">Session complete</h2>
+        <h2 className="text-2xl font-bold text-foreground">{t('summary.complete')}</h2>
         <p className="text-muted-foreground">
-          You answered
-          {' '}
-          {results.length}
-          {' '}
-          {results.length === 1 ? 'question' : 'questions'}
-          . Each one is already scheduled for its next review.
+          {t('summary.answered', { count: results.length })}
         </p>
       </div>
 
-      <ul className="grid grid-cols-2 gap-2 sm:grid-cols-4" aria-label="Your answers">
+      <ul className="grid grid-cols-2 gap-2 sm:grid-cols-4" aria-label={t('summary.yourAnswers')}>
         {FSRS_RATINGS.map(rating => (
           <li key={rating} className={`rounded-xl p-3 ${RATING_CHIP_CLASSES[rating]}`}>
             <span className="block text-2xl font-bold">{counts[rating]}</span>
-            <span className="text-xs font-medium">{FSRS_RATING_LABELS[rating]}</span>
+            <span className="text-xs font-medium">{t(FSRS_RATING_LABEL_KEYS[rating])}</span>
           </li>
         ))}
       </ul>
 
       {retryOutcome && (
         <p className="rounded-xl border border-border bg-card p-3 text-sm text-muted-foreground">
-          This time you remembered
-          {' '}
-          <span className="font-semibold text-foreground">
-            {retryOutcome.recalled}
-            {' '}
-            of
-            {' '}
-            {retryOutcome.total}
-          </span>
-          . The retry round is only practice: it was not saved and your schedule did not change.
+          {t.rich('summary.retryOutcome', {
+            recalled: retryOutcome.recalled,
+            total: retryOutcome.total,
+            strong: chunks => <span className="font-semibold text-foreground">{chunks}</span>,
+          })}
         </p>
       )}
 
       {pendingAfter > 0 && (
         <p className="text-sm text-muted-foreground">
-          {pendingAfter}
-          {' '}
-          {pendingAfter === 1 ? 'question waits' : 'questions wait'}
-          {' '}
-          for later sessions.
+          {t('summary.pendingAfter', { count: pendingAfter })}
         </p>
       )}
 
       <div className="flex flex-col justify-center gap-2 sm:flex-row">
         {missed > 0 && !retryOutcome && (
           <Button type="button" variant="outline" onClick={onRetry}>
-            Retry
-            {' '}
-            {missed}
-            {' '}
-            missed (practice only)
+            {t('summary.retry', { count: missed })}
           </Button>
         )}
         {pendingAfter > 0 && (
           <Button type="button" onClick={onMore} disabled={isLoadingMore}>
-            Review
-            {' '}
-            {moreCount}
-            {' '}
-            more
+            {t('summary.reviewMore', { count: moreCount })}
           </Button>
         )}
         <Button type="button" variant={pendingAfter > 0 ? 'outline' : 'default'} onClick={onStop}>
-          Stop for today
+          {t('summary.stopToday')}
         </Button>
       </div>
     </div>
