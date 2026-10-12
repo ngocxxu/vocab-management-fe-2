@@ -139,3 +139,34 @@ export type TAdminWordType = {
   createdAt: string;
   updatedAt: string;
 };
+
+/** Who a broadcast reaches. Mirrors the BE BroadcastTarget. */
+type TBroadcastTarget = 'ALL' | 'ROLE' | 'USERS';
+
+/** Body of POST /notifications/broadcast. Only the fields the chosen target uses are sent. */
+export type TBroadcastPayload = {
+  message: string;
+  priority: 'LOW' | 'MEDIUM' | 'HIGH';
+  /** ISO instant. */
+  expiresAt: string;
+  target: TBroadcastTarget;
+  role?: TAdminUserRole;
+  userIds?: string[];
+};
+
+/** Reply to POST /notifications/broadcast. The recipient list is never returned. */
+export type TBroadcastResult = {
+  count: number;
+};
+
+/** One row from GET /notifications/broadcasts. The recipient count stands in for the list. */
+export type TBroadcastHistoryItem = {
+  id: string;
+  message: string;
+  priority: 'LOW' | 'MEDIUM' | 'HIGH';
+  isActive: boolean;
+  /** ISO date string as sent by the API. */
+  expiresAt: string;
+  createdAt: string;
+  recipientCount: number;
+};

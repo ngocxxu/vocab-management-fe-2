@@ -1,10 +1,12 @@
 'use client';
 
 import type { ColumnDef } from '@tanstack/react-table';
-import type { TAdminLanguage, TAdminWordType } from '@/types/admin';
-import { useTranslations } from 'next-intl';
+import type { TAdminLanguage, TAdminWordType, TBroadcastHistoryItem } from '@/types/admin';
+import { useFormatter, useTranslations } from 'next-intl';
 import { useMemo } from 'react';
+import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
+import { BroadcastRowActions } from '../ui/BroadcastRowActions';
 import { LanguageRowActions } from '../ui/LanguageRowActions';
 
 type TLanguageColumnsOptions = {
@@ -68,4 +70,61 @@ export function useWordTypeColumns({ isPending, onEdit, onDelete }: TWordTypeCol
       ),
     },
   ], [t, isPending, onEdit, onDelete]);
+}
+
+type TBroadcastColumnsOptions = {
+  isPending: boolean;
+  onToggle: (broadcast: TBroadcastHistoryItem) => void;
+  onDelete: (broadcast: TBroadcastHistoryItem) => void;
+};
+
+const PRIORITY_LABEL_KEYS = {
+  LOW: 'priority.low',
+  MEDIUM: 'priority.medium',
+  HIGH: 'priority.high',
+} as const;
+
+/** Columns for the broadcast history. Switching off and deleting are handed up to the page that owns the dialogs. */
+export function useBroadcastColumns({ isPending, onToggle, onDelete }: TBroadcastColumnsOptions): ColumnDef<TBroadcastHistoryItem>[] {
+  const t = useTranslations('admin.broadcasts');
+  const format = useFormatter();
+
+  return useMemo<ColumnDef<TBroadcastHistoryItem>[]>(() => [
+    {
+      id: 'message',
+      accessorKey: 'message',
+      header: t('history.columns.message'),
+      enableSorting: false,
+      cell: ({ row }) => <span className="line-clamp-2 max-w-md">{row.original.message}</span>,
+    },
+    {
+      id: 'priority',
+      header: t('history.columns.priority'),
+      enableSorting: false,
+      cell: ({ row }) => t(PRIORITY_LABEL_KEYS[row.original.priority]),
+    },
+    { id: 'recipientCount', accessorKey: 'recipientCount', header: t('history.columns.recipients'), enableSorting: false },
+    {
+      id: 'expiresAt',
+      header: t('history.columns.expiresAt'),
+      enableSorting: false,
+      cell: ({ row }) => format.dateTime(new Date(row.original.expiresAt), { dateStyle: 'medium', timeStyle: 'short' }),
+    },
+    {
+      id: 'status',
+      header: t('history.columns.status'),
+      enableSorting: false,
+      cell: ({ row }) => (
+        <Badge variant={row.original.isActive ? 'default' : 'outline'}>
+          {t(row.original.isActive ? 'history.status.active' : 'history.status.inactive')}
+        </Badge>
+      ),
+    },
+    {
+      id: 'actions',
+      header: t('history.columns.actions'),
+      enableSorting: false,
+      cell: ({ row }) => <BroadcastRowActions broadcast={row.original} isPending={isPending} onToggle={onToggle} onDelete={onDelete} />,
+    },
+  ], [t, format, isPending, onToggle, onDelete]);
 }

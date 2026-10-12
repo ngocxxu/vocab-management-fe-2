@@ -1,5 +1,5 @@
 import type { EQuestionType } from '@/enum/vocab-trainer';
-import type { TAdminUserRole, TAdminUsersQuery, TCreateAdminPlanInput, TUpdateAdminPlanInput, TUpdateAdminUserInput } from '@/types/admin';
+import type { TAdminUserRole, TAdminUsersQuery, TBroadcastPayload, TCreateAdminPlanInput, TUpdateAdminPlanInput, TUpdateAdminUserInput } from '@/types/admin';
 import type { GenerateUploadSignatureInput } from '@/types/cloudinary';
 import type {
   TChangePasswordData,
@@ -362,6 +362,11 @@ export const API_METHODS = {
     create: (notificationData: TNotificationInput) => ({ endpoint: API_ENDPOINTS.notifications, data: notificationData }),
     update: (id: string, notificationData: Partial<TNotificationInput>) => ({ endpoint: `${API_ENDPOINTS.notifications}/${id}`, data: notificationData }),
     updateStatus: (id: string, statusData: TUpdateNotificationStatusInput) => ({ endpoint: `${API_ENDPOINTS.notifications}/${id}/status`, data: statusData }),
+    broadcast: (input: TBroadcastPayload) => ({ endpoint: `${API_ENDPOINTS.notifications}/broadcast`, data: input }),
+    broadcastHistory: () => ({ endpoint: `${API_ENDPOINTS.notifications}/broadcasts` }),
+    setActive: (id: string, isActive: boolean) => ({ endpoint: `${API_ENDPOINTS.notifications}/${id}`, data: { isActive } }),
+    remove: (id: string) => ({ endpoint: `${API_ENDPOINTS.notifications}/${id}` }),
+    cleanupExpired: () => ({ endpoint: `${API_ENDPOINTS.notifications}/cleanup/expired` }),
   },
   cloudinary: {
     getUploadSignature: (params?: GenerateUploadSignatureInput) => {

@@ -90,7 +90,12 @@
     "adminSaveLanguage": "Không thể lưu ngôn ngữ. Vui lòng thử lại.",
     "adminDeleteLanguage": "Không thể xóa ngôn ngữ. Vui lòng thử lại.",
     "adminSaveWordType": "Không thể lưu loại từ. Vui lòng thử lại.",
-    "adminDeleteWordType": "Không thể xóa loại từ. Vui lòng thử lại."
+    "adminDeleteWordType": "Không thể xóa loại từ. Vui lòng thử lại.",
+    "adminSendBroadcast": "Không thể gửi thông báo. Vui lòng thử lại.",
+    "adminUpdateBroadcast": "Không thể cập nhật thông báo. Vui lòng thử lại.",
+    "adminDeleteBroadcast": "Không thể xóa thông báo. Vui lòng thử lại.",
+    "adminCleanupBroadcasts": "Không thể dọn thông báo hết hạn. Vui lòng thử lại.",
+    "adminSearchUsers": "Không thể tìm người dùng. Vui lòng thử lại."
   },
   "validation": {
     "emailRequired": "Email là bắt buộc",
@@ -1857,7 +1862,8 @@
       "users": "Người dùng",
       "plans": "Gói dịch vụ",
       "languages": "Ngôn ngữ",
-      "wordTypes": "Loại từ"
+      "wordTypes": "Loại từ",
+      "broadcasts": "Thông báo"
     },
     "overview": {
       "users": "Người dùng",
@@ -2010,6 +2016,90 @@
         "created": "Đã thêm ngôn ngữ",
         "saved": "Đã lưu ngôn ngữ",
         "deleted": "Đã xóa ngôn ngữ",
+        "failed": "Có lỗi xảy ra. Vui lòng thử lại."
+      }
+    },
+    "broadcasts": {
+      "description": "Gửi thông báo trong ứng dụng tới tất cả người dùng đang hoạt động, một vai trò, hoặc những người dùng đã chọn. Người nhận thấy thông báo ở chuông thông báo.",
+      "loadError": "Không thể tải thông báo. Vui lòng thử lại sau.",
+      "sections": {
+        "compose": "Gửi thông báo",
+        "history": "Thông báo đã gửi"
+      },
+      "compose": {
+        "message": "Nội dung",
+        "messageCount": "{count} / {max} ký tự",
+        "priority": "Mức độ ưu tiên",
+        "expiresAt": "Hết hạn lúc",
+        "target": "Gửi tới",
+        "role": "Vai trò",
+        "users": "Người dùng",
+        "addUsers": "Thêm người dùng",
+        "searchUsers": "Tìm theo tên hoặc email",
+        "noUsers": "Không tìm thấy người dùng đang hoạt động.",
+        "picked": "Đã chọn",
+        "removeUser": "Bỏ {name}",
+        "submit": "Gửi thông báo",
+        "errors": {
+          "message": "Nhập nội dung từ 1 đến {max} ký tự.",
+          "expiresAt": "Chọn thời điểm trong tương lai.",
+          "role": "Chọn một vai trò.",
+          "userIds": "Chọn ít nhất một người dùng."
+        }
+      },
+      "target": {
+        "all": "Tất cả người dùng đang hoạt động",
+        "role": "Người dùng theo vai trò",
+        "users": "Người dùng đã chọn"
+      },
+      "priority": {
+        "low": "Thấp",
+        "medium": "Trung bình",
+        "high": "Cao"
+      },
+      "roles": {
+        "ADMIN": "Quản trị",
+        "MEMBER": "Thành viên",
+        "GUEST": "Khách"
+      },
+      "history": {
+        "description": "Thông báo hiển thị trên chuông cho đến khi hết hạn hoặc bạn xóa.",
+        "empty": "Chưa gửi thông báo nào.",
+        "cleanup": "Dọn thông báo hết hạn",
+        "activate": "Bật",
+        "deactivate": "Tắt",
+        "delete": "Xóa",
+        "columns": {
+          "message": "Nội dung",
+          "priority": "Ưu tiên",
+          "recipients": "Người nhận",
+          "expiresAt": "Hết hạn",
+          "status": "Trạng thái",
+          "actions": "Thao tác"
+        },
+        "status": {
+          "active": "Đang hiển thị",
+          "inactive": "Đã tắt"
+        }
+      },
+      "deleteDialog": {
+        "title": "Xóa thông báo này?",
+        "description": "Người nhận sẽ không còn thấy nó. Không thể hoàn tác.",
+        "confirm": "Xóa thông báo",
+        "cancel": "Hủy"
+      },
+      "cleanupDialog": {
+        "title": "Dọn thông báo hết hạn?",
+        "description": "Mọi thông báo đã quá hạn sẽ bị xóa. Không thể hoàn tác.",
+        "confirm": "Dọn",
+        "cancel": "Hủy"
+      },
+      "toast": {
+        "sent": "Đã gửi thông báo",
+        "activated": "Đã bật thông báo",
+        "deactivated": "Đã tắt thông báo",
+        "deleted": "Đã xóa thông báo",
+        "cleaned": "Đã dọn thông báo hết hạn",
         "failed": "Có lỗi xảy ra. Vui lòng thử lại."
       }
     },

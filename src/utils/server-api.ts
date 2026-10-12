@@ -17,6 +17,9 @@ import type {
   TAdminUserRole,
   TAdminUsersQuery,
   TAdminWordType,
+  TBroadcastHistoryItem,
+  TBroadcastPayload,
+  TBroadcastResult,
   TCreateAdminPlanInput,
   TUpdateAdminPlanInput,
   TUpdateAdminUserInput,
@@ -654,6 +657,26 @@ export const notificationsApi = {
   },
   updateStatus: (id: string, statusData: TUpdateNotificationStatusInput) => {
     return serverApi.patch<TNotification>(`${API_ENDPOINTS.notifications}/${id}/status`, statusData);
+  },
+  broadcast: (input: TBroadcastPayload) => {
+    const config = API_METHODS.notifications.broadcast(input);
+    return serverApi.post<TBroadcastResult>(config.endpoint, config.data);
+  },
+  broadcastHistory: () => {
+    const config = API_METHODS.notifications.broadcastHistory();
+    return serverApi.get<ResponseAPI<TBroadcastHistoryItem[]>>(config.endpoint);
+  },
+  setActive: (id: string, isActive: boolean) => {
+    const config = API_METHODS.notifications.setActive(id, isActive);
+    return serverApi.put<TNotification>(config.endpoint, config.data);
+  },
+  remove: (id: string) => {
+    const config = API_METHODS.notifications.remove(id);
+    return serverApi.delete<TNotification>(config.endpoint);
+  },
+  cleanupExpired: () => {
+    const config = API_METHODS.notifications.cleanupExpired();
+    return serverApi.delete<{ count: number }>(config.endpoint);
   },
 };
 

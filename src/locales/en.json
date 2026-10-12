@@ -90,7 +90,12 @@
     "adminSaveLanguage": "Could not save the language. Try again.",
     "adminDeleteLanguage": "Could not delete the language. Try again.",
     "adminSaveWordType": "Could not save the word type. Try again.",
-    "adminDeleteWordType": "Could not delete the word type. Try again."
+    "adminDeleteWordType": "Could not delete the word type. Try again.",
+    "adminSendBroadcast": "Could not send the message. Try again.",
+    "adminUpdateBroadcast": "Could not update the message. Try again.",
+    "adminDeleteBroadcast": "Could not delete the message. Try again.",
+    "adminCleanupBroadcasts": "Could not clean up expired messages. Try again.",
+    "adminSearchUsers": "Could not search users. Try again."
   },
   "validation": {
     "emailRequired": "Email is required",
@@ -1857,7 +1862,8 @@
       "users": "Users",
       "plans": "Plans",
       "languages": "Languages",
-      "wordTypes": "Word types"
+      "wordTypes": "Word types",
+      "broadcasts": "Broadcasts"
     },
     "overview": {
       "users": "Users",
@@ -2010,6 +2016,90 @@
         "created": "Language added",
         "saved": "Language saved",
         "deleted": "Language deleted",
+        "failed": "Something went wrong. Try again."
+      }
+    },
+    "broadcasts": {
+      "description": "Send an in-app message to all active users, a role, or selected users. Recipients see it in their notification bell.",
+      "loadError": "Could not load messages. Try again later.",
+      "sections": {
+        "compose": "Send a message",
+        "history": "Sent messages"
+      },
+      "compose": {
+        "message": "Message",
+        "messageCount": "{count} of {max} characters",
+        "priority": "Priority",
+        "expiresAt": "Expires at",
+        "target": "Send to",
+        "role": "Role",
+        "users": "Users",
+        "addUsers": "Add users",
+        "searchUsers": "Search by name or email",
+        "noUsers": "No active users found.",
+        "picked": "Selected",
+        "removeUser": "Remove {name}",
+        "submit": "Send message",
+        "errors": {
+          "message": "Enter a message of 1 to {max} characters.",
+          "expiresAt": "Pick a time in the future.",
+          "role": "Choose a role.",
+          "userIds": "Choose at least one user."
+        }
+      },
+      "target": {
+        "all": "All active users",
+        "role": "Users with a role",
+        "users": "Selected users"
+      },
+      "priority": {
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High"
+      },
+      "roles": {
+        "ADMIN": "Admin",
+        "MEMBER": "Member",
+        "GUEST": "Guest"
+      },
+      "history": {
+        "description": "Messages stay in the bell until they expire or you delete them.",
+        "empty": "No messages sent yet.",
+        "cleanup": "Clean up expired",
+        "activate": "Activate",
+        "deactivate": "Deactivate",
+        "delete": "Delete",
+        "columns": {
+          "message": "Message",
+          "priority": "Priority",
+          "recipients": "Recipients",
+          "expiresAt": "Expires",
+          "status": "Status",
+          "actions": "Actions"
+        },
+        "status": {
+          "active": "Active",
+          "inactive": "Inactive"
+        }
+      },
+      "deleteDialog": {
+        "title": "Delete this message?",
+        "description": "Recipients stop seeing it. This cannot be undone.",
+        "confirm": "Delete message",
+        "cancel": "Cancel"
+      },
+      "cleanupDialog": {
+        "title": "Clean up expired messages?",
+        "description": "Every message past its expiry is deleted. This cannot be undone.",
+        "confirm": "Clean up",
+        "cancel": "Cancel"
+      },
+      "toast": {
+        "sent": "Message sent",
+        "activated": "Message activated",
+        "deactivated": "Message deactivated",
+        "deleted": "Message deleted",
+        "cleaned": "Expired messages cleaned up",
         "failed": "Something went wrong. Try again."
       }
     },

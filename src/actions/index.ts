@@ -1,4 +1,5 @@
 export * from './admin';
+export * from './admin-broadcasts';
 export * from './admin-catalog';
 export * from './auth';
 export * from './chat';
