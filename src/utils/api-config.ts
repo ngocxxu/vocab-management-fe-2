@@ -114,6 +114,8 @@ export const API_ENDPOINTS = {
     stats: '/admin/stats',
     users: '/admin/users',
     plans: '/admin/plans',
+    languages: '/admin/languages',
+    wordTypes: '/admin/word-types',
   },
   auth: {
     signin: '/auth/signin',
@@ -163,6 +165,13 @@ export const API_METHODS = {
       list: () => ({ endpoint: API_ENDPOINTS.admin.plans }),
       create: (data: TCreateAdminPlanInput) => ({ endpoint: API_ENDPOINTS.plans, data }),
       update: (role: TAdminUserRole, data: TUpdateAdminPlanInput) => ({ endpoint: `${API_ENDPOINTS.plans}/${role}`, data }),
+    },
+    // Writes reuse the public /languages and /word-types routes, which the BE guards with the admin role.
+    languages: {
+      list: () => ({ endpoint: API_ENDPOINTS.admin.languages }),
+    },
+    wordTypes: {
+      list: () => ({ endpoint: API_ENDPOINTS.admin.wordTypes }),
     },
   },
   auth: {

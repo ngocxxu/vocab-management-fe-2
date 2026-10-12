@@ -86,7 +86,11 @@
     "adminUpdateUser": "Không thể cập nhật người dùng. Vui lòng thử lại.",
     "adminDeleteUser": "Không thể xóa người dùng. Vui lòng thử lại.",
     "adminInvalidInput": "Một số thông tin chưa hợp lệ. Vui lòng kiểm tra lại và thử lại.",
-    "adminSavePlan": "Không thể lưu gói. Vui lòng thử lại."
+    "adminSavePlan": "Không thể lưu gói. Vui lòng thử lại.",
+    "adminSaveLanguage": "Không thể lưu ngôn ngữ. Vui lòng thử lại.",
+    "adminDeleteLanguage": "Không thể xóa ngôn ngữ. Vui lòng thử lại.",
+    "adminSaveWordType": "Không thể lưu loại từ. Vui lòng thử lại.",
+    "adminDeleteWordType": "Không thể xóa loại từ. Vui lòng thử lại."
   },
   "validation": {
     "emailRequired": "Email là bắt buộc",
@@ -1851,7 +1855,9 @@
       "label": "Mục quản trị",
       "overview": "Tổng quan",
       "users": "Người dùng",
-      "plans": "Gói dịch vụ"
+      "plans": "Gói dịch vụ",
+      "languages": "Ngôn ngữ",
+      "wordTypes": "Loại từ"
     },
     "overview": {
       "users": "Người dùng",
@@ -1967,6 +1973,81 @@
         "failed": "Có lỗi xảy ra. Vui lòng thử lại."
       },
       "adminUnlimited": "Quản trị viên không bị giới hạn bởi gói."
+    },
+    "languages": {
+      "description": "Ngôn ngữ đang được dùng bởi từ vựng và thư mục. Ngôn ngữ đang dùng không thể xóa và mã không thể đổi.",
+      "columns": {
+        "name": "Tên",
+        "code": "Mã",
+        "vocabs": "Từ vựng",
+        "folders": "Thư mục",
+        "actions": "Thao tác"
+      },
+      "create": "Thêm ngôn ngữ",
+      "rename": "Đổi tên",
+      "delete": "Xóa",
+      "inUseHint": "Đang dùng bởi {vocabCount} từ vựng và {folderCount} thư mục. Hãy gỡ chúng trước.",
+      "codeLocked": "Mã không thể đổi sau khi tạo.",
+      "empty": "Chưa có ngôn ngữ nào.",
+      "loadError": "Không thể tải ngôn ngữ. Vui lòng thử lại sau.",
+      "dialog": {
+        "createTitle": "Thêm ngôn ngữ",
+        "editTitle": "Đổi tên ngôn ngữ",
+        "name": "Tên",
+        "code": "Mã",
+        "nameHint": "Nhập tên, từ 1 đến 100 ký tự.",
+        "codeHint": "Ví dụ en, vi hoặc en-US.",
+        "cancel": "Hủy",
+        "save": "Lưu"
+      },
+      "deleteDialog": {
+        "title": "Xóa {name}?",
+        "description": "Ngôn ngữ sẽ bị xóa. Không thể hoàn tác.",
+        "confirm": "Xóa ngôn ngữ",
+        "cancel": "Hủy"
+      },
+      "toast": {
+        "created": "Đã thêm ngôn ngữ",
+        "saved": "Đã lưu ngôn ngữ",
+        "deleted": "Đã xóa ngôn ngữ",
+        "failed": "Có lỗi xảy ra. Vui lòng thử lại."
+      }
+    },
+    "wordTypes": {
+      "description": "Loại từ gắn nhãn cho nghĩa đích. Xóa loại từ sẽ bỏ nhãn khỏi các nghĩa đích đó.",
+      "columns": {
+        "name": "Tên",
+        "description": "Mô tả",
+        "textTargets": "Nghĩa đích",
+        "actions": "Thao tác"
+      },
+      "create": "Thêm loại từ",
+      "edit": "Sửa",
+      "delete": "Xóa",
+      "empty": "Chưa có loại từ nào.",
+      "loadError": "Không thể tải loại từ. Vui lòng thử lại sau.",
+      "dialog": {
+        "createTitle": "Thêm loại từ",
+        "editTitle": "Sửa loại từ",
+        "name": "Tên",
+        "nameHint": "Nhập tên, từ 1 đến 100 ký tự.",
+        "description": "Mô tả",
+        "descriptionHint": "Nhập mô tả, từ 1 đến 500 ký tự.",
+        "cancel": "Hủy",
+        "save": "Lưu"
+      },
+      "deleteDialog": {
+        "title": "Xóa {name}?",
+        "description": "Các nghĩa đích có loại từ này vẫn giữ nội dung nhưng mất nhãn.",
+        "confirm": "Xóa loại từ",
+        "cancel": "Hủy"
+      },
+      "toast": {
+        "created": "Đã thêm loại từ",
+        "saved": "Đã lưu loại từ",
+        "deleted": "Đã xóa loại từ",
+        "failed": "Có lỗi xảy ra. Vui lòng thử lại."
+      }
     }
   }
 }

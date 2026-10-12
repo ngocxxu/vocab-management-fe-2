@@ -86,7 +86,11 @@
     "adminUpdateUser": "Could not update the user. Try again.",
     "adminDeleteUser": "Could not delete the user. Try again.",
     "adminInvalidInput": "Some of the details are not valid. Check them and try again.",
-    "adminSavePlan": "Could not save the plan. Try again."
+    "adminSavePlan": "Could not save the plan. Try again.",
+    "adminSaveLanguage": "Could not save the language. Try again.",
+    "adminDeleteLanguage": "Could not delete the language. Try again.",
+    "adminSaveWordType": "Could not save the word type. Try again.",
+    "adminDeleteWordType": "Could not delete the word type. Try again."
   },
   "validation": {
     "emailRequired": "Email is required",
@@ -1851,7 +1855,9 @@
       "label": "Admin sections",
       "overview": "Overview",
       "users": "Users",
-      "plans": "Plans"
+      "plans": "Plans",
+      "languages": "Languages",
+      "wordTypes": "Word types"
     },
     "overview": {
       "users": "Users",
@@ -1967,6 +1973,81 @@
         "failed": "Something went wrong. Try again."
       },
       "adminUnlimited": "Admins are never limited by plans."
+    },
+    "languages": {
+      "description": "Languages used by vocabs and folders. A language in use cannot be deleted, and its code cannot change.",
+      "columns": {
+        "name": "Name",
+        "code": "Code",
+        "vocabs": "Vocabs",
+        "folders": "Folders",
+        "actions": "Actions"
+      },
+      "create": "Add language",
+      "rename": "Rename",
+      "delete": "Delete",
+      "inUseHint": "In use by {vocabCount} vocabs and {folderCount} folders. Remove them first.",
+      "codeLocked": "The code cannot change after creation.",
+      "empty": "No languages yet.",
+      "loadError": "Could not load languages. Try again later.",
+      "dialog": {
+        "createTitle": "Add language",
+        "editTitle": "Rename language",
+        "name": "Name",
+        "code": "Code",
+        "nameHint": "Enter a name, 1 to 100 characters.",
+        "codeHint": "For example en, vi or en-US.",
+        "cancel": "Cancel",
+        "save": "Save"
+      },
+      "deleteDialog": {
+        "title": "Delete {name}?",
+        "description": "This removes the language. It cannot be undone.",
+        "confirm": "Delete language",
+        "cancel": "Cancel"
+      },
+      "toast": {
+        "created": "Language added",
+        "saved": "Language saved",
+        "deleted": "Language deleted",
+        "failed": "Something went wrong. Try again."
+      }
+    },
+    "wordTypes": {
+      "description": "Word types tag text targets. Deleting one clears the tag on those text targets.",
+      "columns": {
+        "name": "Name",
+        "description": "Description",
+        "textTargets": "Text targets",
+        "actions": "Actions"
+      },
+      "create": "Add word type",
+      "edit": "Edit",
+      "delete": "Delete",
+      "empty": "No word types yet.",
+      "loadError": "Could not load word types. Try again later.",
+      "dialog": {
+        "createTitle": "Add word type",
+        "editTitle": "Edit word type",
+        "name": "Name",
+        "nameHint": "Enter a name, 1 to 100 characters.",
+        "description": "Description",
+        "descriptionHint": "Enter a description, 1 to 500 characters.",
+        "cancel": "Cancel",
+        "save": "Save"
+      },
+      "deleteDialog": {
+        "title": "Delete {name}?",
+        "description": "Text targets with this word type keep their text but lose the tag.",
+        "confirm": "Delete word type",
+        "cancel": "Cancel"
+      },
+      "toast": {
+        "created": "Word type added",
+        "saved": "Word type saved",
+        "deleted": "Word type deleted",
+        "failed": "Something went wrong. Try again."
+      }
     }
   }
 }

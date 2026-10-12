@@ -10,11 +10,13 @@ import type {
 import type { ResponseAPI, TLanguage, TLanguageFolder, TUser } from '@/types';
 import type { TPlan } from '@/types/plan';
 import type {
+  TAdminLanguage,
   TAdminPlan,
   TAdminStats,
   TAdminUser,
   TAdminUserRole,
   TAdminUsersQuery,
+  TAdminWordType,
   TCreateAdminPlanInput,
   TUpdateAdminPlanInput,
   TUpdateAdminUserInput,
@@ -674,6 +676,18 @@ export const adminApi = {
     remove: (id: string) => {
       const config = API_METHODS.admin.users.remove(id);
       return serverApi.delete<TAdminUser>(config.endpoint);
+    },
+  },
+  languages: {
+    list: () => {
+      const config = API_METHODS.admin.languages.list();
+      return serverApi.get<TAdminLanguage[]>(config.endpoint);
+    },
+  },
+  wordTypes: {
+    list: () => {
+      const config = API_METHODS.admin.wordTypes.list();
+      return serverApi.get<TAdminWordType[]>(config.endpoint);
     },
   },
   plans: {

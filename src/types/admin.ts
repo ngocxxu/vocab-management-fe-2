@@ -107,3 +107,35 @@ export type TCreateAdminPlanInput = TAdminPlanPayload & { role: TAdminUserRole }
 
 /** At least one field is sent; the BE rejects an empty change. */
 export type TUpdateAdminPlanInput = Partial<TAdminPlanPayload>;
+
+/** Form input for a language. The code is read-only once the language exists. */
+export type TAdminLanguageInput = {
+  code: string;
+  name: string;
+};
+
+export type TAdminWordTypeInput = {
+  name: string;
+  description: string;
+};
+
+/** One language from GET /admin/languages, with how many vocabs and folders use it. */
+export type TAdminLanguage = {
+  id: string;
+  code: string;
+  name: string;
+  vocabCount: number;
+  folderCount: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+/** One word type from GET /admin/word-types, with how many text targets use it. */
+export type TAdminWordType = {
+  id: string;
+  name: string;
+  description: string;
+  textTargetCount: number;
+  createdAt: string;
+  updatedAt: string;
+};

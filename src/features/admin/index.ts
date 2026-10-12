@@ -1,7 +1,10 @@
+export { getAdminLanguagesPageData, getAdminWordTypesPageData } from './services/server/getAdminCatalogPageData';
 export { getAdminOverviewData } from './services/server/getAdminOverviewData';
 export { getAdminPlansPageData } from './services/server/getAdminPlansPageData';
 export { getAdminUsersPageData } from './services/server/getAdminUsersPageData';
+export { AdminLanguageList } from './ui/AdminLanguageList';
 export { AdminNav } from './ui/AdminNav';
 export { AdminOverview } from './ui/AdminOverview';
 export { AdminPlanList } from './ui/AdminPlanList';
 export { AdminUsersTable } from './ui/AdminUsersTable';
+export { AdminWordTypeList } from './ui/AdminWordTypeList';
