@@ -85,7 +85,8 @@
     "saveVocabulary": "Lưu từ vựng thất bại",
     "adminUpdateUser": "Không thể cập nhật người dùng. Vui lòng thử lại.",
     "adminDeleteUser": "Không thể xóa người dùng. Vui lòng thử lại.",
-    "adminInvalidInput": "Một số thông tin chưa hợp lệ. Vui lòng kiểm tra lại và thử lại."
+    "adminInvalidInput": "Một số thông tin chưa hợp lệ. Vui lòng kiểm tra lại và thử lại.",
+    "adminSavePlan": "Không thể lưu gói. Vui lòng thử lại."
   },
   "validation": {
     "emailRequired": "Email là bắt buộc",
@@ -1849,7 +1850,8 @@
     "nav": {
       "label": "Mục quản trị",
       "overview": "Tổng quan",
-      "users": "Người dùng"
+      "users": "Người dùng",
+      "plans": "Gói dịch vụ"
     },
     "overview": {
       "users": "Người dùng",
@@ -1920,6 +1922,51 @@
         "failed": "Đã có lỗi xảy ra. Vui lòng thử lại."
       },
       "loadError": "Không thể tải danh sách người dùng. Vui lòng thử lại sau."
+    },
+    "plans": {
+      "description": "Giới hạn và giá có hiệu lực từ lần tạo tiếp theo. Mỗi vai trò có một gói.",
+      "noPlan": "Chưa có gói. Tạo gói để đặt giới hạn cho vai trò này.",
+      "create": "Tạo gói",
+      "edit": "Sửa",
+      "deactivate": "Tắt",
+      "reactivate": "Bật lại",
+      "statusActive": "Đang bật",
+      "statusInactive": "Đã tắt",
+      "unlimited": "Không giới hạn",
+      "limits": {
+        "vocabPerDay": "Từ vựng mỗi ngày",
+        "languageFolders": "Thư mục",
+        "subjects": "Chủ đề"
+      },
+      "loadError": "Không thể tải gói. Vui lòng thử lại sau.",
+      "dialog": {
+        "createTitle": "Tạo gói {role}",
+        "editTitle": "Sửa gói {role}",
+        "description": "Giới hạn có hiệu lực từ lần tạo tiếp theo.",
+        "name": "Tên",
+        "priceLabel": "Nhãn giá",
+        "price": "Giá",
+        "priceHint": "Để trống nếu không có giá",
+        "sortOrder": "Thứ tự hiển thị",
+        "limits": "Giới hạn",
+        "features": "Tính năng",
+        "featuresHint": "Mỗi tính năng một dòng",
+        "stripePriceId": "Mã giá Stripe",
+        "active": "Đang bật",
+        "cancel": "Hủy",
+        "save": "Lưu gói"
+      },
+      "validation": {
+        "invalid": "Kiểm tra lại thông tin gói. Giới hạn là số nguyên; -1 nghĩa là không giới hạn."
+      },
+      "toast": {
+        "created": "Đã tạo gói",
+        "saved": "Đã lưu gói",
+        "activated": "Đã bật lại gói",
+        "deactivated": "Đã tắt gói",
+        "failed": "Có lỗi xảy ra. Vui lòng thử lại."
+      },
+      "adminUnlimited": "Quản trị viên không bị giới hạn bởi gói."
     }
   }
 }

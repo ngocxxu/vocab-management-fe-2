@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl';
 const ADMIN_TABS = [
   { path: '/admin', labelKey: 'nav.overview' },
   { path: '/admin/users', labelKey: 'nav.users' },
+  { path: '/admin/plans', labelKey: 'nav.plans' },
 ] as const;
 
 export function AdminNav() {

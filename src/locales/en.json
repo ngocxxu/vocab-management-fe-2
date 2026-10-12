@@ -85,7 +85,8 @@
     "saveVocabulary": "Failed to save vocabulary",
     "adminUpdateUser": "Could not update the user. Try again.",
     "adminDeleteUser": "Could not delete the user. Try again.",
-    "adminInvalidInput": "Some of the details are not valid. Check them and try again."
+    "adminInvalidInput": "Some of the details are not valid. Check them and try again.",
+    "adminSavePlan": "Could not save the plan. Try again."
   },
   "validation": {
     "emailRequired": "Email is required",
@@ -1849,7 +1850,8 @@
     "nav": {
       "label": "Admin sections",
       "overview": "Overview",
-      "users": "Users"
+      "users": "Users",
+      "plans": "Plans"
     },
     "overview": {
       "users": "Users",
@@ -1920,6 +1922,51 @@
         "failed": "Something went wrong. Try again."
       },
       "loadError": "Could not load users. Try again later."
+    },
+    "plans": {
+      "description": "Limits and prices take effect on the next create. Each role has one plan.",
+      "noPlan": "No plan yet. Create one to set this role's limits.",
+      "create": "Create plan",
+      "edit": "Edit",
+      "deactivate": "Deactivate",
+      "reactivate": "Reactivate",
+      "statusActive": "Active",
+      "statusInactive": "Inactive",
+      "unlimited": "Unlimited",
+      "limits": {
+        "vocabPerDay": "Vocabs per day",
+        "languageFolders": "Folders",
+        "subjects": "Subjects"
+      },
+      "loadError": "Could not load plans. Try again later.",
+      "dialog": {
+        "createTitle": "Create {role} plan",
+        "editTitle": "Edit {role} plan",
+        "description": "Limits take effect on the next create.",
+        "name": "Name",
+        "priceLabel": "Price label",
+        "price": "Price",
+        "priceHint": "Empty for no price",
+        "sortOrder": "Display order",
+        "limits": "Limits",
+        "features": "Features",
+        "featuresHint": "One feature per line",
+        "stripePriceId": "Stripe price ID",
+        "active": "Active",
+        "cancel": "Cancel",
+        "save": "Save plan"
+      },
+      "validation": {
+        "invalid": "Check the plan details. Limits are whole numbers; -1 means unlimited."
+      },
+      "toast": {
+        "created": "Plan created",
+        "saved": "Plan saved",
+        "activated": "Plan reactivated",
+        "deactivated": "Plan deactivated",
+        "failed": "Something went wrong. Try again."
+      },
+      "adminUnlimited": "Admins are never limited by plans."
     }
   }
 }

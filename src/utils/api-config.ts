@@ -1,5 +1,5 @@
 import type { EQuestionType } from '@/enum/vocab-trainer';
-import type { TAdminUsersQuery, TUpdateAdminUserInput } from '@/types/admin';
+import type { TAdminUserRole, TAdminUsersQuery, TCreateAdminPlanInput, TUpdateAdminPlanInput, TUpdateAdminUserInput } from '@/types/admin';
 import type { GenerateUploadSignatureInput } from '@/types/cloudinary';
 import type {
   TChangePasswordData,
@@ -113,6 +113,7 @@ export const API_ENDPOINTS = {
   admin: {
     stats: '/admin/stats',
     users: '/admin/users',
+    plans: '/admin/plans',
   },
   auth: {
     signin: '/auth/signin',
@@ -156,6 +157,12 @@ export const API_METHODS = {
       },
       update: (id: string, data: TUpdateAdminUserInput) => ({ endpoint: `${API_ENDPOINTS.admin.users}/${id}`, data }),
       remove: (id: string) => ({ endpoint: `${API_ENDPOINTS.admin.users}/${id}` }),
+    },
+    // Create and update reuse the public /plans routes, which the BE guards with the admin role.
+    plans: {
+      list: () => ({ endpoint: API_ENDPOINTS.admin.plans }),
+      create: (data: TCreateAdminPlanInput) => ({ endpoint: API_ENDPOINTS.plans, data }),
+      update: (role: TAdminUserRole, data: TUpdateAdminPlanInput) => ({ endpoint: `${API_ENDPOINTS.plans}/${role}`, data }),
     },
   },
   auth: {

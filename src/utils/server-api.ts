@@ -8,7 +8,17 @@ import type {
   VocabTrainerQueryParams,
 } from './api-config';
 import type { ResponseAPI, TLanguage, TLanguageFolder, TUser } from '@/types';
-import type { TAdminStats, TAdminUser, TAdminUsersQuery, TUpdateAdminUserInput } from '@/types/admin';
+import type { TPlan } from '@/types/plan';
+import type {
+  TAdminPlan,
+  TAdminStats,
+  TAdminUser,
+  TAdminUserRole,
+  TAdminUsersQuery,
+  TCreateAdminPlanInput,
+  TUpdateAdminPlanInput,
+  TUpdateAdminUserInput,
+} from '@/types/admin';
 import type { TApiKey, TApiKeyResponse, TApiKeyScope, TCreateApiKeyResponse } from '@/types/api-key';
 import type { TChangePasswordData, TOAuthData, TOAuthResponse, TResendConfirmationData, TSessionDto, TSignUpResponse, TVerifyOtpData } from '@/types/auth';
 import type {
@@ -664,6 +674,20 @@ export const adminApi = {
     remove: (id: string) => {
       const config = API_METHODS.admin.users.remove(id);
       return serverApi.delete<TAdminUser>(config.endpoint);
+    },
+  },
+  plans: {
+    list: () => {
+      const config = API_METHODS.admin.plans.list();
+      return serverApi.get<TAdminPlan[]>(config.endpoint);
+    },
+    create: (data: TCreateAdminPlanInput) => {
+      const config = API_METHODS.admin.plans.create(data);
+      return serverApi.post<TPlan>(config.endpoint, config.data);
+    },
+    update: (role: TAdminUserRole, data: TUpdateAdminPlanInput) => {
+      const config = API_METHODS.admin.plans.update(role, data);
+      return serverApi.put<TPlan>(config.endpoint, config.data);
     },
   },
 };
