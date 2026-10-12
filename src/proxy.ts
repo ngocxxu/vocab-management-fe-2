@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import { getRefreshLock, getRefreshLockKey, performRefresh } from '@/libs/refresh-lock';
 import { AUTH_COOKIE_OPTIONS, REFRESH_COOKIE_OPTIONS } from '@/utils/auth-cookies';
 
-const PROTECTED = ['/dashboard', '/library', '/vocab-list', '/vocab-trainer', '/profile', '/subjects', '/notifications'];
+const PROTECTED = ['/dashboard', '/library', '/vocab-list', '/vocab-trainer', '/profile', '/subjects', '/notifications', '/admin'];
 const AUTH_ROUTES = ['/signin', '/signup', '/forgot-password'];
 const PUBLIC_ROUTES = ['/auth/callback'];
 const REFRESH_THRESHOLD = 60;

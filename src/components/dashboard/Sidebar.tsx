@@ -3,6 +3,7 @@ import { logger } from '@/libs/Logger';
 import { Button } from '@/components/ui/button';
 import type { MenuItem, SidebarProps } from '@/types';
 import { useTheme } from '@/hooks/useTheme';
+import { isAdmin } from '@/utils/is-admin';
 import {
   Bell,
   Bookmark,
@@ -10,6 +11,7 @@ import {
   Key,
   Library,
   Power,
+  ShieldUser,
   SquareAcademicCap,
   User,
 } from '@solar-icons/react/ssr';
@@ -30,6 +32,7 @@ const settingsMenuItems: MenuItem[] = [
   { id: 'subjects', path: '/subjects', labelKey: 'nav.subjects', icon: <Bookmark size={20} weight="BoldDuotone" /> },
   { id: 'notifications', path: '/notifications', labelKey: 'nav.notifications', icon: <Bell size={20} weight="BoldDuotone" /> },
   { id: 'api-keys', path: '/api-keys', labelKey: 'nav.apiKeys', icon: <Key size={20} weight="BoldDuotone" /> },
+  { id: 'admin', path: '/admin', labelKey: 'nav.admin', icon: <ShieldUser size={20} weight="BoldDuotone" /> },
 ];
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, isExpanded = true, user }) => {
@@ -50,7 +53,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, isExpanded = 
     return pathname === path || pathname.startsWith(`${path}/`);
   };
 
-  const visibleSettingsMenuItems = settingsMenuItems.filter(item => item.id !== 'api-keys' || user?.role !== 'GUEST');
+  const visibleSettingsMenuItems = settingsMenuItems.filter(item => (item.id !== 'api-keys' || user?.role !== 'GUEST') && (item.id !== 'admin' || isAdmin(user)));
 
   useEffect(() => {
     for (const item of [...mainMenuItems, ...visibleSettingsMenuItems]) {

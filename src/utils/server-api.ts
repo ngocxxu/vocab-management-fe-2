@@ -8,6 +8,7 @@ import type {
   VocabTrainerQueryParams,
 } from './api-config';
 import type { ResponseAPI, TLanguage, TLanguageFolder, TUser } from '@/types';
+import type { TAdminStats } from '@/types/admin';
 import type { TApiKey, TApiKeyResponse, TApiKeyScope, TCreateApiKeyResponse } from '@/types/api-key';
 import type { TChangePasswordData, TOAuthData, TOAuthResponse, TResendConfirmationData, TSessionDto, TSignUpResponse, TVerifyOtpData } from '@/types/auth';
 import type {
@@ -148,7 +149,7 @@ export const authApi = {
     const config = API_METHODS.auth.signin(data);
     return serverApi.post<TSessionDto>(config.endpoint, config.data);
   },
-  signup: (data: { email: string; password: string; firstName: string; lastName: string; phone: string; avatar: string; role: string }) => {
+  signup: (data: { email: string; password: string; firstName: string; lastName: string; phone: string; avatar: string }) => {
     const config = API_METHODS.auth.signup(data);
     return serverApi.post<TSignUpResponse>(config.endpoint, config.data);
   },
@@ -644,8 +645,18 @@ export const notificationsApi = {
   },
 };
 
+export const adminApi = {
+  stats: {
+    get: () => {
+      const config = API_METHODS.admin.stats();
+      return serverApi.get<TAdminStats>(config.endpoint);
+    },
+  },
+};
+
 // Main API object for easy access
 export const api = {
+  admin: adminApi,
   auth: authApi,
   vocab: vocabApi,
   vocabTrainer: vocabTrainerApi,

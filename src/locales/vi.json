@@ -242,7 +242,8 @@
       "notifications": "Thông báo",
       "apiKeys": "Khóa API",
       "more": "Thêm",
-      "primary": "Điều hướng chính"
+      "primary": "Điều hướng chính",
+      "admin": "Quản trị"
     },
     "sidebar": {
       "mainMenu": "Menu chính",
@@ -1840,5 +1841,32 @@
     "itemSelected": ", đã chọn",
     "itemNotSelected": ", chưa chọn",
     "itemDisabled": ", đã vô hiệu hóa"
+  },
+  "admin": {
+    "nav": {
+      "label": "Mục quản trị",
+      "overview": "Tổng quan"
+    },
+    "overview": {
+      "users": "Người dùng",
+      "total": "Tổng người dùng",
+      "byRole": "Quản trị {admin} · Thành viên {member} · Khách {guest}",
+      "active": "Đang hoạt động",
+      "deactivated": "Đã vô hiệu hóa",
+      "newSevenDays": "Mới trong 7 ngày",
+      "newThirtyDays": "{count} trong 30 ngày qua",
+      "content": "Nội dung",
+      "vocabs": "Từ vựng",
+      "trainers": "Bộ luyện tập",
+      "examResults": "Kết quả kiểm tra",
+      "reviewsSevenDays": "Lượt ôn trong 7 ngày",
+      "operations": "Vận hành",
+      "jobFailures": "Lỗi tác vụ (24 giờ)",
+      "signupsTitle": "Đăng ký",
+      "signupsDescription": "Tài khoản mới mỗi ngày, 30 ngày qua",
+      "signupsValue": "Đăng ký",
+      "signupsAria": "Biểu đồ đăng ký theo ngày trong 30 ngày qua",
+      "loadError": "Không thể tải tổng quan. Vui lòng thử lại sau."
+    }
   }
 }

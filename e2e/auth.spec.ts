@@ -7,7 +7,7 @@ test.use({ storageState: { cookies: [], origins: [] } });
 test.beforeAll(async ({ playwright }) => {
   const api = await playwright.request.newContext();
   const response = await api.post(`${API}/auth/signup`, {
-    data: { ...AUTH_SPEC_USER, phone: '', avatar: '', role: 'GUEST' },
+    data: { ...AUTH_SPEC_USER, phone: '', avatar: '' },
   });
   expect(response.ok(), await response.text()).toBe(true);
   await api.dispose();

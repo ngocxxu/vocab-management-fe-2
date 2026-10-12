@@ -109,6 +109,9 @@ export type NotificationQueryParams = {
 
 // API endpoint definitions
 export const API_ENDPOINTS = {
+  admin: {
+    stats: '/admin/stats',
+  },
   auth: {
     signin: '/auth/signin',
     signup: '/auth/signup',
@@ -142,9 +145,12 @@ export const API_ENDPOINTS = {
 
 // API method configurations
 export const API_METHODS = {
+  admin: {
+    stats: () => ({ endpoint: API_ENDPOINTS.admin.stats }),
+  },
   auth: {
     signin: (data: { email: string; password: string }) => ({ endpoint: API_ENDPOINTS.auth.signin, data }),
-    signup: (data: { email: string; password: string; firstName: string; lastName: string; phone: string; avatar: string; role: string }) => ({ endpoint: API_ENDPOINTS.auth.signup, data }),
+    signup: (data: { email: string; password: string; firstName: string; lastName: string; phone: string; avatar: string }) => ({ endpoint: API_ENDPOINTS.auth.signup, data }),
     refresh: (data: { refreshToken: string }) => ({ endpoint: API_ENDPOINTS.auth.refresh, data }),
     signout: () => ({ endpoint: API_ENDPOINTS.auth.signout }),
     deleteAccount: () => ({ endpoint: API_ENDPOINTS.auth.deleteAccount }),

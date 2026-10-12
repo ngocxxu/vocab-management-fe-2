@@ -11,7 +11,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { renderChartTooltipBody } from '@/features/dashboard/ui/ChartTooltipBody';
+import { renderChartTooltipBody } from '@/components/shared/ChartTooltipBody';
 
 const formatDate = (dateString: string, locale: string): string => {
   const date = new Date(dateString);

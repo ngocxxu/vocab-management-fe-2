@@ -242,7 +242,8 @@
       "notifications": "Notifications",
       "apiKeys": "API Keys",
       "more": "More",
-      "primary": "Primary"
+      "primary": "Primary",
+      "admin": "Admin"
     },
     "sidebar": {
       "mainMenu": "Main Menu",
@@ -1840,5 +1841,32 @@
     "itemSelected": ", selected",
     "itemNotSelected": ", not selected",
     "itemDisabled": ", disabled"
+  },
+  "admin": {
+    "nav": {
+      "label": "Admin sections",
+      "overview": "Overview"
+    },
+    "overview": {
+      "users": "Users",
+      "total": "Total users",
+      "byRole": "Admins {admin} · Members {member} · Guests {guest}",
+      "active": "Active",
+      "deactivated": "Deactivated",
+      "newSevenDays": "New in 7 days",
+      "newThirtyDays": "{count} in the last 30 days",
+      "content": "Content",
+      "vocabs": "Vocabs",
+      "trainers": "Vocab trainers",
+      "examResults": "Exam results",
+      "reviewsSevenDays": "Reviews in 7 days",
+      "operations": "Operations",
+      "jobFailures": "Job failures (24h)",
+      "signupsTitle": "Signups",
+      "signupsDescription": "New accounts per day, last 30 days",
+      "signupsValue": "Signups",
+      "signupsAria": "Bar chart of signups per day over the last 30 days",
+      "loadError": "Could not load the overview. Try again later."
+    }
   }
 }

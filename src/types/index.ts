@@ -5,6 +5,9 @@ export type TOption = { label: string; value: string };
 
 export type ResponseAPI<T> = { items: T } & TPagination;
 
+// Export admin types
+export * from './admin';
+
 // Export API key types
 export * from './api-key';
 
