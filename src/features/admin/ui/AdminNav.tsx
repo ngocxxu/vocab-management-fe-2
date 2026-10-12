@@ -4,9 +4,10 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
-// Only Overview ships for now. Add a tab here when its page exists, so no link leads to a 404.
+// Add a tab here only when its page exists, so no link leads to a 404.
 const ADMIN_TABS = [
   { path: '/admin', labelKey: 'nav.overview' },
+  { path: '/admin/users', labelKey: 'nav.users' },
 ] as const;
 
 export function AdminNav() {

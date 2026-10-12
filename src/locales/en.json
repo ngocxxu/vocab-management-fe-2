@@ -82,7 +82,10 @@
     "fetchVocabulariesByIds": "Failed to fetch vocabularies by ids",
     "fetchLanguageFolders": "Failed to fetch language folders",
     "loadLanguageFolders": "Failed to load language folders",
-    "saveVocabulary": "Failed to save vocabulary"
+    "saveVocabulary": "Failed to save vocabulary",
+    "adminUpdateUser": "Could not update the user. Try again.",
+    "adminDeleteUser": "Could not delete the user. Try again.",
+    "adminInvalidInput": "Some of the details are not valid. Check them and try again."
   },
   "validation": {
     "emailRequired": "Email is required",
@@ -1845,7 +1848,8 @@
   "admin": {
     "nav": {
       "label": "Admin sections",
-      "overview": "Overview"
+      "overview": "Overview",
+      "users": "Users"
     },
     "overview": {
       "users": "Users",
@@ -1867,6 +1871,55 @@
       "signupsValue": "Signups",
       "signupsAria": "Bar chart of signups per day over the last 30 days",
       "loadError": "Could not load the overview. Try again later."
+    },
+    "users": {
+      "searchPlaceholder": "Search by name or email",
+      "filters": {
+        "role": "Role",
+        "status": "Status",
+        "allRoles": "All roles",
+        "allStatuses": "All statuses",
+        "active": "Active",
+        "deactivated": "Deactivated"
+      },
+      "roles": {
+        "ADMIN": "Admin",
+        "MEMBER": "Member",
+        "GUEST": "Guest"
+      },
+      "columns": {
+        "name": "Name",
+        "email": "Email",
+        "role": "Role",
+        "status": "Status",
+        "created": "Joined",
+        "actions": "Actions"
+      },
+      "statusActive": "Active",
+      "statusDeactivated": "Deactivated",
+      "you": "You",
+      "lockedHint": "You cannot change your own account here.",
+      "actions": {
+        "deactivate": "Deactivate",
+        "reactivate": "Reactivate",
+        "delete": "Delete",
+        "changeRole": "Change role"
+      },
+      "deleteDialog": {
+        "title": "Delete this user?",
+        "description": "This removes {email} from Supabase and from the database. It cannot be undone.",
+        "typeEmail": "Type {email} to confirm",
+        "confirm": "Delete user",
+        "cancel": "Cancel"
+      },
+      "toast": {
+        "roleUpdated": "Role updated",
+        "activated": "User reactivated",
+        "deactivated": "User deactivated",
+        "deleted": "User deleted",
+        "failed": "Something went wrong. Try again."
+      },
+      "loadError": "Could not load users. Try again later."
     }
   }
 }

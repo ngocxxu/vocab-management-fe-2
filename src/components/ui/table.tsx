@@ -95,6 +95,8 @@ type DataTableProps<TData extends { id: string }, TValue> = {
   // Server-side pagination & sorting
   manualPagination?: boolean;
   manualSorting?: boolean;
+  // Controlled sort state. When provided, the parent owns the sort (for example, it reads it from the URL).
+  sorting?: SortingState;
   manualFiltering?: boolean;
   pageCount?: number;
   currentPage?: number;
@@ -161,6 +163,7 @@ export function DataTable<TData extends { id: string }, TValue>({
   // Server-side props
   manualPagination = false,
   manualSorting = false,
+  sorting: controlledSorting,
   manualFiltering = false,
   pageCount = -1,
   currentPage = 1,
@@ -180,7 +183,14 @@ export function DataTable<TData extends { id: string }, TValue>({
   displayCount,
 }: Readonly<DataTableProps<TData, TValue>>) {
   const t = useTranslations('dataTable');
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const [internalSorting, setInternalSorting] = useState<SortingState>([]);
+  const isSortControlled = controlledSorting !== undefined;
+  const sorting = controlledSorting ?? internalSorting;
+  const setSorting = React.useCallback((next: React.SetStateAction<SortingState>) => {
+    if (!isSortControlled) {
+      setInternalSorting(next);
+    }
+  }, [isSortControlled]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [internalColumnVisibility, setInternalColumnVisibility] = useState<VisibilityState>({});
 
@@ -235,7 +245,7 @@ export function DataTable<TData extends { id: string }, TValue>({
     } else {
       setSorting(updaterOrValue);
     }
-  }, [manualSorting, onSortingChange, sorting]);
+  }, [manualSorting, onSortingChange, sorting, setSorting]);
 
   // Create table instance with all necessary features
   const table = useReactTable({

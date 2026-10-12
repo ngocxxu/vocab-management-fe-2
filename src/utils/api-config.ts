@@ -1,4 +1,5 @@
 import type { EQuestionType } from '@/enum/vocab-trainer';
+import type { TAdminUsersQuery, TUpdateAdminUserInput } from '@/types/admin';
 import type { GenerateUploadSignatureInput } from '@/types/cloudinary';
 import type {
   TChangePasswordData,
@@ -111,6 +112,7 @@ export type NotificationQueryParams = {
 export const API_ENDPOINTS = {
   admin: {
     stats: '/admin/stats',
+    users: '/admin/users',
   },
   auth: {
     signin: '/auth/signin',
@@ -147,6 +149,14 @@ export const API_ENDPOINTS = {
 export const API_METHODS = {
   admin: {
     stats: () => ({ endpoint: API_ENDPOINTS.admin.stats }),
+    users: {
+      list: (params: TAdminUsersQuery) => {
+        const query = buildQueryString({ ...params });
+        return { endpoint: query ? `${API_ENDPOINTS.admin.users}?${query}` : API_ENDPOINTS.admin.users };
+      },
+      update: (id: string, data: TUpdateAdminUserInput) => ({ endpoint: `${API_ENDPOINTS.admin.users}/${id}`, data }),
+      remove: (id: string) => ({ endpoint: `${API_ENDPOINTS.admin.users}/${id}` }),
+    },
   },
   auth: {
     signin: (data: { email: string; password: string }) => ({ endpoint: API_ENDPOINTS.auth.signin, data }),

@@ -8,7 +8,7 @@ import type {
   VocabTrainerQueryParams,
 } from './api-config';
 import type { ResponseAPI, TLanguage, TLanguageFolder, TUser } from '@/types';
-import type { TAdminStats } from '@/types/admin';
+import type { TAdminStats, TAdminUser, TAdminUsersQuery, TUpdateAdminUserInput } from '@/types/admin';
 import type { TApiKey, TApiKeyResponse, TApiKeyScope, TCreateApiKeyResponse } from '@/types/api-key';
 import type { TChangePasswordData, TOAuthData, TOAuthResponse, TResendConfirmationData, TSessionDto, TSignUpResponse, TVerifyOtpData } from '@/types/auth';
 import type {
@@ -650,6 +650,20 @@ export const adminApi = {
     get: () => {
       const config = API_METHODS.admin.stats();
       return serverApi.get<TAdminStats>(config.endpoint);
+    },
+  },
+  users: {
+    list: (params: TAdminUsersQuery) => {
+      const config = API_METHODS.admin.users.list(params);
+      return serverApi.get<ResponseAPI<TAdminUser[]>>(config.endpoint);
+    },
+    update: (id: string, data: TUpdateAdminUserInput) => {
+      const config = API_METHODS.admin.users.update(id, data);
+      return serverApi.patch<TAdminUser>(config.endpoint, config.data);
+    },
+    remove: (id: string) => {
+      const config = API_METHODS.admin.users.remove(id);
+      return serverApi.delete<TAdminUser>(config.endpoint);
     },
   },
 };

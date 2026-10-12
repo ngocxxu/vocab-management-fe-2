@@ -17,6 +17,7 @@ import { logger } from '@/libs/Logger';
 import { getRefreshLock, getRefreshLockKey, invalidateRefreshLock, performRefresh } from '@/libs/refresh-lock';
 import { clearAuthCookies, getAccessToken, getRefreshToken, setAuthCookies } from '@/utils/auth-cookies';
 import { isUnauthorizedError } from '@/utils/auth-error';
+import { isAdmin } from '@/utils/is-admin';
 import { authApi } from '@/utils/server-api';
 import { toActionError, translateError } from './utils';
 
@@ -240,6 +241,14 @@ export async function requireAuth(): Promise<TUser> {
   const user = await verifyUser();
   if (!user) {
     throw new Error('Unauthorized');
+  }
+  return user;
+}
+
+export async function requireAdmin(): Promise<TUser> {
+  const user = await requireAuth();
+  if (!isAdmin(user)) {
+    throw new Error('Forbidden');
   }
   return user;
 }

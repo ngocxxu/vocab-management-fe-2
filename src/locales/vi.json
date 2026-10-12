@@ -82,7 +82,10 @@
     "fetchVocabulariesByIds": "Không thể tải từ vựng theo mã",
     "fetchLanguageFolders": "Không thể tải thư mục ngôn ngữ",
     "loadLanguageFolders": "Không thể tải thư mục ngôn ngữ",
-    "saveVocabulary": "Lưu từ vựng thất bại"
+    "saveVocabulary": "Lưu từ vựng thất bại",
+    "adminUpdateUser": "Không thể cập nhật người dùng. Vui lòng thử lại.",
+    "adminDeleteUser": "Không thể xóa người dùng. Vui lòng thử lại.",
+    "adminInvalidInput": "Một số thông tin chưa hợp lệ. Vui lòng kiểm tra lại và thử lại."
   },
   "validation": {
     "emailRequired": "Email là bắt buộc",
@@ -1845,7 +1848,8 @@
   "admin": {
     "nav": {
       "label": "Mục quản trị",
-      "overview": "Tổng quan"
+      "overview": "Tổng quan",
+      "users": "Người dùng"
     },
     "overview": {
       "users": "Người dùng",
@@ -1867,6 +1871,55 @@
       "signupsValue": "Đăng ký",
       "signupsAria": "Biểu đồ đăng ký theo ngày trong 30 ngày qua",
       "loadError": "Không thể tải tổng quan. Vui lòng thử lại sau."
+    },
+    "users": {
+      "searchPlaceholder": "Tìm theo tên hoặc email",
+      "filters": {
+        "role": "Vai trò",
+        "status": "Trạng thái",
+        "allRoles": "Tất cả vai trò",
+        "allStatuses": "Tất cả trạng thái",
+        "active": "Đang hoạt động",
+        "deactivated": "Đã vô hiệu hóa"
+      },
+      "roles": {
+        "ADMIN": "Quản trị viên",
+        "MEMBER": "Thành viên",
+        "GUEST": "Khách"
+      },
+      "columns": {
+        "name": "Tên",
+        "email": "Email",
+        "role": "Vai trò",
+        "status": "Trạng thái",
+        "created": "Ngày tham gia",
+        "actions": "Thao tác"
+      },
+      "statusActive": "Đang hoạt động",
+      "statusDeactivated": "Đã vô hiệu hóa",
+      "you": "Bạn",
+      "lockedHint": "Bạn không thể thay đổi chính tài khoản của mình tại đây.",
+      "actions": {
+        "deactivate": "Vô hiệu hóa",
+        "reactivate": "Kích hoạt lại",
+        "delete": "Xóa",
+        "changeRole": "Đổi vai trò"
+      },
+      "deleteDialog": {
+        "title": "Xóa người dùng này?",
+        "description": "Thao tác này xóa {email} khỏi Supabase và cơ sở dữ liệu. Không thể hoàn tác.",
+        "typeEmail": "Nhập {email} để xác nhận",
+        "confirm": "Xóa người dùng",
+        "cancel": "Hủy"
+      },
+      "toast": {
+        "roleUpdated": "Đã cập nhật vai trò",
+        "activated": "Đã kích hoạt lại người dùng",
+        "deactivated": "Đã vô hiệu hóa người dùng",
+        "deleted": "Đã xóa người dùng",
+        "failed": "Đã có lỗi xảy ra. Vui lòng thử lại."
+      },
+      "loadError": "Không thể tải danh sách người dùng. Vui lòng thử lại sau."
     }
   }
 }
