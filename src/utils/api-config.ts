@@ -146,6 +146,8 @@ export const API_ENDPOINTS = {
   chatMessages: '/chat/messages',
   chatUnreadCount: '/chat/unread-count',
   chatRead: '/chat/read',
+  config: '/config',
+  cache: '/cache',
 } as const;
 
 // API method configurations
@@ -405,5 +407,15 @@ export const API_METHODS = {
     },
     getUnreadCount: () => ({ endpoint: API_ENDPOINTS.chatUnreadCount }),
     markRead: () => ({ endpoint: API_ENDPOINTS.chatRead }),
+  },
+  config: {
+    getSystem: (key: string) => ({ endpoint: `${API_ENDPOINTS.config}/system/${key}` }),
+    setSystem: (key: string, value: string) => ({ endpoint: `${API_ENDPOINTS.config}/system/${key}`, data: { value } }),
+    deleteSystem: (key: string) => ({ endpoint: `${API_ENDPOINTS.config}/system/${key}` }),
+  },
+  // clear drops only the app's own cache prefixes. The BE whole-database flush (DELETE /cache/flush) is deliberately not wired.
+  cache: {
+    stats: () => ({ endpoint: `${API_ENDPOINTS.cache}/stats` }),
+    clear: () => ({ endpoint: `${API_ENDPOINTS.cache}/clear` }),
   },
 } as const;

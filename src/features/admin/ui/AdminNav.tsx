@@ -12,6 +12,7 @@ const ADMIN_TABS = [
   { path: '/admin/languages', labelKey: 'nav.languages' },
   { path: '/admin/word-types', labelKey: 'nav.wordTypes' },
   { path: '/admin/broadcasts', labelKey: 'nav.broadcasts' },
+  { path: '/admin/system', labelKey: 'nav.system' },
 ] as const;
 
 export function AdminNav() {

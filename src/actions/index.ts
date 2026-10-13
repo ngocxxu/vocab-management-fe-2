@@ -1,6 +1,7 @@
 export * from './admin';
 export * from './admin-broadcasts';
 export * from './admin-catalog';
+export * from './admin-system';
 export * from './auth';
 export * from './chat';
 export * from './cloudinary';

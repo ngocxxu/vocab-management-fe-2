@@ -1,4 +1,4 @@
-import type { ADMIN_USER_ROLES, ADMIN_USER_SORT_FIELDS } from '@/constants/admin';
+import type { ADMIN_USER_ROLES, ADMIN_USER_SORT_FIELDS, AI_SETTING_KEYS } from '@/constants/admin';
 
 // Mirrors the backend admin responses (GET /admin/stats, /admin/users). Keep in step with the BE DTOs.
 export type TAdminUserRole = (typeof ADMIN_USER_ROLES)[number];
@@ -169,4 +169,25 @@ export type TBroadcastHistoryItem = {
   expiresAt: string;
   createdAt: string;
   recipientCount: number;
+};
+
+/** One of the four AI settings. Provider keys take a provider; model keys take a model name. */
+export type TAiSettingKey = (typeof AI_SETTING_KEYS)[number];
+
+/** Stored value of each AI setting. Null means unset, so the env default applies. */
+export type TAiSettings = Record<TAiSettingKey, string | null>;
+
+/** Reply to GET /config/system/:key. Only the value is read here. */
+export type TSystemConfig = {
+  key: string;
+  value: unknown;
+};
+
+/** Reply to GET /cache/stats: each Redis key prefix with the number of keys under it. */
+export type TCacheStats = Record<string, number>;
+
+/** One row of the cache table. */
+export type TCacheRow = {
+  prefix: string;
+  count: number;
 };

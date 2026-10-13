@@ -95,7 +95,9 @@
     "adminUpdateBroadcast": "Could not update the message. Try again.",
     "adminDeleteBroadcast": "Could not delete the message. Try again.",
     "adminCleanupBroadcasts": "Could not clean up expired messages. Try again.",
-    "adminSearchUsers": "Could not search users. Try again."
+    "adminSearchUsers": "Could not search users. Try again.",
+    "adminSaveAiSetting": "Could not save the AI setting. Please try again.",
+    "adminClearCache": "Could not clear the app caches. Please try again."
   },
   "validation": {
     "emailRequired": "Email is required",
@@ -1863,7 +1865,8 @@
       "plans": "Plans",
       "languages": "Languages",
       "wordTypes": "Word types",
-      "broadcasts": "Broadcasts"
+      "broadcasts": "Broadcasts",
+      "system": "System"
     },
     "overview": {
       "users": "Users",
@@ -2137,6 +2140,49 @@
         "saved": "Word type saved",
         "deleted": "Word type deleted",
         "failed": "Something went wrong. Try again."
+      }
+    },
+    "system": {
+      "description": "Choose the AI provider and model the app uses for chat and audio. Unset values use the server env default.",
+      "loadError": "Could not load system settings. Please try again shortly.",
+      "sections": {
+        "ai": "AI settings",
+        "cache": "App caches"
+      },
+      "ai": {
+        "fields": {
+          "chatProvider": "Chat provider",
+          "chatModel": "Chat model",
+          "audioProvider": "Audio provider",
+          "audioModel": "Audio model"
+        },
+        "envDefault": "env default",
+        "providers": {
+          "gemini": "Gemini",
+          "openrouter": "OpenRouter",
+          "groq": "Groq",
+          "omniroute": "OmniRoute"
+        },
+        "save": "Save",
+        "reset": "Reset to env default"
+      },
+      "cache": {
+        "prefix": "Key prefix",
+        "count": "Keys",
+        "empty": "No cache keys found.",
+        "clear": "Clear app caches",
+        "confirm": {
+          "title": "Clear app caches?",
+          "description": "This deletes every key under the prefixes listed above, including sessions, queued jobs, job locks and daily quota counters. Users may be signed out, and work in progress may fail or run twice.",
+          "confirm": "Clear caches",
+          "cancel": "Cancel"
+        }
+      },
+      "toast": {
+        "saved": "AI setting saved",
+        "reset": "AI setting reset to env default",
+        "cleared": "App caches cleared",
+        "failed": "Could not update system settings"
       }
     }
   }

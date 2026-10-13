@@ -17,10 +17,13 @@ import type {
   TAdminUserRole,
   TAdminUsersQuery,
   TAdminWordType,
+  TAiSettingKey,
   TBroadcastHistoryItem,
   TBroadcastPayload,
   TBroadcastResult,
+  TCacheStats,
   TCreateAdminPlanInput,
+  TSystemConfig,
   TUpdateAdminPlanInput,
   TUpdateAdminUserInput,
 } from '@/types/admin';
@@ -677,6 +680,33 @@ export const notificationsApi = {
   cleanupExpired: () => {
     const config = API_METHODS.notifications.cleanupExpired();
     return serverApi.delete<{ count: number }>(config.endpoint);
+  },
+};
+
+// System config holds the four AI settings. The BE keeps them under ADMIN-only routes.
+export const configApi = {
+  getSystem: (key: TAiSettingKey) => {
+    const config = API_METHODS.config.getSystem(key);
+    return serverApi.get<TSystemConfig>(config.endpoint);
+  },
+  setSystem: (key: TAiSettingKey, value: string) => {
+    const config = API_METHODS.config.setSystem(key, value);
+    return serverApi.put<TSystemConfig>(config.endpoint, config.data);
+  },
+  deleteSystem: (key: TAiSettingKey) => {
+    const config = API_METHODS.config.deleteSystem(key);
+    return serverApi.delete<TSystemConfig>(config.endpoint);
+  },
+};
+
+export const cacheApi = {
+  stats: () => {
+    const config = API_METHODS.cache.stats();
+    return serverApi.get<TCacheStats>(config.endpoint);
+  },
+  clear: () => {
+    const config = API_METHODS.cache.clear();
+    return serverApi.delete<{ message: string }>(config.endpoint);
   },
 };
 
