@@ -1869,6 +1869,7 @@
       "system": "Hệ thống"
     },
     "overview": {
+      "description": "Đăng ký, nội dung và tình trạng tác vụ trong một cái nhìn.",
       "users": "Người dùng",
       "total": "Tổng người dùng",
       "byRole": "Quản trị {admin} · Thành viên {member} · Khách {guest}",
@@ -1890,6 +1891,7 @@
       "loadError": "Không thể tải tổng quan. Vui lòng thử lại sau."
     },
     "users": {
+      "description": "Đổi vai trò, vô hiệu hóa hoặc xóa tài khoản. Bạn không thể đổi tài khoản của chính mình tại đây.",
       "searchPlaceholder": "Tìm theo tên hoặc email",
       "filters": {
         "role": "Vai trò",

@@ -25,8 +25,7 @@ export function AdminLanguageList({ languages }: TAdminLanguageListProps) {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <p className="text-sm text-muted-foreground">{t('description')}</p>
+      <div className="flex justify-end">
         <Button size="sm" disabled={isPending} onClick={openCreate}>
           {t('create')}
         </Button>

@@ -76,7 +76,7 @@ export function RoleCell({ user, isSelf, isPending, onChangeRole }: Readonly<{
           }
         }}
       >
-        <SelectTrigger className="h-8 w-36 bg-card" aria-label={t('actions.changeRole')}>
+        <SelectTrigger className="h-8 w-32 bg-card" aria-label={t('actions.changeRole')}>
           <SelectValue />
         </SelectTrigger>
         <SelectContent>

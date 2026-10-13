@@ -17,6 +17,7 @@ type TPlanRoleCardProps = Readonly<{
 
 type TPlanSummaryProps = Readonly<{
   plan: TAdminPlan;
+  roleLabel: string;
   isPending: boolean;
   onEdit: () => void;
   onToggleActive: () => void;
@@ -29,14 +30,15 @@ type TNoPlanProps = Readonly<{
   onCreate: () => void;
 }>;
 
-function PlanSummary({ plan, isPending, onEdit, onToggleActive }: TPlanSummaryProps) {
+function PlanSummary({ plan, roleLabel, isPending, onEdit, onToggleActive }: TPlanSummaryProps) {
   const t = useTranslations('admin.plans');
   const formatLimit = (value: number) => (value === ADMIN_PLAN_UNLIMITED ? t('unlimited') : String(value));
 
   return (
     <>
       <div>
-        <p className="font-medium text-foreground">{plan.name}</p>
+        {/* The card header already shows the role and the price line below shows the price; repeat the name only when it says something new. */}
+        {plan.name !== roleLabel && plan.name !== plan.priceLabel && <p className="font-medium text-foreground">{plan.name}</p>}
         <p className="text-sm text-muted-foreground">{plan.priceLabel}</p>
       </div>
 
@@ -88,11 +90,12 @@ function NoPlan({ role, canCreate, isPending, onCreate }: TNoPlanProps) {
 export function PlanRoleCard({ role, plan, canCreate, isPending, onEdit, onToggleActive }: TPlanRoleCardProps) {
   const t = useTranslations('admin.plans');
   const tUsers = useTranslations('admin.users');
+  const roleLabel = tUsers(`roles.${role}`);
 
   return (
-    <li className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-6 shadow-sm">
+    <li className={`flex flex-col gap-4 rounded-2xl border border-border bg-card p-6 shadow-sm ${plan ? '' : 'md:self-start'}`}>
       <div className="flex items-center justify-between gap-2">
-        <h2 className="text-lg font-semibold text-foreground">{tUsers(`roles.${role}`)}</h2>
+        <h2 className="text-lg font-semibold text-foreground">{roleLabel}</h2>
         {plan && <Badge variant={plan.isActive ? 'secondary' : 'outline'}>{plan.isActive ? t('statusActive') : t('statusInactive')}</Badge>}
       </div>
 
@@ -100,6 +103,7 @@ export function PlanRoleCard({ role, plan, canCreate, isPending, onEdit, onToggl
         ? (
             <PlanSummary
               plan={plan}
+              roleLabel={roleLabel}
               isPending={isPending}
               onEdit={() => onEdit(role, plan)}
               onToggleActive={() => onToggleActive(plan)}

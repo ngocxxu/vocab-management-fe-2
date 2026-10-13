@@ -50,6 +50,7 @@ export function AdminUsersTable({ query, page, currentUserId }: TAdminUsersTable
       accessorKey: 'email',
       header: t('columns.email'),
       enableSorting: true,
+      cell: ({ row }) => <span className="block max-w-[12rem] truncate text-muted-foreground" title={row.original.email}>{row.original.email}</span>,
     },
     {
       id: 'role',
@@ -77,7 +78,7 @@ export function AdminUsersTable({ query, page, currentUserId }: TAdminUsersTable
       accessorKey: 'createdAt',
       header: t('columns.created'),
       enableSorting: true,
-      cell: ({ row }) => dateFormatter.format(new Date(row.original.createdAt)),
+      cell: ({ row }) => <span className="whitespace-nowrap tabular-nums">{dateFormatter.format(new Date(row.original.createdAt))}</span>,
     },
     {
       id: 'actions',

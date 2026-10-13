@@ -15,9 +15,7 @@ export function AdminBroadcastPanel({ broadcasts }: TAdminBroadcastPanelProps) {
 
   return (
     <div className="flex flex-col gap-10">
-      <p className="text-sm text-muted-foreground">{t('description')}</p>
-
-      <section aria-labelledby="admin-broadcast-compose" className="flex flex-col gap-4">
+      <section aria-labelledby="admin-broadcast-compose" className="flex max-w-2xl flex-col gap-4">
         <h2 id="admin-broadcast-compose" className="text-lg font-semibold">{t('sections.compose')}</h2>
         <BroadcastComposeForm />
       </section>

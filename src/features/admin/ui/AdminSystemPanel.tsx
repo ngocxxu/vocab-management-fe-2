@@ -16,8 +16,6 @@ export function AdminSystemPanel({ aiSettings, cacheRows }: TAdminSystemPanelPro
 
   return (
     <div className="flex flex-col gap-10">
-      <p className="text-sm text-muted-foreground">{t('description')}</p>
-
       <section aria-labelledby="admin-system-ai" className="flex flex-col gap-4">
         <h2 id="admin-system-ai" className="text-lg font-semibold">{t('sections.ai')}</h2>
         <AiSettingsPanel settings={aiSettings} />

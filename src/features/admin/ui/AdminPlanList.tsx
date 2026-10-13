@@ -1,7 +1,6 @@
 'use client';
 
 import type { TAdminPlan, TAdminPlanFormValues, TAdminUserRole } from '@/types/admin';
-import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { ADMIN_USER_ROLES } from '@/constants/admin';
 import { useAdminPlanActions } from '../hooks/useAdminPlanActions';
@@ -17,7 +16,6 @@ type TAdminPlanListProps = Readonly<{
 
 /** One card per role. A role with no plan can be created; a plan can be edited and switched on or off. */
 export function AdminPlanList({ plans }: TAdminPlanListProps) {
-  const t = useTranslations('admin.plans');
   const { isPending, createPlan, savePlan, toggleActive } = useAdminPlanActions();
   const [editing, setEditing] = useState<TEditingPlan | null>(null);
   const creatableRoles = getCreatableRoles(plans);
@@ -38,8 +36,6 @@ export function AdminPlanList({ plans }: TAdminPlanListProps) {
 
   return (
     <div className="flex flex-col gap-6">
-      <p className="text-sm text-muted-foreground">{t('description')}</p>
-
       <ul className="grid gap-4 md:grid-cols-3">
         {ADMIN_USER_ROLES.map(role => (
           <PlanRoleCard

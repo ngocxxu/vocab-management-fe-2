@@ -3,17 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-
-// Add a tab here only when its page exists, so no link leads to a 404.
-const ADMIN_TABS = [
-  { path: '/admin', labelKey: 'nav.overview' },
-  { path: '/admin/users', labelKey: 'nav.users' },
-  { path: '/admin/plans', labelKey: 'nav.plans' },
-  { path: '/admin/languages', labelKey: 'nav.languages' },
-  { path: '/admin/word-types', labelKey: 'nav.wordTypes' },
-  { path: '/admin/broadcasts', labelKey: 'nav.broadcasts' },
-  { path: '/admin/system', labelKey: 'nav.system' },
-] as const;
+import { ADMIN_TABS } from '../utils/admin-tabs';
 
 export function AdminNav() {
   const t = useTranslations('admin');
