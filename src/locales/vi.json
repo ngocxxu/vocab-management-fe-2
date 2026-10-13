@@ -82,7 +82,22 @@
     "fetchVocabulariesByIds": "Không thể tải từ vựng theo mã",
     "fetchLanguageFolders": "Không thể tải thư mục ngôn ngữ",
     "loadLanguageFolders": "Không thể tải thư mục ngôn ngữ",
-    "saveVocabulary": "Lưu từ vựng thất bại"
+    "saveVocabulary": "Lưu từ vựng thất bại",
+    "adminUpdateUser": "Không thể cập nhật người dùng. Vui lòng thử lại.",
+    "adminDeleteUser": "Không thể xóa người dùng. Vui lòng thử lại.",
+    "adminInvalidInput": "Một số thông tin chưa hợp lệ. Vui lòng kiểm tra lại và thử lại.",
+    "adminSavePlan": "Không thể lưu gói. Vui lòng thử lại.",
+    "adminSaveLanguage": "Không thể lưu ngôn ngữ. Vui lòng thử lại.",
+    "adminDeleteLanguage": "Không thể xóa ngôn ngữ. Vui lòng thử lại.",
+    "adminSaveWordType": "Không thể lưu loại từ. Vui lòng thử lại.",
+    "adminDeleteWordType": "Không thể xóa loại từ. Vui lòng thử lại.",
+    "adminSendBroadcast": "Không thể gửi thông báo. Vui lòng thử lại.",
+    "adminUpdateBroadcast": "Không thể cập nhật thông báo. Vui lòng thử lại.",
+    "adminDeleteBroadcast": "Không thể xóa thông báo. Vui lòng thử lại.",
+    "adminCleanupBroadcasts": "Không thể dọn thông báo hết hạn. Vui lòng thử lại.",
+    "adminSearchUsers": "Không thể tìm người dùng. Vui lòng thử lại.",
+    "adminSaveAiSetting": "Không lưu được cài đặt AI. Vui lòng thử lại.",
+    "adminClearCache": "Không xóa được bộ nhớ đệm ứng dụng. Vui lòng thử lại."
   },
   "validation": {
     "emailRequired": "Email là bắt buộc",
@@ -242,7 +257,8 @@
       "notifications": "Thông báo",
       "apiKeys": "Khóa API",
       "more": "Thêm",
-      "primary": "Điều hướng chính"
+      "primary": "Điều hướng chính",
+      "admin": "Quản trị"
     },
     "sidebar": {
       "mainMenu": "Menu chính",
@@ -1840,5 +1856,336 @@
     "itemSelected": ", đã chọn",
     "itemNotSelected": ", chưa chọn",
     "itemDisabled": ", đã vô hiệu hóa"
+  },
+  "admin": {
+    "nav": {
+      "label": "Mục quản trị",
+      "overview": "Tổng quan",
+      "users": "Người dùng",
+      "plans": "Gói dịch vụ",
+      "languages": "Ngôn ngữ",
+      "wordTypes": "Loại từ",
+      "broadcasts": "Thông báo",
+      "system": "Hệ thống"
+    },
+    "overview": {
+      "description": "Đăng ký, nội dung và tình trạng tác vụ trong một cái nhìn.",
+      "users": "Người dùng",
+      "total": "Tổng người dùng",
+      "byRole": "Quản trị {admin} · Thành viên {member} · Khách {guest}",
+      "active": "Đang hoạt động",
+      "deactivated": "Đã vô hiệu hóa",
+      "newSevenDays": "Mới trong 7 ngày",
+      "newThirtyDays": "{count} trong 30 ngày qua",
+      "content": "Nội dung",
+      "vocabs": "Từ vựng",
+      "trainers": "Bộ luyện tập",
+      "examResults": "Kết quả kiểm tra",
+      "reviewsSevenDays": "Lượt ôn trong 7 ngày",
+      "operations": "Vận hành",
+      "jobFailures": "Lỗi tác vụ (24 giờ)",
+      "signupsTitle": "Đăng ký",
+      "signupsDescription": "Tài khoản mới mỗi ngày, 30 ngày qua",
+      "signupsValue": "Đăng ký",
+      "signupsAria": "Biểu đồ đăng ký theo ngày trong 30 ngày qua",
+      "loadError": "Không thể tải tổng quan. Vui lòng thử lại sau."
+    },
+    "users": {
+      "description": "Đổi vai trò, vô hiệu hóa hoặc xóa tài khoản. Bạn không thể đổi tài khoản của chính mình tại đây.",
+      "searchPlaceholder": "Tìm theo tên hoặc email",
+      "filters": {
+        "role": "Vai trò",
+        "status": "Trạng thái",
+        "allRoles": "Tất cả vai trò",
+        "allStatuses": "Tất cả trạng thái",
+        "active": "Đang hoạt động",
+        "deactivated": "Đã vô hiệu hóa"
+      },
+      "roles": {
+        "ADMIN": "Quản trị viên",
+        "MEMBER": "Thành viên",
+        "GUEST": "Khách"
+      },
+      "columns": {
+        "name": "Tên",
+        "email": "Email",
+        "role": "Vai trò",
+        "status": "Trạng thái",
+        "created": "Ngày tham gia",
+        "actions": "Thao tác"
+      },
+      "statusActive": "Đang hoạt động",
+      "statusDeactivated": "Đã vô hiệu hóa",
+      "you": "Bạn",
+      "lockedHint": "Bạn không thể thay đổi chính tài khoản của mình tại đây.",
+      "actions": {
+        "deactivate": "Vô hiệu hóa",
+        "reactivate": "Kích hoạt lại",
+        "delete": "Xóa",
+        "changeRole": "Đổi vai trò"
+      },
+      "deleteDialog": {
+        "title": "Xóa người dùng này?",
+        "description": "Thao tác này xóa {email} khỏi Supabase và cơ sở dữ liệu. Không thể hoàn tác.",
+        "typeEmail": "Nhập {email} để xác nhận",
+        "confirm": "Xóa người dùng",
+        "cancel": "Hủy"
+      },
+      "toast": {
+        "roleUpdated": "Đã cập nhật vai trò",
+        "activated": "Đã kích hoạt lại người dùng",
+        "deactivated": "Đã vô hiệu hóa người dùng",
+        "deleted": "Đã xóa người dùng",
+        "failed": "Đã có lỗi xảy ra. Vui lòng thử lại."
+      },
+      "loadError": "Không thể tải danh sách người dùng. Vui lòng thử lại sau."
+    },
+    "plans": {
+      "description": "Giới hạn và giá có hiệu lực từ lần tạo tiếp theo. Mỗi vai trò có một gói.",
+      "noPlan": "Chưa có gói. Tạo gói để đặt giới hạn cho vai trò này.",
+      "create": "Tạo gói",
+      "edit": "Sửa",
+      "deactivate": "Tắt",
+      "reactivate": "Bật lại",
+      "statusActive": "Đang bật",
+      "statusInactive": "Đã tắt",
+      "unlimited": "Không giới hạn",
+      "limits": {
+        "vocabPerDay": "Từ vựng mỗi ngày",
+        "languageFolders": "Thư mục",
+        "subjects": "Chủ đề"
+      },
+      "loadError": "Không thể tải gói. Vui lòng thử lại sau.",
+      "dialog": {
+        "createTitle": "Tạo gói {role}",
+        "editTitle": "Sửa gói {role}",
+        "description": "Giới hạn có hiệu lực từ lần tạo tiếp theo.",
+        "name": "Tên",
+        "priceLabel": "Nhãn giá",
+        "price": "Giá",
+        "priceHint": "Để trống nếu không có giá",
+        "sortOrder": "Thứ tự hiển thị",
+        "limits": "Giới hạn",
+        "features": "Tính năng",
+        "featuresHint": "Mỗi tính năng một dòng",
+        "stripePriceId": "Mã giá Stripe",
+        "active": "Đang bật",
+        "cancel": "Hủy",
+        "save": "Lưu gói"
+      },
+      "validation": {
+        "invalid": "Kiểm tra lại thông tin gói. Giới hạn là số nguyên; -1 nghĩa là không giới hạn."
+      },
+      "toast": {
+        "created": "Đã tạo gói",
+        "saved": "Đã lưu gói",
+        "activated": "Đã bật lại gói",
+        "deactivated": "Đã tắt gói",
+        "failed": "Có lỗi xảy ra. Vui lòng thử lại."
+      },
+      "adminUnlimited": "Quản trị viên không bị giới hạn bởi gói."
+    },
+    "languages": {
+      "description": "Ngôn ngữ đang được dùng bởi từ vựng và thư mục. Ngôn ngữ đang dùng không thể xóa và mã không thể đổi.",
+      "columns": {
+        "name": "Tên",
+        "code": "Mã",
+        "vocabs": "Từ vựng",
+        "folders": "Thư mục",
+        "actions": "Thao tác"
+      },
+      "create": "Thêm ngôn ngữ",
+      "rename": "Đổi tên",
+      "delete": "Xóa",
+      "inUseHint": "Đang dùng bởi {vocabCount} từ vựng và {folderCount} thư mục. Hãy gỡ chúng trước.",
+      "codeLocked": "Mã không thể đổi sau khi tạo.",
+      "empty": "Chưa có ngôn ngữ nào.",
+      "loadError": "Không thể tải ngôn ngữ. Vui lòng thử lại sau.",
+      "dialog": {
+        "createTitle": "Thêm ngôn ngữ",
+        "editTitle": "Đổi tên ngôn ngữ",
+        "name": "Tên",
+        "code": "Mã",
+        "nameHint": "Nhập tên, từ 1 đến 100 ký tự.",
+        "codeHint": "Ví dụ en, vi hoặc en-US.",
+        "cancel": "Hủy",
+        "save": "Lưu"
+      },
+      "deleteDialog": {
+        "title": "Xóa {name}?",
+        "description": "Ngôn ngữ sẽ bị xóa. Không thể hoàn tác.",
+        "confirm": "Xóa ngôn ngữ",
+        "cancel": "Hủy"
+      },
+      "toast": {
+        "created": "Đã thêm ngôn ngữ",
+        "saved": "Đã lưu ngôn ngữ",
+        "deleted": "Đã xóa ngôn ngữ",
+        "failed": "Có lỗi xảy ra. Vui lòng thử lại."
+      }
+    },
+    "broadcasts": {
+      "description": "Gửi thông báo trong ứng dụng tới tất cả người dùng đang hoạt động, một vai trò, hoặc những người dùng đã chọn. Người nhận thấy thông báo ở chuông thông báo.",
+      "loadError": "Không thể tải thông báo. Vui lòng thử lại sau.",
+      "sections": {
+        "compose": "Gửi thông báo",
+        "history": "Thông báo đã gửi"
+      },
+      "compose": {
+        "message": "Nội dung",
+        "messageCount": "{count} / {max} ký tự",
+        "priority": "Mức độ ưu tiên",
+        "expiresAt": "Hết hạn lúc",
+        "target": "Gửi tới",
+        "role": "Vai trò",
+        "users": "Người dùng",
+        "addUsers": "Thêm người dùng",
+        "searchUsers": "Tìm theo tên hoặc email",
+        "noUsers": "Không tìm thấy người dùng đang hoạt động.",
+        "picked": "Đã chọn",
+        "removeUser": "Bỏ {name}",
+        "submit": "Gửi thông báo",
+        "errors": {
+          "message": "Nhập nội dung từ 1 đến {max} ký tự.",
+          "expiresAt": "Chọn thời điểm trong tương lai.",
+          "role": "Chọn một vai trò.",
+          "userIds": "Chọn ít nhất một người dùng."
+        }
+      },
+      "target": {
+        "all": "Tất cả người dùng đang hoạt động",
+        "role": "Người dùng theo vai trò",
+        "users": "Người dùng đã chọn"
+      },
+      "priority": {
+        "low": "Thấp",
+        "medium": "Trung bình",
+        "high": "Cao"
+      },
+      "roles": {
+        "ADMIN": "Quản trị",
+        "MEMBER": "Thành viên",
+        "GUEST": "Khách"
+      },
+      "history": {
+        "description": "Thông báo hiển thị trên chuông cho đến khi hết hạn hoặc bạn xóa.",
+        "empty": "Chưa gửi thông báo nào.",
+        "cleanup": "Dọn thông báo hết hạn",
+        "activate": "Bật",
+        "deactivate": "Tắt",
+        "delete": "Xóa",
+        "columns": {
+          "message": "Nội dung",
+          "priority": "Ưu tiên",
+          "recipients": "Người nhận",
+          "expiresAt": "Hết hạn",
+          "status": "Trạng thái",
+          "actions": "Thao tác"
+        },
+        "status": {
+          "active": "Đang hiển thị",
+          "inactive": "Đã tắt"
+        }
+      },
+      "deleteDialog": {
+        "title": "Xóa thông báo này?",
+        "description": "Người nhận sẽ không còn thấy nó. Không thể hoàn tác.",
+        "confirm": "Xóa thông báo",
+        "cancel": "Hủy"
+      },
+      "cleanupDialog": {
+        "title": "Dọn thông báo hết hạn?",
+        "description": "Mọi thông báo đã quá hạn sẽ bị xóa. Không thể hoàn tác.",
+        "confirm": "Dọn",
+        "cancel": "Hủy"
+      },
+      "toast": {
+        "sent": "Đã gửi thông báo",
+        "activated": "Đã bật thông báo",
+        "deactivated": "Đã tắt thông báo",
+        "deleted": "Đã xóa thông báo",
+        "cleaned": "Đã dọn thông báo hết hạn",
+        "failed": "Có lỗi xảy ra. Vui lòng thử lại."
+      }
+    },
+    "wordTypes": {
+      "description": "Loại từ gắn nhãn cho nghĩa đích. Xóa loại từ sẽ bỏ nhãn khỏi các nghĩa đích đó.",
+      "columns": {
+        "name": "Tên",
+        "description": "Mô tả",
+        "textTargets": "Nghĩa đích",
+        "actions": "Thao tác"
+      },
+      "create": "Thêm loại từ",
+      "edit": "Sửa",
+      "delete": "Xóa",
+      "empty": "Chưa có loại từ nào.",
+      "loadError": "Không thể tải loại từ. Vui lòng thử lại sau.",
+      "dialog": {
+        "createTitle": "Thêm loại từ",
+        "editTitle": "Sửa loại từ",
+        "name": "Tên",
+        "nameHint": "Nhập tên, từ 1 đến 100 ký tự.",
+        "description": "Mô tả",
+        "descriptionHint": "Nhập mô tả, từ 1 đến 500 ký tự.",
+        "cancel": "Hủy",
+        "save": "Lưu"
+      },
+      "deleteDialog": {
+        "title": "Xóa {name}?",
+        "description": "Các nghĩa đích có loại từ này vẫn giữ nội dung nhưng mất nhãn.",
+        "confirm": "Xóa loại từ",
+        "cancel": "Hủy"
+      },
+      "toast": {
+        "created": "Đã thêm loại từ",
+        "saved": "Đã lưu loại từ",
+        "deleted": "Đã xóa loại từ",
+        "failed": "Có lỗi xảy ra. Vui lòng thử lại."
+      }
+    },
+    "system": {
+      "description": "Chọn nhà cung cấp và mô hình AI mà ứng dụng dùng cho trò chuyện và âm thanh. Giá trị chưa đặt sẽ dùng mặc định từ môi trường máy chủ.",
+      "loadError": "Không tải được cài đặt hệ thống. Vui lòng thử lại sau.",
+      "sections": {
+        "ai": "Cài đặt AI",
+        "cache": "Bộ nhớ đệm ứng dụng"
+      },
+      "ai": {
+        "fields": {
+          "chatProvider": "Nhà cung cấp trò chuyện",
+          "chatModel": "Mô hình trò chuyện",
+          "audioProvider": "Nhà cung cấp âm thanh",
+          "audioModel": "Mô hình âm thanh"
+        },
+        "envDefault": "mặc định môi trường",
+        "providers": {
+          "gemini": "Gemini",
+          "openrouter": "OpenRouter",
+          "groq": "Groq",
+          "omniroute": "OmniRoute"
+        },
+        "save": "Lưu",
+        "reset": "Đặt lại mặc định môi trường"
+      },
+      "cache": {
+        "prefix": "Tiền tố khóa",
+        "count": "Số khóa",
+        "empty": "Không tìm thấy khóa bộ nhớ đệm nào.",
+        "clear": "Xóa bộ nhớ đệm ứng dụng",
+        "confirm": {
+          "title": "Xóa bộ nhớ đệm ứng dụng?",
+          "description": "Thao tác này xóa mọi khóa thuộc các tiền tố trong bảng, gồm phiên đăng nhập, công việc trong hàng đợi, khóa công việc và bộ đếm hạn mức hằng ngày. Người dùng có thể bị đăng xuất, và công việc đang chạy có thể lỗi hoặc chạy hai lần.",
+          "confirm": "Xóa bộ nhớ đệm",
+          "cancel": "Hủy"
+        }
+      },
+      "toast": {
+        "saved": "Đã lưu cài đặt AI",
+        "reset": "Đã đặt lại cài đặt AI về mặc định môi trường",
+        "cleared": "Đã xóa bộ nhớ đệm ứng dụng",
+        "failed": "Không cập nhật được cài đặt hệ thống"
+      }
+    }
   }
 }

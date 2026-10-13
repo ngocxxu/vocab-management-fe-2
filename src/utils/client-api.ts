@@ -59,7 +59,7 @@ export const authApi = {
     const config = API_METHODS.auth.signin(data);
     return ClientAPI.post<TAuthResponse>(config.endpoint, config.data);
   },
-  signup: (data: { email: string; password: string; firstName: string; lastName: string; phone: string; avatar: string; role: string }) => {
+  signup: (data: { email: string; password: string; firstName: string; lastName: string; phone: string; avatar: string }) => {
     const config = API_METHODS.auth.signup(data);
     return ClientAPI.post<TSignUpResult>(config.endpoint, config.data);
   },

@@ -80,7 +80,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     lastName: string;
     phone: string;
     avatar: string;
-    role: string;
   }) => {
     try {
       await signup(userData);

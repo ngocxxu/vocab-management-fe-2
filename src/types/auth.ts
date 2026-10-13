@@ -30,7 +30,6 @@ export type TSignupData = {
   lastName: string;
   phone: string;
   avatar: string;
-  role: string;
 };
 
 export type TRefreshData = {

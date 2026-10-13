@@ -9,3 +9,10 @@ export class BackendRequestError extends Error {
     this.body = body;
   }
 }
+
+const HTTP_NOT_FOUND = 404;
+
+/** True when the BE answered 404. Callers use it where a missing record already means the goal is met. */
+export function isBackendNotFound(error: unknown): boolean {
+  return error instanceof BackendRequestError && error.statusCode === HTTP_NOT_FOUND;
+}

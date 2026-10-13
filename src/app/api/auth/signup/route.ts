@@ -9,14 +9,14 @@ import { createBackendErrorResponse, getBackendAuthUrl, parseBackendResponse, pa
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, password, firstName, lastName, phone, avatar, role } = body;
+    const { email, password, firstName, lastName, phone, avatar } = body;
 
     const nestResponse = await fetch(getBackendAuthUrl(API_ENDPOINTS.auth.signup), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email, password, firstName, lastName, phone, avatar, role }),
+      body: JSON.stringify({ email, password, firstName, lastName, phone, avatar }),
     });
 
     const data = await parseBackendResponse<TSignUpResponse>(nestResponse);

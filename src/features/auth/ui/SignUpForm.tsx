@@ -9,7 +9,6 @@ import { useTranslations } from 'next-intl';
 import { useCallback, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { EyeIcon } from '@/components/auth/EyeIcon';
-import { UserRole } from '@/constants/auth';
 import { signUpSchema } from '@/libs/validations/auth';
 import { Alert, AlertDescription } from '@/shared/ui/alert';
 import { Button } from '@/shared/ui/button';
@@ -63,7 +62,6 @@ function SignUpForm() {
         lastName: data.lastName,
         phone: data.phone || '',
         avatar: '',
-        role: UserRole.GUEST,
       });
 
       if (result.user) {

@@ -8,6 +8,25 @@ import type {
   VocabTrainerQueryParams,
 } from './api-config';
 import type { ResponseAPI, TLanguage, TLanguageFolder, TUser } from '@/types';
+import type { TPlan } from '@/types/plan';
+import type {
+  TAdminLanguage,
+  TAdminPlan,
+  TAdminStats,
+  TAdminUser,
+  TAdminUserRole,
+  TAdminUsersQuery,
+  TAdminWordType,
+  TAiSettingKey,
+  TBroadcastHistoryItem,
+  TBroadcastPayload,
+  TBroadcastResult,
+  TCacheStats,
+  TCreateAdminPlanInput,
+  TSystemConfig,
+  TUpdateAdminPlanInput,
+  TUpdateAdminUserInput,
+} from '@/types/admin';
 import type { TApiKey, TApiKeyResponse, TApiKeyScope, TCreateApiKeyResponse } from '@/types/api-key';
 import type { TChangePasswordData, TOAuthData, TOAuthResponse, TResendConfirmationData, TSessionDto, TSignUpResponse, TVerifyOtpData } from '@/types/auth';
 import type {
@@ -148,7 +167,7 @@ export const authApi = {
     const config = API_METHODS.auth.signin(data);
     return serverApi.post<TSessionDto>(config.endpoint, config.data);
   },
-  signup: (data: { email: string; password: string; firstName: string; lastName: string; phone: string; avatar: string; role: string }) => {
+  signup: (data: { email: string; password: string; firstName: string; lastName: string; phone: string; avatar: string }) => {
     const config = API_METHODS.auth.signup(data);
     return serverApi.post<TSignUpResponse>(config.endpoint, config.data);
   },
@@ -642,10 +661,107 @@ export const notificationsApi = {
   updateStatus: (id: string, statusData: TUpdateNotificationStatusInput) => {
     return serverApi.patch<TNotification>(`${API_ENDPOINTS.notifications}/${id}/status`, statusData);
   },
+  broadcast: (input: TBroadcastPayload) => {
+    const config = API_METHODS.notifications.broadcast(input);
+    return serverApi.post<TBroadcastResult>(config.endpoint, config.data);
+  },
+  broadcastHistory: () => {
+    const config = API_METHODS.notifications.broadcastHistory();
+    return serverApi.get<ResponseAPI<TBroadcastHistoryItem[]>>(config.endpoint);
+  },
+  setActive: (id: string, isActive: boolean) => {
+    const config = API_METHODS.notifications.setActive(id, isActive);
+    return serverApi.put<TNotification>(config.endpoint, config.data);
+  },
+  remove: (id: string) => {
+    const config = API_METHODS.notifications.remove(id);
+    return serverApi.delete<TNotification>(config.endpoint);
+  },
+  cleanupExpired: () => {
+    const config = API_METHODS.notifications.cleanupExpired();
+    return serverApi.delete<{ count: number }>(config.endpoint);
+  },
+};
+
+// System config holds the four AI settings. The BE keeps them under ADMIN-only routes.
+export const configApi = {
+  getSystem: (key: TAiSettingKey) => {
+    const config = API_METHODS.config.getSystem(key);
+    return serverApi.get<TSystemConfig>(config.endpoint);
+  },
+  setSystem: (key: TAiSettingKey, value: string) => {
+    const config = API_METHODS.config.setSystem(key, value);
+    return serverApi.put<TSystemConfig>(config.endpoint, config.data);
+  },
+  deleteSystem: (key: TAiSettingKey) => {
+    const config = API_METHODS.config.deleteSystem(key);
+    return serverApi.delete<TSystemConfig>(config.endpoint);
+  },
+};
+
+export const cacheApi = {
+  stats: () => {
+    const config = API_METHODS.cache.stats();
+    return serverApi.get<TCacheStats>(config.endpoint);
+  },
+  clear: () => {
+    const config = API_METHODS.cache.clear();
+    return serverApi.delete<{ message: string }>(config.endpoint);
+  },
+};
+
+export const adminApi = {
+  stats: {
+    get: () => {
+      const config = API_METHODS.admin.stats();
+      return serverApi.get<TAdminStats>(config.endpoint);
+    },
+  },
+  users: {
+    list: (params: TAdminUsersQuery) => {
+      const config = API_METHODS.admin.users.list(params);
+      return serverApi.get<ResponseAPI<TAdminUser[]>>(config.endpoint);
+    },
+    update: (id: string, data: TUpdateAdminUserInput) => {
+      const config = API_METHODS.admin.users.update(id, data);
+      return serverApi.patch<TAdminUser>(config.endpoint, config.data);
+    },
+    remove: (id: string) => {
+      const config = API_METHODS.admin.users.remove(id);
+      return serverApi.delete<TAdminUser>(config.endpoint);
+    },
+  },
+  languages: {
+    list: () => {
+      const config = API_METHODS.admin.languages.list();
+      return serverApi.get<TAdminLanguage[]>(config.endpoint);
+    },
+  },
+  wordTypes: {
+    list: () => {
+      const config = API_METHODS.admin.wordTypes.list();
+      return serverApi.get<TAdminWordType[]>(config.endpoint);
+    },
+  },
+  plans: {
+    list: () => {
+      const config = API_METHODS.admin.plans.list();
+      return serverApi.get<TAdminPlan[]>(config.endpoint);
+    },
+    create: (data: TCreateAdminPlanInput) => {
+      const config = API_METHODS.admin.plans.create(data);
+      return serverApi.post<TPlan>(config.endpoint, config.data);
+    },
+    update: (role: TAdminUserRole, data: TUpdateAdminPlanInput) => {
+      const config = API_METHODS.admin.plans.update(role, data);
+      return serverApi.put<TPlan>(config.endpoint, config.data);
+    },
+  },
 };
 
 // Main API object for easy access
 export const api = {
+  admin: adminApi,
   auth: authApi,
   vocab: vocabApi,
   vocabTrainer: vocabTrainerApi,

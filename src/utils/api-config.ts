@@ -1,4 +1,5 @@
 import type { EQuestionType } from '@/enum/vocab-trainer';
+import type { TAdminUserRole, TAdminUsersQuery, TBroadcastPayload, TCreateAdminPlanInput, TUpdateAdminPlanInput, TUpdateAdminUserInput } from '@/types/admin';
 import type { GenerateUploadSignatureInput } from '@/types/cloudinary';
 import type {
   TChangePasswordData,
@@ -109,6 +110,13 @@ export type NotificationQueryParams = {
 
 // API endpoint definitions
 export const API_ENDPOINTS = {
+  admin: {
+    stats: '/admin/stats',
+    users: '/admin/users',
+    plans: '/admin/plans',
+    languages: '/admin/languages',
+    wordTypes: '/admin/word-types',
+  },
   auth: {
     signin: '/auth/signin',
     signup: '/auth/signup',
@@ -138,13 +146,39 @@ export const API_ENDPOINTS = {
   chatMessages: '/chat/messages',
   chatUnreadCount: '/chat/unread-count',
   chatRead: '/chat/read',
+  config: '/config',
+  cache: '/cache',
 } as const;
 
 // API method configurations
 export const API_METHODS = {
+  admin: {
+    stats: () => ({ endpoint: API_ENDPOINTS.admin.stats }),
+    users: {
+      list: (params: TAdminUsersQuery) => {
+        const query = buildQueryString({ ...params });
+        return { endpoint: query ? `${API_ENDPOINTS.admin.users}?${query}` : API_ENDPOINTS.admin.users };
+      },
+      update: (id: string, data: TUpdateAdminUserInput) => ({ endpoint: `${API_ENDPOINTS.admin.users}/${id}`, data }),
+      remove: (id: string) => ({ endpoint: `${API_ENDPOINTS.admin.users}/${id}` }),
+    },
+    // Create and update reuse the public /plans routes, which the BE guards with the admin role.
+    plans: {
+      list: () => ({ endpoint: API_ENDPOINTS.admin.plans }),
+      create: (data: TCreateAdminPlanInput) => ({ endpoint: API_ENDPOINTS.plans, data }),
+      update: (role: TAdminUserRole, data: TUpdateAdminPlanInput) => ({ endpoint: `${API_ENDPOINTS.plans}/${role}`, data }),
+    },
+    // Writes reuse the public /languages and /word-types routes, which the BE guards with the admin role.
+    languages: {
+      list: () => ({ endpoint: API_ENDPOINTS.admin.languages }),
+    },
+    wordTypes: {
+      list: () => ({ endpoint: API_ENDPOINTS.admin.wordTypes }),
+    },
+  },
   auth: {
     signin: (data: { email: string; password: string }) => ({ endpoint: API_ENDPOINTS.auth.signin, data }),
-    signup: (data: { email: string; password: string; firstName: string; lastName: string; phone: string; avatar: string; role: string }) => ({ endpoint: API_ENDPOINTS.auth.signup, data }),
+    signup: (data: { email: string; password: string; firstName: string; lastName: string; phone: string; avatar: string }) => ({ endpoint: API_ENDPOINTS.auth.signup, data }),
     refresh: (data: { refreshToken: string }) => ({ endpoint: API_ENDPOINTS.auth.refresh, data }),
     signout: () => ({ endpoint: API_ENDPOINTS.auth.signout }),
     deleteAccount: () => ({ endpoint: API_ENDPOINTS.auth.deleteAccount }),
@@ -330,6 +364,11 @@ export const API_METHODS = {
     create: (notificationData: TNotificationInput) => ({ endpoint: API_ENDPOINTS.notifications, data: notificationData }),
     update: (id: string, notificationData: Partial<TNotificationInput>) => ({ endpoint: `${API_ENDPOINTS.notifications}/${id}`, data: notificationData }),
     updateStatus: (id: string, statusData: TUpdateNotificationStatusInput) => ({ endpoint: `${API_ENDPOINTS.notifications}/${id}/status`, data: statusData }),
+    broadcast: (input: TBroadcastPayload) => ({ endpoint: `${API_ENDPOINTS.notifications}/broadcast`, data: input }),
+    broadcastHistory: () => ({ endpoint: `${API_ENDPOINTS.notifications}/broadcasts` }),
+    setActive: (id: string, isActive: boolean) => ({ endpoint: `${API_ENDPOINTS.notifications}/${id}`, data: { isActive } }),
+    remove: (id: string) => ({ endpoint: `${API_ENDPOINTS.notifications}/${id}` }),
+    cleanupExpired: () => ({ endpoint: `${API_ENDPOINTS.notifications}/cleanup/expired` }),
   },
   cloudinary: {
     getUploadSignature: (params?: GenerateUploadSignatureInput) => {
@@ -368,5 +407,15 @@ export const API_METHODS = {
     },
     getUnreadCount: () => ({ endpoint: API_ENDPOINTS.chatUnreadCount }),
     markRead: () => ({ endpoint: API_ENDPOINTS.chatRead }),
+  },
+  config: {
+    getSystem: (key: string) => ({ endpoint: `${API_ENDPOINTS.config}/system/${key}` }),
+    setSystem: (key: string, value: string) => ({ endpoint: `${API_ENDPOINTS.config}/system/${key}`, data: { value } }),
+    deleteSystem: (key: string) => ({ endpoint: `${API_ENDPOINTS.config}/system/${key}` }),
+  },
+  // clear drops only the app's own cache prefixes. The BE whole-database flush (DELETE /cache/flush) is deliberately not wired.
+  cache: {
+    stats: () => ({ endpoint: `${API_ENDPOINTS.cache}/stats` }),
+    clear: () => ({ endpoint: `${API_ENDPOINTS.cache}/clear` }),
   },
 } as const;

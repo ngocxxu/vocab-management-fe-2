@@ -8,7 +8,7 @@ import { Chart } from '@tanstack/react-charts/tooltip';
 import { useTranslations } from 'next-intl';
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { renderChartTooltipBody } from '@/features/dashboard/ui/ChartTooltipBody';
+import { renderChartTooltipBody } from '@/components/shared/ChartTooltipBody';
 
 const CORRECT_COLOR = 'var(--success)';
 const INCORRECT_COLOR = 'var(--destructive)';

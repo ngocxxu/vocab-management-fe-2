@@ -82,7 +82,22 @@
     "fetchVocabulariesByIds": "Failed to fetch vocabularies by ids",
     "fetchLanguageFolders": "Failed to fetch language folders",
     "loadLanguageFolders": "Failed to load language folders",
-    "saveVocabulary": "Failed to save vocabulary"
+    "saveVocabulary": "Failed to save vocabulary",
+    "adminUpdateUser": "Could not update the user. Try again.",
+    "adminDeleteUser": "Could not delete the user. Try again.",
+    "adminInvalidInput": "Some of the details are not valid. Check them and try again.",
+    "adminSavePlan": "Could not save the plan. Try again.",
+    "adminSaveLanguage": "Could not save the language. Try again.",
+    "adminDeleteLanguage": "Could not delete the language. Try again.",
+    "adminSaveWordType": "Could not save the word type. Try again.",
+    "adminDeleteWordType": "Could not delete the word type. Try again.",
+    "adminSendBroadcast": "Could not send the message. Try again.",
+    "adminUpdateBroadcast": "Could not update the message. Try again.",
+    "adminDeleteBroadcast": "Could not delete the message. Try again.",
+    "adminCleanupBroadcasts": "Could not clean up expired messages. Try again.",
+    "adminSearchUsers": "Could not search users. Try again.",
+    "adminSaveAiSetting": "Could not save the AI setting. Please try again.",
+    "adminClearCache": "Could not clear the app caches. Please try again."
   },
   "validation": {
     "emailRequired": "Email is required",
@@ -242,7 +257,8 @@
       "notifications": "Notifications",
       "apiKeys": "API Keys",
       "more": "More",
-      "primary": "Primary"
+      "primary": "Primary",
+      "admin": "Admin"
     },
     "sidebar": {
       "mainMenu": "Main Menu",
@@ -1840,5 +1856,336 @@
     "itemSelected": ", selected",
     "itemNotSelected": ", not selected",
     "itemDisabled": ", disabled"
+  },
+  "admin": {
+    "nav": {
+      "label": "Admin sections",
+      "overview": "Overview",
+      "users": "Users",
+      "plans": "Plans",
+      "languages": "Languages",
+      "wordTypes": "Word types",
+      "broadcasts": "Broadcasts",
+      "system": "System"
+    },
+    "overview": {
+      "description": "Sign-ups, content and job health at a glance.",
+      "users": "Users",
+      "total": "Total users",
+      "byRole": "Admins {admin} · Members {member} · Guests {guest}",
+      "active": "Active",
+      "deactivated": "Deactivated",
+      "newSevenDays": "New in 7 days",
+      "newThirtyDays": "{count} in the last 30 days",
+      "content": "Content",
+      "vocabs": "Vocabs",
+      "trainers": "Vocab trainers",
+      "examResults": "Exam results",
+      "reviewsSevenDays": "Reviews in 7 days",
+      "operations": "Operations",
+      "jobFailures": "Job failures (24h)",
+      "signupsTitle": "Signups",
+      "signupsDescription": "New accounts per day, last 30 days",
+      "signupsValue": "Signups",
+      "signupsAria": "Bar chart of signups per day over the last 30 days",
+      "loadError": "Could not load the overview. Try again later."
+    },
+    "users": {
+      "description": "Change roles, deactivate or delete accounts. You cannot change your own account here.",
+      "searchPlaceholder": "Search by name or email",
+      "filters": {
+        "role": "Role",
+        "status": "Status",
+        "allRoles": "All roles",
+        "allStatuses": "All statuses",
+        "active": "Active",
+        "deactivated": "Deactivated"
+      },
+      "roles": {
+        "ADMIN": "Admin",
+        "MEMBER": "Member",
+        "GUEST": "Guest"
+      },
+      "columns": {
+        "name": "Name",
+        "email": "Email",
+        "role": "Role",
+        "status": "Status",
+        "created": "Joined",
+        "actions": "Actions"
+      },
+      "statusActive": "Active",
+      "statusDeactivated": "Deactivated",
+      "you": "You",
+      "lockedHint": "You cannot change your own account here.",
+      "actions": {
+        "deactivate": "Deactivate",
+        "reactivate": "Reactivate",
+        "delete": "Delete",
+        "changeRole": "Change role"
+      },
+      "deleteDialog": {
+        "title": "Delete this user?",
+        "description": "This removes {email} from Supabase and from the database. It cannot be undone.",
+        "typeEmail": "Type {email} to confirm",
+        "confirm": "Delete user",
+        "cancel": "Cancel"
+      },
+      "toast": {
+        "roleUpdated": "Role updated",
+        "activated": "User reactivated",
+        "deactivated": "User deactivated",
+        "deleted": "User deleted",
+        "failed": "Something went wrong. Try again."
+      },
+      "loadError": "Could not load users. Try again later."
+    },
+    "plans": {
+      "description": "Limits and prices take effect on the next create. Each role has one plan.",
+      "noPlan": "No plan yet. Create one to set this role's limits.",
+      "create": "Create plan",
+      "edit": "Edit",
+      "deactivate": "Deactivate",
+      "reactivate": "Reactivate",
+      "statusActive": "Active",
+      "statusInactive": "Inactive",
+      "unlimited": "Unlimited",
+      "limits": {
+        "vocabPerDay": "Vocabs per day",
+        "languageFolders": "Folders",
+        "subjects": "Subjects"
+      },
+      "loadError": "Could not load plans. Try again later.",
+      "dialog": {
+        "createTitle": "Create {role} plan",
+        "editTitle": "Edit {role} plan",
+        "description": "Limits take effect on the next create.",
+        "name": "Name",
+        "priceLabel": "Price label",
+        "price": "Price",
+        "priceHint": "Empty for no price",
+        "sortOrder": "Display order",
+        "limits": "Limits",
+        "features": "Features",
+        "featuresHint": "One feature per line",
+        "stripePriceId": "Stripe price ID",
+        "active": "Active",
+        "cancel": "Cancel",
+        "save": "Save plan"
+      },
+      "validation": {
+        "invalid": "Check the plan details. Limits are whole numbers; -1 means unlimited."
+      },
+      "toast": {
+        "created": "Plan created",
+        "saved": "Plan saved",
+        "activated": "Plan reactivated",
+        "deactivated": "Plan deactivated",
+        "failed": "Something went wrong. Try again."
+      },
+      "adminUnlimited": "Admins are never limited by plans."
+    },
+    "languages": {
+      "description": "Languages used by vocabs and folders. A language in use cannot be deleted, and its code cannot change.",
+      "columns": {
+        "name": "Name",
+        "code": "Code",
+        "vocabs": "Vocabs",
+        "folders": "Folders",
+        "actions": "Actions"
+      },
+      "create": "Add language",
+      "rename": "Rename",
+      "delete": "Delete",
+      "inUseHint": "In use by {vocabCount} vocabs and {folderCount} folders. Remove them first.",
+      "codeLocked": "The code cannot change after creation.",
+      "empty": "No languages yet.",
+      "loadError": "Could not load languages. Try again later.",
+      "dialog": {
+        "createTitle": "Add language",
+        "editTitle": "Rename language",
+        "name": "Name",
+        "code": "Code",
+        "nameHint": "Enter a name, 1 to 100 characters.",
+        "codeHint": "For example en, vi or en-US.",
+        "cancel": "Cancel",
+        "save": "Save"
+      },
+      "deleteDialog": {
+        "title": "Delete {name}?",
+        "description": "This removes the language. It cannot be undone.",
+        "confirm": "Delete language",
+        "cancel": "Cancel"
+      },
+      "toast": {
+        "created": "Language added",
+        "saved": "Language saved",
+        "deleted": "Language deleted",
+        "failed": "Something went wrong. Try again."
+      }
+    },
+    "broadcasts": {
+      "description": "Send an in-app message to all active users, a role, or selected users. Recipients see it in their notification bell.",
+      "loadError": "Could not load messages. Try again later.",
+      "sections": {
+        "compose": "Send a message",
+        "history": "Sent messages"
+      },
+      "compose": {
+        "message": "Message",
+        "messageCount": "{count} of {max} characters",
+        "priority": "Priority",
+        "expiresAt": "Expires at",
+        "target": "Send to",
+        "role": "Role",
+        "users": "Users",
+        "addUsers": "Add users",
+        "searchUsers": "Search by name or email",
+        "noUsers": "No active users found.",
+        "picked": "Selected",
+        "removeUser": "Remove {name}",
+        "submit": "Send message",
+        "errors": {
+          "message": "Enter a message of 1 to {max} characters.",
+          "expiresAt": "Pick a time in the future.",
+          "role": "Choose a role.",
+          "userIds": "Choose at least one user."
+        }
+      },
+      "target": {
+        "all": "All active users",
+        "role": "Users with a role",
+        "users": "Selected users"
+      },
+      "priority": {
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High"
+      },
+      "roles": {
+        "ADMIN": "Admin",
+        "MEMBER": "Member",
+        "GUEST": "Guest"
+      },
+      "history": {
+        "description": "Messages stay in the bell until they expire or you delete them.",
+        "empty": "No messages sent yet.",
+        "cleanup": "Clean up expired",
+        "activate": "Activate",
+        "deactivate": "Deactivate",
+        "delete": "Delete",
+        "columns": {
+          "message": "Message",
+          "priority": "Priority",
+          "recipients": "Recipients",
+          "expiresAt": "Expires",
+          "status": "Status",
+          "actions": "Actions"
+        },
+        "status": {
+          "active": "Active",
+          "inactive": "Inactive"
+        }
+      },
+      "deleteDialog": {
+        "title": "Delete this message?",
+        "description": "Recipients stop seeing it. This cannot be undone.",
+        "confirm": "Delete message",
+        "cancel": "Cancel"
+      },
+      "cleanupDialog": {
+        "title": "Clean up expired messages?",
+        "description": "Every message past its expiry is deleted. This cannot be undone.",
+        "confirm": "Clean up",
+        "cancel": "Cancel"
+      },
+      "toast": {
+        "sent": "Message sent",
+        "activated": "Message activated",
+        "deactivated": "Message deactivated",
+        "deleted": "Message deleted",
+        "cleaned": "Expired messages cleaned up",
+        "failed": "Something went wrong. Try again."
+      }
+    },
+    "wordTypes": {
+      "description": "Word types tag text targets. Deleting one clears the tag on those text targets.",
+      "columns": {
+        "name": "Name",
+        "description": "Description",
+        "textTargets": "Text targets",
+        "actions": "Actions"
+      },
+      "create": "Add word type",
+      "edit": "Edit",
+      "delete": "Delete",
+      "empty": "No word types yet.",
+      "loadError": "Could not load word types. Try again later.",
+      "dialog": {
+        "createTitle": "Add word type",
+        "editTitle": "Edit word type",
+        "name": "Name",
+        "nameHint": "Enter a name, 1 to 100 characters.",
+        "description": "Description",
+        "descriptionHint": "Enter a description, 1 to 500 characters.",
+        "cancel": "Cancel",
+        "save": "Save"
+      },
+      "deleteDialog": {
+        "title": "Delete {name}?",
+        "description": "Text targets with this word type keep their text but lose the tag.",
+        "confirm": "Delete word type",
+        "cancel": "Cancel"
+      },
+      "toast": {
+        "created": "Word type added",
+        "saved": "Word type saved",
+        "deleted": "Word type deleted",
+        "failed": "Something went wrong. Try again."
+      }
+    },
+    "system": {
+      "description": "Choose the AI provider and model the app uses for chat and audio. Unset values use the server env default.",
+      "loadError": "Could not load system settings. Please try again shortly.",
+      "sections": {
+        "ai": "AI settings",
+        "cache": "App caches"
+      },
+      "ai": {
+        "fields": {
+          "chatProvider": "Chat provider",
+          "chatModel": "Chat model",
+          "audioProvider": "Audio provider",
+          "audioModel": "Audio model"
+        },
+        "envDefault": "env default",
+        "providers": {
+          "gemini": "Gemini",
+          "openrouter": "OpenRouter",
+          "groq": "Groq",
+          "omniroute": "OmniRoute"
+        },
+        "save": "Save",
+        "reset": "Reset to env default"
+      },
+      "cache": {
+        "prefix": "Key prefix",
+        "count": "Keys",
+        "empty": "No cache keys found.",
+        "clear": "Clear app caches",
+        "confirm": {
+          "title": "Clear app caches?",
+          "description": "This deletes every key under the prefixes listed above, including sessions, queued jobs, job locks and daily quota counters. Users may be signed out, and work in progress may fail or run twice.",
+          "confirm": "Clear caches",
+          "cancel": "Cancel"
+        }
+      },
+      "toast": {
+        "saved": "AI setting saved",
+        "reset": "AI setting reset to env default",
+        "cleared": "App caches cleared",
+        "failed": "Could not update system settings"
+      }
+    }
   }
 }

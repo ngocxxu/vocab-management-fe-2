@@ -7,7 +7,7 @@ import { tooltip } from '@tanstack/charts/tooltip';
 import { Chart } from '@tanstack/react-charts/tooltip';
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
-import { renderChartTooltipBody } from '@/features/dashboard/ui/ChartTooltipBody';
+import { renderChartTooltipBody } from '@/components/shared/ChartTooltipBody';
 
 type FsrsBarChartProps = Readonly<{
   title: string;

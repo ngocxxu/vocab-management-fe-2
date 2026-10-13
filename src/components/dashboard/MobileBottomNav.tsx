@@ -10,6 +10,7 @@ import {
   Library,
   MenuDots,
   Power,
+  ShieldUser,
   SquareAcademicCap,
   User,
 } from '@solar-icons/react/ssr';
@@ -18,6 +19,7 @@ import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { signoutClient } from '@/utils/auth-utils';
+import { isAdmin } from '@/utils/is-admin';
 import { logger } from '@/libs/Logger';
 import {
   Drawer,
@@ -38,6 +40,7 @@ const moreItems: MenuItem[] = [
   { id: 'subjects', path: '/subjects', labelKey: 'nav.subjects', icon: <Bookmark size={20} weight="BoldDuotone" /> },
   { id: 'notifications', path: '/notifications', labelKey: 'nav.notifications', icon: <Bell size={20} weight="BoldDuotone" /> },
   { id: 'api-keys', path: '/api-keys', labelKey: 'nav.apiKeys', icon: <Key size={20} weight="BoldDuotone" /> },
+  { id: 'admin', path: '/admin', labelKey: 'nav.admin', icon: <ShieldUser size={20} weight="BoldDuotone" /> },
 ];
 
 // ponytail: exam routes get full-screen real estate, tab bar would eat the tight mobile viewport
@@ -65,7 +68,7 @@ export function MobileBottomNav({ user }: MobileBottomNavProps) {
 
   const isMoreActive = moreItems.some(item => isActivePath(item.path));
 
-  const visibleMoreItems = moreItems.filter(item => item.id !== 'api-keys' || user?.role !== 'GUEST');
+  const visibleMoreItems = moreItems.filter(item => (item.id !== 'api-keys' || user?.role !== 'GUEST') && (item.id !== 'admin' || isAdmin(user)));
 
   const handleSignOut = () => {
     signoutClient('/signin').catch(error => logger.error('Sign out failed:', { error }));

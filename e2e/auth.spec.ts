@@ -1,17 +1,11 @@
 import { expect, test } from '@playwright/test';
-import { API, AUTH_SPEC_USER, FORM_ALERT } from './fixtures';
+import { AUTH_SPEC_USER, FORM_ALERT } from './fixtures';
+import { signUpViaApi } from './signup';
 
 // These specs start logged out; the saved session is only for the other specs.
 test.use({ storageState: { cookies: [], origins: [] } });
 
-test.beforeAll(async ({ playwright }) => {
-  const api = await playwright.request.newContext();
-  const response = await api.post(`${API}/auth/signup`, {
-    data: { ...AUTH_SPEC_USER, phone: '', avatar: '', role: 'GUEST' },
-  });
-  expect(response.ok(), await response.text()).toBe(true);
-  await api.dispose();
-});
+test.beforeAll(() => signUpViaApi(AUTH_SPEC_USER));
 
 test('redirects a logged out visit to /dashboard to the signin page', async ({ page }) => {
   await page.goto('/dashboard');
