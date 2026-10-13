@@ -67,13 +67,14 @@ type TAiSettingFieldProps = Readonly<{
 export function AiSettingField({ settingKey, control, label, stored, isPending, onSave }: TAiSettingFieldProps) {
   const t = useTranslations('admin.system.ai');
   const id = useId();
+  const labelId = useId();
   const [draft, setDraft] = useState(stored ?? '');
   const nextValue = toSettingValue(draft);
   const isChanged = isSettingChanged(draft, stored);
 
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4">
-      <Label htmlFor={id}>{label}</Label>
+    <div role="group" aria-labelledby={labelId} className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4">
+      <Label id={labelId} htmlFor={id}>{label}</Label>
       {control === 'provider'
         ? <ProviderControl id={id} draft={draft} onChange={setDraft} />
         : <ModelControl id={id} draft={draft} onChange={setDraft} />}
