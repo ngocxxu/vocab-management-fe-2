@@ -1,41 +1,36 @@
 import { expect, test } from '@playwright/test';
-import { AUTH_SPEC_USER, FORM_ALERT } from './fixtures';
-import { signUpViaApi } from './signup';
+import { loginWithAuth0 } from './auth0';
+import { E2E_AUTH0_USER } from './fixtures';
 
 // These specs start logged out; the saved session is only for the other specs.
 test.use({ storageState: { cookies: [], origins: [] } });
 
-test.beforeAll(() => signUpViaApi(AUTH_SPEC_USER));
-
-test('redirects a logged out visit to /dashboard to the signin page', async ({ page }) => {
+test('sends a logged out visit to /dashboard to Auth0 login', async ({ page }) => {
   await page.goto('/dashboard');
 
-  await expect(page).toHaveURL(/\/signin\?redirect=%2Fdashboard/);
+  await expect(page.getByLabel(/^Email address/)).toBeVisible();
+  await expect(page).toHaveURL(/\.auth0\.com\//);
 });
 
-test('shows an error and stays on signin for a wrong password', async ({ page }) => {
-  await page.goto('/signin');
+test('stays on Auth0 login with an error for a wrong password', async ({ page }) => {
+  await page.goto('/api/auth/login?redirect=%2Fdashboard');
 
-  await page.getByLabel('Email Address').fill(AUTH_SPEC_USER.email);
-  await page.getByLabel('Password', { exact: true }).fill('not-the-password');
-  await page.getByRole('button', { name: /Sign In to Dashboard/ }).click();
+  await page.getByLabel(/^Email address/).fill(E2E_AUTH0_USER.email);
+  await page.getByLabel(/^Password/).fill('not-the-password');
+  await page.getByRole('button', { name: 'Continue', exact: true }).click();
 
-  await expect(page.locator(FORM_ALERT)).toBeVisible();
-  await expect(page).toHaveURL(/\/signin/);
+  await expect(page.getByText(/wrong email or password/i)).toBeVisible();
+  await expect(page).toHaveURL(/\.auth0\.com\//);
 });
 
 test('signs in, reaches the dashboard, then signs out', async ({ page }) => {
-  await page.goto('/signin');
-
-  await page.getByLabel('Email Address').fill(AUTH_SPEC_USER.email);
-  await page.getByLabel('Password', { exact: true }).fill(AUTH_SPEC_USER.password);
-  await page.getByRole('button', { name: /Sign In to Dashboard/ }).click();
-  await page.waitForURL('**/dashboard**');
+  await loginWithAuth0(page, E2E_AUTH0_USER);
 
   // Header and sidebar both render a "Sign out" button; click the visible one.
   await page.getByRole('button', { name: 'Sign out' }).filter({ visible: true }).first().click();
-  await page.waitForURL(url => !url.pathname.startsWith('/dashboard'));
+  // Sign-out ends the Auth0 session too, and Auth0 returns the browser to the app root.
+  await page.waitForURL(url => url.pathname === '/' && url.hostname === 'localhost');
 
   await page.goto('/dashboard');
-  await expect(page).toHaveURL(/\/signin/);
+  await expect(page.getByLabel(/^Email address/)).toBeVisible();
 });

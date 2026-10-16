@@ -1,11 +1,10 @@
 import type { NextFetchEvent, NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { getRefreshLock, getRefreshLockKey, performRefresh } from '@/libs/refresh-lock';
+import { LOGIN_PATH } from '@/constants/auth';
 import { AUTH_COOKIE_OPTIONS, REFRESH_COOKIE_OPTIONS } from '@/utils/auth-cookies';
 
 const PROTECTED = ['/dashboard', '/library', '/vocab-list', '/vocab-trainer', '/profile', '/subjects', '/notifications', '/admin'];
-const AUTH_ROUTES = ['/signin', '/signup', '/forgot-password'];
-const PUBLIC_ROUTES = ['/auth/callback'];
 const REFRESH_THRESHOLD = 60;
 
 type Session = { access_token: string; refresh_token: string };
@@ -88,40 +87,30 @@ function withRefreshedSession(request: NextRequest, session: Session): NextRespo
   return setAuthCookies(NextResponse.next({ request: { headers } }), session);
 }
 
+function loginRedirect(request: NextRequest, path: string): NextResponse {
+  const url = new URL(LOGIN_PATH, request.url);
+  url.searchParams.set('redirect', getSafeRedirectPath(path, path));
+  return NextResponse.redirect(url);
+}
+
 export default async function proxy(request: NextRequest, _event: NextFetchEvent) {
   const { pathname } = request.nextUrl;
 
-  const isProtected = PROTECTED.some(r => pathname.startsWith(r));
-  const isAuth = AUTH_ROUTES.some(r => pathname.startsWith(r));
-
-  if (PUBLIC_ROUTES.some(r => pathname.startsWith(r))) {
+  if (!PROTECTED.some(r => pathname.startsWith(r))) {
     return NextResponse.next();
   }
 
   const token = request.cookies.get('accessToken')?.value;
   const refreshToken = request.cookies.get('refreshToken')?.value;
+  const returnTo = `${pathname}${request.nextUrl.search}`;
 
-  // Clear cookies on expired session redirect
-  if (isAuth && request.nextUrl.searchParams.get('expired') === '1') {
-    return clearAuthCookies(NextResponse.next());
-  }
-
-  // Attempt token refresh
-  if ((isProtected || isAuth) && refreshToken && shouldRefresh(token, request)) {
+  if (refreshToken && shouldRefresh(token, request)) {
     const lockKey = getRefreshLockKey(token, refreshToken);
-    const sessionDto = await getRefreshLock(lockKey).getOrRefresh(
+    const session = await getRefreshLock(lockKey).getOrRefresh(
       () => performRefresh(refreshToken),
     );
 
-    const session = sessionDto
-      ? { access_token: sessionDto.access_token, refresh_token: sessionDto.refresh_token }
-      : null;
-
     if (session) {
-      if (isAuth) {
-        const redirectUrl = getSafeRedirectPath(request.nextUrl.searchParams.get('redirect'), '/dashboard');
-        return setAuthCookies(NextResponse.redirect(new URL(redirectUrl, request.url)), session);
-      }
       return withRefreshedSession(request, session);
     }
 
@@ -129,31 +118,14 @@ export default async function proxy(request: NextRequest, _event: NextFetchEvent
     // If the access token still exists and is not expired, keep this request alive instead
     // of clearing cookies because another concurrent request may have already refreshed.
     if (token && !isTokenExpired(token)) {
-      if (isAuth) {
-        const redirectUrl = getSafeRedirectPath(request.nextUrl.searchParams.get('redirect'), '/dashboard');
-        return NextResponse.redirect(new URL(redirectUrl, request.url));
-      }
       return NextResponse.next();
     }
 
-    if (isProtected) {
-      const url = new URL('/signin', request.url);
-      url.searchParams.set('redirect', getSafeRedirectPath(`${pathname}${request.nextUrl.search}`, pathname));
-      return clearAuthCookies(NextResponse.redirect(url));
-    }
-
-    return clearAuthCookies(NextResponse.next());
+    return clearAuthCookies(loginRedirect(request, returnTo));
   }
 
-  if (isProtected && !token) {
-    const url = new URL('/signin', request.url);
-    url.searchParams.set('redirect', getSafeRedirectPath(`${pathname}${request.nextUrl.search}`, pathname));
-    return NextResponse.redirect(url);
-  }
-
-  if (isAuth && token) {
-    const redirectUrl = getSafeRedirectPath(request.nextUrl.searchParams.get('redirect'), '/dashboard');
-    return NextResponse.redirect(new URL(redirectUrl, request.url));
+  if (!token) {
+    return loginRedirect(request, returnTo);
   }
 
   return NextResponse.next();

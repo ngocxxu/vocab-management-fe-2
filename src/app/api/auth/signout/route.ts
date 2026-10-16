@@ -1,19 +1,19 @@
+import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import { buildLogoutUrl, getAppOrigin, getAuth0Config } from '@/libs/auth0';
 import { logger } from '@/libs/Logger';
-import { API_ENDPOINTS } from '@/utils/api-config';
-import { serverApi } from '@/utils/server-api';
 
-export async function POST() {
+// POST /api/auth/signout - clear the session cookies and hand back the Auth0 logout URL so the browser ends the SSO session too
+export function POST(request: NextRequest) {
+  let logoutUrl: string | undefined;
   try {
-    await serverApi.post<{ message: string }>(API_ENDPOINTS.auth.signout, {});
+    logoutUrl = buildLogoutUrl(getAuth0Config(), `${getAppOrigin(request.nextUrl.origin)}/`);
   } catch (error) {
-    const status = error && typeof error === 'object' && 'statusCode' in error ? (error as { statusCode: number }).statusCode : 0;
-    if (status !== 401 && status !== 403) {
-      logger.error('Signout error:', { error });
-    }
+    // Not fatal: the local session still ends, only the Auth0 SSO session survives.
+    logger.error('Auth0 logout URL unavailable:', { error });
   }
 
-  const response = NextResponse.json({ message: 'Successfully signed out' });
+  const response = NextResponse.json({ message: 'Successfully signed out', logoutUrl });
   const clearOpts = {
     path: '/',
     maxAge: 0,

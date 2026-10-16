@@ -116,7 +116,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ currentUser, currentPl
         <div className="min-w-0">
           {panel('account', <ProfileIdentity currentUser={currentUser} currentPlan={currentPlan} />)}
           {srsSettings && panel('spaced-repetition', <SrsDefaultsSection settings={srsSettings} onDirtyChange={setIsSrsDirty} />)}
-          {panel('security', <ProfileSecurity hasPassword={currentUser?.hasPassword ?? false} />)}
+          {panel('security', <ProfileSecurity />)}
           {panel('plan', <ProfilePlan role={currentUser?.role ?? ''} currentPlan={currentPlan} />)}
           {panel('danger', <ProfileDangerZone />)}
         </div>

@@ -1,9 +1,9 @@
 'use client';
 
+import { SIGNUP_PATH } from '@/constants/auth';
 import type { TPlan } from '@/types/plan';
 import { getPlanBadgeClassName, getPlanTextClassName } from '@/constants/plan';
 import { cn } from '@/libs/utils';
-import Link from 'next/link';
 import { CheckCircle } from '@solar-icons/react/ssr';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
@@ -147,7 +147,7 @@ export function PlanCard({
                   </Button>
                 )
               : (
-                  <Link href="/signup" className="block">
+                  <a href={SIGNUP_PATH} className="block">
                     <Button
                       variant={isRecommended ? 'default' : 'outline'}
                       className={
@@ -159,7 +159,7 @@ export function PlanCard({
                     >
                       {isRecommended ? t('upgrade') : t('startFree')}
                     </Button>
-                  </Link>
+                  </a>
                 )}
       </div>
     </div>

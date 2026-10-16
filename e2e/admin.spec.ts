@@ -1,7 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 import { expect, test } from '@playwright/test';
 import { ADMIN_AUTH_FILE, TARGET_USER } from './fixtures';
-import { signUpViaApi } from './signup';
+import { insertMemberRow } from './db';
 
 // One admin session walks every admin area in order. Nothing signs out, so the last check proves the
 // session survived the whole run.
@@ -19,7 +19,7 @@ function userRow(page: Page): Locator {
   return page.getByRole('row').filter({ hasText: TARGET_USER.email });
 }
 
-test.beforeAll(() => signUpViaApi(TARGET_USER));
+test.beforeAll(() => insertMemberRow(TARGET_USER));
 
 test('the overview loads for an admin', async ({ page }) => {
   await page.goto('/admin');

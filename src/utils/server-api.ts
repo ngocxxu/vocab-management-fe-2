@@ -28,7 +28,6 @@ import type {
   TUpdateAdminUserInput,
 } from '@/types/admin';
 import type { TApiKey, TApiKeyResponse, TApiKeyScope, TCreateApiKeyResponse } from '@/types/api-key';
-import type { TChangePasswordData, TOAuthData, TOAuthResponse, TResendConfirmationData, TSessionDto, TSignUpResponse, TVerifyOtpData } from '@/types/auth';
 import type {
   TDeleteNotificationResponse,
   TMarkAllAsReadResponse,
@@ -163,53 +162,13 @@ export const serverApi = new ServerAPI();
 
 // Auth API endpoints
 export const authApi = {
-  signin: (data: { email: string; password: string }) => {
-    const config = API_METHODS.auth.signin(data);
-    return serverApi.post<TSessionDto>(config.endpoint, config.data);
-  },
-  signup: (data: { email: string; password: string; firstName: string; lastName: string; phone: string; avatar: string }) => {
-    const config = API_METHODS.auth.signup(data);
-    return serverApi.post<TSignUpResponse>(config.endpoint, config.data);
-  },
-  refresh: (data: { refreshToken: string }) => {
-    const config = API_METHODS.auth.refresh(data);
-    return serverApi.post<TSessionDto>(config.endpoint, config.data);
-  },
-  signout: () => {
-    const config = API_METHODS.auth.signout();
-    return serverApi.post<{ message: string }>(config.endpoint, {});
-  },
   deleteAccount: () => {
     const config = API_METHODS.auth.deleteAccount();
     return serverApi.delete<TUser>(config.endpoint);
   },
-  resetPassword: (data: { email: string }) => {
-    const config = API_METHODS.auth.resetPassword(data);
-    return serverApi.post<{ message: string }>(config.endpoint, config.data);
-  },
-  changePassword: (data: TChangePasswordData) => {
-    const config = API_METHODS.auth.changePassword(data);
-    return serverApi.post<{ message: string; session: TSessionDto }>(config.endpoint, config.data);
-  },
   verify: () => {
     const config = API_METHODS.auth.verify();
     return serverApi.get<TUser>(config.endpoint);
-  },
-  oauth: (data: TOAuthData) => {
-    const config = API_METHODS.auth.oauth(data);
-    return serverApi.post<TOAuthResponse>(config.endpoint, config.data);
-  },
-  oauthSync: (data: { accessToken: string; refreshToken: string }) => {
-    const config = API_METHODS.auth.oauthSync(data);
-    return serverApi.post<TSessionDto>(config.endpoint, config.data);
-  },
-  verifyOtp: (data: TVerifyOtpData) => {
-    const config = API_METHODS.auth.verifyOtp(data);
-    return serverApi.post<TSessionDto>(config.endpoint, config.data);
-  },
-  resendConfirmation: (data: TResendConfirmationData) => {
-    const config = API_METHODS.auth.resendConfirmation(data);
-    return serverApi.post<{ message: string }>(config.endpoint, config.data);
   },
 };
 

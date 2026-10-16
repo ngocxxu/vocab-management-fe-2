@@ -1,5 +1,6 @@
 'use client';
 
+import { SIGNUP_PATH } from '@/constants/auth';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
@@ -18,7 +19,7 @@ export default function LandingCta() {
             {t('body')}
           </p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4 2xl:mt-12">
-            <Link href="/signup">
+            <a href={SIGNUP_PATH}>
               <Button
                 size="lg"
                 variant="secondary"
@@ -26,7 +27,7 @@ export default function LandingCta() {
               >
                 {t('getStarted')}
               </Button>
-            </Link>
+            </a>
             <Link href="#pricing">
               <Button
                 size="lg"

@@ -45,8 +45,6 @@ export type TAdminUser = {
   /** ISO date string as sent by the API. */
   createdAt: string;
   updatedAt: string;
-  supabaseUserId: string;
-  hasPassword: boolean;
 };
 
 export type TAdminUsersQuery = {

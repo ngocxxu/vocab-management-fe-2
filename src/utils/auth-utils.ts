@@ -1,3 +1,4 @@
+import { LOGIN_PATH } from '@/constants/auth';
 import en from '@/locales/en.json';
 import vi from '@/locales/vi.json';
 import { DEFAULT_LOCALE, isLocale, LOCALE_COOKIE_NAME } from '@/i18n/config';
@@ -32,12 +33,11 @@ export const handleTokenExpiration = () => {
     });
   });
 
-  // Redirect to signin page after a short delay to allow toast to show
+  // Redirect to Auth0 login after a short delay to allow toast to show
   setTimeout(() => {
     // Preserve current URL with query params for redirect after login
     const currentPath = `${window.location.pathname}${window.location.search}`;
-    const signInUrl = `/signin?redirect=${encodeURIComponent(currentPath)}`;
-    window.location.href = signInUrl;
+    window.location.href = `${LOGIN_PATH}?redirect=${encodeURIComponent(currentPath)}`;
   }, 1000);
 };
 
@@ -53,10 +53,12 @@ export const signoutClient = async (redirectTo = '/'): Promise<void> => {
   try {
     const res = await fetch('/api/auth/signout', { method: 'POST', credentials: 'include' });
     if (!res.ok) {
-      const data = await res.json().catch(() => ({}));
-      throw new Error(typeof data?.error === 'string' ? data.error : 'Sign out failed');
+      const errorBody = await res.json().catch(() => ({}));
+      throw new Error(typeof errorBody?.error === 'string' ? errorBody.error : 'Sign out failed');
     }
-    globalThis.location.href = redirectTo;
+    const data = await res.json().catch(() => ({})) as { logoutUrl?: unknown };
+    // Auth0 ends its own session, then sends the browser back to the app root.
+    globalThis.location.href = typeof data.logoutUrl === 'string' ? data.logoutUrl : redirectTo;
   } finally {
     isSigningOut = false;
   }

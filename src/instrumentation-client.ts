@@ -2,7 +2,6 @@
 // The added config here will be used whenever a users loads a page in their browser.
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 import * as Sentry from '@sentry/nextjs';
-import * as Spotlight from '@spotlightjs/spotlight';
 
 import { version } from '../package.json';
 import { resolveSentry, resolveSentryEnvironment } from '@/libs/sentry-config';
@@ -88,10 +87,5 @@ Sentry.init({
     return event;
   },
 });
-
-// Local development overlay. Deliberately independent of the capture switch.
-if (process.env.NODE_ENV === 'development') {
-  Spotlight.init();
-}
 
 export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;

@@ -21,7 +21,7 @@ export const ProfileDangerZone: React.FC = () => {
       await deleteAccount();
       setIsDialogOpen(false);
       toast.success(t('deleted'));
-      router.push('/signin');
+      router.push('/');
     } catch (error) {
       toast.error(error instanceof Error ? error.message : tErrors('deleteAccount'));
     } finally {

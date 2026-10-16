@@ -1,8 +1,15 @@
+import fs from 'node:fs';
 import path from 'node:path';
 import { defineConfig, devices } from '@playwright/test';
 
-// One id per run; workers inherit it. The local Supabase auth DB is not reset between
-// runs, so specs build a unique user email from it.
+// Test-only Auth0 accounts live in .env.e2e. Next and the backend read that file themselves, but the
+// test runner does not, so load it here before any spec imports fixtures.
+const E2E_ENV = path.resolve(__dirname, '.env.e2e');
+if (fs.existsSync(E2E_ENV)) {
+  process.loadEnvFile(E2E_ENV);
+}
+
+// One id per run; workers inherit it. Target users are named from it, so reruns never collide.
 process.env.E2E_RUN_ID ??= String(Date.now());
 
 const BE_DIR = process.env.E2E_BE_DIR ?? path.resolve(__dirname, '../vocab-management-be-2');
@@ -31,7 +38,7 @@ export default defineConfig({
     {
       // Own build dir, so a `pnpm dev` already running in this folder does not hold the lock.
       command: 'E2E_DIST_DIR=.next-e2e pnpm exec dotenv -e .env.e2e -- next dev --turbopack --port 3101',
-      url: 'http://localhost:3101/signin',
+      url: 'http://localhost:3101/',
       reuseExistingServer: true,
       timeout: 180_000,
     },

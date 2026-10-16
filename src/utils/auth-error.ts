@@ -1,3 +1,4 @@
+import { LOGIN_PATH } from '@/constants/auth';
 import { BackendRequestError } from '@/utils/backend-request-error';
 
 export function isUnauthorizedError(error: unknown): boolean {
@@ -23,10 +24,7 @@ export function hasUnauthorizedError(errors: unknown[]): boolean {
 }
 
 export function getExpiredSessionRedirect(path: string): string {
-  const params = new URLSearchParams({
-    redirect: path,
-    expired: '1',
-  });
+  const params = new URLSearchParams({ redirect: path });
 
-  return `/signin?${params.toString()}`;
+  return `${LOGIN_PATH}?${params.toString()}`;
 }

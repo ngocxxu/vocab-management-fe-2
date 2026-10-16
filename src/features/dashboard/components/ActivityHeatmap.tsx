@@ -2,11 +2,11 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ACTIVITY_CALENDAR_THEME } from '../utils/activityCalendarTheme';
+import { buildActivityTooltipLabels } from '../utils/activityTooltipLabels';
 import { getCalendarYearDateRange } from '../utils/dateRange';
 import { mapProgressToCalendarActivities } from '../utils/mapProgressToCalendarActivities';
 import { useTheme } from '@/hooks/useTheme';
 import type { TProgressOverTime } from '@/types/statistics';
-import { parseISO } from 'date-fns';
 import { useLocale, useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 import { ActivityCalendar } from 'react-activity-calendar';
@@ -44,12 +44,13 @@ export function ActivityHeatmap({ progress }: TActivityHeatmapProps) {
   const totalSessions = activities.reduce((sum, activity) => sum + activity.count, 0);
   const colorScheme = mounted && theme === 'dark' ? 'dark' : 'light';
 
-  const formatActivityTooltip = (date: string, count: number): string => {
-    const label = parseISO(date).toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric' });
-    return count === 0
-      ? t('none', { date: label })
-      : t('session', { date: label, count });
-  };
+  const tooltipLabels = useMemo(
+    () => buildActivityTooltipLabels(activities, locale, (dateLabel, count) =>
+      count === 0
+        ? t('none', { date: dateLabel })
+        : t('session', { date: dateLabel, count })),
+    [activities, locale, t],
+  );
 
   return (
     <Card className="flex h-full flex-col overflow-hidden border-0 bg-card shadow-sm">
@@ -79,7 +80,7 @@ export function ActivityHeatmap({ progress }: TActivityHeatmapProps) {
             }}
             tooltips={{
               activity: {
-                text: activity => formatActivityTooltip(activity.date, activity.count),
+                text: activity => tooltipLabels.get(activity.date) ?? '',
               },
             }}
           />

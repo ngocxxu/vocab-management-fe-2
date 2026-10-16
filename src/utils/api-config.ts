@@ -2,13 +2,6 @@ import type { EQuestionType } from '@/enum/vocab-trainer';
 import type { TAdminUserRole, TAdminUsersQuery, TBroadcastPayload, TCreateAdminPlanInput, TUpdateAdminPlanInput, TUpdateAdminUserInput } from '@/types/admin';
 import type { GenerateUploadSignatureInput } from '@/types/cloudinary';
 import type {
-  TChangePasswordData,
-  TOAuthData,
-  TOAuthSyncInput,
-  TResendConfirmationData,
-  TVerifyOtpData,
-} from '@/types/auth';
-import type {
   TNotificationInput,
   TUpdateNotificationStatusInput,
 } from '@/types/notification';
@@ -118,18 +111,11 @@ export const API_ENDPOINTS = {
     wordTypes: '/admin/word-types',
   },
   auth: {
-    signin: '/auth/signin',
-    signup: '/auth/signup',
     refresh: '/auth/refresh',
     signout: '/auth/signout',
     deleteAccount: '/users/me',
-    resetPassword: '/auth/reset-password',
-    changePassword: '/auth/change-password',
     verify: '/auth/verify',
-    oauth: '/auth/oauth',
-    oauthSync: '/auth/oauth/sync',
-    verifyOtp: '/auth/verify-otp',
-    resendConfirmation: '/auth/resend-confirmation',
+    sync: '/auth/sync',
   },
   vocabs: '/vocabs',
   textTargets: '/vocabs/:vocabId/text-targets',
@@ -177,18 +163,10 @@ export const API_METHODS = {
     },
   },
   auth: {
-    signin: (data: { email: string; password: string }) => ({ endpoint: API_ENDPOINTS.auth.signin, data }),
-    signup: (data: { email: string; password: string; firstName: string; lastName: string; phone: string; avatar: string }) => ({ endpoint: API_ENDPOINTS.auth.signup, data }),
     refresh: (data: { refreshToken: string }) => ({ endpoint: API_ENDPOINTS.auth.refresh, data }),
     signout: () => ({ endpoint: API_ENDPOINTS.auth.signout }),
     deleteAccount: () => ({ endpoint: API_ENDPOINTS.auth.deleteAccount }),
-    resetPassword: (data: { email: string }) => ({ endpoint: API_ENDPOINTS.auth.resetPassword, data }),
-    changePassword: (data: TChangePasswordData) => ({ endpoint: API_ENDPOINTS.auth.changePassword, data }),
     verify: () => ({ endpoint: API_ENDPOINTS.auth.verify }),
-    oauth: (data: TOAuthData) => ({ endpoint: API_ENDPOINTS.auth.oauth, data }),
-    oauthSync: (data: TOAuthSyncInput) => ({ endpoint: API_ENDPOINTS.auth.oauthSync, data }),
-    verifyOtp: (data: TVerifyOtpData) => ({ endpoint: API_ENDPOINTS.auth.verifyOtp, data }),
-    resendConfirmation: (data: TResendConfirmationData) => ({ endpoint: API_ENDPOINTS.auth.resendConfirmation, data }),
   },
   vocabs: {
     getAll: (params?: VocabQueryParams) => {

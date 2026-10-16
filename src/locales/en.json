@@ -11,7 +11,6 @@
       "server": "Something went wrong on our side. Please try again later.",
       "tooManyRequests": "Too many requests. Please try again shortly."
     },
-    "updatePassword": "Failed to update password",
     "verifyOTP": "Failed to verify OTP",
     "updateWordType": "Failed to update word type",
     "updateVocabulary": "Failed to update vocabulary",
@@ -176,70 +175,11 @@
     "other": "Other"
   },
   "auth": {
-    "panel": {
-      "aiPowered": "AI-Powered Intelligence",
-      "headline": "Master any language with",
-      "headlineAccent": "Precision.",
-      "description": "Our neural-spaced repetition system adapts to your pace, ensuring 98% retention through science-backed algorithms.",
-      "retentionRate": "Retention Rate",
-      "globalLanguages": "Global Languages",
-      "copyright": "{year} Ngoc Quach. All rights reserved."
-    },
-    "common": {
-      "emailAddress": "Email Address",
-      "password": "Password",
-      "showPassword": "Show password",
-      "hidePassword": "Hide password",
-      "orContinueWithEmail": "OR CONTINUE WITH EMAIL",
-      "connecting": "Connecting...",
-      "spamHint": "If you don’t see the email in your inbox, please check your spam folder.",
-      "backToSignIn": "Back to sign in",
-      "checkYourEmail": "Check your email",
-      "signInLink": "Sign in"
-    },
-    "signIn": {
-      "title": "Welcome Back",
-      "subtitle": "Please enter your details to sign in.",
-      "forgotPassword": "Forgot password?",
-      "keepSignedIn": "Keep me signed in",
-      "submit": "Sign In to Dashboard",
-      "submitting": "Signing in...",
-      "noAccount": "Don’t have an account?",
-      "createAccount": "Create an account"
-    },
-    "signUp": {
-      "title": "Create Account",
-      "subtitle": "Sign up to get started with your vocabulary management.",
-      "firstName": "First Name",
-      "lastName": "Last Name",
-      "phoneOptional": "Phone (Optional)",
-      "createStrongPassword": "Create a strong password",
-      "confirmPassword": "Confirm Password",
-      "confirmYourPassword": "Confirm your password",
-      "submit": "Create Account",
-      "submitting": "Creating Account...",
-      "alreadyHaveAccount": "Already have an account?",
-      "confirmationSent": "We’ve sent a confirmation link to <strong>{email}</strong>. Click the link to activate your account.",
-      "resend": "Resend email",
-      "resendSending": "Sending...",
-      "resendSent": "Email sent"
-    },
-    "forgotPassword": {
-      "title": "Forgot Password",
-      "subtitle": "Enter your email address and we’ll send you a link to reset your password.",
-      "submit": "Send Reset Link",
-      "submitting": "Sending...",
-      "rememberPassword": "Remember your password?",
-      "sentTo": "We’ve sent a password reset link to <strong>{email}</strong>.",
-      "sendAnother": "Send another email"
-    },
     "errors": {
-      "signIn": "Failed to sign in. Please try again.",
-      "signUp": "Failed to sign up. Please try again.",
-      "resendConfirmation": "Failed to resend confirmation email. Please try again.",
-      "provider": "Failed to sign in with provider. Please try again.",
-      "originUnavailable": "Origin URL could not be determined.",
-      "resetPassword": "Failed to send reset email. Please try again."
+      "login_failed": "Sign-in failed. Please try again.",
+      "email_not_verified": "Please verify your email address first, then sign in again.",
+      "account_link_required": "An account with this email already exists. Ask an admin to link your login.",
+      "auth_not_configured": "Sign-in is not available right now. Please try again later."
     },
     "sessionExpired": {
       "title": "Session expired",
@@ -247,6 +187,7 @@
     }
   },
   "shell": {
+    "loading": "Loading...",
     "nav": {
       "dashboard": "Dashboard",
       "library": "Library",
@@ -319,12 +260,6 @@
     "security": {
       "title": "Security",
       "description": "How you sign in and how your account is protected.",
-      "passwordLabel": "Password",
-      "setPasswordLabel": "Set a password",
-      "updateHint": "Update the password you use to sign in.",
-      "addHint": "Add a password so you can also sign in with email and password.",
-      "changePassword": "Change password",
-      "setPassword": "Set password",
       "twoFactor": "Two-factor authentication",
       "twoFactorHint": "Ask for a verification code when you sign in. Coming soon."
     },
@@ -350,23 +285,6 @@
       "cancel": "Cancel",
       "deleting": "Deleting...",
       "confirm": "Delete Permanently"
-    },
-    "password": {
-      "changeTitle": "Change Password",
-      "setTitle": "Set Password",
-      "changeDescription": "Enter your current password and choose a new one.",
-      "setDescription": "Add a password to your account so you can also sign in with email and password.",
-      "currentPassword": "Current Password",
-      "newPassword": "New Password",
-      "confirmNewPassword": "Confirm New Password",
-      "showPassword": "Show password",
-      "hidePassword": "Hide password",
-      "cancel": "Cancel",
-      "saving": "Saving...",
-      "update": "Update Password",
-      "set": "Set Password",
-      "changedToast": "Password changed successfully",
-      "setToast": "Password set successfully"
     },
     "srs": {
       "title": "Spaced repetition",
@@ -1073,12 +991,6 @@
       "privacy": "Privacy",
       "terms": "Terms"
     }
-  },
-  "authCallback": {
-    "failed": "Failed to complete sign in",
-    "redirecting": "Redirecting to sign in page...",
-    "completing": "Completing sign in...",
-    "loading": "Loading..."
   },
   "support": {
     "trigger": "Support",
@@ -1926,7 +1838,7 @@
       },
       "deleteDialog": {
         "title": "Delete this user?",
-        "description": "This removes {email} from Supabase and from the database. It cannot be undone.",
+        "description": "This removes {email} from authentication and from the database. It cannot be undone.",
         "typeEmail": "Type {email} to confirm",
         "confirm": "Delete user",
         "cancel": "Cancel"

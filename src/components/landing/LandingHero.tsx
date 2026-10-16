@@ -1,7 +1,7 @@
 'use client';
 
+import { LOGIN_PATH, SIGNUP_PATH } from '@/constants/auth';
 import { Chart, QuestionCircle, SquareAcademicCap } from '@solar-icons/react/ssr';
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -29,15 +29,15 @@ export default function LandingHero() {
           {t('subtitle')}
         </p>
         <div className="flex flex-wrap items-center justify-center gap-3 xl:gap-4">
-          <Link href="/signup">
+          <a href={SIGNUP_PATH}>
             <Button
               size="lg"
               className="h-12 rounded-full px-8 font-semibold shadow-sm xl:h-14 xl:px-10 xl:text-base 2xl:h-16 2xl:px-12 2xl:text-lg"
             >
               {t('createAccount')}
             </Button>
-          </Link>
-          <Link href="/signin">
+          </a>
+          <a href={LOGIN_PATH}>
             <Button
               size="lg"
               variant="outline"
@@ -45,7 +45,7 @@ export default function LandingHero() {
             >
               {t('signIn')}
             </Button>
-          </Link>
+          </a>
         </div>
       </div>
 

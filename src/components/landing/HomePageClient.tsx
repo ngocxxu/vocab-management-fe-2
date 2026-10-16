@@ -3,7 +3,9 @@
 import type { TPlan } from '@/types/plan';
 import type { TUser } from '@/types/auth';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import { verifyUser } from '@/actions';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useTheme } from '@/hooks/useTheme';
@@ -15,8 +17,11 @@ import LandingHero from '@/components/landing/LandingHero';
 import LandingPricing from '@/components/landing/LandingPricing';
 import MethodologySection from '@/components/landing/MethodologySection';
 
+const KNOWN_AUTH_ERRORS = new Set(['login_failed', 'email_not_verified', 'account_link_required', 'auth_not_configured']);
+
 export default function HomePageClient({ initialPlans }: Readonly<{ initialPlans: TPlan[] }>) {
   const router = useRouter();
+  const tAuth = useTranslations('auth');
   const { theme, mounted } = useTheme();
   const [user, setUser] = useState<TUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -34,6 +39,16 @@ export default function HomePageClient({ initialPlans }: Readonly<{ initialPlans
     };
     loadUser();
   }, []);
+
+  // /api/auth/callback sends failed logins back here as ?auth_error=<code>.
+  useEffect(() => {
+    const code = new URLSearchParams(globalThis.location.search).get('auth_error');
+    if (!code) {
+      return;
+    }
+    toast.error(tAuth(`errors.${KNOWN_AUTH_ERRORS.has(code) ? code : 'login_failed'}`));
+    router.replace('/');
+  }, [router, tAuth]);
 
   useEffect(() => {
     if (!isLoading && user) {
