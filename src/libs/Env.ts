@@ -11,6 +11,12 @@ export const Env = createEnv({
     // unset Docker ARG arrives as '', which enum().optional() rejects, and a
     // Docker build must not fail just because the switch was left off.
     SENTRY_ENABLED: z.string().optional(),
+    // Auth0 Regular Web Application. The secret never reaches the browser; AUTH0_DOMAIN is the tenant domain
+    // (e.g. vocab-development.jp.auth0.com) and AUTH0_AUDIENCE must equal the BE's AUTH0_AUDIENCE.
+    AUTH0_DOMAIN: z.string().optional(),
+    AUTH0_CLIENT_ID: z.string().optional(),
+    AUTH0_CLIENT_SECRET: z.string().optional(),
+    AUTH0_AUDIENCE: z.string().optional(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.string().optional(),
@@ -50,6 +56,10 @@ export const Env = createEnv({
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     SENTRY_ENABLED: process.env.SENTRY_ENABLED,
+    AUTH0_DOMAIN: process.env.AUTH0_DOMAIN,
+    AUTH0_CLIENT_ID: process.env.AUTH0_CLIENT_ID,
+    AUTH0_CLIENT_SECRET: process.env.AUTH0_CLIENT_SECRET,
+    AUTH0_AUDIENCE: process.env.AUTH0_AUDIENCE,
     NEXT_PUBLIC_SENTRY_ENABLED: process.env.NEXT_PUBLIC_SENTRY_ENABLED,
     NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
     NEXT_PUBLIC_SENTRY_ENVIRONMENT: process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT,

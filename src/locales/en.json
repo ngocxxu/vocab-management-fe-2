@@ -195,21 +195,22 @@
       "spamHint": "If you don’t see the email in your inbox, please check your spam folder.",
       "backToSignIn": "Back to sign in",
       "checkYourEmail": "Check your email",
-      "signInLink": "Sign in"
+      "signInLink": "Sign in",
+      "continueWithGoogle": "Continue with Google"
     },
     "signIn": {
       "title": "Welcome Back",
-      "subtitle": "Please enter your details to sign in.",
+      "subtitle": "Continue to sign in securely.",
       "forgotPassword": "Forgot password?",
       "keepSignedIn": "Keep me signed in",
-      "submit": "Sign In to Dashboard",
+      "submit": "Sign in",
       "submitting": "Signing in...",
       "noAccount": "Don’t have an account?",
       "createAccount": "Create an account"
     },
     "signUp": {
       "title": "Create Account",
-      "subtitle": "Sign up to get started with your vocabulary management.",
+      "subtitle": "Continue to create your account securely.",
       "firstName": "First Name",
       "lastName": "Last Name",
       "phoneOptional": "Phone (Optional)",
@@ -239,7 +240,11 @@
       "resendConfirmation": "Failed to resend confirmation email. Please try again.",
       "provider": "Failed to sign in with provider. Please try again.",
       "originUnavailable": "Origin URL could not be determined.",
-      "resetPassword": "Failed to send reset email. Please try again."
+      "resetPassword": "Failed to send reset email. Please try again.",
+      "login_failed": "Sign-in failed. Please try again.",
+      "email_not_verified": "Please verify your email address first, then sign in again.",
+      "account_link_required": "An account with this email already exists. Ask an admin to link your login.",
+      "auth_not_configured": "Sign-in is not available right now. Please try again later."
     },
     "sessionExpired": {
       "title": "Session expired",

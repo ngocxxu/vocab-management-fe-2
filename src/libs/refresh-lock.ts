@@ -1,7 +1,6 @@
-import type { TSessionDto } from '@/types/auth';
-import { Env } from '@/libs/Env';
+import type { TRefreshedSession } from '@/types/auth';
+import { getAuth0Config, refreshTokens } from '@/libs/auth0';
 import { logger } from '@/libs/Logger';
-import { API_ENDPOINTS } from '@/utils/api-config';
 
 const DEDUP_WINDOW_MS = 5_000;
 const PROMISE_TIMEOUT_MS = 10_000;
@@ -30,22 +29,6 @@ function decodeJwtPayload(token: string): TJwtPayload | null {
   } catch {
     return null;
   }
-}
-
-function isValidSession(data: unknown): data is TSessionDto {
-  if (!data || typeof data !== 'object') {
-    return false;
-  }
-
-  const session = data as Partial<TSessionDto>;
-  return (
-    typeof session.access_token === 'string'
-    && session.access_token.length > 0
-    && typeof session.refresh_token === 'string'
-    && session.refresh_token.length > 0
-    && !!session.user
-    && typeof session.user === 'object'
-  );
 }
 
 export function getRefreshLockKey(accessToken?: string, refreshToken?: string): string {
@@ -94,41 +77,15 @@ function extractErrorMessage(body: unknown): string {
   return '';
 }
 
-export async function performRefresh(refreshToken: string): Promise<TSessionDto | null> {
-  const baseURL = Env.NESTJS_API_URL || 'http://localhost:3002/api/v1';
-
+/** Swaps the refresh token at Auth0. Null means the session is over (revoked, expired, reused) or Auth0 is unreachable. */
+export async function performRefresh(refreshToken: string): Promise<TRefreshedSession | null> {
   try {
-    const response = await fetch(`${baseURL}${API_ENDPOINTS.auth.refresh}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refreshToken }),
-    });
-
-    const responseText = await response.text();
-    let data: unknown = {};
-
-    if (responseText) {
-      try {
-        data = JSON.parse(responseText) as unknown;
-      } catch {
-        data = { error: responseText };
-      }
-    }
-
-    if (!response.ok) {
-      logger.debug('[refresh-lock] Backend refresh failed', {
-        status: response.status,
-        reuse: isRefreshTokenReuseError(response.status, data),
-      });
+    const tokens = await refreshTokens(getAuth0Config(), refreshToken);
+    if (!tokens?.refreshToken) {
+      logger.debug('[refresh-lock] Auth0 refresh failed');
       return null;
     }
-
-    if (!isValidSession(data)) {
-      logger.warn('[refresh-lock] Backend returned invalid session shape');
-      return null;
-    }
-
-    return data;
+    return { access_token: tokens.accessToken, refresh_token: tokens.refreshToken };
   } catch (error) {
     logger.error('[refresh-lock] performRefresh error', { error });
     return null;
@@ -136,13 +93,13 @@ export async function performRefresh(refreshToken: string): Promise<TSessionDto 
 }
 
 export class RefreshLock {
-  private inflight: Promise<TSessionDto | null> | null = null;
-  private lastResult: TSessionDto | null = null;
+  private inflight: Promise<TRefreshedSession | null> | null = null;
+  private lastResult: TRefreshedSession | null = null;
   private lastResultAt = 0;
 
   async getOrRefresh(
-    doRefresh: () => Promise<TSessionDto | null>,
-  ): Promise<TSessionDto | null> {
+    doRefresh: () => Promise<TRefreshedSession | null>,
+  ): Promise<TRefreshedSession | null> {
     refreshMetrics.attempted += 1;
 
     if (

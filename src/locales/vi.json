@@ -195,21 +195,22 @@
       "spamHint": "Nếu bạn không thấy email trong hộp thư đến, hãy kiểm tra thư rác.",
       "backToSignIn": "Quay lại đăng nhập",
       "checkYourEmail": "Kiểm tra email của bạn",
-      "signInLink": "Đăng nhập"
+      "signInLink": "Đăng nhập",
+      "continueWithGoogle": "Tiếp tục với Google"
     },
     "signIn": {
       "title": "Chào mừng trở lại",
-      "subtitle": "Vui lòng nhập thông tin để đăng nhập.",
+      "subtitle": "Tiếp tục để đăng nhập an toàn.",
       "forgotPassword": "Quên mật khẩu?",
       "keepSignedIn": "Giữ tôi đăng nhập",
-      "submit": "Đăng nhập vào Bảng điều khiển",
+      "submit": "Đăng nhập",
       "submitting": "Đang đăng nhập...",
       "noAccount": "Chưa có tài khoản?",
       "createAccount": "Tạo tài khoản"
     },
     "signUp": {
       "title": "Tạo tài khoản",
-      "subtitle": "Đăng ký để bắt đầu quản lý từ vựng của bạn.",
+      "subtitle": "Tiếp tục để tạo tài khoản an toàn.",
       "firstName": "Tên",
       "lastName": "Họ",
       "phoneOptional": "Số điện thoại (không bắt buộc)",
@@ -239,7 +240,11 @@
       "resendConfirmation": "Không thể gửi lại email xác nhận. Vui lòng thử lại.",
       "provider": "Không thể đăng nhập bằng nhà cung cấp. Vui lòng thử lại.",
       "originUnavailable": "Không xác định được địa chỉ gốc.",
-      "resetPassword": "Không thể gửi email đặt lại mật khẩu. Vui lòng thử lại."
+      "resetPassword": "Không thể gửi email đặt lại mật khẩu. Vui lòng thử lại.",
+      "login_failed": "Đăng nhập thất bại. Vui lòng thử lại.",
+      "email_not_verified": "Vui lòng xác minh địa chỉ email trước, rồi đăng nhập lại.",
+      "account_link_required": "Đã có tài khoản với email này. Hãy nhờ quản trị viên liên kết tài khoản đăng nhập của bạn.",
+      "auth_not_configured": "Hiện chưa thể đăng nhập. Vui lòng thử lại sau."
     },
     "sessionExpired": {
       "title": "Phiên đăng nhập đã hết hạn",

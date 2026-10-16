@@ -65,15 +65,10 @@ export async function signout(): Promise<{ message: string }> {
   const accessToken = await getAccessToken();
   const refreshToken = await getRefreshToken();
 
-  try {
-    const result = await authApi.signout();
-    return result;
-  } catch (error) {
-    throw await toActionError(error, 'signOut');
-  } finally {
-    invalidateRefreshLock(accessToken, refreshToken);
-    await clearAuthCookies();
-  }
+  // Tokens are Auth0's now, so there is no backend session to end: clearing the cookies is the sign-out.
+  invalidateRefreshLock(accessToken, refreshToken);
+  await clearAuthCookies();
+  return { message: 'Successfully signed out' };
 }
 
 export async function refresh(refreshData: TRefreshData): Promise<{ message: string }> {

@@ -97,3 +97,6 @@ export type TSessionDto = {
   token_type: string;
   user: TUser;
 };
+
+/** What a refresh returns: only tokens, the user is not part of Auth0's token response. */
+export type TRefreshedSession = Pick<TSessionDto, 'access_token' | 'refresh_token'>;

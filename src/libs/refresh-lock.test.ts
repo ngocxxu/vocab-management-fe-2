@@ -1,4 +1,4 @@
-import type { TSessionDto } from '@/types/auth';
+import type { TRefreshedSession } from '@/types/auth';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   getRefreshLock,
@@ -13,13 +13,11 @@ import {
 vi.mock('@/libs/Logger', () => ({
   logger: { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() },
 }));
-vi.mock('@/libs/Env', () => ({ Env: { NESTJS_API_URL: 'http://be.test/api/v1' } }));
+vi.mock('@/libs/Env', () => ({
+  Env: { AUTH0_DOMAIN: 'tenant.example.auth0.com', AUTH0_CLIENT_ID: 'cid', AUTH0_CLIENT_SECRET: 'secret', AUTH0_AUDIENCE: 'https://api.test' },
+}));
 
-const session = {
-  access_token: 'access',
-  refresh_token: 'refresh',
-  user: { id: 'u1' },
-} as unknown as TSessionDto;
+const session: TRefreshedSession = { access_token: 'access', refresh_token: 'refresh' };
 
 function fakeJwt(payload: Record<string, unknown>): string {
   return `h.${btoa(JSON.stringify(payload))}.s`;
@@ -116,7 +114,7 @@ describe(RefreshLock, () => {
 
   it('does not cache a null result', async () => {
     const lock = new RefreshLock();
-    const doRefresh = vi.fn<() => Promise<TSessionDto | null>>()
+    const doRefresh = vi.fn<() => Promise<TRefreshedSession | null>>()
       .mockResolvedValueOnce(null)
       .mockResolvedValueOnce(session);
 
@@ -188,18 +186,26 @@ describe('performRefresh', () => {
     return fetchMock;
   }
 
-  it('posts the refresh token and returns a valid session', async () => {
-    const fetchMock = stubFetch(new Response(JSON.stringify(session), { status: 200 }));
+  it('swaps the refresh token at Auth0 and returns the rotated pair', async () => {
+    const fetchMock = stubFetch(new Response(JSON.stringify({ access_token: 'new-at', refresh_token: 'new-rt' }), { status: 200 }));
 
-    expect(await performRefresh('rt-1')).toEqual(session);
-    expect(fetchMock).toHaveBeenCalledWith('http://be.test/api/v1/auth/refresh', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refreshToken: 'rt-1' }),
+    expect(await performRefresh('rt-1')).toEqual({ access_token: 'new-at', refresh_token: 'new-rt' });
+    const [url, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
+    expect(url).toBe('https://tenant.example.auth0.com/oauth/token');
+    expect(JSON.parse(init.body as string)).toEqual({
+      client_id: 'cid',
+      client_secret: 'secret',
+      grant_type: 'refresh_token',
+      refresh_token: 'rt-1',
     });
   });
 
-  it('returns null for a response with the wrong shape', async () => {
+  it('keeps the old refresh token when rotation is off and Auth0 sends no new one', async () => {
+    stubFetch(new Response(JSON.stringify({ access_token: 'new-at' }), { status: 200 }));
+    expect(await performRefresh('rt-1')).toEqual({ access_token: 'new-at', refresh_token: 'rt-1' });
+  });
+
+  it('returns null for a response without an access token', async () => {
     stubFetch(new Response(JSON.stringify({ foo: 1 }), { status: 200 }));
     expect(await performRefresh('rt')).toBeNull();
   });
@@ -209,8 +215,8 @@ describe('performRefresh', () => {
     expect(await performRefresh('rt')).toBeNull();
   });
 
-  it('returns null for a failed status', async () => {
-    stubFetch(new Response(JSON.stringify({ message: 'Token already used' }), { status: 401 }));
+  it('returns null when Auth0 rejects the refresh token', async () => {
+    stubFetch(new Response(JSON.stringify({ error: 'invalid_grant' }), { status: 403 }));
     expect(await performRefresh('rt')).toBeNull();
   });
 

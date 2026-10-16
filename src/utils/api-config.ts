@@ -126,6 +126,7 @@ export const API_ENDPOINTS = {
     resetPassword: '/auth/reset-password',
     changePassword: '/auth/change-password',
     verify: '/auth/verify',
+    sync: '/auth/sync',
     oauth: '/auth/oauth',
     oauthSync: '/auth/oauth/sync',
     verifyOtp: '/auth/verify-otp',

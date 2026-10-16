@@ -1,13 +1,6 @@
-'use client';
+import { redirect } from 'next/navigation';
 
-import { Suspense } from 'react';
-import { Skeleton } from '@/shared/ui/skeleton';
-import { ForgotPasswordForm } from '@/features/auth/ui/ForgotPasswordForm';
-
+// Password reset is part of Auth0 Universal Login ("Forgot password?" on its login screen).
 export default function ForgotPasswordPage() {
-  return (
-    <Suspense fallback={<Skeleton className="h-screen w-full" />}>
-      <ForgotPasswordForm />
-    </Suspense>
-  );
+  redirect('/signin');
 }
