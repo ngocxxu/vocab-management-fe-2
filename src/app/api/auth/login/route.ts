@@ -31,6 +31,6 @@ export function GET(request: NextRequest) {
     return response;
   } catch (error) {
     logger.error('Auth0 login start failed:', { error });
-    return NextResponse.redirect(new URL('/signin?error=auth_not_configured', appOrigin));
+    return NextResponse.redirect(new URL('/?auth_error=auth_not_configured', appOrigin));
   }
 }

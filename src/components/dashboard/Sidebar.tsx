@@ -68,7 +68,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, isExpanded = 
   };
 
   const handleSignOut = () => {
-    signoutClient('/signin').catch(error => logger.error('Sign out failed:', { error }));
+    signoutClient('/').catch(error => logger.error('Sign out failed:', { error }));
   };
 
   return (

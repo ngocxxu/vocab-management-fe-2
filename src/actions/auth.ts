@@ -2,16 +2,8 @@
 
 import { cache } from 'react';
 import type {
-  TAuthResponse,
-  TChangePasswordData,
   TRefreshData,
-  TResendConfirmationData,
-  TResetPasswordData,
-  TSigninData,
-  TSignupData,
-  TSignUpResult,
   TUser,
-  TVerifyOtpData,
 } from '@/types/auth';
 import { logger } from '@/libs/Logger';
 import { getRefreshLock, getRefreshLockKey, invalidateRefreshLock, performRefresh } from '@/libs/refresh-lock';
@@ -20,46 +12,6 @@ import { isUnauthorizedError } from '@/utils/auth-error';
 import { isAdmin } from '@/utils/is-admin';
 import { authApi } from '@/utils/server-api';
 import { toActionError, translateError } from './utils';
-
-export async function signin(signinData: TSigninData): Promise<TAuthResponse> {
-  try {
-    const result = await authApi.signin(signinData);
-
-    // Set HttpOnly cookies with tokens from NestJS response
-    if (result.access_token && result.refresh_token) {
-      await setAuthCookies(result.access_token, result.refresh_token);
-    }
-
-    // Return user info (without tokens)
-    return {
-      user: result.user,
-      message: 'Signed in successfully',
-    };
-  } catch (error) {
-    throw await toActionError(error, 'signIn');
-  }
-}
-
-export async function signup(signupData: TSignupData): Promise<TSignUpResult> {
-  try {
-    const result = await authApi.signup(signupData);
-
-    if (!result.session) {
-      return { user: null, message: result.message };
-    }
-
-    // Set HttpOnly cookies with tokens from NestJS response
-    await setAuthCookies(result.session.access_token, result.session.refresh_token);
-
-    // Return user info (without tokens)
-    return {
-      user: result.session.user,
-      message: 'Signed up successfully',
-    };
-  } catch (error) {
-    throw await toActionError(error, 'signUp');
-  }
-}
 
 export async function signout(): Promise<{ message: string }> {
   const accessToken = await getAccessToken();
@@ -87,41 +39,6 @@ export async function refresh(refreshData: TRefreshData): Promise<{ message: str
     return { message: 'Token refreshed successfully' };
   } catch (error) {
     throw await toActionError(error, 'refreshToken');
-  }
-}
-
-export async function resetPassword(resetData: TResetPasswordData): Promise<{ message: string }> {
-  try {
-    const result = await authApi.resetPassword(resetData);
-    return result;
-  } catch (error) {
-    throw await toActionError(error, 'resetPassword');
-  }
-}
-
-export async function verifyOtp(verifyOtpData: TVerifyOtpData): Promise<TAuthResponse> {
-  try {
-    const result = await authApi.verifyOtp(verifyOtpData);
-
-    if (result.access_token && result.refresh_token) {
-      await setAuthCookies(result.access_token, result.refresh_token);
-    }
-
-    return {
-      user: result.user,
-      message: 'OTP verified successfully',
-    };
-  } catch (error) {
-    throw await toActionError(error, 'verifyOTP');
-  }
-}
-
-export async function resendConfirmation(data: TResendConfirmationData): Promise<{ message: string }> {
-  try {
-    const result = await authApi.resendConfirmation(data);
-    return result;
-  } catch (error) {
-    throw await toActionError(error, 'resendConfirmation');
   }
 }
 
@@ -188,47 +105,6 @@ export async function deleteAccount(): Promise<{ message: string }> {
   } finally {
     invalidateRefreshLock(accessToken, refreshToken);
     await clearAuthCookies();
-  }
-}
-
-export async function changePassword(data: TChangePasswordData): Promise<{ message: string }> {
-  await requireAuth();
-
-  try {
-    const result = await authApi.changePassword(data);
-    // Supabase revokes every existing session (including this one) when a password changes.
-    // The backend signs back in with the new password — adopt that fresh session so the user stays logged in.
-    await setAuthCookies(result.session.access_token, result.session.refresh_token);
-    return { message: result.message };
-  } catch (error) {
-    if (!isUnauthorizedError(error)) {
-      throw await toActionError(error, 'updatePassword');
-    }
-
-    // Access token expired between page load and submit — refresh and retry once (mirrors verifyUserImpl).
-    const token = await getAccessToken();
-    const refreshToken = await getRefreshToken();
-    if (!refreshToken) {
-      throw await toActionError(error, 'updatePassword');
-    }
-
-    const lockKey = getRefreshLockKey(token, refreshToken);
-    const session = await getRefreshLock(lockKey).getOrRefresh(
-      () => performRefresh(refreshToken),
-    );
-    if (!session) {
-      throw await toActionError(error, 'updatePassword');
-    }
-
-    await setAuthCookies(session.access_token, session.refresh_token);
-
-    try {
-      const result = await authApi.changePassword(data);
-      await setAuthCookies(result.session.access_token, result.session.refresh_token);
-      return { message: result.message };
-    } catch (retryError) {
-      throw await toActionError(retryError, 'updatePassword');
-    }
   }
 }
 

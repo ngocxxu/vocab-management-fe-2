@@ -5,7 +5,6 @@ import net from 'node:net';
 const SERVICES = [
   { name: 'postgres', port: 5433 },
   { name: 'redis', port: 6379 },
-  { name: 'supabase', port: 54321 },
 ];
 
 function isUp(port) {
@@ -33,6 +32,6 @@ for (const { name, port } of SERVICES) {
 
 if (down.length > 0) {
   console.error(`E2E preflight: ${down.join(', ')} is down.`);
-  console.error('In vocab-management-be-2 run: docker compose up -d postgres redis && supabase start');
+  console.error('In vocab-management-be-2 run: docker compose up -d postgres redis');
   process.exit(1);
 }

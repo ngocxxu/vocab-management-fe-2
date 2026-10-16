@@ -11,8 +11,6 @@ setup('sign up the e2e user and save the session', async ({ page }) => {
   await page.getByLabel('Confirm Password').fill(E2E_USER.password);
   await page.getByRole('button', { name: /Create Account/ }).click();
 
-  // A session means local Supabase has email confirmation off. If instead the page shows
-  // "We've sent a confirmation link", enable_confirmations is on in supabase/config.toml.
   await page.waitForURL('**/dashboard**');
   await expect(page).toHaveURL(/\/dashboard/);
 

@@ -1,5 +1,6 @@
 'use client';
 
+import { LOGIN_PATH, SIGNUP_PATH } from '@/constants/auth';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
@@ -49,15 +50,15 @@ export default function LandingHeader({ logoSrc }: Readonly<{ logoSrc: string }>
           </Link>
           <span className="h-4 w-px bg-border" aria-hidden />
           <LandingLocaleSwitch />
-          <Link
-            href="/signin"
+          <a
+            href={LOGIN_PATH}
             className="text-sm font-medium text-foreground hover:text-primary"
           >
             {t('signIn')}
-          </Link>
-          <Link href="/signup">
+          </a>
+          <a href={SIGNUP_PATH}>
             <Button className="rounded-xl shadow-sm">{t('getStarted')}</Button>
-          </Link>
+          </a>
         </nav>
       </div>
     </header>

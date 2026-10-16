@@ -1,3 +1,4 @@
+import { LOGIN_PATH } from '@/constants/auth';
 import en from '@/locales/en.json';
 import vi from '@/locales/vi.json';
 import { DEFAULT_LOCALE, isLocale, LOCALE_COOKIE_NAME } from '@/i18n/config';
@@ -32,12 +33,11 @@ export const handleTokenExpiration = () => {
     });
   });
 
-  // Redirect to signin page after a short delay to allow toast to show
+  // Redirect to Auth0 login after a short delay to allow toast to show
   setTimeout(() => {
     // Preserve current URL with query params for redirect after login
     const currentPath = `${window.location.pathname}${window.location.search}`;
-    const signInUrl = `/signin?redirect=${encodeURIComponent(currentPath)}`;
-    window.location.href = signInUrl;
+    window.location.href = `${LOGIN_PATH}?redirect=${encodeURIComponent(currentPath)}`;
   }, 1000);
 };
 

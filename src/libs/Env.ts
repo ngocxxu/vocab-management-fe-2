@@ -26,8 +26,6 @@ export const Env = createEnv({
     NEXT_PUBLIC_POSTHOG_HOST: z.string().optional(),
     NEXT_PUBLIC_API_URL: z.string().optional(),
     NEXT_PUBLIC_SOCKET_URL: z.string().optional(),
-    NEXT_PUBLIC_SUPABASE_URL: z.string().optional(),
-    NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().optional(),
     // Browser capture switch. Only 'true' enables capture — resolved by
     // resolveSentry() in sentry-config.ts. Same reasoning as SENTRY_ENABLED
     // above: an unset Docker ARG arrives as '', which enum().optional()
@@ -53,8 +51,6 @@ export const Env = createEnv({
     NESTJS_API_URL: process.env.NESTJS_API_URL,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     NEXT_PUBLIC_SOCKET_URL: process.env.NEXT_PUBLIC_SOCKET_URL,
-    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
-    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     SENTRY_ENABLED: process.env.SENTRY_ENABLED,
     AUTH0_DOMAIN: process.env.AUTH0_DOMAIN,
     AUTH0_CLIENT_ID: process.env.AUTH0_CLIENT_ID,

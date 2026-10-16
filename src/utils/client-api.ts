@@ -1,16 +1,5 @@
 import type { AxiosRequestConfig } from 'axios';
-import type {
-  TAuthResponse,
-  TOAuthData,
-  TOAuthResponse,
-  TOAuthSyncInput,
-  TOAuthSyncResponse,
-  TResendConfirmationData,
-  TSignUpResult,
-  TVerifyOtpData,
-} from '@/types/auth';
 import axiosInstance from '@/libs/axios';
-import { API_METHODS } from './api-config';
 
 export class ClientAPI {
   static async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
@@ -53,30 +42,3 @@ export class ClientAPI {
     return response.data;
   }
 }
-
-export const authApi = {
-  signin: (data: { email: string; password: string }) => {
-    const config = API_METHODS.auth.signin(data);
-    return ClientAPI.post<TAuthResponse>(config.endpoint, config.data);
-  },
-  signup: (data: { email: string; password: string; firstName: string; lastName: string; phone: string; avatar: string }) => {
-    const config = API_METHODS.auth.signup(data);
-    return ClientAPI.post<TSignUpResult>(config.endpoint, config.data);
-  },
-  oauthSync: (data: TOAuthSyncInput) => {
-    const config = API_METHODS.auth.oauthSync(data);
-    return ClientAPI.post<TOAuthSyncResponse>(config.endpoint, config.data);
-  },
-  oauth: (data: TOAuthData) => {
-    const config = API_METHODS.auth.oauth(data);
-    return ClientAPI.post<TOAuthResponse>(config.endpoint, config.data);
-  },
-  verifyOtp: (data: TVerifyOtpData) => {
-    const config = API_METHODS.auth.verifyOtp(data);
-    return ClientAPI.post<TAuthResponse>(config.endpoint, config.data);
-  },
-  resendConfirmation: (data: TResendConfirmationData) => {
-    const config = API_METHODS.auth.resendConfirmation(data);
-    return ClientAPI.post<{ message: string }>(config.endpoint, config.data);
-  },
-};

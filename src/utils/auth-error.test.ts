@@ -43,11 +43,11 @@ describe('hasUnauthorizedError', () => {
 });
 
 describe('getExpiredSessionRedirect', () => {
-  it('builds a signin URL with an encoded redirect and expired flag', () => {
-    expect(getExpiredSessionRedirect('/vocab-list')).toBe('/signin?redirect=%2Fvocab-list&expired=1');
+  it('builds a login URL with an encoded redirect', () => {
+    expect(getExpiredSessionRedirect('/vocab-list')).toBe('/api/auth/login?redirect=%2Fvocab-list');
   });
 
   it('keeps a query string inside the encoded redirect', () => {
-    expect(getExpiredSessionRedirect('/a?b=1&c=2')).toBe('/signin?redirect=%2Fa%3Fb%3D1%26c%3D2&expired=1');
+    expect(getExpiredSessionRedirect('/a?b=1&c=2')).toBe('/api/auth/login?redirect=%2Fa%3Fb%3D1%26c%3D2');
   });
 });

@@ -1,35 +1,14 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { ChangePasswordDialog } from '@/shared/ui/ChangePasswordDialog';
+import React from 'react';
 import { SettingRow, SettingsSection } from './SettingsSection';
 
-type ProfileSecurityProps = {
-  hasPassword: boolean;
-};
-
-export const ProfileSecurity: React.FC<ProfileSecurityProps> = ({ hasPassword }) => {
+export const ProfileSecurity: React.FC = () => {
   const t = useTranslations('settings.security');
-  const [isPasswordOpen, setIsPasswordOpen] = useState(false);
 
   return (
-    <SettingsSection
-      id="security"
-      title={t('title')}
-      description={t('description')}
-      footer={<ChangePasswordDialog open={isPasswordOpen} onOpenChange={setIsPasswordOpen} hasPassword={hasPassword} />}
-    >
-      <SettingRow
-        label={hasPassword ? t('passwordLabel') : t('setPasswordLabel')}
-        description={hasPassword ? t('updateHint') : t('addHint')}
-      >
-        <Button variant="outline" onClick={() => setIsPasswordOpen(true)}>
-          {hasPassword ? t('changePassword') : t('setPassword')}
-        </Button>
-      </SettingRow>
-
+    <SettingsSection id="security" title={t('title')} description={t('description')}>
       {/* Not wired to the backend yet: shown disabled so it does not look like a working setting. */}
       <SettingRow label={t('twoFactor')} description={t('twoFactorHint')}>
         <button

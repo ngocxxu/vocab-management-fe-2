@@ -8,8 +8,7 @@ export type TE2eUser = {
   lastName: string;
 };
 
-// Test-only credentials for the local Supabase started by `supabase start`.
-// The email is unique per run: the Supabase auth DB is not reset between runs.
+// Test-only credentials. The email is unique per run, so reruns never collide with earlier users.
 // Domain must be a real-looking one: the backend IsEmail() rejects @test.local.
 export const E2E_USER: TE2eUser = {
   email: `e2e+${process.env.E2E_RUN_ID}@example.com`,

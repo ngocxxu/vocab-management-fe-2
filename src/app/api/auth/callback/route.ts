@@ -6,15 +6,12 @@ import { API_ENDPOINTS } from '@/utils/api-config';
 import { AUTH_COOKIE_OPTIONS, REFRESH_COOKIE_OPTIONS } from '@/utils/auth-cookies';
 import { getBackendAuthUrl, parseBackendResponse } from '../session-response';
 
-// Codes the sign-in page knows how to explain; anything else from the BE is shown as a generic failure.
+// Codes the landing page knows how to explain; anything else from the BE is shown as a generic failure.
 const KNOWN_SYNC_ERRORS = new Set(['email_not_verified', 'account_link_required']);
 
-function failure(appOrigin: string, code: string, redirect?: string): NextResponse {
-  const url = new URL('/signin', appOrigin);
-  url.searchParams.set('error', code);
-  if (redirect) {
-    url.searchParams.set('redirect', redirect);
-  }
+function failure(appOrigin: string, code: string): NextResponse {
+  const url = new URL('/', appOrigin);
+  url.searchParams.set('auth_error', code);
   const response = NextResponse.redirect(url);
   response.cookies.set(AUTH0_TXN_COOKIE, '', { path: '/api/auth', maxAge: 0 });
   return response;
@@ -58,17 +55,17 @@ export async function GET(request: NextRequest) {
       redirectUri: `${appOrigin}${AUTH0_CALLBACK_PATH}`,
     });
     if (!tokens) {
-      return failure(appOrigin, 'login_failed', transaction.redirect);
+      return failure(appOrigin, 'login_failed');
     }
     if (!tokens.refreshToken) {
       // Without a refresh token the session would die when the access token expires.
       logger.error('Auth0 returned no refresh token: enable "Allow Offline Access" on the API.');
-      return failure(appOrigin, 'login_failed', transaction.redirect);
+      return failure(appOrigin, 'login_failed');
     }
 
     const syncError = await syncUser(tokens.accessToken);
     if (syncError) {
-      return failure(appOrigin, syncError, transaction.redirect);
+      return failure(appOrigin, syncError);
     }
 
     const response = NextResponse.redirect(new URL(transaction.redirect, appOrigin));
@@ -78,6 +75,6 @@ export async function GET(request: NextRequest) {
     return response;
   } catch (error) {
     logger.error('Auth0 callback failed:', { error });
-    return failure(appOrigin, 'login_failed', transaction.redirect);
+    return failure(appOrigin, 'login_failed');
   }
 }

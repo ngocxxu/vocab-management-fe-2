@@ -1,7 +1,7 @@
 /**
  * URL reduction helpers for Sentry payloads.
  *
- * Query strings carry Supabase OAuth `code`/`state`, signed asset URLs and
+ * Query strings carry Auth0 OAuth `code`/`state`, signed asset URLs and
  * search terms. They are stripped everywhere, in every environment — there is
  * no case where a query string is worth more than the risk of shipping one.
  *

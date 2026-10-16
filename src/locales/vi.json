@@ -11,7 +11,6 @@
       "server": "Đã xảy ra lỗi phía máy chủ. Vui lòng thử lại sau.",
       "tooManyRequests": "Thao tác quá nhanh. Vui lòng thử lại sau."
     },
-    "updatePassword": "Không thể cập nhật mật khẩu",
     "verifyOTP": "Không thể xác minh mã OTP",
     "updateWordType": "Không thể cập nhật loại từ",
     "updateVocabulary": "Không thể cập nhật từ vựng",
@@ -176,71 +175,7 @@
     "other": "Khác"
   },
   "auth": {
-    "panel": {
-      "aiPowered": "Trí tuệ nhân tạo hỗ trợ",
-      "headline": "Làm chủ mọi ngôn ngữ với",
-      "headlineAccent": "Chính xác.",
-      "description": "Hệ thống ôn tập lặp lại ngắt quãng thích nghi với tốc độ của bạn, giữ tỷ lệ ghi nhớ 98% nhờ các thuật toán có căn cứ khoa học.",
-      "retentionRate": "Tỷ lệ ghi nhớ",
-      "globalLanguages": "Ngôn ngữ toàn cầu",
-      "copyright": "{year} Ngoc Quach. Bảo lưu mọi quyền."
-    },
-    "common": {
-      "emailAddress": "Địa chỉ email",
-      "password": "Mật khẩu",
-      "showPassword": "Hiện mật khẩu",
-      "hidePassword": "Ẩn mật khẩu",
-      "orContinueWithEmail": "HOẶC TIẾP TỤC BẰNG EMAIL",
-      "connecting": "Đang kết nối...",
-      "spamHint": "Nếu bạn không thấy email trong hộp thư đến, hãy kiểm tra thư rác.",
-      "backToSignIn": "Quay lại đăng nhập",
-      "checkYourEmail": "Kiểm tra email của bạn",
-      "signInLink": "Đăng nhập",
-      "continueWithGoogle": "Tiếp tục với Google"
-    },
-    "signIn": {
-      "title": "Chào mừng trở lại",
-      "subtitle": "Tiếp tục để đăng nhập an toàn.",
-      "forgotPassword": "Quên mật khẩu?",
-      "keepSignedIn": "Giữ tôi đăng nhập",
-      "submit": "Đăng nhập",
-      "submitting": "Đang đăng nhập...",
-      "noAccount": "Chưa có tài khoản?",
-      "createAccount": "Tạo tài khoản"
-    },
-    "signUp": {
-      "title": "Tạo tài khoản",
-      "subtitle": "Tiếp tục để tạo tài khoản an toàn.",
-      "firstName": "Tên",
-      "lastName": "Họ",
-      "phoneOptional": "Số điện thoại (không bắt buộc)",
-      "createStrongPassword": "Tạo mật khẩu mạnh",
-      "confirmPassword": "Xác nhận mật khẩu",
-      "confirmYourPassword": "Nhập lại mật khẩu",
-      "submit": "Tạo tài khoản",
-      "submitting": "Đang tạo tài khoản...",
-      "alreadyHaveAccount": "Đã có tài khoản?",
-      "confirmationSent": "Chúng tôi đã gửi liên kết xác nhận tới <strong>{email}</strong>. Nhấn vào liên kết để kích hoạt tài khoản.",
-      "resend": "Gửi lại email",
-      "resendSending": "Đang gửi...",
-      "resendSent": "Đã gửi email"
-    },
-    "forgotPassword": {
-      "title": "Quên mật khẩu",
-      "subtitle": "Nhập địa chỉ email và chúng tôi sẽ gửi liên kết đặt lại mật khẩu.",
-      "submit": "Gửi liên kết đặt lại",
-      "submitting": "Đang gửi...",
-      "rememberPassword": "Nhớ mật khẩu rồi?",
-      "sentTo": "Chúng tôi đã gửi liên kết đặt lại mật khẩu tới <strong>{email}</strong>.",
-      "sendAnother": "Gửi lại email khác"
-    },
     "errors": {
-      "signIn": "Không thể đăng nhập. Vui lòng thử lại.",
-      "signUp": "Không thể đăng ký. Vui lòng thử lại.",
-      "resendConfirmation": "Không thể gửi lại email xác nhận. Vui lòng thử lại.",
-      "provider": "Không thể đăng nhập bằng nhà cung cấp. Vui lòng thử lại.",
-      "originUnavailable": "Không xác định được địa chỉ gốc.",
-      "resetPassword": "Không thể gửi email đặt lại mật khẩu. Vui lòng thử lại.",
       "login_failed": "Đăng nhập thất bại. Vui lòng thử lại.",
       "email_not_verified": "Vui lòng xác minh địa chỉ email trước, rồi đăng nhập lại.",
       "account_link_required": "Đã có tài khoản với email này. Hãy nhờ quản trị viên liên kết tài khoản đăng nhập của bạn.",
@@ -324,12 +259,6 @@
     "security": {
       "title": "Bảo mật",
       "description": "Cách bạn đăng nhập và cách tài khoản được bảo vệ.",
-      "passwordLabel": "Mật khẩu",
-      "setPasswordLabel": "Đặt mật khẩu",
-      "updateHint": "Cập nhật mật khẩu bạn dùng để đăng nhập.",
-      "addHint": "Thêm mật khẩu để bạn cũng có thể đăng nhập bằng email và mật khẩu.",
-      "changePassword": "Đổi mật khẩu",
-      "setPassword": "Đặt mật khẩu",
       "twoFactor": "Xác thực hai lớp",
       "twoFactorHint": "Yêu cầu mã xác minh khi bạn đăng nhập. Sắp ra mắt."
     },
@@ -355,23 +284,6 @@
       "cancel": "Hủy",
       "deleting": "Đang xóa...",
       "confirm": "Xóa vĩnh viễn"
-    },
-    "password": {
-      "changeTitle": "Đổi mật khẩu",
-      "setTitle": "Đặt mật khẩu",
-      "changeDescription": "Nhập mật khẩu hiện tại và chọn mật khẩu mới.",
-      "setDescription": "Thêm mật khẩu cho tài khoản để bạn cũng có thể đăng nhập bằng email và mật khẩu.",
-      "currentPassword": "Mật khẩu hiện tại",
-      "newPassword": "Mật khẩu mới",
-      "confirmNewPassword": "Xác nhận mật khẩu mới",
-      "showPassword": "Hiện mật khẩu",
-      "hidePassword": "Ẩn mật khẩu",
-      "cancel": "Hủy",
-      "saving": "Đang lưu...",
-      "update": "Cập nhật mật khẩu",
-      "set": "Đặt mật khẩu",
-      "changedToast": "Đổi mật khẩu thành công",
-      "setToast": "Đặt mật khẩu thành công"
     },
     "srs": {
       "title": "Lặp lại ngắt quãng",
@@ -1078,12 +990,6 @@
       "privacy": "Quyền riêng tư",
       "terms": "Điều khoản"
     }
-  },
-  "authCallback": {
-    "failed": "Không thể hoàn tất đăng nhập",
-    "redirecting": "Đang chuyển đến trang đăng nhập...",
-    "completing": "Đang hoàn tất đăng nhập...",
-    "loading": "Đang tải..."
   },
   "support": {
     "trigger": "Hỗ trợ",
@@ -1931,7 +1837,7 @@
       },
       "deleteDialog": {
         "title": "Xóa người dùng này?",
-        "description": "Thao tác này xóa {email} khỏi Supabase và cơ sở dữ liệu. Không thể hoàn tác.",
+        "description": "Thao tác này xóa {email} khỏi hệ thống xác thực và cơ sở dữ liệu. Không thể hoàn tác.",
         "typeEmail": "Nhập {email} để xác nhận",
         "confirm": "Xóa người dùng",
         "cancel": "Hủy"

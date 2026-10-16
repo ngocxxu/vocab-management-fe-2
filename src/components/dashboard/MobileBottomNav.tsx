@@ -71,7 +71,7 @@ export function MobileBottomNav({ user }: MobileBottomNavProps) {
   const visibleMoreItems = moreItems.filter(item => (item.id !== 'api-keys' || user?.role !== 'GUEST') && (item.id !== 'admin' || isAdmin(user)));
 
   const handleSignOut = () => {
-    signoutClient('/signin').catch(error => logger.error('Sign out failed:', { error }));
+    signoutClient('/').catch(error => logger.error('Sign out failed:', { error }));
   };
 
   return (
