@@ -187,6 +187,7 @@
     }
   },
   "shell": {
+    "loading": "Loading...",
     "nav": {
       "dashboard": "Dashboard",
       "library": "Library",

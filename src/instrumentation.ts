@@ -76,11 +76,6 @@ const sentryOptions: Sentry.NodeOptions | Sentry.EdgeOptions = {
   ),
   release: `vocab-management-fe@${version}`,
 
-  // Spotlight is a local development overlay and has nothing to do with whether
-  // we send to Sentry. Kept on its own condition so local debugging never
-  // requires turning capture on.
-  spotlight: process.env.NODE_ENV === 'development',
-
   integrations: [
     // `log` / `info` / `debug` are where developers interpolate whole objects,
     // and those objects are the ones carrying request bodies and user records.

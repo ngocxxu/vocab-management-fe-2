@@ -1,4 +1,4 @@
-import { ActivityHeatmap } from '../components/ActivityHeatmap';
+import { ActivityHeatmapLazy } from '../components/ActivityHeatmapLazy';
 import { ZoneError } from '../components/ZoneError';
 import { getDashboardHeatmapData } from '../services/server/getDashboardHeatmapData';
 import { getExpiredSessionRedirect, isUnauthorizedError } from '@/utils/auth-error';
@@ -9,7 +9,7 @@ export async function DashboardHeatmapZone() {
     const { progress } = await getDashboardHeatmapData();
     return (
       <div className="h-full">
-        <ActivityHeatmap progress={progress} />
+        <ActivityHeatmapLazy progress={progress} />
       </div>
     );
   } catch (error) {

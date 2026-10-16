@@ -2,7 +2,6 @@
 
 import type { ResponseAPI } from '@/types';
 import type { TUser } from '@/types/auth';
-import type { TMessage } from '@/types/chat';
 import type { TNotification, TUnreadCountResponse } from '@/types/notification';
 import type { TPlan } from '@/types/plan';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -11,7 +10,6 @@ import { Header, MobileBottomNav, Sidebar } from '@/components/dashboard';
 import { useTranslations } from 'next-intl';
 import { logger } from '@/libs/Logger';
 import { SocketProvider } from '@/providers/SocketProvider';
-import { ChatBubble, ChatPanel, ChatProvider } from '@/features/chat';
 
 type LayoutClientProps = {
   children: React.ReactNode;
@@ -20,9 +18,7 @@ type LayoutClientProps = {
   initialAllNotifications?: ResponseAPI<TNotification[]>;
   initialUnreadNotifications?: ResponseAPI<TNotification[]>;
   initialUnreadCount?: TUnreadCountResponse;
-  initialChatUnreadCount?: number;
-  initialChatMessages?: TMessage[];
-  initialChatNextCursor?: string | null;
+  chat?: React.ReactNode;
 };
 
 export function LayoutClient({
@@ -32,9 +28,7 @@ export function LayoutClient({
   initialAllNotifications,
   initialUnreadNotifications,
   initialUnreadCount,
-  initialChatUnreadCount,
-  initialChatMessages,
-  initialChatNextCursor,
+  chat,
 }: LayoutClientProps) {
   const t = useTranslations('shell');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -156,10 +150,7 @@ export function LayoutClient({
         </div>
         <MobileBottomNav user={currentUser} />
       </div>
-      <ChatProvider initialUnreadCount={initialChatUnreadCount ?? 0} initialMessages={initialChatMessages} initialNextCursor={initialChatNextCursor}>
-        <ChatBubble />
-        <ChatPanel />
-      </ChatProvider>
+      {chat}
     </SocketProvider>
   );
 }

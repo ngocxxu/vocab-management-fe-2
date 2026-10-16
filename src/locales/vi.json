@@ -187,6 +187,7 @@
     }
   },
   "shell": {
+    "loading": "Đang tải...",
     "nav": {
       "dashboard": "Bảng điều khiển",
       "library": "Thư viện",

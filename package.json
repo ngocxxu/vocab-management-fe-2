@@ -5,7 +5,6 @@
     "node": ">=20"
   },
   "scripts": {
-    "dev:spotlight": "npx @spotlightjs/spotlight",
     "dev:next": "next dev --turbopack --port 3001",
     "dev": "run-p dev:*",
     "build:next": "next build",
@@ -89,7 +88,6 @@
     "@next/bundle-analyzer": "^15.4.6",
     "@next/eslint-plugin-next": "^15.4.6",
     "@playwright/test": "^1.63.0",
-    "@spotlightjs/spotlight": "^3.0.2",
     "@tailwindcss/postcss": "^4.1.11",
     "@types/node": "^24.2.0",
     "@types/react": "^19.1.9",
