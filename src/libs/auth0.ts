@@ -90,7 +90,7 @@ export function statesMatch(expected: string, received: string | null): boolean 
 
 export function buildAuthorizeUrl(
   config: TAuth0Config,
-  params: { redirectUri: string; state: string; challenge: string; signup?: boolean; googleOnly?: boolean },
+  params: { redirectUri: string; state: string; challenge: string; signup?: boolean; googleOnly?: boolean; locale?: string },
 ): string {
   const url = new URL(`https://${config.domain}/authorize`);
   url.searchParams.set('response_type', 'code');
@@ -106,6 +106,10 @@ export function buildAuthorizeUrl(
   }
   if (params.googleOnly) {
     url.searchParams.set('connection', 'google-oauth2');
+  }
+  // Universal Login does not read the app's locale cookie; this tells Auth0 which language to show.
+  if (params.locale) {
+    url.searchParams.set('ui_locales', params.locale);
   }
   return url.toString();
 }

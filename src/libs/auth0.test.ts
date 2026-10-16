@@ -71,6 +71,13 @@ describe('buildAuthorizeUrl', () => {
     });
   });
 
+  it('tells Auth0 which language to show only when a locale is given', () => {
+    const base = { redirectUri: 'r', state: 's', challenge: 'c' };
+
+    expect(new URL(buildAuthorizeUrl(config, { ...base, locale: 'vi' })).searchParams.get('ui_locales')).toBe('vi');
+    expect(new URL(buildAuthorizeUrl(config, base)).searchParams.has('ui_locales')).toBe(false);
+  });
+
   it('adds the signup hint and the Google connection only when asked', () => {
     const url = new URL(buildAuthorizeUrl(config, { redirectUri: 'r', state: 's', challenge: 'c', signup: true, googleOnly: true }));
 

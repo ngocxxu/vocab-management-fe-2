@@ -1,12 +1,15 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { AUTH0_CALLBACK_PATH, AUTH0_TXN_COOKIE, AUTH0_TXN_MAX_AGE_SECONDS, buildAuthorizeUrl, createTransaction, getAppOrigin, getAuth0Config, safeRedirectPath } from '@/libs/auth0';
+import { DEFAULT_LOCALE, isLocale, LOCALE_COOKIE_NAME } from '@/i18n/config';
 import { logger } from '@/libs/Logger';
 
 // GET /api/auth/login - start Authorization Code + PKCE at Auth0 (?redirect=/path, ?mode=signup, ?connection=google)
 export function GET(request: NextRequest) {
   const { searchParams, origin } = request.nextUrl;
   const appOrigin = getAppOrigin(origin);
+
+  const localeCookie = request.cookies.get(LOCALE_COOKIE_NAME)?.value;
 
   try {
     const config = getAuth0Config();
@@ -17,6 +20,7 @@ export function GET(request: NextRequest) {
       challenge,
       signup: searchParams.get('mode') === 'signup',
       googleOnly: searchParams.get('connection') === 'google',
+      locale: isLocale(localeCookie) ? localeCookie : DEFAULT_LOCALE,
     });
 
     const response = NextResponse.redirect(authorizeUrl);
