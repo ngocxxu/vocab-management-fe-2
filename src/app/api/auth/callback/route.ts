@@ -5,6 +5,7 @@ import { logger } from '@/libs/Logger';
 import { API_ENDPOINTS } from '@/utils/api-config';
 import { AUTH_COOKIE_OPTIONS, REFRESH_COOKIE_OPTIONS } from '@/utils/auth-cookies';
 import { getBackendAuthUrl, parseBackendResponse } from '../session-response';
+import { finishLink, linkFailed } from './link';
 
 // Codes the landing page knows how to explain; anything else from the BE is shown as a generic failure.
 const KNOWN_SYNC_ERRORS = new Set(['email_not_verified', 'account_link_required']);
@@ -38,6 +39,15 @@ export async function GET(request: NextRequest) {
   const { searchParams, origin } = request.nextUrl;
   const appOrigin = getAppOrigin(origin);
   const transaction = parseTransaction(request.cookies.get(AUTH0_TXN_COOKIE)?.value);
+
+  if (transaction?.purpose === 'link') {
+    // A link never signs anyone in. A refused or cancelled Auth0 step comes back here too, so it is handled as a failed link.
+    const linkCode = searchParams.get('code');
+    if (searchParams.get('error') || !linkCode || !statesMatch(transaction.state, searchParams.get('state'))) {
+      return linkFailed(appOrigin, transaction);
+    }
+    return finishLink(appOrigin, transaction, linkCode, request.cookies.get('accessToken')?.value);
+  }
 
   if (searchParams.get('error')) {
     logger.warn('Auth0 returned an error:', { error: searchParams.get('error'), description: searchParams.get('error_description') });

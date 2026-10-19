@@ -17,6 +17,7 @@ type ProfilePageProps = {
   currentUser?: TUser | null;
   currentPlan?: TPlan | null;
   srsSettings?: TSrsSettings | null;
+  signInMethods?: string[] | null;
 };
 
 // The order is the order of the tabs. Spaced repetition comes right after the account, because it is what people come back for.
@@ -33,7 +34,7 @@ type TabId = (typeof NAV_ITEMS)[number]['id'];
 
 const TAB_PREFIX = 'tab-';
 
-export const ProfilePage: React.FC<ProfilePageProps> = ({ currentUser, currentPlan, srsSettings }) => {
+export const ProfilePage: React.FC<ProfilePageProps> = ({ currentUser, currentPlan, srsSettings, signInMethods }) => {
   const t = useTranslations('settings');
   // The spaced repetition tab only exists when its settings loaded.
   const tabs = useMemo(() => NAV_ITEMS.filter(item => item.id !== 'spaced-repetition' || Boolean(srsSettings)), [srsSettings]);
@@ -116,7 +117,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ currentUser, currentPl
         <div className="min-w-0">
           {panel('account', <ProfileIdentity currentUser={currentUser} currentPlan={currentPlan} />)}
           {srsSettings && panel('spaced-repetition', <SrsDefaultsSection settings={srsSettings} onDirtyChange={setIsSrsDirty} />)}
-          {panel('security', <ProfileSecurity />)}
+          {panel('security', <ProfileSecurity signInMethods={signInMethods} />)}
           {panel('plan', <ProfilePlan role={currentUser?.role ?? ''} currentPlan={currentPlan} />)}
           {panel('danger', <ProfileDangerZone />)}
         </div>

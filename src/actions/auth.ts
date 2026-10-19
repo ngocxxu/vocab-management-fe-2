@@ -91,6 +91,20 @@ async function verifyUserImpl(): Promise<TUser | null> {
 
 export const verifyUser = cache(verifyUserImpl);
 
+/** The caller's connected sign-in methods as labels (`google`, `password`), or null when they cannot be loaded. */
+export async function getSignInMethods(): Promise<string[] | null> {
+  try {
+    return (await authApi.signInMethods()).methods;
+  } catch (error) {
+    if (isUnauthorizedError(error)) {
+      throw error;
+    }
+    // The rest of the profile still works without this section.
+    logger.error('Failed to load sign-in methods:', { error });
+    return null;
+  }
+}
+
 export async function deleteAccount(): Promise<{ message: string }> {
   await requireAuth();
 

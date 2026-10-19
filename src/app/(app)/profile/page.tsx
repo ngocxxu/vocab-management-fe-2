@@ -1,4 +1,4 @@
-import { verifyUser } from '@/actions';
+import { getSignInMethods, verifyUser } from '@/actions';
 import { getPlans } from '@/actions/plans';
 import { getSrsSettings } from '@/actions/srs-settings';
 import { ProfilePage } from '@/components/settings';
@@ -20,7 +20,8 @@ export default async function ProfileRoutePage() {
       logger.error('Failed to load spaced repetition settings:', { error });
       return null;
     });
-    return <ProfilePage currentUser={user} currentPlan={currentPlan} srsSettings={srsSettings} />;
+    const signInMethods = await getSignInMethods();
+    return <ProfilePage currentUser={user} currentPlan={currentPlan} srsSettings={srsSettings} signInMethods={signInMethods} />;
   } catch (error) {
     if (isUnauthorizedError(error)) {
       redirect(getExpiredSessionRedirect('/profile'));

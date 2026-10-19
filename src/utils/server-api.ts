@@ -170,6 +170,7 @@ export const authApi = {
     const config = API_METHODS.auth.verify();
     return serverApi.get<TUser>(config.endpoint);
   },
+  signInMethods: () => serverApi.get<{ methods: string[] }>(API_ENDPOINTS.auth.identities),
 };
 
 // Vocabulary Management API endpoints

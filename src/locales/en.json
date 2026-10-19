@@ -178,7 +178,7 @@
     "errors": {
       "login_failed": "Sign-in failed. Please try again.",
       "email_not_verified": "Please verify your email address first, then sign in again.",
-      "account_link_required": "An account with this email already exists. Ask an admin to link your login.",
+      "account_link_required": "An account with this email already exists. Sign in with the method you used before, then connect this one under Profile, Security, Sign-in methods.",
       "auth_not_configured": "Sign-in is not available right now. Please try again later."
     },
     "sessionExpired": {
@@ -262,6 +262,25 @@
       "description": "How you sign in and how your account is protected.",
       "twoFactor": "Two-factor authentication",
       "twoFactorHint": "Ask for a verification code when you sign in. Coming soon."
+    },
+    "signInMethods": {
+      "title": "Sign-in methods",
+      "description": "The ways you can sign in to this account. Connect another one to sign in with either.",
+      "google": "Google",
+      "password": "Password",
+      "connected": "Connected",
+      "connectGoogle": "Connect Google",
+      "addPassword": "Add a password",
+      "success": "Sign-in method connected. You can now sign in with either one.",
+      "errors": {
+        "identity_already_linked": "That sign-in method already belongs to another account. Nothing was changed.",
+        "email_not_verified": "Check your inbox to verify your email, then connect again.",
+        "link_proof_stale": "The sign-in took too long. Please connect again.",
+        "link_nonce_invalid": "This connection request is no longer valid. Please start again.",
+        "id_token_invalid": "We could not verify that sign-in. Please try again.",
+        "link_session_changed": "Your session changed while connecting. Please sign in again and retry.",
+        "link_failed": "We could not connect that sign-in method. Please try again."
+      }
     },
     "plan": {
       "title": "Plan",

@@ -15,6 +15,13 @@ vi.mock('@/libs/Env', () => ({ Env: {} }));
 const config = { domain: 'tenant.example.auth0.com', clientId: 'cid', clientSecret: 'secret', audience: 'https://api.test' };
 
 describe('createTransaction', () => {
+  it('marks a link transaction with its purpose and the User who started it', () => {
+    const { transaction } = createTransaction('/profile', { userId: 'user-1' });
+
+    expect(transaction).toMatchObject({ purpose: 'link', userId: 'user-1', redirect: '/profile' });
+    expect(createTransaction('/profile').transaction).not.toHaveProperty('purpose');
+  });
+
   it('derives an S256 challenge from the verifier and never repeats', () => {
     const { transaction, challenge } = createTransaction('/dashboard');
 
@@ -32,6 +39,13 @@ describe('parseTransaction', () => {
     expect(parseTransaction('not json')).toBeNull();
     expect(parseTransaction(JSON.stringify({ state: 1 }))).toBeNull();
     expect(parseTransaction(undefined)).toBeNull();
+  });
+
+  it('keeps a link transaction, and ignores a purpose that has no User behind it', () => {
+    const { transaction } = createTransaction('/profile', { userId: 'user-1' });
+
+    expect(parseTransaction(JSON.stringify(transaction))).toEqual(transaction);
+    expect(parseTransaction(JSON.stringify({ ...transaction, userId: undefined }))).not.toHaveProperty('purpose');
   });
 });
 
@@ -86,6 +100,35 @@ describe('buildAuthorizeUrl', () => {
   });
 });
 
+describe('buildAuthorizeUrl for a link', () => {
+  it('forces a fresh sign-in on the chosen connection and carries the BE nonce', () => {
+    const url = new URL(buildAuthorizeUrl(config, {
+      redirectUri: 'r',
+      state: 's',
+      challenge: 'c',
+      connection: 'Username-Password-Authentication',
+      nonce: 'n-1',
+      forceLogin: true,
+      maxAgeSeconds: 300,
+      scope: 'openid profile email',
+    }));
+
+    expect(Object.fromEntries(url.searchParams)).toMatchObject({
+      connection: 'Username-Password-Authentication',
+      nonce: 'n-1',
+      prompt: 'login',
+      max_age: '300',
+      scope: 'openid profile email',
+    });
+  });
+
+  it('sends none of those for an ordinary login', () => {
+    const url = new URL(buildAuthorizeUrl(config, { redirectUri: 'r', state: 's', challenge: 'c' }));
+
+    expect(['nonce', 'prompt', 'max_age', 'connection'].some(name => url.searchParams.has(name))).toBe(false);
+  });
+});
+
 describe('buildLogoutUrl', () => {
   it('returns to the given URL', () => {
     const url = new URL(buildLogoutUrl(config, 'http://app/'));
@@ -101,9 +144,16 @@ describe('exchangeCode', () => {
     const fetchMock = vi.fn(async () => new Response(JSON.stringify({ access_token: 'at', refresh_token: 'rt' }), { status: 200 }));
     vi.stubGlobal('fetch', fetchMock);
 
-    expect(await exchangeCode(config, { code: 'c', verifier: 'v', redirectUri: 'r' })).toEqual({ accessToken: 'at', refreshToken: 'rt' });
+    expect(await exchangeCode(config, { code: 'c', verifier: 'v', redirectUri: 'r' })).toEqual({ accessToken: 'at', refreshToken: 'rt', idToken: null });
     const [, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
     expect(JSON.parse(init.body as string)).toMatchObject({ grant_type: 'authorization_code', code: 'c', code_verifier: 'v', redirect_uri: 'r', client_secret: 'secret' });
+    vi.unstubAllGlobals();
+  });
+
+  it('returns the ID token when Auth0 sends one', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({ access_token: 'at', id_token: 'idt' }), { status: 200 })));
+
+    expect(await exchangeCode(config, { code: 'c', verifier: 'v', redirectUri: 'r' })).toMatchObject({ idToken: 'idt' });
     vi.unstubAllGlobals();
   });
 
