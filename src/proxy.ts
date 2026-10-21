@@ -4,7 +4,8 @@ import { getRefreshLock, getRefreshLockKey, performRefresh } from '@/libs/refres
 import { LOGIN_PATH } from '@/constants/auth';
 import { AUTH_COOKIE_OPTIONS, REFRESH_COOKIE_OPTIONS } from '@/utils/auth-cookies';
 
-const PROTECTED = ['/dashboard', '/library', '/vocab-list', '/vocab-trainer', '/profile', '/subjects', '/notifications', '/admin'];
+// /api/auth/link is listed so an access token that expires is refreshed before the link reads it. The callback is not, because a login has no session yet.
+const PROTECTED = ['/dashboard', '/library', '/vocab-list', '/vocab-trainer', '/profile', '/subjects', '/notifications', '/admin', '/api/auth/link'];
 const REFRESH_THRESHOLD = 60;
 
 type Session = { access_token: string; refresh_token: string };

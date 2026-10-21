@@ -1,5 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import type { TLinkableMethodId } from '@/constants/auth';
+import { LINKABLE_METHOD_IDS } from '@/constants/auth';
 import {
   AUTH0_CALLBACK_PATH,
   AUTH0_CONNECTIONS,
@@ -15,73 +17,65 @@ import {
 } from '@/libs/auth0';
 import { DEFAULT_LOCALE, isLocale, LOCALE_COOKIE_NAME } from '@/i18n/config';
 import { logger } from '@/libs/Logger';
-import { API_ENDPOINTS } from '@/utils/api-config';
-import { getBackendAuthUrl, parseBackendResponse } from '../session-response';
+import { API_METHODS } from '@/utils/api-config';
+import { appRedirect } from '../link-result';
+import { fetchBackendWithBearer, readBackendJson } from '../session-response';
 
-const METHODS = { google: AUTH0_CONNECTIONS.google, password: AUTH0_CONNECTIONS.password } as const;
+// Fixed for every link: a forced fresh sign-in that must carry the nonce back in the ID token.
+const LINK_LOGIN = { forceLogin: true, maxAgeSeconds: LINK_MAX_AGE_SECONDS, scope: LINK_SCOPE } as const;
 
-function backToProfile(appOrigin: string, code: string): NextResponse {
-  const url = new URL(LINK_RETURN_PATH, appOrigin);
-  url.searchParams.set('link_error', code);
-  url.hash = 'security';
-  return NextResponse.redirect(url);
+function isLinkableMethod(value: FormDataEntryValue | null): value is TLinkableMethodId {
+  return typeof value === 'string' && (LINKABLE_METHOD_IDS as readonly string[]).includes(value);
 }
 
-async function callBackend<T>(path: string, accessToken: string, method: 'GET' | 'POST'): Promise<{ ok: boolean; body: T | null }> {
-  const response = await fetch(getBackendAuthUrl(path), {
-    method,
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
-    signal: AbortSignal.timeout(10_000),
-  });
-  const body = response.ok ? await parseBackendResponse<T>(response) as T : null;
-  return { ok: response.ok, body };
-}
-
-// GET /api/auth/link?method=google|password - connect another sign-in method to the signed-in User (ADR 0004).
+// POST /api/auth/link (form field `method`) - connect another sign-in method to the signed-in User (ADR 0004).
 // Asks the BE for a single-use nonce, then sends the browser to Auth0 for a forced fresh sign-in that carries it back in the ID token.
-export async function GET(request: NextRequest) {
-  const { searchParams, origin } = request.nextUrl;
-  const appOrigin = getAppOrigin(origin);
-  const method = searchParams.get('method');
+// A form POST, not a GET: a cross-site page cannot trigger it, because the access-token cookie is SameSite=Lax.
+export async function POST(request: NextRequest) {
+  const appOrigin = getAppOrigin(request.nextUrl.origin);
+  const form = await request.formData();
+  const method = form.get('method');
   const accessToken = request.cookies.get('accessToken')?.value;
 
-  if (method !== 'google' && method !== 'password') {
-    return backToProfile(appOrigin, 'link_failed');
+  if (!isLinkableMethod(method)) {
+    return appRedirect(appOrigin, LINK_RETURN_PATH, { link_error: 'link_failed' }, { hash: 'security' });
   }
   if (!accessToken) {
-    return NextResponse.redirect(new URL('/', appOrigin));
+    return appRedirect(appOrigin, '/', {});
   }
 
   try {
-    const [me, nonce] = await Promise.all([
-      callBackend<{ id?: string }>(API_ENDPOINTS.auth.verify, accessToken, 'GET'),
-      callBackend<{ nonce?: string }>(API_ENDPOINTS.auth.linkNonce, accessToken, 'POST'),
+    const [meResponse, nonceResponse] = await Promise.all([
+      fetchBackendWithBearer(API_METHODS.auth.verify().endpoint, accessToken),
+      fetchBackendWithBearer(API_METHODS.auth.linkNonce().endpoint, accessToken, { method: 'POST' }),
     ]);
-    if (!me.body?.id || !nonce.body?.nonce) {
-      return backToProfile(appOrigin, 'link_session_changed');
+    // A session the BE does not recognise is a changed session; a failed nonce is a plain failure.
+    const me = await readBackendJson<{ id?: string }>(meResponse);
+    if (!me?.id) {
+      return appRedirect(appOrigin, LINK_RETURN_PATH, { link_error: 'link_session_changed' }, { hash: 'security' });
+    }
+    const nonce = await readBackendJson<{ nonce?: string }>(nonceResponse);
+    if (!nonce?.nonce) {
+      return appRedirect(appOrigin, LINK_RETURN_PATH, { link_error: 'link_failed' }, { hash: 'security' });
     }
 
     const localeCookie = request.cookies.get(LOCALE_COOKIE_NAME)?.value;
-    const { transaction, challenge } = createTransaction(LINK_RETURN_PATH, { userId: me.body.id });
+    const { transaction, challenge } = createTransaction(LINK_RETURN_PATH, { userId: me.id });
     const authorizeUrl = buildAuthorizeUrl(getAuth0Config(), {
       redirectUri: `${appOrigin}${AUTH0_CALLBACK_PATH}`,
       state: transaction.state,
       challenge,
-      connection: METHODS[method],
-      // A password the User does not have yet is created on the way, so the sign-up screen comes first.
-      signup: method === 'password',
-      nonce: nonce.body.nonce,
-      forceLogin: true,
-      maxAgeSeconds: LINK_MAX_AGE_SECONDS,
-      scope: LINK_SCOPE,
+      connection: AUTH0_CONNECTIONS[method],
+      nonce: nonce.nonce,
+      ...LINK_LOGIN,
       locale: isLocale(localeCookie) ? localeCookie : DEFAULT_LOCALE,
     });
 
-    const response = NextResponse.redirect(authorizeUrl);
+    const response = NextResponse.redirect(authorizeUrl, 303);
     response.cookies.set(AUTH0_TXN_COOKIE, JSON.stringify(transaction), transactionCookieOptions());
     return response;
   } catch (error) {
     logger.error('Auth0 link start failed:', { error });
-    return backToProfile(appOrigin, 'link_failed');
+    return appRedirect(appOrigin, LINK_RETURN_PATH, { link_error: 'link_failed' }, { hash: 'security' });
   }
 }

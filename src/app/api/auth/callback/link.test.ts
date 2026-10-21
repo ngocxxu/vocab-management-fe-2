@@ -10,9 +10,9 @@ vi.mock('@/libs/Logger', () => ({ logger: { warn: vi.fn(), error: vi.fn(), info:
 const APP = 'http://app.test';
 const transaction: TAuth0Transaction = { state: 's', verifier: 'v', redirect: '/profile', purpose: 'link', userId: 'user-1' };
 
-type Backend = { sessionUserId?: string | null; tokenBody?: Record<string, unknown>; link?: { status: number; body: unknown } };
+type TBackendStub = { sessionUserId?: string | null; tokenBody?: Record<string, unknown>; link?: { status: number; body: unknown } };
 
-function stubFetch({ sessionUserId = 'user-1', tokenBody = { access_token: 'other-at', id_token: 'id-token-b' }, link = { status: 200, body: { methods: ['google', 'password'] } } }: Backend = {}) {
+function stubFetch({ sessionUserId = 'user-1', tokenBody = { access_token: 'other-at', id_token: 'id-token-b' }, link = { status: 200, body: { methods: ['google', 'password'] } } }: TBackendStub = {}) {
   const fetchMock = vi.fn(async (input: string | URL | Request) => {
     const url = String(input);
     if (url.endsWith('/auth/verify')) {

@@ -19,7 +19,7 @@ describe('createTransaction', () => {
     const { transaction } = createTransaction('/profile', { userId: 'user-1' });
 
     expect(transaction).toMatchObject({ purpose: 'link', userId: 'user-1', redirect: '/profile' });
-    expect(createTransaction('/profile').transaction).not.toHaveProperty('purpose');
+    expect(createTransaction('/profile').transaction).toMatchObject({ purpose: 'login' });
   });
 
   it('derives an S256 challenge from the verifier and never repeats', () => {
@@ -45,7 +45,7 @@ describe('parseTransaction', () => {
     const { transaction } = createTransaction('/profile', { userId: 'user-1' });
 
     expect(parseTransaction(JSON.stringify(transaction))).toEqual(transaction);
-    expect(parseTransaction(JSON.stringify({ ...transaction, userId: undefined }))).not.toHaveProperty('purpose');
+    expect(parseTransaction(JSON.stringify({ ...transaction, userId: undefined }))).toMatchObject({ purpose: 'login' });
   });
 });
 

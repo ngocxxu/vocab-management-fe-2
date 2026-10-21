@@ -1,6 +1,6 @@
 'use client';
 
-import type { TUser } from '@/types/auth';
+import type { TSignInMethods, TUser } from '@/types/auth';
 import type { TPlan } from '@/types/plan';
 import type { TSrsSettings } from '@/types/srs-settings';
 import { useTranslations } from 'next-intl';
@@ -17,7 +17,7 @@ type ProfilePageProps = {
   currentUser?: TUser | null;
   currentPlan?: TPlan | null;
   srsSettings?: TSrsSettings | null;
-  signInMethods?: string[] | null;
+  signInMethods?: TSignInMethods | null;
 };
 
 // The order is the order of the tabs. Spaced repetition comes right after the account, because it is what people come back for.

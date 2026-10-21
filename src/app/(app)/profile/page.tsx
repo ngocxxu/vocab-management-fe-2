@@ -12,15 +12,18 @@ export default async function ProfileRoutePage() {
   try {
     const user = await verifyUser();
     const currentPlan = user?.role ? (await getPlans(user.role))[0] ?? null : null;
-    const srsSettings = await getSrsSettings().catch((error: unknown) => {
-      if (isUnauthorizedError(error)) {
-        throw error;
-      }
-      // The rest of the profile still works without this section.
-      logger.error('Failed to load spaced repetition settings:', { error });
-      return null;
-    });
-    const signInMethods = await getSignInMethods();
+    // Independent of each other, so they run together.
+    const [srsSettings, signInMethods] = await Promise.all([
+      getSrsSettings().catch((error: unknown) => {
+        if (isUnauthorizedError(error)) {
+          throw error;
+        }
+        // The rest of the profile still works without this section.
+        logger.error('Failed to load spaced repetition settings:', { error });
+        return null;
+      }),
+      getSignInMethods(),
+    ]);
     return <ProfilePage currentUser={user} currentPlan={currentPlan} srsSettings={srsSettings} signInMethods={signInMethods} />;
   } catch (error) {
     if (isUnauthorizedError(error)) {

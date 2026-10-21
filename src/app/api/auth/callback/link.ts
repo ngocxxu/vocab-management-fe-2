@@ -1,39 +1,20 @@
 import type { TAuth0Transaction } from '@/libs/auth0';
-import { NextResponse } from 'next/server';
-import { AUTH0_CALLBACK_PATH, AUTH0_TXN_COOKIE, exchangeCode, getAuth0Config } from '@/libs/auth0';
+import type { NextResponse } from 'next/server';
+import { isAccountErrorCode } from '@/constants/auth';
+import { AUTH0_CALLBACK_PATH, exchangeCode, getAuth0Config } from '@/libs/auth0';
 import { logger } from '@/libs/Logger';
-import { API_ENDPOINTS } from '@/utils/api-config';
-import { getBackendAuthUrl, parseBackendResponse } from '../session-response';
-
-// Codes the Profile page can explain; anything else from the BE is shown as a generic failure.
-const KNOWN_LINK_ERRORS = new Set([
-  'identity_already_linked',
-  'email_not_verified',
-  'link_proof_stale',
-  'link_nonce_invalid',
-  'id_token_invalid',
-]);
+import { API_METHODS } from '@/utils/api-config';
+import { appRedirect } from '../link-result';
+import { fetchBackendWithBearer, parseBackendResponse, readBackendJson } from '../session-response';
 
 function done(appOrigin: string, transaction: TAuth0Transaction, result: { link: 'success' } | { link_error: string }): NextResponse {
-  const url = new URL(transaction.redirect, appOrigin);
   const [name, value] = Object.entries(result)[0] as [string, string];
-  url.searchParams.set(name, value);
-  url.hash = 'security';
-  const response = NextResponse.redirect(url);
-  response.cookies.set(AUTH0_TXN_COOKIE, '', { path: '/api/auth', maxAge: 0 });
-  return response;
+  return appRedirect(appOrigin, transaction.redirect, { [name]: value }, { hash: 'security', clearTransaction: true });
 }
 
 async function currentUserId(accessToken: string): Promise<string | null> {
-  const response = await fetch(getBackendAuthUrl(API_ENDPOINTS.auth.verify), {
-    headers: { Authorization: `Bearer ${accessToken}` },
-    signal: AbortSignal.timeout(10_000),
-  });
-  if (!response.ok) {
-    return null;
-  }
-  const body = await parseBackendResponse<{ id?: string }>(response) as { id?: string };
-  return typeof body.id === 'string' ? body.id : null;
+  const body = await readBackendJson<{ id?: string }>(await fetchBackendWithBearer(API_METHODS.auth.verify().endpoint, accessToken));
+  return typeof body?.id === 'string' ? body.id : null;
 }
 
 /** A link that did not get as far as the BE: Auth0 refused or the user cancelled, or the state did not match. */
@@ -57,19 +38,18 @@ export async function finishLink(appOrigin: string, transaction: TAuth0Transacti
       return done(appOrigin, transaction, { link_error: 'link_failed' });
     }
 
-    const response = await fetch(getBackendAuthUrl(API_ENDPOINTS.auth.link), {
+    const response = await fetchBackendWithBearer(API_METHODS.auth.link({ idToken: tokens.idToken }).endpoint, accessToken, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
-      body: JSON.stringify({ idToken: tokens.idToken }),
-      signal: AbortSignal.timeout(10_000),
+      body: { idToken: tokens.idToken },
     });
     if (response.ok) {
       return done(appOrigin, transaction, { link: 'success' });
     }
-    const body = await parseBackendResponse<unknown>(response) as { message?: unknown };
+    // The refusal's message is the code, so the body is read whatever the status.
+    const body = await parseBackendResponse<{ message?: unknown }>(response);
     const message = typeof body.message === 'string' ? body.message : '';
     logger.warn('Account link rejected:', { status: response.status, message });
-    return done(appOrigin, transaction, { link_error: KNOWN_LINK_ERRORS.has(message) ? message : 'link_failed' });
+    return done(appOrigin, transaction, { link_error: isAccountErrorCode(message) ? message : 'link_failed' });
   } catch (error) {
     logger.error('Account link failed:', { error });
     return done(appOrigin, transaction, { link_error: 'link_failed' });

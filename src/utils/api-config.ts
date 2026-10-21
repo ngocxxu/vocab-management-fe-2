@@ -119,6 +119,7 @@ export const API_ENDPOINTS = {
     identities: '/auth/identities',
     linkNonce: '/auth/identities/link-nonce',
     link: '/auth/identities/link',
+    password: '/auth/identities/password',
   },
   vocabs: '/vocabs',
   textTargets: '/vocabs/:vocabId/text-targets',
@@ -170,6 +171,11 @@ export const API_METHODS = {
     signout: () => ({ endpoint: API_ENDPOINTS.auth.signout }),
     deleteAccount: () => ({ endpoint: API_ENDPOINTS.auth.deleteAccount }),
     verify: () => ({ endpoint: API_ENDPOINTS.auth.verify }),
+    signInMethods: () => ({ endpoint: API_ENDPOINTS.auth.identities }),
+    linkNonce: () => ({ endpoint: API_ENDPOINTS.auth.linkNonce }),
+    link: (data: { idToken: string }) => ({ endpoint: API_ENDPOINTS.auth.link, data }),
+    addPassword: () => ({ endpoint: API_ENDPOINTS.auth.password, data: {} }),
+    sync: () => ({ endpoint: API_ENDPOINTS.auth.sync }),
   },
   vocabs: {
     getAll: (params?: VocabQueryParams) => {

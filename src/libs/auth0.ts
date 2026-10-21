@@ -12,7 +12,7 @@ export const LINK_SCOPE = 'openid profile email';
 export const LINK_MAX_AGE_SECONDS = 300;
 /** Where a link starts and ends: the Security tab of the profile page. */
 export const LINK_RETURN_PATH = '/profile';
-export const AUTH0_CONNECTIONS = { google: 'google-oauth2', password: 'Username-Password-Authentication' } as const;
+export const AUTH0_CONNECTIONS = { google: 'google-oauth2' } as const;
 const REQUEST_TIMEOUT_MS = 10_000;
 
 export type TAuth0Config = {
@@ -26,8 +26,8 @@ export type TAuth0Transaction = {
   state: string;
   verifier: string;
   redirect: string;
-  /** Set when the login connects another sign-in method to the signed-in User instead of signing in. */
-  purpose?: 'link';
+  /** `link` connects another sign-in method to the signed-in User instead of signing in. */
+  purpose: 'login' | 'link';
   /** The User who started the link. A consistency check only: the BE decides ownership from its own nonce and the session. */
   userId?: string;
 };
@@ -73,7 +73,12 @@ export function safeRedirectPath(value: string | null | undefined, fallback: str
 export function createTransaction(redirect: string, link?: { userId: string }): { transaction: TAuth0Transaction; challenge: string } {
   const verifier = randomBytes(32).toString('base64url');
   return {
-    transaction: { state: randomBytes(16).toString('base64url'), verifier, redirect, ...(link && { purpose: 'link' as const, userId: link.userId }) },
+    transaction: {
+      state: randomBytes(16).toString('base64url'),
+      verifier,
+      redirect,
+      ...(link ? { purpose: 'link' as const, userId: link.userId } : { purpose: 'login' as const }),
+    },
     challenge: createHash('sha256').update(verifier).digest('base64url'),
   };
 }
@@ -96,8 +101,14 @@ export function parseTransaction(raw: string | undefined): TAuth0Transaction | n
   try {
     const value = JSON.parse(raw) as Partial<TAuth0Transaction>;
     if (typeof value.state === 'string' && typeof value.verifier === 'string' && typeof value.redirect === 'string') {
+      // Transactions written before `purpose` existed are logins.
       const isLink = value.purpose === 'link' && typeof value.userId === 'string' && value.userId.length > 0;
-      return { state: value.state, verifier: value.verifier, redirect: value.redirect, ...(isLink && { purpose: 'link' as const, userId: value.userId }) };
+      return {
+        state: value.state,
+        verifier: value.verifier,
+        redirect: value.redirect,
+        ...(isLink ? { purpose: 'link' as const, userId: value.userId } : { purpose: 'login' as const }),
+      };
     }
   } catch {}
   return null;
