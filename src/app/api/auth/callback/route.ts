@@ -1,5 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import { VERIFY_EMAIL_PATH } from '@/constants/auth';
 import { AUTH0_CALLBACK_PATH, AUTH0_TXN_COOKIE, exchangeCode, getAppOrigin, getAuth0Config, parseTransaction, statesMatch } from '@/libs/auth0';
 import { logger } from '@/libs/Logger';
 import { API_METHODS } from '@/utils/api-config';
@@ -11,7 +12,11 @@ import { finishLink, linkFailed } from './link';
 // Codes the landing page knows how to explain; anything else from the BE is shown as a generic failure.
 const KNOWN_SYNC_ERRORS = new Set(['email_not_verified', 'account_link_required']);
 
+// An unverified email has its own page with the way forward, so it does not land on the landing page.
 function failure(appOrigin: string, code: string): NextResponse {
+  if (code === 'email_not_verified') {
+    return appRedirect(appOrigin, VERIFY_EMAIL_PATH, {}, { clearTransaction: true });
+  }
   return appRedirect(appOrigin, '/', { auth_error: code }, { clearTransaction: true });
 }
 

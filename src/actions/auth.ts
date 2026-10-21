@@ -12,6 +12,7 @@ import { getRefreshLock, getRefreshLockKey, invalidateRefreshLock, performRefres
 import { clearAuthCookies, getAccessToken, getRefreshToken, setAuthCookies } from '@/utils/auth-cookies';
 import { isUnauthorizedError } from '@/utils/auth-error';
 import { isAdmin } from '@/utils/is-admin';
+import { emailAddressSchema } from '@/libs/validations/email';
 import { authApi } from '@/utils/server-api';
 import { toActionError, translateError } from './utils';
 
@@ -119,6 +120,23 @@ export async function getSignInMethods(): Promise<TSignInMethods | null> {
     // The rest of the profile still works without this section.
     logger.error('Failed to load sign-in methods:', { error });
     return null;
+  }
+}
+
+/**
+ * Asks the BE for a new verification link to an unverified sign-in with this address. Resolves the same way whatever the address
+ * is, so it reveals nothing about accounts. The BE applies the per-address cooldown and the rate limit.
+ */
+export async function resendVerificationEmail(email: string): Promise<void> {
+  // No requireAuth() or revalidatePath(): the User is signed out here, as in signout and refresh.
+  const parsed = emailAddressSchema.safeParse(email);
+  if (!parsed.success) {
+    throw new Error(await translateError('invalidEmail'));
+  }
+  try {
+    await authApi.resendConfirmation(parsed.data);
+  } catch (error) {
+    throw await toActionError(error, 'resendConfirmation');
   }
 }
 

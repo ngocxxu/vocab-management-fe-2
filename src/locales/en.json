@@ -175,6 +175,18 @@
     "other": "Other"
   },
   "auth": {
+    "verifyEmail": {
+      "title": "Verify your email",
+      "description": "Your account is waiting for email verification. Enter the email you signed up with and we will send a new link.",
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@example.com",
+      "submit": "Send a new link",
+      "submitting": "Sending...",
+      "cooling": "Send again in {seconds}s",
+      "sent": "If this email is waiting for verification, we have sent a new link. Check your inbox, and the spam folder too.",
+      "invalidEmail": "Enter a valid email address.",
+      "backToSignIn": "Back to sign in"
+    },
     "errors": {
       "login_failed": "Sign-in failed. Please try again.",
       "email_not_verified": "Please verify your email address first, then sign in again.",

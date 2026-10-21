@@ -175,6 +175,18 @@
     "other": "Khác"
   },
   "auth": {
+    "verifyEmail": {
+      "title": "Xác minh email của bạn",
+      "description": "Tài khoản của bạn đang chờ xác minh email. Nhập email bạn đã đăng ký, chúng tôi sẽ gửi liên kết mới.",
+      "emailLabel": "Email",
+      "emailPlaceholder": "ban@example.com",
+      "submit": "Gửi liên kết mới",
+      "submitting": "Đang gửi...",
+      "cooling": "Gửi lại sau {seconds} giây",
+      "sent": "Nếu email này đang chờ xác minh, chúng tôi đã gửi liên kết mới. Hãy kiểm tra hộp thư và cả thư rác.",
+      "invalidEmail": "Nhập một địa chỉ email hợp lệ.",
+      "backToSignIn": "Quay lại đăng nhập"
+    },
     "errors": {
       "login_failed": "Đăng nhập thất bại. Vui lòng thử lại.",
       "email_not_verified": "Vui lòng xác minh địa chỉ email trước, rồi đăng nhập lại.",

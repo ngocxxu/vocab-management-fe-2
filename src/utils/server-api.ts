@@ -213,6 +213,10 @@ export const authApi = {
     const config = API_METHODS.auth.signInMethods();
     return serverApi.get<TSignInMethods>(config.endpoint);
   },
+  resendConfirmation: (email: string) => {
+    const config = API_METHODS.auth.resendConfirmation(email);
+    return serverApi.post<{ accepted: true }>(config.endpoint, config.data);
+  },
   addPassword: () => {
     const config = API_METHODS.auth.addPassword();
     return serverApi.post<{ emailSent: boolean }>(config.endpoint, config.data);
