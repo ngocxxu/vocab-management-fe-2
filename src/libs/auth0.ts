@@ -6,6 +6,13 @@ export const AUTH0_TXN_COOKIE = 'auth0_txn';
 export const AUTH0_TXN_MAX_AGE_SECONDS = 600;
 export const AUTH0_CALLBACK_PATH = '/api/auth/callback';
 const SCOPE = 'openid profile email offline_access';
+// Linking another sign-in method only needs the ID token, so no refresh token is requested.
+export const LINK_SCOPE = 'openid profile email';
+/** The BE accepts a link proof whose sign-in is at most this old (ADR 0004), so Auth0 is told to demand a fresh one. */
+export const LINK_MAX_AGE_SECONDS = 300;
+/** Where a link starts and ends: the Security tab of the profile page. */
+export { LINK_RETURN_PATH } from '@/constants/auth';
+export const AUTH0_CONNECTIONS = { google: 'google-oauth2' } as const;
 const REQUEST_TIMEOUT_MS = 10_000;
 
 export type TAuth0Config = {
@@ -19,11 +26,16 @@ export type TAuth0Transaction = {
   state: string;
   verifier: string;
   redirect: string;
+  /** `link` connects another sign-in method to the signed-in User instead of signing in. */
+  purpose: 'login' | 'link';
+  /** The User who started the link. A consistency check only: the BE decides ownership from its own nonce and the session. */
+  userId?: string;
 };
 
 export type TAuth0Tokens = {
   accessToken: string;
   refreshToken: string | null;
+  idToken: string | null;
 };
 
 /** Reads the Auth0 settings; throws (never returns a half-filled config) so a misconfigured deploy fails loudly. */
@@ -58,11 +70,27 @@ export function safeRedirectPath(value: string | null | undefined, fallback: str
   }
 }
 
-export function createTransaction(redirect: string): { transaction: TAuth0Transaction; challenge: string } {
+export function createTransaction(redirect: string, link?: { userId: string }): { transaction: TAuth0Transaction; challenge: string } {
   const verifier = randomBytes(32).toString('base64url');
   return {
-    transaction: { state: randomBytes(16).toString('base64url'), verifier, redirect },
+    transaction: {
+      state: randomBytes(16).toString('base64url'),
+      verifier,
+      redirect,
+      ...(link ? { purpose: 'link' as const, userId: link.userId } : { purpose: 'login' as const }),
+    },
     challenge: createHash('sha256').update(verifier).digest('base64url'),
+  };
+}
+
+/** Lax so the cookie comes back on Auth0's top-level redirect to the callback; path-scoped to the auth routes. */
+export function transactionCookieOptions() {
+  return {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax' as const,
+    path: '/api/auth',
+    maxAge: AUTH0_TXN_MAX_AGE_SECONDS,
   };
 }
 
@@ -73,7 +101,14 @@ export function parseTransaction(raw: string | undefined): TAuth0Transaction | n
   try {
     const value = JSON.parse(raw) as Partial<TAuth0Transaction>;
     if (typeof value.state === 'string' && typeof value.verifier === 'string' && typeof value.redirect === 'string') {
-      return { state: value.state, verifier: value.verifier, redirect: value.redirect };
+      // Transactions written before `purpose` existed are logins.
+      const isLink = value.purpose === 'link' && typeof value.userId === 'string' && value.userId.length > 0;
+      return {
+        state: value.state,
+        verifier: value.verifier,
+        redirect: value.redirect,
+        ...(isLink ? { purpose: 'link' as const, userId: value.userId } : { purpose: 'login' as const }),
+      };
     }
   } catch {}
   return null;
@@ -90,14 +125,27 @@ export function statesMatch(expected: string, received: string | null): boolean 
 
 export function buildAuthorizeUrl(
   config: TAuth0Config,
-  params: { redirectUri: string; state: string; challenge: string; signup?: boolean; googleOnly?: boolean; locale?: string },
+  params: {
+    redirectUri: string;
+    state: string;
+    challenge: string;
+    signup?: boolean;
+    googleOnly?: boolean;
+    locale?: string;
+    /** Link mode: the connection to use, the BE's nonce, and a forced fresh sign-in. */
+    connection?: string;
+    nonce?: string;
+    forceLogin?: boolean;
+    maxAgeSeconds?: number;
+    scope?: string;
+  },
 ): string {
   const url = new URL(`https://${config.domain}/authorize`);
   url.searchParams.set('response_type', 'code');
   url.searchParams.set('client_id', config.clientId);
   url.searchParams.set('redirect_uri', params.redirectUri);
   url.searchParams.set('audience', config.audience);
-  url.searchParams.set('scope', SCOPE);
+  url.searchParams.set('scope', params.scope ?? SCOPE);
   url.searchParams.set('state', params.state);
   url.searchParams.set('code_challenge', params.challenge);
   url.searchParams.set('code_challenge_method', 'S256');
@@ -105,7 +153,19 @@ export function buildAuthorizeUrl(
     url.searchParams.set('screen_hint', 'signup');
   }
   if (params.googleOnly) {
-    url.searchParams.set('connection', 'google-oauth2');
+    url.searchParams.set('connection', AUTH0_CONNECTIONS.google);
+  }
+  if (params.connection) {
+    url.searchParams.set('connection', params.connection);
+  }
+  if (params.nonce) {
+    url.searchParams.set('nonce', params.nonce);
+  }
+  if (params.forceLogin) {
+    url.searchParams.set('prompt', 'login');
+  }
+  if (params.maxAgeSeconds !== undefined) {
+    url.searchParams.set('max_age', String(params.maxAgeSeconds));
   }
   // Universal Login does not read the app's locale cookie; this tells Auth0 which language to show.
   if (params.locale) {
@@ -136,7 +196,11 @@ function readTokens(data: Record<string, unknown>): TAuth0Tokens | null {
   if (typeof data.access_token !== 'string' || data.access_token.length === 0) {
     return null;
   }
-  return { accessToken: data.access_token, refreshToken: typeof data.refresh_token === 'string' && data.refresh_token ? data.refresh_token : null };
+  return {
+    accessToken: data.access_token,
+    refreshToken: typeof data.refresh_token === 'string' && data.refresh_token ? data.refresh_token : null,
+    idToken: typeof data.id_token === 'string' && data.id_token ? data.id_token : null,
+  };
 }
 
 /** Returns null on any failure; the caller only needs to know the login did not work. */

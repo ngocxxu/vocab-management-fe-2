@@ -2,28 +2,22 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { AUTH0_CALLBACK_PATH, AUTH0_TXN_COOKIE, exchangeCode, getAppOrigin, getAuth0Config, parseTransaction, statesMatch } from '@/libs/auth0';
 import { logger } from '@/libs/Logger';
-import { API_ENDPOINTS } from '@/utils/api-config';
+import { API_METHODS } from '@/utils/api-config';
 import { AUTH_COOKIE_OPTIONS, REFRESH_COOKIE_OPTIONS } from '@/utils/auth-cookies';
-import { getBackendAuthUrl, parseBackendResponse } from '../session-response';
+import { appRedirect } from '../link-result';
+import { fetchBackendWithBearer, parseBackendResponse } from '../session-response';
+import { finishLink, linkFailed } from './link';
 
 // Codes the landing page knows how to explain; anything else from the BE is shown as a generic failure.
 const KNOWN_SYNC_ERRORS = new Set(['email_not_verified', 'account_link_required']);
 
 function failure(appOrigin: string, code: string): NextResponse {
-  const url = new URL('/', appOrigin);
-  url.searchParams.set('auth_error', code);
-  const response = NextResponse.redirect(url);
-  response.cookies.set(AUTH0_TXN_COOKIE, '', { path: '/api/auth', maxAge: 0 });
-  return response;
+  return appRedirect(appOrigin, '/', { auth_error: code }, { clearTransaction: true });
 }
 
 /** Creates the Vocab user on first login (idempotent). Returns an error code, or null on success. */
 async function syncUser(accessToken: string): Promise<string | null> {
-  const response = await fetch(getBackendAuthUrl(API_ENDPOINTS.auth.sync), {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
-    signal: AbortSignal.timeout(10_000),
-  });
+  const response = await fetchBackendWithBearer(API_METHODS.auth.sync().endpoint, accessToken, { method: 'POST' });
   if (response.ok) {
     return null;
   }
@@ -38,6 +32,15 @@ export async function GET(request: NextRequest) {
   const { searchParams, origin } = request.nextUrl;
   const appOrigin = getAppOrigin(origin);
   const transaction = parseTransaction(request.cookies.get(AUTH0_TXN_COOKIE)?.value);
+
+  if (transaction?.purpose === 'link') {
+    // A link never signs anyone in. A refused or cancelled Auth0 step comes back here too, so it is handled as a failed link.
+    const linkCode = searchParams.get('code');
+    if (searchParams.get('error') || !linkCode || !statesMatch(transaction.state, searchParams.get('state'))) {
+      return linkFailed(appOrigin, transaction);
+    }
+    return finishLink(appOrigin, transaction, linkCode, request.cookies.get('accessToken')?.value);
+  }
 
   if (searchParams.get('error')) {
     logger.warn('Auth0 returned an error:', { error: searchParams.get('error'), description: searchParams.get('error_description') });

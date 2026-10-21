@@ -1,6 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import { AUTH0_CALLBACK_PATH, AUTH0_TXN_COOKIE, AUTH0_TXN_MAX_AGE_SECONDS, buildAuthorizeUrl, createTransaction, getAppOrigin, getAuth0Config, safeRedirectPath } from '@/libs/auth0';
+import { AUTH0_CALLBACK_PATH, AUTH0_TXN_COOKIE, buildAuthorizeUrl, createTransaction, getAppOrigin, getAuth0Config, safeRedirectPath, transactionCookieOptions } from '@/libs/auth0';
 import { DEFAULT_LOCALE, isLocale, LOCALE_COOKIE_NAME } from '@/i18n/config';
 import { logger } from '@/libs/Logger';
 
@@ -24,14 +24,7 @@ export function GET(request: NextRequest) {
     });
 
     const response = NextResponse.redirect(authorizeUrl);
-    // Lax so the cookie comes back on Auth0's top-level redirect to the callback; path-scoped to the auth routes.
-    response.cookies.set(AUTH0_TXN_COOKIE, JSON.stringify(transaction), {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/api/auth',
-      maxAge: AUTH0_TXN_MAX_AGE_SECONDS,
-    });
+    response.cookies.set(AUTH0_TXN_COOKIE, JSON.stringify(transaction), transactionCookieOptions());
     return response;
   } catch (error) {
     logger.error('Auth0 login start failed:', { error });

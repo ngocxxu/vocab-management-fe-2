@@ -1,8 +1,10 @@
 'use server';
 
+import { revalidatePath } from 'next/cache';
 import { cache } from 'react';
 import type {
   TRefreshData,
+  TSignInMethods,
   TUser,
 } from '@/types/auth';
 import { logger } from '@/libs/Logger';
@@ -90,6 +92,35 @@ async function verifyUserImpl(): Promise<TUser | null> {
 }
 
 export const verifyUser = cache(verifyUserImpl);
+
+/**
+ * Asks the BE to create the caller's password login; Auth0 emails the set-password link (ADR 0004).
+ * A refusal throws with the BE's code as the message (`email_not_verified`, `password_login_exists`), like other actions.
+ */
+export async function addPasswordLogin(): Promise<void> {
+  await requireAuth();
+  try {
+    await authApi.addPassword();
+  } catch (error) {
+    throw await toActionError(error, 'link_failed');
+  }
+  revalidatePath('/profile');
+}
+
+/** The caller's connected sign-in methods as labels (`google`, `password`), or null when they cannot be loaded. */
+export async function getSignInMethods(): Promise<TSignInMethods | null> {
+  await requireAuth();
+  try {
+    return await authApi.signInMethods();
+  } catch (error) {
+    if (isUnauthorizedError(error)) {
+      throw error;
+    }
+    // The rest of the profile still works without this section.
+    logger.error('Failed to load sign-in methods:', { error });
+    return null;
+  }
+}
 
 export async function deleteAccount(): Promise<{ message: string }> {
   await requireAuth();

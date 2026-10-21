@@ -8,6 +8,7 @@ import type {
   VocabTrainerQueryParams,
 } from './api-config';
 import type { ResponseAPI, TLanguage, TLanguageFolder, TUser } from '@/types';
+import type { TSignInMethods } from '@/types/auth';
 import type { TPlan } from '@/types/plan';
 import type {
   TAdminLanguage,
@@ -169,6 +170,14 @@ export const authApi = {
   verify: () => {
     const config = API_METHODS.auth.verify();
     return serverApi.get<TUser>(config.endpoint);
+  },
+  signInMethods: () => {
+    const config = API_METHODS.auth.signInMethods();
+    return serverApi.get<TSignInMethods>(config.endpoint);
+  },
+  addPassword: () => {
+    const config = API_METHODS.auth.addPassword();
+    return serverApi.post<{ emailSent: boolean }>(config.endpoint, config.data);
   },
 };
 

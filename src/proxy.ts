@@ -1,10 +1,11 @@
 import type { NextFetchEvent, NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { getRefreshLock, getRefreshLockKey, performRefresh } from '@/libs/refresh-lock';
-import { LOGIN_PATH } from '@/constants/auth';
+import { LINK_RETURN_PATH, LOGIN_PATH } from '@/constants/auth';
 import { AUTH_COOKIE_OPTIONS, REFRESH_COOKIE_OPTIONS } from '@/utils/auth-cookies';
 
-const PROTECTED = ['/dashboard', '/library', '/vocab-list', '/vocab-trainer', '/profile', '/subjects', '/notifications', '/admin'];
+// /api/auth/link is listed so an access token that expires is refreshed before the link reads it. The callback is not, because a login has no session yet.
+const PROTECTED = ['/dashboard', '/library', '/vocab-list', '/vocab-trainer', '/profile', '/subjects', '/notifications', '/admin', '/api/auth/link'];
 const REFRESH_THRESHOLD = 60;
 
 type Session = { access_token: string; refresh_token: string };
@@ -87,10 +88,11 @@ function withRefreshedSession(request: NextRequest, session: Session): NextRespo
   return setAuthCookies(NextResponse.next({ request: { headers } }), session);
 }
 
+// 303, not the default 307: a POST that expired must come back to the login route as a GET (that route has no POST).
 function loginRedirect(request: NextRequest, path: string): NextResponse {
   const url = new URL(LOGIN_PATH, request.url);
   url.searchParams.set('redirect', getSafeRedirectPath(path, path));
-  return NextResponse.redirect(url);
+  return NextResponse.redirect(url, 303);
 }
 
 export default async function proxy(request: NextRequest, _event: NextFetchEvent) {
@@ -102,7 +104,8 @@ export default async function proxy(request: NextRequest, _event: NextFetchEvent
 
   const token = request.cookies.get('accessToken')?.value;
   const refreshToken = request.cookies.get('refreshToken')?.value;
-  const returnTo = `${pathname}${request.nextUrl.search}`;
+  // A route handler is not a page the User can return to after logging in; the link form goes back to the Profile page.
+  const returnTo = pathname.startsWith('/api/') ? LINK_RETURN_PATH : `${pathname}${request.nextUrl.search}`;
 
   if (refreshToken && shouldRefresh(token, request)) {
     const lockKey = getRefreshLockKey(token, refreshToken);

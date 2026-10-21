@@ -178,7 +178,7 @@
     "errors": {
       "login_failed": "Đăng nhập thất bại. Vui lòng thử lại.",
       "email_not_verified": "Vui lòng xác minh địa chỉ email trước, rồi đăng nhập lại.",
-      "account_link_required": "Đã có tài khoản với email này. Hãy nhờ quản trị viên liên kết tài khoản đăng nhập của bạn.",
+      "account_link_required": "Đã có tài khoản với email này. Hãy đăng nhập bằng phương thức bạn đã dùng trước đây, rồi kết nối phương thức này tại Hồ sơ, Bảo mật, Phương thức đăng nhập.",
       "auth_not_configured": "Hiện chưa thể đăng nhập. Vui lòng thử lại sau."
     },
     "sessionExpired": {
@@ -261,7 +261,35 @@
       "title": "Bảo mật",
       "description": "Cách bạn đăng nhập và cách tài khoản được bảo vệ.",
       "twoFactor": "Xác thực hai lớp",
-      "twoFactorHint": "Yêu cầu mã xác minh khi bạn đăng nhập. Sắp ra mắt."
+      "twoFactorHint": "Yêu cầu mã xác minh khi bạn đăng nhập.",
+      "comingSoon": "Sắp ra mắt"
+    },
+    "signInMethods": {
+      "title": "Phương thức đăng nhập",
+      "description": "Các cách bạn có thể đăng nhập vào tài khoản này. Kết nối thêm một cách để đăng nhập bằng cả hai.",
+      "google": "Google",
+      "password": "Mật khẩu",
+      "connectGoogle": "Kết nối Google",
+      "addPassword": "Thêm mật khẩu",
+      "passwordSentToast": "Đã gửi email.",
+      "pendingHint": "Hãy kiểm tra hộp thư. Mở liên kết chúng tôi đã gửi để đặt mật khẩu.",
+      "resend": "Gửi lại email",
+      "success": "Đã kết nối phương thức đăng nhập. Bạn có thể đăng nhập bằng một trong hai.",
+      "errors": {
+        "identity_already_linked": "Phương thức đăng nhập đó đã thuộc về một tài khoản khác. Không có gì thay đổi.",
+        "email_not_verified": "Hãy kiểm tra hộp thư để xác minh email, rồi kết nối lại.",
+        "link_proof_stale": "Đăng nhập mất quá nhiều thời gian. Vui lòng kết nối lại.",
+        "link_nonce_invalid": "Yêu cầu kết nối này không còn hợp lệ. Vui lòng bắt đầu lại.",
+        "id_token_invalid": "Không thể xác minh lần đăng nhập đó. Vui lòng thử lại.",
+        "link_session_changed": "Phiên của bạn đã thay đổi khi đang kết nối. Vui lòng đăng nhập lại và thử lại.",
+        "password_login_exists": "Đã có tài khoản mật khẩu với email này và không thuộc tài khoản này. Hãy đăng nhập bằng tài khoản đó, rồi kết nối Google trong Cài đặt của nó.",
+        "link_failed": "Không thể kết nối phương thức đăng nhập đó. Vui lòng thử lại."
+      },
+      "status": {
+        "connected": "Đã kết nối",
+        "pending": "Chờ thiết lập"
+      },
+      "loadFailed": "Không tải được phương thức đăng nhập. Tải lại trang để thử lại."
     },
     "plan": {
       "title": "Gói dịch vụ",
