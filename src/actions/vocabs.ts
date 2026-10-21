@@ -11,7 +11,6 @@ import { requireAuth } from './auth';
 import { toActionError, translateError } from './utils';
 
 export async function createVocab(vocabData: TCreateVocab) {
-  await requireAuth();
   if (!vocabData || typeof vocabData !== 'object') {
     throw new Error('Vocab data is required');
   }
@@ -29,7 +28,6 @@ export async function createVocab(vocabData: TCreateVocab) {
 }
 
 export async function updateVocab(id: string, vocabData: Partial<TCreateVocab>) {
-  await requireAuth();
   if (!id || typeof id !== 'string') {
     throw new Error('Vocab ID is required');
   }
@@ -49,7 +47,6 @@ export async function updateVocab(id: string, vocabData: Partial<TCreateVocab>) 
 
 /** Deletes a word. A word still in a trainer is refused and returned as a conflict; nothing is deleted then. */
 export async function deleteVocab(id: string): Promise<TDeleteVocabResult> {
-  await requireAuth();
   if (!id || typeof id !== 'string') {
     throw new Error('Vocab ID is required');
   }
@@ -69,7 +66,6 @@ export async function deleteVocab(id: string): Promise<TDeleteVocabResult> {
 }
 
 export async function createVocabsBulk(vocabData: TCreateVocab[]) {
-  await requireAuth();
   if (!Array.isArray(vocabData) || vocabData.length === 0) {
     throw new Error('Vocab data array is required and must not be empty');
   }
@@ -85,7 +81,6 @@ export async function createVocabsBulk(vocabData: TCreateVocab[]) {
 
 /** Deletes several words, all or nothing: if one is still in a trainer the conflict is returned and none is deleted. */
 export async function deleteVocabsBulk(ids: string[]): Promise<TDeleteVocabResult> {
-  await requireAuth();
   if (!Array.isArray(ids) || ids.length === 0) {
     throw new Error('IDs array is required and must not be empty');
   }
@@ -105,7 +100,6 @@ export async function deleteVocabsBulk(ids: string[]): Promise<TDeleteVocabResul
 }
 
 export async function bulkUpdateVocabs(updates: TBulkVocabUpdateItem[]): Promise<TVocab[]> {
-  await requireAuth();
   if (!Array.isArray(updates) || updates.length === 0) {
     throw new Error('Updates array is required and must not be empty');
   }
@@ -128,7 +122,6 @@ export async function importVocabsCsv(
     targetLanguageCode: string;
   },
 ) {
-  await requireAuth();
   if (!file || !(file instanceof File)) {
     throw new Error('File is required');
   }
@@ -180,8 +173,6 @@ export async function getRandomVocabsForSelection(
   params: RandomVocabQueryParams,
 ): Promise<TVocab[] | { error: string }> {
   try {
-    await requireAuth();
-
     if (!params || typeof params !== 'object') {
       throw new Error('Params are required');
     }
@@ -213,7 +204,6 @@ export async function getRandomVocabsForSelection(
 
 export async function getVocabsByIds(ids: string[]): Promise<TVocab[] | { error: string }> {
   try {
-    await requireAuth();
     if (!Array.isArray(ids)) {
       throw new TypeError('IDs must be an array');
     }
@@ -236,8 +226,6 @@ export async function generateTextTargetContent(data: {
   sourceLanguageCode: string;
   targetLanguageCode: string;
 }): Promise<{ jobId: string }> {
-  await requireAuth();
-
   try {
     return await vocabApi.generateTextTarget(data);
   } catch (error) {

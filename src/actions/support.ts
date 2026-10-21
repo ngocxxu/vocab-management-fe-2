@@ -5,7 +5,6 @@ import { Resend } from 'resend';
 import { toDisplayMessage } from '@/i18n/validation';
 import { supportSchema } from '@/libs/validations/support';
 import type { TSupportFormData } from '@/libs/validations/support';
-import { requireAuth } from './auth';
 import { toActionError } from './utils';
 
 const SUPPORT_TO = 'ngocquach97@gmail.com';
@@ -21,8 +20,6 @@ function getResend(): Resend {
 }
 
 export async function sendSupportEmail(data: TSupportFormData): Promise<{ messageId?: string }> {
-  await requireAuth();
-
   const parsed = supportSchema.safeParse(data);
   if (!parsed.success) {
     const t = await getTranslations();

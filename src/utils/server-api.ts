@@ -61,14 +61,15 @@ import type { TWordTypeResponse } from '@/types/word-type';
 import { Env } from '@/libs/Env';
 import { BackendRequestError } from '@/utils/backend-request-error';
 import { logger } from '@/libs/Logger';
-import { getAccessToken } from '@/utils/auth-cookies';
+import { getRefreshLock, getRefreshLockKey, performRefresh } from '@/libs/refresh-lock';
+import { getAccessToken, getRefreshToken, setAuthCookies } from '@/utils/auth-cookies';
 import { API_ENDPOINTS, API_METHODS } from './api-config';
 
 class ServerAPI {
   readonly baseURL = Env.NESTJS_API_URL || 'http://localhost:3002/api/v1';
 
-  private async doFetch(endpoint: string, options: RequestInit): Promise<Response> {
-    const token = await getAccessToken();
+  private async doFetch(endpoint: string, options: RequestInit, tokenOverride?: string): Promise<Response> {
+    const token = tokenOverride ?? await getAccessToken();
 
     return fetch(`${this.baseURL}${endpoint}`, {
       ...options,
@@ -80,12 +81,49 @@ class ServerAPI {
     });
   }
 
+  /**
+   * Actions no longer call GET /auth/verify before every data call (it burned the per-minute throttle),
+   * so an expired access token is refreshed here, once, when the backend answers 401.
+   * Null means there is no session to refresh. `/auth/*` endpoints manage their own session.
+   */
+  private async refreshAccessToken(): Promise<string | null> {
+    const accessToken = await getAccessToken();
+    const refreshToken = await getRefreshToken();
+    if (!refreshToken) {
+      return null;
+    }
+
+    const session = await getRefreshLock(getRefreshLockKey(accessToken, refreshToken)).getOrRefresh(
+      () => performRefresh(refreshToken),
+    );
+    if (!session) {
+      return null;
+    }
+
+    try {
+      await setAuthCookies(session.access_token, session.refresh_token);
+    } catch {
+      // Cookies are read-only while a page renders; the request below still uses the new token and the proxy persists it on the next navigation.
+    }
+    return session.access_token;
+  }
+
+  private async fetchWithRefresh(endpoint: string, options: RequestInit): Promise<Response> {
+    const response = await this.doFetch(endpoint, options);
+    if (response.status !== 401 || endpoint.startsWith('/auth/')) {
+      return response;
+    }
+
+    const refreshedToken = await this.refreshAccessToken();
+    return refreshedToken ? this.doFetch(endpoint, options, refreshedToken) : response;
+  }
+
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     if (!endpoint || typeof endpoint !== 'string') {
       throw new Error('Endpoint must be a non-empty string');
     }
 
-    const response = await this.doFetch(endpoint, options);
+    const response = await this.fetchWithRefresh(endpoint, options);
 
     // 1. Handle Response Content
     // Check if the response is JSON based on headers or empty body (204)

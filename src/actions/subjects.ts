@@ -5,7 +5,6 @@ import { isStandardErrorBody } from '@/types/api-error';
 import { BackendRequestError } from '@/utils/backend-request-error';
 import { parseVocabularyCountFromConflictMessage } from '@/utils/parse-vocabulary-conflict-count';
 import { subjectsApi } from '@/utils/server-api';
-import { requireAuth } from './auth';
 import { toActionError } from './utils';
 
 export type DeleteSubjectResult
@@ -13,7 +12,6 @@ export type DeleteSubjectResult
     | { ok: false; code: 'CONFLICT'; vocabularyCount?: number };
 
 export async function createSubject(subjectData: { name: string }) {
-  await requireAuth();
   try {
     const result = await subjectsApi.create({ ...subjectData, order: 0 });
     revalidatePath('/subjects');
@@ -25,7 +23,6 @@ export async function createSubject(subjectData: { name: string }) {
 }
 
 export async function updateSubject(id: string, subjectData: { name: string; order: number }) {
-  await requireAuth();
   try {
     const result = await subjectsApi.update(id, subjectData);
     revalidatePath('/subjects');
@@ -37,7 +34,6 @@ export async function updateSubject(id: string, subjectData: { name: string; ord
 }
 
 export async function deleteSubject(id: string): Promise<DeleteSubjectResult> {
-  await requireAuth();
   try {
     await subjectsApi.delete(id);
     revalidatePath('/subjects');
@@ -56,7 +52,6 @@ export async function deleteSubject(id: string): Promise<DeleteSubjectResult> {
 }
 
 export async function reorderSubjects(subjects: { id: string; order: number }[]) {
-  await requireAuth();
   try {
     const result = await subjectsApi.reorder(subjects);
     revalidatePath('/subjects');
@@ -71,7 +66,6 @@ export async function generateSubjectSuggestions(data: {
   textTarget: string;
   targetLanguageCode: string;
 }): Promise<{ jobId: string }> {
-  await requireAuth();
   try {
     return await subjectsApi.generate(data);
   } catch (error) {

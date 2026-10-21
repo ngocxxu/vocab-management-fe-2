@@ -5,11 +5,9 @@ import type { TextTargetQueryParams } from '@/utils/api-config';
 import type { TCreateTextTarget, TTextTarget, TUpdateTextTarget } from '@/types/vocab-list';
 import { revalidatePath } from 'next/cache';
 import { textTargetApi } from '@/utils/server-api';
-import { requireAuth } from './auth';
 import { toActionError } from './utils';
 
 export async function getTextTargets(vocabId: string, params?: TextTargetQueryParams): Promise<ResponseAPI<TTextTarget[]>> {
-  await requireAuth();
   if (!vocabId) {
     throw new Error('Vocab ID is required');
   }
@@ -21,7 +19,6 @@ export async function getTextTargets(vocabId: string, params?: TextTargetQueryPa
 }
 
 export async function getTextTargetById(vocabId: string, id: string): Promise<TTextTarget> {
-  await requireAuth();
   if (!vocabId || !id) {
     throw new Error('Vocab ID and text target ID are required');
   }
@@ -33,7 +30,6 @@ export async function getTextTargetById(vocabId: string, id: string): Promise<TT
 }
 
 export async function createTextTarget(vocabId: string, data: TCreateTextTarget): Promise<TTextTarget> {
-  await requireAuth();
   if (!vocabId) {
     throw new Error('Vocab ID is required');
   }
@@ -47,7 +43,6 @@ export async function createTextTarget(vocabId: string, data: TCreateTextTarget)
 }
 
 export async function updateTextTarget(vocabId: string, id: string, data: TUpdateTextTarget): Promise<TTextTarget> {
-  await requireAuth();
   if (!vocabId || !id) {
     throw new Error('Vocab ID and text target ID are required');
   }
@@ -61,7 +56,6 @@ export async function updateTextTarget(vocabId: string, id: string, data: TUpdat
 }
 
 export async function deleteTextTarget(vocabId: string, id: string): Promise<void> {
-  await requireAuth();
   if (!vocabId || !id) {
     throw new Error('Vocab ID and text target ID are required');
   }

@@ -3,7 +3,7 @@
 import type { TMessage } from '@/types/chat';
 import { API_METHODS } from '@/utils/api-config';
 import { serverApi } from '@/utils/server-api';
-import { requireAuth, verifyUser } from './auth';
+import { verifyUser } from './auth';
 import { toActionError } from './utils';
 
 export async function getChatUnreadCount(): Promise<number> {
@@ -21,7 +21,6 @@ export async function getChatUnreadCount(): Promise<number> {
 }
 
 export async function getChatMessages(cursor?: string): Promise<{ messages: TMessage[]; nextCursor: string | null }> {
-  await requireAuth();
   try {
     const { endpoint } = API_METHODS.chat.getMessages(cursor);
     const data = await serverApi.get<{ items: TMessage[]; nextCursor: string | null }>(endpoint);
@@ -33,7 +32,6 @@ export async function getChatMessages(cursor?: string): Promise<{ messages: TMes
 }
 
 export async function markChatRead(): Promise<void> {
-  await requireAuth();
   try {
     const { endpoint } = API_METHODS.chat.markRead();
     await serverApi.patch<void>(endpoint, {});

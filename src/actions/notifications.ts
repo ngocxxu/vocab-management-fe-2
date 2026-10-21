@@ -3,11 +3,9 @@
 import type { TNotificationInput, TUpdateNotificationStatusInput } from '@/types/notification';
 import { revalidatePath } from 'next/cache';
 import { notificationsApi } from '@/utils/server-api';
-import { requireAuth } from './auth';
 import { toActionError } from './utils';
 
 export async function markNotificationAsRead(id: string) {
-  await requireAuth();
   try {
     const result = await notificationsApi.markAsRead(id);
     revalidatePath('/notifications');
@@ -18,7 +16,6 @@ export async function markNotificationAsRead(id: string) {
 }
 
 export async function markAllNotificationsAsRead() {
-  await requireAuth();
   try {
     const result = await notificationsApi.markAllAsRead();
     revalidatePath('/notifications');
@@ -29,7 +26,6 @@ export async function markAllNotificationsAsRead() {
 }
 
 export async function deleteNotification(id: string) {
-  await requireAuth();
   try {
     const result = await notificationsApi.delete(id);
     revalidatePath('/notifications');
@@ -40,7 +36,6 @@ export async function deleteNotification(id: string) {
 }
 
 export async function createNotification(notificationData: TNotificationInput) {
-  await requireAuth();
   try {
     const result = await notificationsApi.create(notificationData);
     revalidatePath('/notifications');
@@ -51,7 +46,6 @@ export async function createNotification(notificationData: TNotificationInput) {
 }
 
 export async function updateNotification(id: string, notificationData: Partial<TNotificationInput>) {
-  await requireAuth();
   try {
     const result = await notificationsApi.update(id, notificationData);
     revalidatePath('/notifications');
@@ -62,7 +56,6 @@ export async function updateNotification(id: string, notificationData: Partial<T
 }
 
 export async function updateNotificationStatus(id: string, statusData: TUpdateNotificationStatusInput) {
-  await requireAuth();
   try {
     const result = await notificationsApi.updateStatus(id, statusData);
     revalidatePath('/notifications');
