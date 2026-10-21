@@ -11,7 +11,7 @@ export const LINK_SCOPE = 'openid profile email';
 /** The BE accepts a link proof whose sign-in is at most this old (ADR 0004), so Auth0 is told to demand a fresh one. */
 export const LINK_MAX_AGE_SECONDS = 300;
 /** Where a link starts and ends: the Security tab of the profile page. */
-export const LINK_RETURN_PATH = '/profile';
+export { LINK_RETURN_PATH } from '@/constants/auth';
 export const AUTH0_CONNECTIONS = { google: 'google-oauth2' } as const;
 const REQUEST_TIMEOUT_MS = 10_000;
 

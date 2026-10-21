@@ -9,6 +9,9 @@ export type TUserRole = (typeof UserRole)[keyof typeof UserRole];
 export const LOGIN_PATH = '/api/auth/login';
 export const SIGNUP_PATH = '/api/auth/login?mode=signup';
 
+/** Where the link flow lands the User: the Profile page, Security section. */
+export const LINK_RETURN_PATH = '/profile';
+
 /** Starts connecting Google to the signed-in User. A form POST, so a cross-site page cannot trigger it (the cookie is SameSite=Lax). */
 export const LINK_START_PATH = '/api/auth/link';
 
