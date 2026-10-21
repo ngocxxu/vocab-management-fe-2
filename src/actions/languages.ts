@@ -2,11 +2,9 @@
 
 import { revalidatePath, updateTag } from 'next/cache';
 import { languagesApi } from '@/utils/server-api';
-import { requireAuth } from './auth';
 import { toActionError } from './utils';
 
 export async function createLanguage(languageData: { name: string; code: string }) {
-  await requireAuth();
   try {
     const result = await languagesApi.create(languageData);
     updateTag('languages');
@@ -18,7 +16,6 @@ export async function createLanguage(languageData: { name: string; code: string 
 }
 
 export async function updateLanguage(id: string, languageData: { name: string; code: string }) {
-  await requireAuth();
   try {
     const result = await languagesApi.update(id, languageData);
     updateTag('languages');
@@ -30,7 +27,6 @@ export async function updateLanguage(id: string, languageData: { name: string; c
 }
 
 export async function deleteLanguage(id: string) {
-  await requireAuth();
   try {
     const result = await languagesApi.delete(id);
     updateTag('languages');

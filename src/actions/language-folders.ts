@@ -4,7 +4,6 @@ import type { ResponseAPI, TLanguageFolder } from '@/types';
 import type { LanguageFolderQueryParams } from '@/utils/api-config';
 import { revalidatePath } from 'next/cache';
 import { languageFoldersApi } from '@/utils/server-api';
-import { requireAuth } from './auth';
 import { toActionError, translateError } from './utils';
 
 export async function createLanguageFolder(languageFolderData: {
@@ -13,7 +12,6 @@ export async function createLanguageFolder(languageFolderData: {
   sourceLanguageCode: string;
   targetLanguageCode: string;
 }) {
-  await requireAuth();
   try {
     const result = await languageFoldersApi.create(languageFolderData);
     revalidatePath('/library');
@@ -33,7 +31,6 @@ export async function updateLanguageFolder(
     targetLanguageCode: string;
   },
 ) {
-  await requireAuth();
   try {
     const result = await languageFoldersApi.update(id, languageFolderData);
     revalidatePath('/library');
@@ -45,7 +42,6 @@ export async function updateLanguageFolder(
 }
 
 export async function deleteLanguageFolder(id: string) {
-  await requireAuth();
   try {
     const result = await languageFoldersApi.delete(id);
     revalidatePath('/library');
@@ -57,11 +53,6 @@ export async function deleteLanguageFolder(id: string) {
 }
 
 export async function getMyLanguageFoldersForSelection(params?: LanguageFolderQueryParams): Promise<ResponseAPI<TLanguageFolder[]> | { error: string }> {
-  try {
-    await requireAuth();
-  } catch {
-    return { error: 'User not authenticated' };
-  }
   try {
     const result = await languageFoldersApi.getMy(params || { page: 1, pageSize: 100 });
     return result;

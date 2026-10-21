@@ -138,6 +138,12 @@ export function ChatProvider({ children, initialUnreadCount = 0, initialMessages
   const t = useTranslations('chat');
   const socketRef = useRef<ReturnType<typeof io> | null>(null);
   const inputFocusedRef = useRef(false);
+  // `t` changes identity when the layout re-renders after revalidatePath. Keeping it out of the socket effect's deps stops a disconnect and reconnect on every render.
+  const tRef = useRef(t);
+
+  useEffect(() => {
+    tRef.current = t;
+  }, [t]);
 
   const fetchUnreadCount = useCallback(async () => {
     try {
@@ -272,7 +278,7 @@ export function ChatProvider({ children, initialUnreadCount = 0, initialMessages
         return;
       }
       toast.error(errMsg, {
-        description: retryable ? t('retryHint') : undefined,
+        description: retryable ? tRef.current('retryHint') : undefined,
       });
     });
 
@@ -286,7 +292,7 @@ export function ChatProvider({ children, initialUnreadCount = 0, initialMessages
       socket.disconnect();
       socketRef.current = null;
     };
-  }, [fetchUnreadCount, t]);
+  }, [fetchUnreadCount]);
 
   const sendMessage = useCallback((message: string) => {
     dispatch({ type: 'SEND_OPTIMISTIC', message });
