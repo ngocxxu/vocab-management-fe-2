@@ -34,6 +34,15 @@ describe('srsSettingsFormSchema', () => {
     expect(srsSettingsFormSchema.safeParse({ ...valid, directions: ['SIDEWAYS'] }).success).toBe(false);
   });
 
+  it('accepts Random alone and rejects Random together with another direction', () => {
+    expect(srsSettingsFormSchema.safeParse({ ...valid, directions: ['RANDOM'] }).success).toBe(true);
+
+    const combined = srsSettingsFormSchema.safeParse({ ...valid, directions: ['RANDOM', 'SOURCE_TO_TARGET'] });
+
+    expect(combined.success).toBe(false);
+    expect(combined.error?.issues[0]?.message).toBe('validation.directionRandomExclusive');
+  });
+
   it('rejects a question type FSRS cannot review', () => {
     expect(srsSettingsFormSchema.safeParse({ ...valid, questionType: 'MULTIPLE_CHOICE' }).success).toBe(false);
   });

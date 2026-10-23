@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Slider } from '@/components/ui/slider';
 import { FSRS_QUESTION_TYPE_OPTIONS } from '@/constants/vocab-trainer';
 import { EFsrsDirection } from '@/enum/vocab-trainer';
+import { toggleDirection } from '@/utils/fsrs-directions';
 import { toDisplayMessage } from '@/i18n/validation';
 import { formatRecallPerTen, SRS_MAX_RETENTION, SRS_MIN_RETENTION, srsSettingsFormSchema } from '@/libs/validations/srs-settings';
 import { SettingRow, SettingsGroup, SettingsSection } from './SettingsSection';
@@ -26,6 +27,7 @@ type SrsDefaultsSectionProps = {
 const DIRECTION_OPTIONS: { value: EFsrsDirection; labelKey: string; hintKey: string }[] = [
   { value: EFsrsDirection.SOURCE_TO_TARGET, labelKey: 'directions.sourceToTarget.label', hintKey: 'directions.sourceToTarget.hint' },
   { value: EFsrsDirection.TARGET_TO_SOURCE, labelKey: 'directions.targetToSource.label', hintKey: 'directions.targetToSource.hint' },
+  { value: EFsrsDirection.RANDOM, labelKey: 'directions.random.label', hintKey: 'directions.random.hint' },
 ];
 
 const PERCENT = 100;
@@ -72,12 +74,8 @@ export const SrsDefaultsSection: React.FC<SrsDefaultsSectionProps> = ({ settings
     }
   };
 
-  const toggleDirection = (direction: EFsrsDirection, checked: boolean) => {
-    const next = checked ? [...defaults.directions, direction] : defaults.directions.filter(item => item !== direction);
-    if (next.length === 0) {
-      return;
-    }
-    setDefaults({ ...defaults, directions: next });
+  const pickDirection = (direction: EFsrsDirection) => {
+    setDefaults({ ...defaults, directions: toggleDirection(defaults.directions, direction) });
   };
 
   const discardChanges = () => {
@@ -174,7 +172,7 @@ export const SrsDefaultsSection: React.FC<SrsDefaultsSectionProps> = ({ settings
                   <Checkbox
                     id={`srs-direction-${option.value}`}
                     checked={defaults.directions.includes(option.value)}
-                    onCheckedChange={checked => toggleDirection(option.value, checked === true)}
+                    onCheckedChange={() => pickDirection(option.value)}
                   />
                   <Label htmlFor={`srs-direction-${option.value}`} className="flex-col items-start gap-0.5 font-normal">
                     {t(option.labelKey)}

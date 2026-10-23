@@ -75,6 +75,10 @@ describe('session helpers', () => {
     expect(directionLabelKey(EFsrsDirection.TARGET_TO_SOURCE)).toBe('direction.targetToSource');
   });
 
+  it('keys Random as its own label, not as Recall', () => {
+    expect(directionLabelKey(EFsrsDirection.RANDOM)).toBe('direction.random');
+  });
+
   it('keeps the duration inside what the backend accepts', () => {
     expect(clampDuration(1000, 4500)).toBe(3500);
     expect(clampDuration(5000, 1000)).toBe(0);

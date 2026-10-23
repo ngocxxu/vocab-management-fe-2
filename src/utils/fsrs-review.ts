@@ -64,6 +64,10 @@ export function isBacklog(overdue: number): boolean {
 
 /** Translation key (under trainer.fsrs.direction) for the side the card is asked from. */
 export function directionLabelKey(direction: EFsrsDirection): string {
+  if (direction === EFsrsDirection.RANDOM) {
+    return 'direction.random';
+  }
+
   return direction === EFsrsDirection.SOURCE_TO_TARGET ? 'direction.sourceToTarget' : 'direction.targetToSource';
 }
 

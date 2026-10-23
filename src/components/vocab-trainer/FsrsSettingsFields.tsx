@@ -11,6 +11,7 @@ import { Input } from '@/shared/ui/input';
 import { Slider } from '@/shared/ui/slider';
 import { EFsrsDirection } from '@/enum/vocab-trainer';
 import { cn } from '@/libs/utils';
+import { toggleDirection } from '@/utils/fsrs-directions';
 import { formatRecallPerTen, SRS_MAX_RETENTION, SRS_MIN_RETENTION } from '@/libs/validations/srs-settings';
 import { countCards, FSRS_MAX_INTERVAL_DAYS, suggestNewPerDay } from '@/libs/validations/vocab-trainer';
 
@@ -27,6 +28,7 @@ type FsrsCardCountProps = Pick<FsrsSettingsFieldsProps, 'wordCount' | 'wordsWith
 const DIRECTION_OPTIONS = [
   { value: EFsrsDirection.SOURCE_TO_TARGET, titleKey: 'directionRecognise', hintKey: 'directionRecogniseHint', example: 'apple → quả táo' },
   { value: EFsrsDirection.TARGET_TO_SOURCE, titleKey: 'directionRecall', hintKey: 'directionRecallHint', example: 'quả táo → apple' },
+  { value: EFsrsDirection.RANDOM, titleKey: 'directionRandom', hintKey: 'directionRandomHint', example: 'apple ⇄ quả táo' },
 ];
 
 const MAX_LISTED_WORDS = 5;
@@ -76,13 +78,8 @@ const FsrsSettingsFields: React.FC<FsrsSettingsFieldsProps> = ({ editMode, wordC
   // Advanced is collapsed by default; open it when one of its fields fails validation so the error is not hidden.
   const advancedHasError = ADVANCED_FIELDS.some(name => Boolean(form.formState.errors[name]));
 
-  const toggleDirection = (direction: EFsrsDirection) => {
-    const next = directions.includes(direction) ? directions.filter(d => d !== direction) : [...directions, direction];
-    // The last direction stays selected: a trainer without one would have no cards.
-    if (next.length === 0) {
-      return;
-    }
-    form.setValue('fsrsDirections', next, { shouldDirty: true, shouldValidate: true });
+  const pickDirection = (direction: EFsrsDirection) => {
+    form.setValue('fsrsDirections', toggleDirection(directions, direction), { shouldDirty: true, shouldValidate: true });
   };
 
   return (
@@ -122,7 +119,7 @@ const FsrsSettingsFields: React.FC<FsrsSettingsFieldsProps> = ({ editMode, wordC
                     type="button"
                     aria-pressed={selected}
                     disabled={editMode}
-                    onClick={() => toggleDirection(option.value)}
+                    onClick={() => pickDirection(option.value)}
                     className={cn(
                       'rounded-xl border p-3 text-left transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-not-allowed',
                       selected ? 'border-primary bg-primary/10' : 'border-border bg-card hover:bg-muted',

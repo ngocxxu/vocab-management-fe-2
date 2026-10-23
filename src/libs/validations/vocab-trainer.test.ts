@@ -48,6 +48,16 @@ describe('createTrainerFormSchema', () => {
     expect(messages(form).map(m => m.split(':')[0]).sort()).toEqual(['fsrsDesiredRetention', 'fsrsDirections', 'fsrsMaximumInterval', 'fsrsNewPerDay']);
   });
 
+  it('accepts Random on its own', () => {
+    expect(messages({ ...fsrsForm, fsrsDirections: [EFsrsDirection.RANDOM] })).toEqual([]);
+  });
+
+  it('rejects Random together with Recognise or Recall', () => {
+    expect(messages({ ...fsrsForm, fsrsDirections: [EFsrsDirection.RANDOM, EFsrsDirection.SOURCE_TO_TARGET] })).toEqual([
+      'fsrsDirections: validation.directionRandomExclusive',
+    ]);
+  });
+
   it('rejects a Classic-only question type for FSRS', () => {
     expect(messages({ ...fsrsForm, questionType: EQuestionType.MULTIPLE_CHOICE })).toEqual(['questionType: validation.questionTypeNotFsrs']);
   });

@@ -17,6 +17,8 @@ export enum EQuestionType {
 export enum EFsrsDirection {
   SOURCE_TO_TARGET = 'SOURCE_TO_TARGET',
   TARGET_TO_SOURCE = 'TARGET_TO_SOURCE',
+  /** One card per word, asked in either direction at random. Cannot be combined with the other two. */
+  RANDOM = 'RANDOM',
 }
 
 /** How a trainer schedules its words. Not the question direction of Classic (`EVocabTrainerType`). */
