@@ -1,24 +1,19 @@
 'use client';
 
-import type { FormEvent } from 'react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState, useTransition } from 'react';
 import { resendVerificationEmail } from '@/actions/auth';
 import { LOGIN_PATH, RESEND_COOLDOWN_SECONDS } from '@/constants/auth';
 import { Button } from '@/shared/ui/button';
-import { Input } from '@/shared/ui/input';
-import { Label } from '@/shared/ui/label';
-import { emailAddressSchema } from '@/libs/validations/email';
 
 const MS_PER_SECOND = 1000;
 
 /**
- * Asks for the address and sends a new verification link. The answer is the same whatever the address is, and the BE
- * enforces the cooldown too; the countdown here only keeps the button from being offered too early.
+ * Sends a new verification link to the login that was just refused. No address is asked for: the BE emails the one stored
+ * on that login. The BE enforces the cooldown too; the countdown here only keeps the button from being offered too early.
  */
-export function VerifyEmailForm() {
+export function VerifyEmailForm({ canResend }: Readonly<{ canResend: boolean }>) {
   const t = useTranslations('auth.verifyEmail');
-  const [email, setEmail] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
   const [cooldownUntil, setCooldownUntil] = useState(0);
@@ -42,22 +37,17 @@ export function VerifyEmailForm() {
     return () => clearInterval(timer);
   }, [cooldownUntil]);
 
-  const submit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!emailAddressSchema.safeParse(email).success) {
-      setError(t('invalidEmail'));
-      return;
-    }
+  const send = () => {
     setError(null);
     startSending(async () => {
       try {
-        await resendVerificationEmail(email);
+        await resendVerificationEmail();
         const started = Date.now();
         setNow(started);
         setCooldownUntil(started + RESEND_COOLDOWN_SECONDS * MS_PER_SECOND);
         setSent(true);
       } catch (caught) {
-        setError(caught instanceof Error ? caught.message : t('invalidEmail'));
+        setError(caught instanceof Error ? caught.message : t('failed'));
       }
     });
   };
@@ -71,27 +61,16 @@ export function VerifyEmailForm() {
         <p className="text-sm text-muted-foreground">{t('description')}</p>
       </header>
 
-      <form className="space-y-4" onSubmit={submit} noValidate>
-        <div className="space-y-2">
-          <Label htmlFor="verify-email-address">{t('emailLabel')}</Label>
-          <Input
-            id="verify-email-address"
-            type="email"
-            autoComplete="email"
-            placeholder={t('emailPlaceholder')}
-            value={email}
-            onChange={event => setEmail(event.target.value)}
-            aria-invalid={error !== null}
-            aria-describedby={error ? 'verify-email-error' : undefined}
-          />
-        </div>
-
-        {error && <p id="verify-email-error" role="alert" className="text-sm text-destructive">{error}</p>}
-
-        <Button type="submit" className="w-full" disabled={isPending || inCooldown}>
-          {isPending ? t('submitting') : inCooldown ? t('cooling', { seconds: secondsLeft }) : t('submit')}
-        </Button>
-      </form>
+      {canResend
+        ? (
+            <div className="space-y-4">
+              {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
+              <Button type="button" className="w-full" disabled={isPending || inCooldown} onClick={send}>
+                {isPending ? t('submitting') : inCooldown ? t('cooling', { seconds: secondsLeft }) : t('submit')}
+              </Button>
+            </div>
+          )
+        : <p role="status" className="text-sm text-muted-foreground">{t('expired')}</p>}
 
       {sent && <p role="status" className="text-sm text-muted-foreground">{t('sent')}</p>}
 

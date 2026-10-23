@@ -9,10 +9,9 @@ import type {
 } from '@/types/auth';
 import { logger } from '@/libs/Logger';
 import { getRefreshLock, getRefreshLockKey, invalidateRefreshLock, performRefresh } from '@/libs/refresh-lock';
-import { clearAuthCookies, getAccessToken, getRefreshToken, setAuthCookies } from '@/utils/auth-cookies';
+import { clearAuthCookies, getAccessToken, getRefreshToken, getUnverifiedAccessToken, setAuthCookies } from '@/utils/auth-cookies';
 import { isUnauthorizedError } from '@/utils/auth-error';
 import { isAdmin } from '@/utils/is-admin';
-import { emailAddressSchema } from '@/libs/validations/email';
 import { authApi } from '@/utils/server-api';
 import { toActionError, translateError } from './utils';
 
@@ -124,18 +123,21 @@ export async function getSignInMethods(): Promise<TSignInMethods | null> {
 }
 
 /**
- * Asks the BE for a new verification link to an unverified sign-in with this address. Resolves the same way whatever the address
- * is, so it reveals nothing about accounts. The BE applies the per-address cooldown and the rate limit.
+ * Asks the BE to resend the verification link for the login that was just refused with `email_not_verified`. The login comes
+ * from the callback's short-lived cookie, never from the caller, and Auth0 emails the address stored on that login.
+ * No requireAuth() or revalidatePath(): that login has no session yet, as in signout and refresh.
  */
-export async function resendVerificationEmail(email: string): Promise<void> {
-  // No requireAuth() or revalidatePath(): the User is signed out here, as in signout and refresh.
-  const parsed = emailAddressSchema.safeParse(email);
-  if (!parsed.success) {
-    throw new Error(await translateError('invalidEmail'));
+export async function resendVerificationEmail(): Promise<void> {
+  const accessToken = await getUnverifiedAccessToken();
+  if (!accessToken) {
+    throw new Error(await translateError('verifyEmailExpired'));
   }
   try {
-    await authApi.resendConfirmation(parsed.data);
+    await authApi.resendVerification(accessToken);
   } catch (error) {
+    if (isUnauthorizedError(error)) {
+      throw new Error(await translateError('verifyEmailExpired'));
+    }
     throw await toActionError(error, 'resendConfirmation');
   }
 }

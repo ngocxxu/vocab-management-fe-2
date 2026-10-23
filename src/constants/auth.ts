@@ -15,7 +15,13 @@ export const LINK_RETURN_PATH = '/profile';
 /** Page to ask for a new verification email, reached from the landing error banner. Public: the User is not signed in yet. */
 export const VERIFY_EMAIL_PATH = '/verify-email';
 
-/** Matches the BE's per-address cooldown; the UI counts it down so the button is not offered too early. */
+/**
+ * Short-lived cookie that carries the access token of a login whose email is not verified yet from the callback to
+ * /verify-email, so the page can ask the BE to resend the link for that login without taking an address from the User.
+ */
+export const UNVERIFIED_TOKEN_COOKIE = 'unverifiedAccessToken';
+
+/** Matches the BE's per-login cooldown; the UI counts it down so the button is not offered too early. */
 export const RESEND_COOLDOWN_SECONDS = 60;
 
 /** Starts connecting Google to the signed-in User. A form POST, so a cross-site page cannot trigger it (the cookie is SameSite=Lax). */

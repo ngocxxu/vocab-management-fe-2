@@ -40,11 +40,23 @@ describe('callback route: a refused sync', () => {
     expect(response.cookies.get('auth0_txn')?.value).toBe('');
   });
 
+  it('hands that login\'s token to the verify page in a cookie scoped to it', async () => {
+    stubSync('email_not_verified');
+
+    const response = await GET(callback());
+
+    const cookie = response.cookies.get('unverifiedAccessToken');
+    expect(cookie?.value).toBe('at');
+    expect(cookie?.path).toBe('/verify-email');
+    expect(cookie?.httpOnly).toBe(true);
+  });
+
   it('keeps the landing page and its error for any other refusal', async () => {
     stubSync('account_link_required');
 
     const response = await GET(callback());
 
     expect(response.headers.get('location')).toBe(`${APP}/?auth_error=account_link_required`);
+    expect(response.cookies.get('unverifiedAccessToken')).toBeUndefined();
   });
 });

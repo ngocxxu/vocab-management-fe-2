@@ -1,4 +1,5 @@
 import { cookies } from 'next/headers';
+import { UNVERIFIED_TOKEN_COOKIE, VERIFY_EMAIL_PATH } from '@/constants/auth';
 
 const COOKIE_DOMAIN = process.env.COOKIE_DOMAIN;
 
@@ -19,6 +20,21 @@ export const REFRESH_COOKIE_OPTIONS = {
   maxAge: 60 * 60 * 24 * 7, // 7 days
   ...(COOKIE_DOMAIN && { domain: COOKIE_DOMAIN }),
 };
+
+/** Scoped to /verify-email so no other request carries it. */
+export const UNVERIFIED_TOKEN_COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'lax' as const,
+  path: VERIFY_EMAIL_PATH,
+  maxAge: 3600, // 1 hour
+  ...(COOKIE_DOMAIN && { domain: COOKIE_DOMAIN }),
+};
+
+export async function getUnverifiedAccessToken(): Promise<string | undefined> {
+  const cookieStore = await cookies();
+  return cookieStore.get(UNVERIFIED_TOKEN_COOKIE)?.value;
+}
 
 export async function getAccessToken(): Promise<string | undefined> {
   const cookieStore = await cookies();
