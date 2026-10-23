@@ -151,6 +151,9 @@ export type ExamErrorStateProps = {
   onBackToTrainers: () => void;
   variant?: 'fullscreen' | 'inline';
   fallbackMessage?: string;
+  /** Shown as a primary action next to the back button, for errors that checking again can fix. */
+  onRetry?: () => void;
+  retryLabel?: string;
 };
 
 export type SocketContextType = {

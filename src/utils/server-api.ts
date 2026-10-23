@@ -465,6 +465,16 @@ export const vocabTrainerApi = {
     const config = API_METHODS.vocabTrainers.submitExam(id, testData);
     return serverApi.patch<{ jobId: string } | { error: string }>(config.endpoint, config.data);
   },
+  getExamJobStatus: (id: string, jobId: string) => {
+    if (!id || typeof id !== 'string') {
+      throw new Error('Trainer ID is required');
+    }
+    if (!jobId || typeof jobId !== 'string') {
+      throw new Error('Job ID is required');
+    }
+    const config = API_METHODS.vocabTrainers.getExamJobStatus(id, jobId);
+    return serverApi.get<import('@/types/vocab-trainer').TExamJobStatusResponse>(config.endpoint);
+  },
   deleteBulk: (ids: string[]) => {
     const config = API_METHODS.vocabTrainers.deleteBulk(ids);
     return serverApi.post(config.endpoint, config.data);

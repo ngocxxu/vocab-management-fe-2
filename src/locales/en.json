@@ -47,6 +47,7 @@
     "generateSubjectSuggestions": "Failed to generate subject suggestions",
     "fetchTextTargets": "Failed to fetch text targets",
     "fetchTextTarget": "Failed to fetch text target",
+    "getExamJobStatus": "Failed to check the exam status",
     "fetchExam": "Failed to fetch exam",
     "fetchChatUnreadCount": "Failed to fetch chat unread count",
     "fetchChatMessages": "Failed to fetch chat messages",
@@ -1654,7 +1655,9 @@
       "fillInTitle": "Evaluating answers with AI...",
       "audioTitle": "Evaluating your translation...",
       "wait": "This may take a few moments. Please wait.",
-      "failed": "Evaluation failed"
+      "failed": "Evaluation failed",
+      "timeout": "This is taking longer than expected. Your answers are saved: check again in a moment.",
+      "checkAgain": "Check again"
     }
   },
   "dashboard": {
