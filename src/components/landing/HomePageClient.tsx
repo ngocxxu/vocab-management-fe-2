@@ -5,9 +5,9 @@ import type { TUser } from '@/types/auth';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
-import { toast } from 'sonner';
 import { verifyUser } from '@/actions';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Alert, AlertDescription } from '@/shared/ui/alert';
 import { useTheme } from '@/hooks/useTheme';
 import LandingCta from '@/components/landing/LandingCta';
 import LandingFeatures from '@/components/landing/LandingFeatures';
@@ -17,7 +17,7 @@ import LandingHero from '@/components/landing/LandingHero';
 import LandingPricing from '@/components/landing/LandingPricing';
 import MethodologySection from '@/components/landing/MethodologySection';
 
-const KNOWN_AUTH_ERRORS = new Set(['login_failed', 'email_not_verified', 'account_link_required', 'auth_not_configured']);
+const KNOWN_AUTH_ERRORS = new Set(['login_failed', 'account_link_required', 'auth_not_configured']);
 
 export default function HomePageClient({ initialPlans }: Readonly<{ initialPlans: TPlan[] }>) {
   const router = useRouter();
@@ -25,6 +25,8 @@ export default function HomePageClient({ initialPlans }: Readonly<{ initialPlans
   const { theme, mounted } = useTheme();
   const [user, setUser] = useState<TUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  // Kept on screen (not a 4 s toast): the User has to act on it, and the URL no longer carries it.
+  const [authError, setAuthError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -46,9 +48,9 @@ export default function HomePageClient({ initialPlans }: Readonly<{ initialPlans
     if (!code) {
       return;
     }
-    toast.error(tAuth(`errors.${KNOWN_AUTH_ERRORS.has(code) ? code : 'login_failed'}`));
+    setAuthError(KNOWN_AUTH_ERRORS.has(code) ? code : 'login_failed');
     router.replace('/');
-  }, [router, tAuth]);
+  }, [router]);
 
   useEffect(() => {
     if (!isLoading && user) {
@@ -81,6 +83,15 @@ export default function HomePageClient({ initialPlans }: Readonly<{ initialPlans
     <div className="min-h-screen bg-background">
       <LandingHeader logoSrc={logoSrc} />
       <main>
+        {authError && (
+          <div className="mx-auto max-w-3xl px-4 pt-4">
+            <Alert variant="destructive" role="alert">
+              <AlertDescription>
+                {tAuth(`errors.${authError}`)}
+              </AlertDescription>
+            </Alert>
+          </div>
+        )}
         <LandingHero />
         <LandingFeatures />
         <MethodologySection />

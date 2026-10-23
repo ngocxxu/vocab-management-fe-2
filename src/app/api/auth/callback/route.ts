@@ -1,9 +1,10 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import { FRESH_LOGIN_COOKIE, UNVERIFIED_TOKEN_COOKIE, VERIFY_EMAIL_PATH } from '@/constants/auth';
 import { AUTH0_CALLBACK_PATH, AUTH0_TXN_COOKIE, exchangeCode, getAppOrigin, getAuth0Config, parseTransaction, statesMatch } from '@/libs/auth0';
 import { logger } from '@/libs/Logger';
 import { API_METHODS } from '@/utils/api-config';
-import { AUTH_COOKIE_OPTIONS, REFRESH_COOKIE_OPTIONS } from '@/utils/auth-cookies';
+import { AUTH_COOKIE_OPTIONS, FRESH_LOGIN_COOKIE_OPTIONS, REFRESH_COOKIE_OPTIONS, UNVERIFIED_TOKEN_COOKIE_OPTIONS } from '@/utils/auth-cookies';
 import { appRedirect } from '../link-result';
 import { fetchBackendWithBearer, parseBackendResponse } from '../session-response';
 import { finishLink, linkFailed } from './link';
@@ -11,8 +12,29 @@ import { finishLink, linkFailed } from './link';
 // Codes the landing page knows how to explain; anything else from the BE is shown as a generic failure.
 const KNOWN_SYNC_ERRORS = new Set(['email_not_verified', 'account_link_required']);
 
-function failure(appOrigin: string, code: string): NextResponse {
-  return appRedirect(appOrigin, '/', { auth_error: code }, { clearTransaction: true });
+/**
+ * A failed sign-in ends whatever session it leaves behind: the app's cookies go, and the next sign-in is forced to ask Auth0 for
+ * credentials again (see the login route), so an Auth0 session of the login that was just refused is not reused in a loop.
+ */
+function endSession(response: NextResponse): NextResponse {
+  const cleared = { ...AUTH_COOKIE_OPTIONS, maxAge: 0 };
+  response.cookies.set('accessToken', '', cleared);
+  response.cookies.set('refreshToken', '', cleared);
+  response.cookies.set(FRESH_LOGIN_COOKIE, '1', FRESH_LOGIN_COOKIE_OPTIONS);
+  return response;
+}
+
+// An unverified email has its own page with the way forward, so it does not land on the landing page. The page asks the BE to
+// resend the link for this login, so it gets the login's token in a short-lived cookie instead of asking the User for an address.
+function failure(appOrigin: string, code: string, accessToken?: string): NextResponse {
+  if (code === 'email_not_verified') {
+    const response = appRedirect(appOrigin, VERIFY_EMAIL_PATH, {}, { clearTransaction: true });
+    if (accessToken) {
+      response.cookies.set(UNVERIFIED_TOKEN_COOKIE, accessToken, UNVERIFIED_TOKEN_COOKIE_OPTIONS);
+    }
+    return endSession(response);
+  }
+  return endSession(appRedirect(appOrigin, '/', { auth_error: code }, { clearTransaction: true }));
 }
 
 /** Creates the Vocab user on first login (idempotent). Returns an error code, or null on success. */
@@ -68,13 +90,14 @@ export async function GET(request: NextRequest) {
 
     const syncError = await syncUser(tokens.accessToken);
     if (syncError) {
-      return failure(appOrigin, syncError);
+      return failure(appOrigin, syncError, tokens.accessToken);
     }
 
     const response = NextResponse.redirect(new URL(transaction.redirect, appOrigin));
     response.cookies.set('accessToken', tokens.accessToken, AUTH_COOKIE_OPTIONS);
     response.cookies.set('refreshToken', tokens.refreshToken, REFRESH_COOKIE_OPTIONS);
     response.cookies.set(AUTH0_TXN_COOKIE, '', { path: '/api/auth', maxAge: 0 });
+    response.cookies.set(UNVERIFIED_TOKEN_COOKIE, '', { ...UNVERIFIED_TOKEN_COOKIE_OPTIONS, maxAge: 0 });
     return response;
   } catch (error) {
     logger.error('Auth0 callback failed:', { error });

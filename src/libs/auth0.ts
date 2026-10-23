@@ -12,7 +12,8 @@ export const LINK_SCOPE = 'openid profile email';
 export const LINK_MAX_AGE_SECONDS = 300;
 /** Where a link starts and ends: the Security tab of the profile page. */
 export { LINK_RETURN_PATH } from '@/constants/auth';
-export const AUTH0_CONNECTIONS = { google: 'google-oauth2' } as const;
+// `password` is the BE's AUTH0_PASSWORD_CONNECTION default: the one database connection the app uses.
+export const AUTH0_CONNECTIONS = { google: 'google-oauth2', password: 'Username-Password-Authentication' } as const;
 const REQUEST_TIMEOUT_MS = 10_000;
 
 export type TAuth0Config = {

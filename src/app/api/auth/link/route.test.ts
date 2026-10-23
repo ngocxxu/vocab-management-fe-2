@@ -55,7 +55,7 @@ describe('pOST /api/auth/link', () => {
   it('refuses a method that cannot be linked, without calling the backend', async () => {
     const fetchMock = stubBackend();
 
-    const response = await POST(linkRequest('password'));
+    const response = await POST(linkRequest('github'));
 
     expect(response.status).toBe(303);
     expect(response.headers.get('location')).toBe(`${APP}/profile?link_error=link_failed#security`);
@@ -99,6 +99,18 @@ describe('pOST /api/auth/link', () => {
     expect(authorize.searchParams.get('max_age')).toBe('300');
     expect(response.cookies.get('auth0_txn')?.value).toContain('"purpose":"link"');
     expect(response.cookies.get('auth0_txn')?.value).toContain('"userId":"user-1"');
+  });
+
+  it('sends an existing password login through its database connection with the same proof', async () => {
+    stubBackend();
+
+    const response = await POST(linkRequest('password'));
+
+    const authorize = new URL(response.headers.get('location') ?? '');
+    expect(authorize.searchParams.get('connection')).toBe('Username-Password-Authentication');
+    expect(authorize.searchParams.get('nonce')).toBe('nonce-1');
+    expect(authorize.searchParams.get('prompt')).toBe('login');
+    expect(authorize.searchParams.get('max_age')).toBe('300');
   });
 
   it('writes no session cookies: the User keeps their own', async () => {

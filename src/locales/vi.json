@@ -32,6 +32,7 @@
     "saveTheAnswer": "Không thể lưu câu trả lời",
     "saveSpacedRepetitionSettings": "Không thể lưu cài đặt ôn tập",
     "resetPassword": "Không thể đặt lại mật khẩu",
+    "verifyEmailExpired": "Phiên đăng nhập này đã hết hạn. Hãy đăng nhập lại để nhận liên kết mới.",
     "resendConfirmation": "Không thể gửi lại email xác nhận",
     "reorderSubjects": "Không thể sắp xếp lại chủ đề",
     "removeTheWordFromTheTrainer": "Không thể xóa từ khỏi trình luyện",
@@ -175,6 +176,17 @@
     "other": "Khác"
   },
   "auth": {
+    "verifyEmail": {
+      "title": "Xác minh email của bạn",
+      "description": "Email của bạn chưa được xác minh. Chúng tôi sẽ gửi liên kết xác minh mới tới email bạn đã đăng ký.",
+      "submit": "Gửi liên kết mới",
+      "submitting": "Đang gửi...",
+      "cooling": "Gửi lại sau {seconds} giây",
+      "sent": "Chúng tôi đã gửi liên kết mới. Hãy kiểm tra hộp thư và cả thư rác.",
+      "expired": "Phiên đăng nhập này đã hết hạn. Hãy đăng nhập lại để nhận liên kết mới.",
+      "failed": "Không thể gửi liên kết. Vui lòng thử lại.",
+      "backToSignIn": "Quay lại đăng nhập"
+    },
     "errors": {
       "login_failed": "Đăng nhập thất bại. Vui lòng thử lại.",
       "email_not_verified": "Vui lòng xác minh địa chỉ email trước, rồi đăng nhập lại.",
@@ -271,6 +283,7 @@
       "password": "Mật khẩu",
       "connectGoogle": "Kết nối Google",
       "addPassword": "Thêm mật khẩu",
+      "connectExistingPassword": "Kết nối tài khoản mật khẩu có sẵn",
       "passwordSentToast": "Đã gửi email.",
       "pendingHint": "Hãy kiểm tra hộp thư. Mở liên kết chúng tôi đã gửi để đặt mật khẩu.",
       "resend": "Gửi lại email",
@@ -282,7 +295,7 @@
         "link_nonce_invalid": "Yêu cầu kết nối này không còn hợp lệ. Vui lòng bắt đầu lại.",
         "id_token_invalid": "Không thể xác minh lần đăng nhập đó. Vui lòng thử lại.",
         "link_session_changed": "Phiên của bạn đã thay đổi khi đang kết nối. Vui lòng đăng nhập lại và thử lại.",
-        "password_login_exists": "Đã có tài khoản mật khẩu với email này và không thuộc tài khoản này. Hãy đăng nhập bằng tài khoản đó, rồi kết nối Google trong Cài đặt của nó.",
+        "password_login_exists": "Đã có tài khoản mật khẩu với email này. Hãy đăng nhập bằng mật khẩu của nó để kết nối vào tài khoản này.",
         "link_failed": "Không thể kết nối phương thức đăng nhập đó. Vui lòng thử lại."
       },
       "status": {

@@ -1,6 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { AUTH0_CALLBACK_PATH, AUTH0_TXN_COOKIE, buildAuthorizeUrl, createTransaction, getAppOrigin, getAuth0Config, safeRedirectPath, transactionCookieOptions } from '@/libs/auth0';
+import { FRESH_LOGIN_COOKIE } from '@/constants/auth';
 import { DEFAULT_LOCALE, isLocale, LOCALE_COOKIE_NAME } from '@/i18n/config';
 import { logger } from '@/libs/Logger';
 
@@ -20,11 +21,14 @@ export function GET(request: NextRequest) {
       challenge,
       signup: searchParams.get('mode') === 'signup',
       googleOnly: searchParams.get('connection') === 'google',
+      // After a failed sign-in, do not reuse a leftover Auth0 session: ask for credentials again.
+      forceLogin: request.cookies.has(FRESH_LOGIN_COOKIE),
       locale: isLocale(localeCookie) ? localeCookie : DEFAULT_LOCALE,
     });
 
     const response = NextResponse.redirect(authorizeUrl);
     response.cookies.set(AUTH0_TXN_COOKIE, JSON.stringify(transaction), transactionCookieOptions());
+    response.cookies.set(FRESH_LOGIN_COOKIE, '', { path: '/api/auth', maxAge: 0 });
     return response;
   } catch (error) {
     logger.error('Auth0 login start failed:', { error });

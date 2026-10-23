@@ -12,11 +12,32 @@ export const SIGNUP_PATH = '/api/auth/login?mode=signup';
 /** Where the link flow lands the User: the Profile page, Security section. */
 export const LINK_RETURN_PATH = '/profile';
 
+/** Page to ask for a new verification email, reached from the landing error banner. Public: the User is not signed in yet. */
+export const VERIFY_EMAIL_PATH = '/verify-email';
+
+/**
+ * Short-lived cookie that carries the access token of a login whose email is not verified yet from the callback to
+ * /verify-email, so the page can ask the BE to resend the link for that login without taking an address from the User.
+ */
+export const UNVERIFIED_TOKEN_COOKIE = 'unverifiedAccessToken';
+
+/** Matches the BE's per-login cooldown; the UI counts it down so the button is not offered too early. */
+export const RESEND_COOLDOWN_SECONDS = 60;
+
+/**
+ * Set when a sign-in attempt fails. The next sign-in then forces Auth0 to ask for credentials again, so a leftover Auth0 session
+ * of the login that was just refused is not reused silently and the User can pick another method.
+ */
+export const FRESH_LOGIN_COOKIE = 'freshLogin';
+
 /** Starts connecting Google to the signed-in User. A form POST, so a cross-site page cannot trigger it (the cookie is SameSite=Lax). */
 export const LINK_START_PATH = '/api/auth/link';
 
-/** Methods the link flow can connect. A password is added by the BE instead (POST /auth/identities/password). */
-export const LINKABLE_METHOD_IDS = ['google'] as const;
+/**
+ * Methods the link flow can connect with a fresh sign-in. `password` connects a password login that already exists; a new one is
+ * added by the BE instead (POST /auth/identities/password).
+ */
+export const LINKABLE_METHOD_IDS = ['google', 'password'] as const;
 export type TLinkableMethodId = (typeof LINKABLE_METHOD_IDS)[number];
 
 /** Codes the Settings page can explain: link results, plus the password refusals. Anything else shows a generic failure. */

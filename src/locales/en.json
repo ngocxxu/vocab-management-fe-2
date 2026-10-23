@@ -32,6 +32,7 @@
     "saveTheAnswer": "Failed to save the answer",
     "saveSpacedRepetitionSettings": "Failed to save spaced repetition settings",
     "resetPassword": "Failed to reset password",
+    "verifyEmailExpired": "This sign-in has expired. Sign in again to get a new link.",
     "resendConfirmation": "Failed to resend confirmation",
     "reorderSubjects": "Failed to reorder subjects",
     "removeTheWordFromTheTrainer": "Failed to remove the word from the trainer",
@@ -175,6 +176,17 @@
     "other": "Other"
   },
   "auth": {
+    "verifyEmail": {
+      "title": "Verify your email",
+      "description": "Your email is not verified yet. We will send a new verification link to the email you signed up with.",
+      "submit": "Send a new link",
+      "submitting": "Sending...",
+      "cooling": "Send again in {seconds}s",
+      "sent": "We have sent a new link. Check your inbox, and the spam folder too.",
+      "expired": "This sign-in has expired. Sign in again to get a new link.",
+      "failed": "Could not send the link. Try again.",
+      "backToSignIn": "Back to sign in"
+    },
     "errors": {
       "login_failed": "Sign-in failed. Please try again.",
       "email_not_verified": "Please verify your email address first, then sign in again.",
@@ -271,6 +283,7 @@
       "password": "Password",
       "connectGoogle": "Connect Google",
       "addPassword": "Add a password",
+      "connectExistingPassword": "Connect existing password login",
       "passwordSentToast": "Email sent.",
       "pendingHint": "Check your inbox. Open the link we sent to set your password.",
       "resend": "Resend email",
@@ -282,7 +295,7 @@
         "link_nonce_invalid": "This connection request is no longer valid. Please start again.",
         "id_token_invalid": "We could not verify that sign-in. Please try again.",
         "link_session_changed": "Your session changed while connecting. Please sign in again and retry.",
-        "password_login_exists": "A password login with this email already exists and is not part of this account. Sign in with it, then connect Google from its Settings.",
+        "password_login_exists": "A password login with this email already exists. Sign in with its password to connect it to this account.",
         "link_failed": "We could not connect that sign-in method. Please try again."
       },
       "status": {

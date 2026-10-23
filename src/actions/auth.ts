@@ -9,7 +9,7 @@ import type {
 } from '@/types/auth';
 import { logger } from '@/libs/Logger';
 import { getRefreshLock, getRefreshLockKey, invalidateRefreshLock, performRefresh } from '@/libs/refresh-lock';
-import { clearAuthCookies, getAccessToken, getRefreshToken, setAuthCookies } from '@/utils/auth-cookies';
+import { clearAuthCookies, getAccessToken, getRefreshToken, getUnverifiedAccessToken, setAuthCookies } from '@/utils/auth-cookies';
 import { isUnauthorizedError } from '@/utils/auth-error';
 import { isAdmin } from '@/utils/is-admin';
 import { authApi } from '@/utils/server-api';
@@ -119,6 +119,26 @@ export async function getSignInMethods(): Promise<TSignInMethods | null> {
     // The rest of the profile still works without this section.
     logger.error('Failed to load sign-in methods:', { error });
     return null;
+  }
+}
+
+/**
+ * Asks the BE to resend the verification link for the login that was just refused with `email_not_verified`. The login comes
+ * from the callback's short-lived cookie, never from the caller, and Auth0 emails the address stored on that login.
+ * No requireAuth() or revalidatePath(): that login has no session yet, as in signout and refresh.
+ */
+export async function resendVerificationEmail(): Promise<void> {
+  const accessToken = await getUnverifiedAccessToken();
+  if (!accessToken) {
+    throw new Error(await translateError('verifyEmailExpired'));
+  }
+  try {
+    await authApi.resendVerification(accessToken);
+  } catch (error) {
+    if (isUnauthorizedError(error)) {
+      throw new Error(await translateError('verifyEmailExpired'));
+    }
+    throw await toActionError(error, 'resendConfirmation');
   }
 }
 

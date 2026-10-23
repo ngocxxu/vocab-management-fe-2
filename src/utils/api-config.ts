@@ -116,6 +116,7 @@ export const API_ENDPOINTS = {
     deleteAccount: '/users/me',
     verify: '/auth/verify',
     sync: '/auth/sync',
+    resendVerification: '/auth/resend-verification',
     identities: '/auth/identities',
     linkNonce: '/auth/identities/link-nonce',
     link: '/auth/identities/link',
@@ -176,6 +177,7 @@ export const API_METHODS = {
     link: (data: { idToken: string }) => ({ endpoint: API_ENDPOINTS.auth.link, data }),
     addPassword: () => ({ endpoint: API_ENDPOINTS.auth.password, data: {} }),
     sync: () => ({ endpoint: API_ENDPOINTS.auth.sync }),
+    resendVerification: () => ({ endpoint: API_ENDPOINTS.auth.resendVerification, data: {} }),
   },
   vocabs: {
     getAll: (params?: VocabQueryParams) => {

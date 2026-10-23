@@ -166,7 +166,8 @@ class ServerAPI {
     return this.request<T>(endpoint, { method: 'GET' });
   }
 
-  post<T>(endpoint: string, data: unknown) {
+  /** `bearerToken` replaces the session cookie's token, for a login that has no session yet. */
+  post<T>(endpoint: string, data: unknown, bearerToken?: string) {
     logger.debug('Server API POST Request:', {
       endpoint: `${this.baseURL}${endpoint}`,
       dataKeys: data && typeof data === 'object' ? Object.keys(data as object) : [],
@@ -175,6 +176,7 @@ class ServerAPI {
     return this.request<T>(endpoint, {
       method: 'POST',
       body: JSON.stringify(data),
+      ...(bearerToken && { headers: { Authorization: `Bearer ${bearerToken}` } }),
     });
   }
 
@@ -212,6 +214,10 @@ export const authApi = {
   signInMethods: () => {
     const config = API_METHODS.auth.signInMethods();
     return serverApi.get<TSignInMethods>(config.endpoint);
+  },
+  resendVerification: (accessToken: string) => {
+    const config = API_METHODS.auth.resendVerification();
+    return serverApi.post<{ emailSent: boolean }>(config.endpoint, config.data, accessToken);
   },
   addPassword: () => {
     const config = API_METHODS.auth.addPassword();
