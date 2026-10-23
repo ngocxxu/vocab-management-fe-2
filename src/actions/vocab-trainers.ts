@@ -3,6 +3,7 @@
 import type {
   TCloneVocabTrainer,
   TCreateVocabTrainer,
+  TExamJobStatusResponse,
   TFormTestVocabTrainerUnion,
   TFsrsAnswerCheck,
   TFsrsAnswerInput,
@@ -107,6 +108,20 @@ export async function submitExam(id: string, examData: TFormTestVocabTrainerUnio
     return result;
   } catch (error) {
     throw await toActionError(error, 'submitExam');
+  }
+}
+
+/** Where an exam generation or grading job stands. Lets a page recover when the socket event never reached it. */
+export async function getExamJobStatus(id: string, jobId: string): Promise<TExamJobStatusResponse> {
+  assertTrainerId(id);
+  if (!jobId || typeof jobId !== 'string') {
+    throw new Error('Job ID is required');
+  }
+
+  try {
+    return await vocabTrainerApi.getExamJobStatus(id, jobId);
+  } catch (error) {
+    throw await toActionError(error, 'getExamJobStatus');
   }
 }
 

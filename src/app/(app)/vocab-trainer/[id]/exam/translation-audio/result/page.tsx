@@ -6,7 +6,7 @@ import { useParams, useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
 import { ExamErrorState } from '@/shared/ui/shared';
 import TranslationAudioResults from '@/components/vocab-trainer/TranslationAudioResults';
-import { useSocket } from '@/hooks/useSocket';
+import { useExamJobResult } from '@/hooks/useExamJobResult';
 import {
   clearCachedAudioEvaluation,
   readCachedAudioEvaluation,
@@ -14,21 +14,36 @@ import {
 } from '@/utils/exam-evaluation-cache';
 import { SOCKET_EVENTS } from '@/utils/socket-config';
 
+type TAudioData = { transcript?: string; markdownReport?: string };
+
+const isAudioData = (data: unknown): data is TAudioData =>
+  typeof data === 'object' && data !== null && (typeof (data as TAudioData).transcript === 'string' || typeof (data as TAudioData).markdownReport === 'string');
+
+const readCached = (jobId: string) => {
+  const cached = readCachedAudioEvaluation(jobId);
+  return cached ? { data: { transcript: cached.transcript, markdownReport: cached.markdownReport }, completedAt: cached.completedAt } : null;
+};
+
+const writeCached = (jobId: string, data: TAudioData, completedAt: string) => {
+  writeCachedAudioEvaluation({ jobId, status: 'completed', data, timestamp: completedAt });
+};
+
 const TranslationAudioResultPage: React.FC = () => {
   const t = useTranslations('trainer.evaluation');
   const params = useParams();
   const router = useRouter();
   const trainerId = params.id as string;
-  const { socket } = useSocket();
   const [jobId, setJobId] = useState<string | null>(null);
   const [timeElapsed, setTimeElapsed] = useState<number>(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [evaluationResult, setEvaluationResult] = useState<{
-    transcript?: string;
-    markdownReport?: string;
-    error?: string;
-  } | null>(null);
+
+  const { state, retry } = useExamJobResult<TAudioData>({
+    trainerId,
+    jobId,
+    socketEvent: SOCKET_EVENTS.AUDIO_EVALUATION_PROGRESS,
+    isValid: isAudioData,
+    readCached,
+    writeCached,
+  });
 
   const loadResultData = useCallback(() => {
     const storageKey = `translation_audio_result_${trainerId}`;
@@ -37,19 +52,14 @@ const TranslationAudioResultPage: React.FC = () => {
     if (cachedData) {
       try {
         const parsedData = JSON.parse(cachedData);
+        if (typeof parsedData.jobId !== 'string') {
+          // Nothing to wait for: treat it like unreadable data instead of spinning forever.
+          localStorage.removeItem(storageKey);
+          router.push('/vocab-trainer');
+          return;
+        }
         setJobId(parsedData.jobId);
         setTimeElapsed(parsedData.timeElapsed || 0);
-
-        if (typeof parsedData.jobId === 'string') {
-          const cachedEvaluation = readCachedAudioEvaluation(parsedData.jobId);
-          if (cachedEvaluation) {
-            setEvaluationResult({
-              transcript: cachedEvaluation.transcript,
-              markdownReport: cachedEvaluation.markdownReport,
-            });
-            setIsLoading(false);
-          }
-        }
       } catch (err) {
         console.error('Failed to parse result data:', err);
         localStorage.removeItem(storageKey);
@@ -64,51 +74,6 @@ const TranslationAudioResultPage: React.FC = () => {
     loadResultData();
   }, [loadResultData]);
 
-  useEffect(() => {
-    if (!socket || !jobId) {
-      return;
-    }
-
-    const handleAudioEvaluationProgress = (data: {
-      jobId: string;
-      status: 'evaluating' | 'completed' | 'failed';
-      data?: {
-        transcript?: string;
-        markdownReport?: string;
-        error?: string;
-      };
-      timestamp: string;
-    }) => {
-      const currentJobId = String(jobId);
-      const eventJobId = String(data.jobId);
-
-      if (eventJobId !== currentJobId) {
-        return;
-      }
-
-      if (data.status === 'evaluating') {
-        setIsLoading(true);
-        setError(null);
-      } else if (data.status === 'completed') {
-        writeCachedAudioEvaluation(data);
-        setEvaluationResult({
-          transcript: data.data?.transcript,
-          markdownReport: data.data?.markdownReport,
-        });
-        setIsLoading(false);
-      } else if (data.status === 'failed') {
-        setError(data.data?.error || t('failed'));
-        setIsLoading(false);
-      }
-    };
-
-    socket.on(SOCKET_EVENTS.AUDIO_EVALUATION_PROGRESS, handleAudioEvaluationProgress);
-
-    return () => {
-      socket.off(SOCKET_EVENTS.AUDIO_EVALUATION_PROGRESS, handleAudioEvaluationProgress);
-    };
-  }, [socket, jobId, t]);
-
   const handleBackToTrainers = () => {
     const storageKey = `translation_audio_result_${trainerId}`;
     localStorage.removeItem(storageKey);
@@ -118,7 +83,7 @@ const TranslationAudioResultPage: React.FC = () => {
     router.push('/vocab-trainer');
   };
 
-  if (isLoading) {
+  if (state.phase === 'loading') {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="space-y-6 text-center">
@@ -136,23 +101,25 @@ const TranslationAudioResultPage: React.FC = () => {
     );
   }
 
-  if (error) {
+  if (state.phase === 'timeout') {
     return (
       <ExamErrorState
-        error={error}
+        error={t('timeout')}
         onBackToTrainers={handleBackToTrainers}
+        onRetry={retry}
+        retryLabel={t('checkAgain')}
         variant="fullscreen"
       />
     );
   }
 
-  if (evaluationResult) {
+  if (state.phase === 'completed' && state.data) {
     return (
       <div className="min-h-full bg-background">
         <TranslationAudioResults
           trainerId={trainerId}
-          transcript={evaluationResult.transcript}
-          markdownReport={evaluationResult.markdownReport}
+          transcript={state.data.transcript}
+          markdownReport={state.data.markdownReport}
           timeElapsed={timeElapsed}
           onBackToTrainers={handleBackToTrainers}
         />
@@ -160,7 +127,13 @@ const TranslationAudioResultPage: React.FC = () => {
     );
   }
 
-  return null;
+  return (
+    <ExamErrorState
+      error={state.error || t('failed')}
+      onBackToTrainers={handleBackToTrainers}
+      variant="fullscreen"
+    />
+  );
 };
 
 export default TranslationAudioResultPage;

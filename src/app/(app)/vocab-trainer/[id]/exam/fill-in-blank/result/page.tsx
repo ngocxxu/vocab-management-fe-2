@@ -1,14 +1,14 @@
 'use client';
 
 import { EQuestionType } from '@/enum/vocab-trainer';
-import type { TExamSubmitResponse, TFillInBlankEvaluationProgress } from '@/types/vocab-trainer';
+import type { TExamResult, TExamSubmitResponse } from '@/types/vocab-trainer';
 import { RefreshCircle } from '@solar-icons/react/ssr';
 import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ExamErrorState } from '@/shared/ui/shared';
 import ExamResults from '@/components/vocab-trainer/ExamResults';
-import { useSocket } from '@/hooks/useSocket';
+import { useExamJobResult } from '@/hooks/useExamJobResult';
 import {
   clearCachedFillInBlankEvaluation,
   readCachedFillInBlankEvaluation,
@@ -16,20 +16,38 @@ import {
 } from '@/utils/exam-evaluation-cache';
 import { SOCKET_EVENTS } from '@/utils/socket-config';
 
+type TFillInBlankData = { results: TExamResult[] };
+
+const isFillInBlankData = (data: unknown): data is TFillInBlankData =>
+  typeof data === 'object' && data !== null && Array.isArray((data as TFillInBlankData).results) && (data as TFillInBlankData).results.length > 0;
+
+const readCached = (jobId: string) => {
+  const cached = readCachedFillInBlankEvaluation(jobId);
+  return cached ? { data: { results: cached.results.results }, completedAt: cached.completedAt } : null;
+};
+
+const writeCached = (jobId: string, data: TFillInBlankData, completedAt: string) => {
+  writeCachedFillInBlankEvaluation({ jobId, status: 'completed', data, timestamp: completedAt });
+};
+
 const FillInBlankResultPage: React.FC = () => {
   const t = useTranslations('trainer.evaluation');
   const params = useParams();
   const router = useRouter();
   const trainerId = params.id as string;
-  const { socket, isConnected } = useSocket();
   const [jobId, setJobId] = useState<string | null>(null);
   const [timeElapsed, setTimeElapsed] = useState<number>(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [evaluationResults, setEvaluationResults] = useState<TExamSubmitResponse | null>(null);
-  const [completedAt, setCompletedAt] = useState<string | undefined>();
   const [questions, setQuestions] = useState<any[]>([]);
   const [selectedAnswers, setSelectedAnswers] = useState<Map<number, string>>(() => new Map());
+
+  const { state, retry } = useExamJobResult<TFillInBlankData>({
+    trainerId,
+    jobId,
+    socketEvent: SOCKET_EVENTS.FILL_IN_BLANK_EVALUATION_PROGRESS,
+    isValid: isFillInBlankData,
+    readCached,
+    writeCached,
+  });
 
   const loadResultData = useCallback(() => {
     const storageKey = `fill_in_blank_result_${trainerId}`;
@@ -38,17 +56,14 @@ const FillInBlankResultPage: React.FC = () => {
     if (cachedData) {
       try {
         const parsedData = JSON.parse(cachedData);
+        if (typeof parsedData.jobId !== 'string') {
+          // Nothing to wait for: treat it like unreadable data instead of spinning forever.
+          localStorage.removeItem(storageKey);
+          router.push('/vocab-trainer');
+          return;
+        }
         setJobId(parsedData.jobId);
         setTimeElapsed(parsedData.timeElapsed || 0);
-
-        if (typeof parsedData.jobId === 'string') {
-          const cachedEvaluation = readCachedFillInBlankEvaluation(parsedData.jobId);
-          if (cachedEvaluation) {
-            setEvaluationResults(cachedEvaluation.results);
-            setCompletedAt(cachedEvaluation.completedAt);
-            setIsLoading(false);
-          }
-        }
 
         if (parsedData.questions) {
           setQuestions(parsedData.questions);
@@ -75,45 +90,10 @@ const FillInBlankResultPage: React.FC = () => {
     loadResultData();
   }, [loadResultData]);
 
-  useEffect(() => {
-    if (!socket || !jobId || !isConnected) {
-      return;
-    }
-
-    const handleFillInBlankEvaluationProgress = (data: TFillInBlankEvaluationProgress) => {
-      const currentJobId = String(jobId);
-      const eventJobId = String(data.jobId);
-
-      if (eventJobId !== currentJobId) {
-        return;
-      }
-
-      if (data.status === 'evaluating') {
-        setIsLoading(true);
-        setError(null);
-      } else if (data.status === 'completed') {
-        if (data.data?.results) {
-          writeCachedFillInBlankEvaluation(data);
-          const results: TExamSubmitResponse = {
-            status: 'completed',
-            results: data.data.results,
-          };
-          setEvaluationResults(results);
-          setCompletedAt(data.timestamp);
-        }
-        setIsLoading(false);
-      } else if (data.status === 'failed') {
-        setError(data.data?.error || t('failed'));
-        setIsLoading(false);
-      }
-    };
-
-    socket.on(SOCKET_EVENTS.FILL_IN_BLANK_EVALUATION_PROGRESS, handleFillInBlankEvaluationProgress);
-
-    return () => {
-      socket.off(SOCKET_EVENTS.FILL_IN_BLANK_EVALUATION_PROGRESS, handleFillInBlankEvaluationProgress);
-    };
-  }, [socket, jobId, isConnected, t]);
+  const evaluationResults = useMemo<TExamSubmitResponse | null>(
+    () => (state.data ? { status: 'completed', results: state.data.results } : null),
+    [state.data],
+  );
 
   const handleBackToTrainers = () => {
     const storageKey = `fill_in_blank_result_${trainerId}`;
@@ -124,7 +104,7 @@ const FillInBlankResultPage: React.FC = () => {
     router.push('/vocab-trainer');
   };
 
-  if (isLoading) {
+  if (state.phase === 'loading') {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="space-y-6 text-center">
@@ -142,11 +122,13 @@ const FillInBlankResultPage: React.FC = () => {
     );
   }
 
-  if (error) {
+  if (state.phase === 'timeout') {
     return (
       <ExamErrorState
-        error={error}
+        error={t('timeout')}
         onBackToTrainers={handleBackToTrainers}
+        onRetry={retry}
+        retryLabel={t('checkAgain')}
         variant="fullscreen"
       />
     );
@@ -163,7 +145,7 @@ const FillInBlankResultPage: React.FC = () => {
           timeElapsed={timeElapsed}
           onBackToTrainers={handleBackToTrainers}
           jobId={jobId ?? undefined}
-          completedAt={completedAt}
+          completedAt={state.completedAt}
           onRetryExam={() => router.push(`/vocab-trainer/${trainerId}/exam/fill-in-blank`)}
           questionType={EQuestionType.FILL_IN_THE_BLANK}
         />
@@ -171,7 +153,13 @@ const FillInBlankResultPage: React.FC = () => {
     );
   }
 
-  return null;
+  return (
+    <ExamErrorState
+      error={state.error || t('failed')}
+      onBackToTrainers={handleBackToTrainers}
+      variant="fullscreen"
+    />
+  );
 };
 
 export default FillInBlankResultPage;

@@ -278,6 +278,7 @@ export const API_METHODS = {
     delete: (id: string) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}` }),
     getExam: (id: string) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}/exam` }),
     submitExam: (id: string, testData: TFormTestVocabTrainerUnion) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}/exam`, data: testData }),
+    getExamJobStatus: (id: string, jobId: string) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}/exam/jobs/${jobId}` }),
     deleteBulk: (ids: string[]) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/bulk/delete`, data: { ids } }),
     clone: (id: string, data: TCloneVocabTrainer) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}/clone`, data }),
     removeVocab: (id: string, vocabId: string) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}/vocabs/${vocabId}` }),

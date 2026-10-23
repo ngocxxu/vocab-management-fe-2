@@ -1,11 +1,12 @@
 'use client';
 
-import type { TExamGenerationProgress, TQuestionAPI } from '@/types/vocab-trainer';
+import type { TExamGenerationProgress, TQuestion, TQuestionAPI } from '@/types/vocab-trainer';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { getExam } from '@/actions';
+import { getExam, getExamJobStatus } from '@/actions';
 import { EQuestionType } from '@/enum/vocab-trainer';
 import { useSocket } from '@/hooks/useSocket';
 import { logger } from '@/libs/Logger';
+import { EXAM_JOB_POLL_INTERVAL_MS, EXAM_JOB_TIMEOUT_MS } from '@/utils/exam-job-result';
 import { SOCKET_EVENTS } from '@/utils/socket-config';
 
 // --- Storage helpers ---
@@ -48,11 +49,11 @@ export const useExamData = ({
   const [examData, setExamData] = useState<TQuestionAPI | null>(null);
   const [status, setStatus] = useState<GenerationStatus>(() => autoLoad && trainerId ? 'generating' : 'idle');
   const [error, setError] = useState<unknown>(null);
+  const [jobId, setJobId] = useState<string | null>(null);
 
-  const { socket, isConnected } = useSocket();
+  const { socket } = useSocket();
 
   // Refs that never need to trigger a re-render
-  const jobIdRef = useRef<string | null>(null);
   const trainerIdRef = useRef(trainerId);
   const loadPromiseRef = useRef<Promise<void> | null>(null);
   const successFiredRef = useRef(false);
@@ -124,7 +125,7 @@ export const useExamData = ({
         }
 
         // Case B: wait for socket
-        jobIdRef.current = data.jobId || trainerId;
+        setJobId(data.jobId || trainerId);
 
         if (!socket?.connected) {
           logger.warn('Socket not connected, waiting for connection...', { trainerId });
@@ -146,44 +147,48 @@ export const useExamData = ({
     }
   }, [trainerId, socket]);
 
+  // Applies news about the generation job, whether it came from the socket or from polling the job status.
+  const settleGeneration = useCallback((progress: { status: string; data?: { questions?: TQuestion[]; error?: string }; error?: string }) => {
+    if (progress.status === 'failed') {
+      const errMsg = progress.data?.error || progress.error || 'Generation failed';
+      setError(errMsg);
+      setStatus('failed');
+      latestActions.current.onErrorAction?.(new Error(errMsg));
+      return;
+    }
+
+    if (progress.status === 'completed' && progress.data?.questions) {
+      const completedData: TQuestionAPI = {
+        ...examData!,
+        questionAnswers: progress.data.questions,
+        questionType: examData!.questionType ?? EQuestionType.MULTIPLE_CHOICE,
+      };
+
+      if (trainerIdRef.current) {
+        saveCachedData(trainerIdRef.current, completedData);
+      }
+
+      setExamData(completedData);
+      setStatus('completed');
+
+      if (!successFiredRef.current) {
+        successFiredRef.current = true;
+        latestActions.current.onSuccessAction?.(completedData);
+      }
+    }
+  }, [examData]);
+
   // Socket listener — only active while generating
   useEffect(() => {
-    if (!socket || !isConnected || !jobIdRef.current || status !== 'generating') {
+    if (!socket || !jobId || status !== 'generating') {
       return;
     }
 
     const handleProgress = (event: TExamGenerationProgress) => {
-      if (String(event.jobId) !== String(jobIdRef.current)) {
+      if (String(event.jobId) !== jobId) {
         return;
       }
-
-      if (event.status === 'failed') {
-        const errMsg = event.data?.error || 'Generation failed';
-        setError(errMsg);
-        setStatus('failed');
-        latestActions.current.onErrorAction?.(new Error(errMsg));
-        return;
-      }
-
-      if (event.status === 'completed' && event.data?.questions) {
-        const completedData: TQuestionAPI = {
-          ...examData!,
-          questionAnswers: event.data.questions,
-          questionType: examData!.questionType ?? EQuestionType.MULTIPLE_CHOICE,
-        };
-
-        if (trainerIdRef.current) {
-          saveCachedData(trainerIdRef.current, completedData);
-        }
-
-        setExamData(completedData);
-        setStatus('completed');
-
-        if (!successFiredRef.current) {
-          successFiredRef.current = true;
-          latestActions.current.onSuccessAction?.(completedData);
-        }
-      }
+      settleGeneration(event);
     };
 
     socket.on(SOCKET_EVENTS.MULTIPLE_CHOICE_GENERATION_PROGRESS, handleProgress);
@@ -192,7 +197,38 @@ export const useExamData = ({
       socket.off(SOCKET_EVENTS.MULTIPLE_CHOICE_GENERATION_PROGRESS, handleProgress);
       socket.off(SOCKET_EVENTS.FILL_IN_BLANK_CHOICE_GENERATION_PROGRESS, handleProgress);
     };
-  }, [socket, isConnected, status, examData]);
+  }, [socket, jobId, status, settleGeneration]);
+
+  // Fallback while generating: the socket event may never arrive, so ask the server and give up after the timeout.
+  useEffect(() => {
+    if (!trainerId || !jobId || status !== 'generating') {
+      return;
+    }
+
+    let cancelled = false;
+    const poll = async () => {
+      try {
+        const response = await getExamJobStatus(trainerId, jobId);
+        if (!cancelled) {
+          settleGeneration({ status: response.status, data: response.data as { questions?: TQuestion[] } | undefined, error: response.error });
+        }
+      } catch (err) {
+        logger.warn('Exam generation status poll failed', { error: err, trainerId, jobId });
+      }
+    };
+
+    void poll();
+    const interval = setInterval(() => void poll(), EXAM_JOB_POLL_INTERVAL_MS);
+    const timeout = setTimeout(() => {
+      settleGeneration({ status: 'failed', error: 'Generating the questions is taking longer than expected' });
+    }, EXAM_JOB_TIMEOUT_MS);
+
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+      clearTimeout(timeout);
+    };
+  }, [trainerId, jobId, status, settleGeneration]);
 
   // Auto-load
   useEffect(() => {
@@ -209,7 +245,7 @@ export const useExamData = ({
     setExamData(null);
     setStatus('idle');
     setError(null);
-    jobIdRef.current = null;
+    setJobId(null);
     loadPromiseRef.current = null;
     successFiredRef.current = false;
   }, [trainerId]);

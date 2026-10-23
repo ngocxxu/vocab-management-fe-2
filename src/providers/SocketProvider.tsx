@@ -124,13 +124,15 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children, user }
       logger.debug('Socket connected:', { data });
     });
 
-    socketInstance.on(SOCKET_EVENTS.FILL_IN_BLANK_EVALUATION_PROGRESS, (data) => {
+    // Cache results even when no result page is listening yet; the page reads the cache when it mounts.
+    const cacheFillInBlankEvaluation = (data: Parameters<typeof writeCachedFillInBlankEvaluation>[0]) => {
       writeCachedFillInBlankEvaluation(data);
-    });
-
-    socketInstance.on(SOCKET_EVENTS.AUDIO_EVALUATION_PROGRESS, (data) => {
+    };
+    const cacheAudioEvaluation = (data: Parameters<typeof writeCachedAudioEvaluation>[0]) => {
       writeCachedAudioEvaluation(data);
-    });
+    };
+    socketInstance.on(SOCKET_EVENTS.FILL_IN_BLANK_EVALUATION_PROGRESS, cacheFillInBlankEvaluation);
+    socketInstance.on(SOCKET_EVENTS.AUDIO_EVALUATION_PROGRESS, cacheAudioEvaluation);
 
     socketInstance.on('reconnect_error', (error) => {
       logger.error('Socket reconnection error:', { error });
@@ -150,8 +152,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children, user }
 
     // Cleanup on unmount
     return () => {
-      socketInstance.off(SOCKET_EVENTS.FILL_IN_BLANK_EVALUATION_PROGRESS);
-      socketInstance.off(SOCKET_EVENTS.AUDIO_EVALUATION_PROGRESS);
+      socketInstance.off(SOCKET_EVENTS.FILL_IN_BLANK_EVALUATION_PROGRESS, cacheFillInBlankEvaluation);
+      socketInstance.off(SOCKET_EVENTS.AUDIO_EVALUATION_PROGRESS, cacheAudioEvaluation);
       socketInstance.disconnect();
       setSocket(null);
       setIsConnected(false);

@@ -117,6 +117,15 @@ export type TExamGenerationProgress = {
   timestamp: string;
 };
 
+/** Answer of `GET /vocab-trainers/:id/exam/jobs/:jobId`: where a generation or grading job stands. */
+export type TExamJobStatusResponse = {
+  jobId: string;
+  status: 'evaluating' | 'generating' | 'completed' | 'failed' | 'unknown';
+  /** The payload the `completed` socket event carries (results, questions, transcript...). */
+  data?: Record<string, unknown>;
+  error?: string;
+};
+
 export type TCreateVocabTrainer = {
   name: string;
   status: string;

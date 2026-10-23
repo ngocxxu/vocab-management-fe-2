@@ -12,6 +12,8 @@ const ExamErrorState: React.FC<ExamErrorStateProps> = ({
   onBackToTrainers,
   variant = 'inline',
   fallbackMessage,
+  onRetry,
+  retryLabel,
 }) => {
   const t = useTranslations('shared');
   const errorMessage = error || fallbackMessage || t('examErrorFallback');
@@ -20,7 +22,12 @@ const ExamErrorState: React.FC<ExamErrorStateProps> = ({
       <Alert variant="destructive">
         <AlertDescription>{errorMessage}</AlertDescription>
       </Alert>
-      <div className="flex justify-center">
+      <div className="flex justify-center gap-3">
+        {onRetry && (
+          <Button onClick={onRetry}>
+            {retryLabel}
+          </Button>
+        )}
         <Button onClick={onBackToTrainers} variant="outline">
           {t('backToTrainers')}
         </Button>

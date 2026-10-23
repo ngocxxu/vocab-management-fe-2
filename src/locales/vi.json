@@ -47,6 +47,7 @@
     "generateSubjectSuggestions": "Không thể tạo gợi ý chủ đề",
     "fetchTextTargets": "Không thể tải danh sách mục tiêu văn bản",
     "fetchTextTarget": "Không thể tải mục tiêu văn bản",
+    "getExamJobStatus": "Không thể kiểm tra trạng thái bài kiểm tra",
     "fetchExam": "Không thể tải bài kiểm tra",
     "fetchChatUnreadCount": "Không thể tải số tin nhắn chưa đọc",
     "fetchChatMessages": "Không thể tải tin nhắn",
@@ -1654,7 +1655,9 @@
       "fillInTitle": "AI đang chấm câu trả lời...",
       "audioTitle": "Đang chấm bản dịch của bạn...",
       "wait": "Việc này có thể mất vài giây. Vui lòng chờ.",
-      "failed": "Chấm bài thất bại"
+      "failed": "Chấm bài thất bại",
+      "timeout": "Việc này lâu hơn dự kiến. Câu trả lời của bạn đã được lưu: hãy kiểm tra lại sau giây lát.",
+      "checkAgain": "Kiểm tra lại"
     }
   },
   "dashboard": {
