@@ -39,6 +39,13 @@ const baseConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      // Auth0 gives password logins a Gravatar picture (falling back to its own default avatar).
+      {
+        protocol: 'https',
+        hostname: 's.gravatar.com',
+        port: '',
+        pathname: '/avatar/**',
+      },
     ],
   },
 };

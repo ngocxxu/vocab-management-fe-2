@@ -63,7 +63,7 @@ export const SignInMethods: React.FC<TSignInMethodsProps> = ({ signInMethods: in
   const t = useTranslations('settings.signInMethods');
   const [isSending, startSending] = useTransition();
   const [signInMethods, setSignInMethods] = useState(initialSignInMethods);
-  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [passwordError, setPasswordError] = useState<TAccountErrorCode | 'link_failed' | null>(null);
 
   const isConnected = (id: string) => signInMethods?.methods.includes(id) ?? false;
   const isPasswordPending = !isConnected('password') && (signInMethods?.pending.includes('password') ?? false);
@@ -82,7 +82,7 @@ export const SignInMethods: React.FC<TSignInMethodsProps> = ({ signInMethods: in
         toast.success(t('passwordSentToast'));
       } catch (error) {
         const code = error instanceof Error ? error.message : '';
-        setPasswordError(t(`errors.${isAccountErrorCode(code) ? code : 'link_failed'}`));
+        setPasswordError(isAccountErrorCode(code) ? code : 'link_failed');
       }
     });
   };
@@ -138,7 +138,18 @@ export const SignInMethods: React.FC<TSignInMethodsProps> = ({ signInMethods: in
           </Button>
         )}
       />
-      {passwordError && <p role="alert" className="pb-5 text-sm text-destructive">{passwordError}</p>}
+      {passwordError && (
+        <div className="space-y-3 pb-5">
+          <p role="alert" className="text-sm text-destructive">{t(`errors.${passwordError}`)}</p>
+          {passwordError === 'password_login_exists' && (
+            // The login already exists, so it is connected by signing in with it (the same fresh sign-in proof as Google).
+            <form method="post" action={LINK_START_PATH}>
+              <input type="hidden" name="method" value="password" />
+              <Button type="submit" variant="outline" size="sm">{t('connectExistingPassword')}</Button>
+            </form>
+          )}
+        </div>
+      )}
     </SettingsSection>
   );
 };

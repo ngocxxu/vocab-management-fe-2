@@ -21,6 +21,16 @@ export const REFRESH_COOKIE_OPTIONS = {
   ...(COOKIE_DOMAIN && { domain: COOKIE_DOMAIN }),
 };
 
+/** Read only by the login route, so it is scoped to /api/auth. */
+export const FRESH_LOGIN_COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'lax' as const,
+  path: '/api/auth',
+  maxAge: 600, // 10 minutes
+  ...(COOKIE_DOMAIN && { domain: COOKIE_DOMAIN }),
+};
+
 /** Scoped to /verify-email so no other request carries it. */
 export const UNVERIFIED_TOKEN_COOKIE_OPTIONS = {
   httpOnly: true,

@@ -283,6 +283,7 @@
       "password": "Mật khẩu",
       "connectGoogle": "Kết nối Google",
       "addPassword": "Thêm mật khẩu",
+      "connectExistingPassword": "Kết nối tài khoản mật khẩu có sẵn",
       "passwordSentToast": "Đã gửi email.",
       "pendingHint": "Hãy kiểm tra hộp thư. Mở liên kết chúng tôi đã gửi để đặt mật khẩu.",
       "resend": "Gửi lại email",
@@ -294,7 +295,7 @@
         "link_nonce_invalid": "Yêu cầu kết nối này không còn hợp lệ. Vui lòng bắt đầu lại.",
         "id_token_invalid": "Không thể xác minh lần đăng nhập đó. Vui lòng thử lại.",
         "link_session_changed": "Phiên của bạn đã thay đổi khi đang kết nối. Vui lòng đăng nhập lại và thử lại.",
-        "password_login_exists": "Đã có tài khoản mật khẩu với email này và không thuộc tài khoản này. Hãy đăng nhập bằng tài khoản đó, rồi kết nối Google trong Cài đặt của nó.",
+        "password_login_exists": "Đã có tài khoản mật khẩu với email này. Hãy đăng nhập bằng mật khẩu của nó để kết nối vào tài khoản này.",
         "link_failed": "Không thể kết nối phương thức đăng nhập đó. Vui lòng thử lại."
       },
       "status": {

@@ -51,6 +51,17 @@ describe('callback route: a refused sync', () => {
     expect(cookie?.httpOnly).toBe(true);
   });
 
+  it('ends the session: clears the app cookies and forces the next sign-in to ask for credentials', async () => {
+    stubSync('account_link_required');
+
+    const response = await GET(callback());
+
+    expect(response.cookies.get('accessToken')?.value).toBe('');
+    expect(response.cookies.get('refreshToken')?.value).toBe('');
+    expect(response.cookies.get('freshLogin')?.value).toBe('1');
+    expect(response.cookies.get('freshLogin')?.path).toBe('/api/auth');
+  });
+
   it('keeps the landing page and its error for any other refusal', async () => {
     stubSync('account_link_required');
 
