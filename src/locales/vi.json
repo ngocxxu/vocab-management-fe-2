@@ -123,6 +123,7 @@
     "questionTypeNotFsrs": "Chọn thẻ lật hoặc nhập câu trả lời",
     "directionRequired": "Chọn ít nhất một chiều ôn tập",
     "directionDuplicate": "Mỗi chiều chỉ được chọn một lần",
+    "directionRandomExclusive": "Ngẫu nhiên không thể chọn cùng Nhận biết hoặc Nhớ lại",
     "newPerDayInvalid": "Nhập số nguyên từ 1 trở lên, hoặc để trống",
     "dateInvalid": "Chọn một ngày hợp lệ",
     "deadlinePast": "Hạn chót không thể là ngày đã qua",
@@ -168,6 +169,10 @@
     "targetToSource": {
       "label": "Nghĩa → từ",
       "hint": "Xem nghĩa, nhớ lại từ."
+    },
+    "random": {
+      "label": "Ngẫu nhiên",
+      "hint": "Một card cho mỗi từ, hỏi theo chiều ngẫu nhiên."
     }
   },
   "supportCategories": {
@@ -1453,7 +1458,8 @@
       },
       "direction": {
         "sourceToTarget": "Từ → Nghĩa",
-        "targetToSource": "Nghĩa → Từ"
+        "targetToSource": "Nghĩa → Từ",
+        "random": "Ngẫu nhiên"
       },
       "deadline": {
         "cycleEnded": "Chu kỳ đã kết thúc",
@@ -1589,7 +1595,9 @@
       "directionRecogniseHint": "Thấy từ, biết nghĩa",
       "directionRecall": "Nhớ lại",
       "directionRecallHint": "Thấy nghĩa, tự nhớ ra từ",
-      "directionsNote": "Mỗi từ được hỏi một lần cho mỗi chiều, sau đó quay lại theo lịch cho đến khi bạn nhớ. Theo thời gian bạn sẽ thấy nhiều câu hỏi hơn số này.",
+      "directionRandom": "Ngẫu nhiên",
+      "directionRandomHint": "Một card cho mỗi từ, hỏi theo chiều ngẫu nhiên.",
+      "directionsNote": "Nhận biết và Nhớ lại hỏi mỗi từ một lần cho mỗi chiều, sau đó theo lịch cho đến khi bạn nhớ. Ngẫu nhiên hỏi mỗi từ một lần, theo chiều ngẫu nhiên.",
       "directionsLocked": "Các chiều được cố định sau khi tạo bộ luyện tập.",
       "deadline": "Hạn chót",
       "optional": "(không bắt buộc)",

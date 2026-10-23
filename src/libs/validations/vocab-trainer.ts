@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { EFsrsDirection, EQuestionType, ETrainerMode } from '@/enum/vocab-trainer';
+import { isRandomWithOthers } from '@/utils/fsrs-directions';
 import { SRS_MAX_RETENTION, SRS_MIN_RETENTION } from './srs-settings';
 
 // Same bounds as the backend; the backend checks them again.
@@ -114,6 +115,9 @@ export function createTrainerFormSchema({ originalEndsAt = '', now = new Date() 
       }
       if (value.fsrsDirections.length === 0) {
         issue('fsrsDirections', 'validation.directionRequired');
+      }
+      if (isRandomWithOthers(value.fsrsDirections)) {
+        issue('fsrsDirections', 'validation.directionRandomExclusive');
       }
       if (value.fsrsDesiredRetention < SRS_MIN_RETENTION || value.fsrsDesiredRetention > SRS_MAX_RETENTION) {
         issue('fsrsDesiredRetention', 'validation.retentionOutOfRange');

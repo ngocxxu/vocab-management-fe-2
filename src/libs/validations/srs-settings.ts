@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { EFsrsDirection, EQuestionType } from '@/enum/vocab-trainer';
+import { isRandomWithOthers } from '@/utils/fsrs-directions';
 
 // Same bounds as the backend; the backend checks them again.
 export const SRS_MIN_RETENTION = 0.7;
@@ -25,7 +26,8 @@ export const srsSettingsFormSchema = z.object({
   directions: z
     .array(z.enum(EFsrsDirection))
     .min(1, 'validation.directionRequired')
-    .refine(directions => new Set(directions).size === directions.length, 'validation.directionDuplicate'),
+    .refine(directions => new Set(directions).size === directions.length, 'validation.directionDuplicate')
+    .refine(directions => !isRandomWithOthers(directions), 'validation.directionRandomExclusive'),
   questionType: z.enum([EQuestionType.FLIP_CARD, EQuestionType.FILL_IN_THE_BLANK]),
   reminderEnabled: z.boolean(),
   timezone: z.string().min(1, 'validation.timezoneRequired').refine(isValidTimezone, 'validation.timezoneUnknown'),

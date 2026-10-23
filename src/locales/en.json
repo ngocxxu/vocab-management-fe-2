@@ -123,6 +123,7 @@
     "questionTypeNotFsrs": "Pick flip card or type the answer",
     "directionRequired": "Pick at least one direction",
     "directionDuplicate": "Each direction can be picked once",
+    "directionRandomExclusive": "Random cannot be combined with Recognise or Recall",
     "newPerDayInvalid": "Enter a whole number of 1 or more, or leave it empty",
     "dateInvalid": "Pick a valid date",
     "deadlinePast": "The deadline cannot be in the past",
@@ -168,6 +169,10 @@
     "targetToSource": {
       "label": "Meaning → word",
       "hint": "See the meaning, recall the word."
+    },
+    "random": {
+      "label": "Random",
+      "hint": "One card per word, asked in either direction at random."
     }
   },
   "supportCategories": {
@@ -1453,7 +1458,8 @@
       },
       "direction": {
         "sourceToTarget": "Word → Meaning",
-        "targetToSource": "Meaning → Word"
+        "targetToSource": "Meaning → Word",
+        "random": "Random"
       },
       "deadline": {
         "cycleEnded": "Cycle ended",
@@ -1589,7 +1595,9 @@
       "directionRecogniseHint": "See the word, know the meaning",
       "directionRecall": "Recall",
       "directionRecallHint": "See the meaning, produce the word",
-      "directionsNote": "Each word is asked once per direction, then comes back on a schedule until you know it. Over time you will see more questions than this.",
+      "directionRandom": "Random",
+      "directionRandomHint": "One card per word, asked in either direction at random.",
+      "directionsNote": "Recognise and Recall ask each word once per direction, then on a schedule until you know it. Random asks each word once, in a random direction.",
       "directionsLocked": "Directions are fixed after the trainer is created.",
       "deadline": "Deadline",
       "optional": "(optional)",
