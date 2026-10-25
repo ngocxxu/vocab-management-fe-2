@@ -9,6 +9,7 @@ import { NotificationItem } from './NotificationItem';
 export const NotificationList: React.FC<NotificationListProps> = ({
   notifications,
   isLoading,
+  hasError,
   onMarkAsRead,
   onDelete,
 }) => {
@@ -22,6 +23,11 @@ export const NotificationList: React.FC<NotificationListProps> = ({
         </div>
       </div>
     );
+  }
+
+  // A failed load is not an empty inbox: the error is shown by the dropdown instead of "all caught up".
+  if (notifications.length === 0 && hasError) {
+    return null;
   }
 
   if (notifications.length === 0) {

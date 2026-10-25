@@ -14,6 +14,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { logger } from '@/libs/Logger';
 import { cn } from '@/libs/utils';
 import { NotificationTabContent } from './NotificationTabContent';
 
@@ -58,7 +59,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
       toast.success(t('markAllReadToast'));
       await refreshNotifications();
     } catch (error) {
-      console.error('Failed to mark all notifications as read:', error);
+      logger.error('Failed to mark all notifications as read:', { error });
       toast.error(t('markAllReadFailed'));
     }
   };
@@ -199,6 +200,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
             <NotificationTabContent
               notifications={displayedUnreadNotifications}
               isLoading={isLoading}
+              hasError={Boolean(error)}
               displayedCount={displayedUnreadNotifications.length}
               totalCount={unreadNotificationsWithRecipients.length}
               scrollAreaRef={scrollAreaRef}
@@ -213,6 +215,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
             <NotificationTabContent
               notifications={displayedAllNotifications}
               isLoading={isLoading}
+              hasError={Boolean(error)}
               displayedCount={displayedAllNotifications.length}
               totalCount={allNotificationsWithRecipients?.length || 0}
               scrollAreaRef={scrollAreaRef}

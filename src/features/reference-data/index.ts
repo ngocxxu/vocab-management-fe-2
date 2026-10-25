@@ -1,1 +1,1 @@
-export { getCachedLanguages, getCachedWordTypes } from './services/server/getCachedReferenceData';
+export { fetchLanguages, fetchWordTypes } from './services/server/getReferenceData';

@@ -1131,6 +1131,7 @@
     "invalidData": "Invalid notification data",
     "examFailed": "Failed to load exam. Please try again.",
     "startExam": "Start Exam",
+    "startReview": "Start review",
     "loading": "Loading notifications...",
     "caughtUp": "All caught up!",
     "caughtUpBody": "Check back later for progress updates and reminders.",

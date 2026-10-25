@@ -9,6 +9,7 @@ import { NotificationList } from './NotificationList';
 export const NotificationTabContent: React.FC<NotificationTabContentProps> = ({
   notifications,
   isLoading,
+  hasError,
   displayedCount,
   totalCount,
   scrollAreaRef,
@@ -28,6 +29,7 @@ export const NotificationTabContent: React.FC<NotificationTabContentProps> = ({
         <NotificationList
           notifications={notifications}
           isLoading={isLoading}
+          hasError={hasError}
           onMarkAsRead={onMarkAsRead}
           onDelete={onDelete}
         />

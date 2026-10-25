@@ -1,6 +1,7 @@
 import { verifyUser } from '@/actions';
 import type { EQuestionType } from '@/enum/vocab-trainer';
-import { getCachedLanguages } from '@/features/reference-data';
+import { fetchLanguages } from '@/features/reference-data';
+import { logger } from '@/libs/Logger';
 import { languagesApi, vocabTrainerApi } from '@/utils/server-api';
 
 type SearchParams = { [key: string]: string | string[] | undefined };
@@ -34,7 +35,10 @@ export async function getVocabTrainerPageData(resolvedParams: SearchParams) {
       status: queryParams.status,
       questionType: queryParams.questionType as EQuestionType,
     }),
-    getCachedLanguages().catch(() => languagesApi.getAll()),
+    fetchLanguages().catch((error: unknown) => {
+      logger.warn('Languages fetch failed, falling back to the API:', { error });
+      return languagesApi.getAll();
+    }),
   ]);
 
   return { currentUser, initialData, initialLanguagesData };

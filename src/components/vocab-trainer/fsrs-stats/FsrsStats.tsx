@@ -5,6 +5,7 @@ import { AltArrowLeft } from '@solar-icons/react/ssr';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import React from 'react';
+import { getReviewUrl } from '@/constants/vocab-trainer';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
@@ -59,7 +60,7 @@ const FsrsStats: React.FC<FsrsStatsProps> = ({ trainerId, trainerName, stats }) 
           <AlertDescription>
             {t('stats.noReviewsBody')}
             {' '}
-            <Link href={`/vocab-trainer/${trainerId}/review`} className="font-medium text-primary underline">{t('stats.startReviewing')}</Link>
+            <Link href={getReviewUrl(trainerId)} className="font-medium text-primary underline">{t('stats.startReviewing')}</Link>
           </AlertDescription>
         </Alert>
       )}

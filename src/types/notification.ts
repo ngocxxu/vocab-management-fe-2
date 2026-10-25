@@ -9,6 +9,13 @@ export enum ENotificationType {
   SYSTEM = 'SYSTEM',
 }
 
+/** Which Reminder a notification came from. Matches the `kind` the BE puts in `data`. */
+export enum ENotificationReminderKind {
+  INITIAL = 'INITIAL',
+  ESCALATION = 'ESCALATION',
+  FSRS_DUE = 'FSRS_DUE',
+}
+
 export type NotificationType = ENotificationType;
 
 export enum ENotificationAction {
@@ -126,6 +133,7 @@ export type NotificationItemProps = {
 export type NotificationListProps = {
   notifications: NotificationWithReadStatus[];
   isLoading: boolean;
+  hasError?: boolean;
   onMarkAsRead: () => void;
   onDelete: () => void;
 };
@@ -133,6 +141,7 @@ export type NotificationListProps = {
 export type NotificationTabContentProps = {
   notifications: NotificationWithReadStatus[];
   isLoading: boolean;
+  hasError?: boolean;
   displayedCount: number;
   totalCount: number;
   scrollAreaRef: React.RefObject<HTMLDivElement | null>;
@@ -143,4 +152,5 @@ export type NotificationTabContentProps = {
 
 export type NotificationsPageContentProps = Readonly<{
   notificationsWithRead: NotificationWithRead[];
+  loadError?: string | null;
 }>;
