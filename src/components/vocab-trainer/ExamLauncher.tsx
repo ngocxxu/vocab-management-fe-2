@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useReducer } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { getExamUrl } from '@/constants/vocab-trainer';
+import { getExamUrl, getReviewUrl } from '@/constants/vocab-trainer';
 import { EQuestionType, ETrainerMode } from '@/enum/vocab-trainer';
 import type { ExamLauncherProps } from '@/types/vocab-trainer';
 import { getExamCooldownRemainingSeconds, markExamCooldownNow } from '@/utils/exam-cooldown';
@@ -41,7 +41,7 @@ const ExamLauncher: React.FC<ExamLauncherProps> = ({ trainerId, questionType, mo
       forceTick();
     }
 
-    router.push(isFsrs ? `/vocab-trainer/${trainerId}/review` : getExamUrl(trainerId, questionType));
+    router.push(isFsrs ? getReviewUrl(trainerId) : getExamUrl(trainerId, questionType));
   };
 
   return (

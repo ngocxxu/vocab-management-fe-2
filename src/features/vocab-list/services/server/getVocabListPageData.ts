@@ -1,5 +1,6 @@
 import { verifyUser } from '@/actions';
-import { getCachedLanguages, getCachedWordTypes } from '@/features/reference-data';
+import { fetchLanguages, fetchWordTypes } from '@/features/reference-data';
+import { logger } from '@/libs/Logger';
 import { MIN_SEMANTIC_QUERY_LENGTH } from '@/features/vocab-search';
 import { languageFoldersApi, languagesApi, subjectsApi, vocabApi, wordTypesApi } from '@/utils/server-api';
 
@@ -37,8 +38,14 @@ export async function getVocabListPageData(resolvedParams: SearchParams) {
     vocabApi.getAll(queryParams),
     languageFolderId ? languageFoldersApi.getById(languageFolderId) : Promise.resolve(null),
     subjectsApi.getAll(),
-    getCachedLanguages().catch(() => languagesApi.getAll()),
-    getCachedWordTypes().catch(() => wordTypesApi.getAll()),
+    fetchLanguages().catch((error: unknown) => {
+      logger.warn('Languages fetch failed, falling back to the API:', { error });
+      return languagesApi.getAll();
+    }),
+    fetchWordTypes().catch((error: unknown) => {
+      logger.warn('Word types fetch failed, falling back to the API:', { error });
+      return wordTypesApi.getAll();
+    }),
     isSemanticQuery
       ? vocabApi.searchSemantic({ q: textSource!, languageFolderId, limit: 12 })
       : Promise.resolve(undefined),

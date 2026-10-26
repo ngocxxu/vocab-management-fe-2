@@ -1,3 +1,6 @@
+// WebSocket only. Long-polling keeps its session in one API pod's memory, so it breaks when the API runs on several pods.
+export const SOCKET_TRANSPORTS: Array<'websocket'> = ['websocket'];
+
 export enum SOCKET_EVENTS {
   AUDIO_EVALUATION_PROGRESS = 'audio-evaluation-progress',
   MULTIPLE_CHOICE_GENERATION_PROGRESS = 'multiple-choice-generation-progress',

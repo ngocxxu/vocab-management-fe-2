@@ -1,6 +1,5 @@
 'use client';
 
-import type { EQuestionType } from '@/enum/vocab-trainer';
 import type { NotificationItemProps } from '@/types/notification';
 import { RefreshCircle } from '@solar-icons/react/ssr';
 import { useLocale, useTranslations } from 'next-intl';
@@ -9,16 +8,17 @@ import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { getExam } from '@/actions';
 import { markNotificationAsRead } from '@/actions/notifications';
-import { getExamUrl } from '@/constants/vocab-trainer';
+import { getExamUrl, getReviewUrl } from '@/constants/vocab-trainer';
 import { logger } from '@/libs/Logger';
 import { cn } from '@/libs/utils';
-import { ENotificationAction, ENotificationType } from '@/types/notification';
+import { ENotificationAction, ENotificationReminderKind, ENotificationType } from '@/types/notification';
 import {
   formatNotificationListDate,
   formatNotificationMessage,
   formatTimeAgo,
   getNotificationIcon,
   getNotificationIconBg,
+  getReminderTarget,
 } from './utils';
 
 export const NotificationItem: React.FC<NotificationItemProps> = ({
@@ -43,6 +43,8 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
     : '';
 
   const isVocabTrainerRemind = notification.type === ENotificationType.VOCAB_TRAINER && notification.action === ENotificationAction.REMIND;
+  const isFsrsReminder = notification.data?.kind === ENotificationReminderKind.FSRS_DUE;
+  const reminderTarget = isVocabTrainerRemind ? getReminderTarget(notification.data) : null;
 
   const handleMarkAsRead = async () => {
     if (!isRead && onMarkAsRead) {
@@ -51,25 +53,35 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
         await onMarkAsRead();
         toast.success(t('markedRead'));
       } catch (error) {
-        console.error('Failed to mark notification as read:', error);
+        logger.error('Failed to mark notification as read:', { error });
         toast.error(t('markReadFailed'));
       }
     }
   };
 
+  // A Reminder with unusable data stays unread, whether opened by the row or by its button.
+  const handleRowClick = () => {
+    if (isVocabTrainerRemind && !reminderTarget) {
+      return;
+    }
+    void handleMarkAsRead();
+  };
+
   const handleStartExam = async () => {
-    await handleMarkAsRead();
-
-    const data = notification.data || {};
-    const trainerId = 'trainerId' in data && typeof data.trainerId === 'string' ? data.trainerId : undefined;
-    const questionType = 'questionType' in data && typeof data.questionType === 'string' ? data.questionType as EQuestionType : undefined;
-
-    if (!trainerId || !questionType) {
-      logger.error('Missing trainerId or questionType:', { trainerId, questionType, data });
+    if (!reminderTarget) {
+      logger.error('Reminder notification has no usable trainer data:', { data: notification.data });
       toast.error(t('invalidData'));
       return;
     }
 
+    await handleMarkAsRead();
+
+    if (reminderTarget.isFsrs) {
+      router.push(getReviewUrl(reminderTarget.trainerId));
+      return;
+    }
+
+    const { trainerId, questionType } = reminderTarget;
     setIsLoadingExam(true);
     try {
       const examData = await getExam(trainerId);
@@ -87,11 +99,26 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
         router.push(getExamUrl(trainerId, questionType));
       }
     } catch (error) {
-      console.error('Failed to load exam data:', error);
+      logger.error('Failed to load exam data:', { error });
       toast.error(t('examFailed'));
       setIsLoadingExam(false);
     }
   };
+
+  const startButton = isVocabTrainerRemind
+    ? (
+        <button
+          type="button"
+          className="mt-2 rounded-md border border-border px-2.5 py-1 text-xs font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+          onClick={(e) => {
+            e.stopPropagation();
+            void handleStartExam();
+          }}
+        >
+          {isFsrsReminder ? t('startReview') : t('startExam')}
+        </button>
+      )
+    : null;
 
   if (variant === 'page') {
     return (
@@ -102,11 +129,11 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
         )}
         role="button"
         tabIndex={0}
-        onClick={() => void handleMarkAsRead()}
+        onClick={handleRowClick}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
-            void handleMarkAsRead();
+            handleRowClick();
           }
         }}
       >
@@ -122,6 +149,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
                 <p className="mt-1 text-sm text-muted-foreground">{description}</p>
               )
             : null}
+          {startButton}
           <p className="mt-2 text-xs text-muted-foreground">{listDate}</p>
         </div>
         <div className="flex shrink-0 items-start">
@@ -144,11 +172,11 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
       )}
       role="button"
       tabIndex={0}
-      onClick={() => void handleMarkAsRead()}
+      onClick={handleRowClick}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          void handleMarkAsRead();
+          handleRowClick();
         }
       }}
     >
@@ -172,18 +200,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
               <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">{description}</p>
             )
           : null}
-        {isVocabTrainerRemind && (
-          <button
-            type="button"
-            className="mt-2 rounded-md border border-border px-2.5 py-1 text-xs font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-            onClick={(e) => {
-              e.stopPropagation();
-              void handleStartExam();
-            }}
-          >
-            {t('startExam')}
-          </button>
-        )}
+        {startButton}
       </div>
 
       <div className="flex shrink-0 items-start pt-0.5">

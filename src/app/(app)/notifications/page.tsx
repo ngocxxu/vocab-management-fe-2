@@ -8,6 +8,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function NotificationsPage() {
   const t = await getTranslations('notifications');
+  const tShell = await getTranslations('shell');
   const { notificationsWithRead, error } = await getNotificationsPageData();
   if (isUnauthorizedError(error)) {
     redirect(getExpiredSessionRedirect('/notifications'));
@@ -20,7 +21,10 @@ export default async function NotificationsPage() {
         <p className="mt-2 text-muted-foreground">
           {t('subtitle')}
         </p>
-        <NotificationsPageContent notificationsWithRead={notificationsWithRead} />
+        <NotificationsPageContent
+          notificationsWithRead={notificationsWithRead}
+          loadError={error ? tShell('errors.loadNotifications') : null}
+        />
       </div>
     </div>
   );

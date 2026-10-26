@@ -8,6 +8,7 @@ import React, { useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { markAllNotificationsAsRead } from '@/actions/notifications';
 import { Button } from '@/components/ui/button';
+import { logger } from '@/libs/Logger';
 import { cn } from '@/libs/utils';
 
 const PREFERENCE_ITEMS = [
@@ -50,7 +51,7 @@ export const NotificationsSidebar: React.FC = () => {
       toast.success(t('markAllReadToast'));
       startTransition(() => router.refresh());
     } catch (error) {
-      console.error('Failed to clear notifications:', error);
+      logger.error('Failed to clear notifications:', { error });
       toast.error(t('settings.clearAllFailed'));
     }
   };

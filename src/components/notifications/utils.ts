@@ -1,4 +1,6 @@
+import type { EQuestionType } from '@/enum/vocab-trainer';
 import type { NotificationType, TNotification } from '@/types/notification';
+import type { TNotificationData } from '@/types/notification-data';
 import {
   Book,
   CheckCircle,
@@ -9,7 +11,27 @@ import {
   SquareAcademicCap,
 } from '@solar-icons/react/ssr';
 import { CircleFill } from '@/components/ui/circle-fill';
+import { ENotificationReminderKind } from '@/types/notification';
 import { startOfDay } from '@/utils/date';
+
+type TReminderTarget
+  = | { trainerId: string; isFsrs: true }
+    | { trainerId: string; isFsrs: false; questionType: EQuestionType };
+
+/** Where a Reminder's Start button leads. Null when the data lacks what that route needs. */
+export function getReminderTarget(data: TNotificationData | undefined): TReminderTarget | null {
+  const trainerId = typeof data?.trainerId === 'string' ? data.trainerId : undefined;
+  if (!trainerId) {
+    return null;
+  }
+
+  if (data?.kind === ENotificationReminderKind.FSRS_DUE) {
+    return { trainerId, isFsrs: true };
+  }
+
+  const questionType = typeof data?.questionType === 'string' ? data.questionType as EQuestionType : undefined;
+  return questionType ? { trainerId, isFsrs: false, questionType } : null;
+}
 
 /** Translator for the `notifications` namespace. Kept as a plain type so these helpers stay hook-free. */
 export type TNotificationTranslator = (key: string, values?: Record<string, string | number>) => string;

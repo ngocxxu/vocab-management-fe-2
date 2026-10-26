@@ -9,6 +9,7 @@ import { getChatMessages, getChatUnreadCount, markChatRead } from '@/actions/cha
 import { Env } from '@/libs/Env';
 import { refreshAccessTokenOnce } from '@/libs/auth-refresh-client';
 import { logger } from '@/libs/Logger';
+import { SOCKET_TRANSPORTS } from '@/utils/socket-config';
 
 type ChatAction
   = { type: 'TOGGLE_OPEN'; open: boolean }
@@ -179,7 +180,7 @@ export function ChatProvider({ children, initialUnreadCount = 0, initialMessages
     let isRefreshing = false;
 
     const socket = io(`${Env.NEXT_PUBLIC_SOCKET_URL}/chat-bot`, {
-      transports: ['websocket', 'polling'],
+      transports: SOCKET_TRANSPORTS,
       autoConnect: true,
       reconnection: true,
       reconnectionAttempts: 10,

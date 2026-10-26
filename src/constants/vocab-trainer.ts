@@ -22,6 +22,8 @@ export function getQuestionTypeLabelKey(questionType: EQuestionType): string | u
   return QUESTION_TYPE_OPTIONS.find(o => o.value === questionType)?.labelKey;
 }
 
+export const getReviewUrl = (trainerId: string): string => `/vocab-trainer/${trainerId}/review`;
+
 export const getExamUrl = (trainerId: string, questionType: EQuestionType): string => {
   if (questionType === EQuestionType.FLIP_CARD) {
     return `/vocab-trainer/${trainerId}/exam/flip-card`;

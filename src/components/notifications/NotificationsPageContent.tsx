@@ -47,6 +47,7 @@ function Section({
 
 export const NotificationsPageContent: React.FC<NotificationsPageContentProps> = ({
   notificationsWithRead,
+  loadError,
 }) => {
   const t = useTranslations('notifications.page');
   const router = useRouter();
@@ -55,6 +56,20 @@ export const NotificationsPageContent: React.FC<NotificationsPageContentProps> =
   const handleMarkAsRead = useCallback(() => {
     startTransition(() => router.refresh());
   }, [router]);
+
+  // A failed load is not an empty inbox, so it never shows the "all clear" state.
+  if (loadError) {
+    return (
+      <div className="mt-8 flex flex-col gap-8 lg:flex-row">
+        <div className="min-w-0 flex-1">
+          <p role="alert" className="rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+            {loadError}
+          </p>
+        </div>
+        <NotificationsSidebar />
+      </div>
+    );
+  }
 
   if (notificationsWithRead.length === 0) {
     return (

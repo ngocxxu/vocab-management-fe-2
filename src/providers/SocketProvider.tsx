@@ -10,7 +10,7 @@ import {
   writeCachedAudioEvaluation,
   writeCachedFillInBlankEvaluation,
 } from '@/utils/exam-evaluation-cache';
-import { SOCKET_EVENTS } from '@/utils/socket-config';
+import { SOCKET_EVENTS, SOCKET_TRANSPORTS } from '@/utils/socket-config';
 
 const SocketContext = createContext<SocketContextType>({
   socket: null,
@@ -35,7 +35,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children, user }
 
     // Create socket connection to notification namespace
     const socketInstance = io(`${Env.NEXT_PUBLIC_SOCKET_URL}/notification`, {
-      transports: ['websocket', 'polling'],
+      transports: SOCKET_TRANSPORTS,
       autoConnect: true,
       reconnection: true,
       reconnectionAttempts: 5,
@@ -114,10 +114,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children, user }
       } else {
         logger.error('Socket connection error:', { error });
       }
-    });
-
-    socketInstance.on('notification', (data) => {
-      logger.debug('Received notification:', { data });
     });
 
     socketInstance.on('connected', (data) => {
