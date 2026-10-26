@@ -10,7 +10,7 @@ import { DataTable } from '@/shared/ui/table';
 import { useAdminUserActions } from '../hooks/useAdminUserActions';
 import type { TAdminUsersUrlUpdate } from '../utils/admin-users-query';
 import { buildAdminUsersSearch, formatAdminUserName } from '../utils/admin-users-query';
-import { ActionsCell, NameCell, RoleCell, StatusCell } from './AdminUserCells';
+import { ActionsCell, McpAccessCell, NameCell, RoleCell, StatusCell } from './AdminUserCells';
 import { AdminUsersFilters } from './AdminUsersFilters';
 import { DeleteUserDialog } from './DeleteUserDialog';
 
@@ -26,7 +26,7 @@ export function AdminUsersTable({ query, page, currentUserId }: TAdminUsersTable
   const locale = useLocale();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { isPending, deleteTarget, setDeleteTarget, changeRole, toggleActive, confirmDelete } = useAdminUserActions();
+  const { isPending, deleteTarget, setDeleteTarget, changeRole, toggleActive, toggleMcpAccess, confirmDelete } = useAdminUserActions();
 
   const replaceParams = (updates: TAdminUsersUrlUpdate) => {
     router.push(`?${buildAdminUsersSearch(new URLSearchParams(searchParams.toString()), updates)}`);
@@ -74,6 +74,20 @@ export function AdminUsersTable({ query, page, currentUserId }: TAdminUsersTable
       cell: ({ row }) => <StatusCell isActive={row.original.isActive} />,
     },
     {
+      id: 'mcp',
+      accessorKey: 'mcpAccess',
+      header: t('columns.mcp'),
+      enableSorting: false,
+      cell: ({ row }) => (
+        <McpAccessCell
+          user={row.original}
+          isSelf={isSelfRow(row.original)}
+          isPending={isPending}
+          onToggleMcpAccess={() => toggleMcpAccess(row.original)}
+        />
+      ),
+    },
+    {
       id: 'createdAt',
       accessorKey: 'createdAt',
       header: t('columns.created'),
@@ -94,7 +108,7 @@ export function AdminUsersTable({ query, page, currentUserId }: TAdminUsersTable
         />
       ),
     },
-  ], [t, isSelfRow, isPending, changeRole, toggleActive, setDeleteTarget, dateFormatter]);
+  ], [t, isSelfRow, isPending, changeRole, toggleActive, toggleMcpAccess, setDeleteTarget, dateFormatter]);
 
   return (
     <div className="flex flex-col gap-4">

@@ -42,6 +42,8 @@ export type TAdminUser = {
   avatar?: string;
   role: TAdminUserRole;
   isActive: boolean;
+  /** Whether the user may use the public MCP endpoint. Set by an admin. */
+  mcpAccess: boolean;
   /** ISO date string as sent by the API. */
   createdAt: string;
   updatedAt: string;
@@ -61,6 +63,7 @@ export type TAdminUsersQuery = {
 export type TUpdateAdminUserInput = {
   role?: TAdminUserRole;
   isActive?: boolean;
+  mcpAccess?: boolean;
 };
 
 type TAdminPlanLimits = {

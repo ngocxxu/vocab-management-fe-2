@@ -39,6 +39,15 @@ describe('updateAdminUserSchema', () => {
   it('rejects a role outside the admin role list', () => {
     expect(updateAdminUserSchema.safeParse({ role: 'ROOT' }).success).toBe(false);
   });
+
+  it('accepts turning MCP access on and off', () => {
+    expect(updateAdminUserSchema.safeParse({ mcpAccess: true }).success).toBe(true);
+    expect(updateAdminUserSchema.safeParse({ mcpAccess: false }).success).toBe(true);
+  });
+
+  it('rejects a non-boolean MCP access value', () => {
+    expect(updateAdminUserSchema.safeParse({ mcpAccess: 'yes' }).success).toBe(false);
+  });
 });
 
 describe('adminUserIdSchema', () => {

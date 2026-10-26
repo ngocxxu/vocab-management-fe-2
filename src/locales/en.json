@@ -1856,7 +1856,7 @@
       "loadError": "Could not load the overview. Try again later."
     },
     "users": {
-      "description": "Change roles, deactivate or delete accounts. You cannot change your own account here.",
+      "description": "Change roles, set MCP access, deactivate or delete accounts. You cannot change your own account here.",
       "searchPlaceholder": "Search by name or email",
       "filters": {
         "role": "Role",
@@ -1876,18 +1876,25 @@
         "email": "Email",
         "role": "Role",
         "status": "Status",
+        "mcp": "MCP access",
         "created": "Joined",
         "actions": "Actions"
       },
       "statusActive": "Active",
       "statusDeactivated": "Deactivated",
+      "mcpOn": "On",
+      "mcpOff": "Off",
+      "mcpNotInPlan": "Not in plan",
+      "mcpNotInPlanHint": "The Free plan does not include MCP. Upgrade the user to a paid plan to allow it.",
       "you": "You",
       "lockedHint": "You cannot change your own account here.",
       "actions": {
         "deactivate": "Deactivate",
         "reactivate": "Reactivate",
         "delete": "Delete",
-        "changeRole": "Change role"
+        "changeRole": "Change role",
+        "enableMcp": "Turn on MCP",
+        "disableMcp": "Turn off MCP"
       },
       "deleteDialog": {
         "title": "Delete this user?",
@@ -1900,6 +1907,8 @@
         "roleUpdated": "Role updated",
         "activated": "User reactivated",
         "deactivated": "User deactivated",
+        "mcpEnabled": "MCP access turned on",
+        "mcpDisabled": "MCP access turned off",
         "deleted": "User deleted",
         "failed": "Something went wrong. Try again."
       },

@@ -1856,7 +1856,7 @@
       "loadError": "Không thể tải tổng quan. Vui lòng thử lại sau."
     },
     "users": {
-      "description": "Đổi vai trò, vô hiệu hóa hoặc xóa tài khoản. Bạn không thể đổi tài khoản của chính mình tại đây.",
+      "description": "Đổi vai trò, bật hoặc tắt truy cập MCP, vô hiệu hóa hoặc xóa tài khoản. Bạn không thể đổi tài khoản của chính mình tại đây.",
       "searchPlaceholder": "Tìm theo tên hoặc email",
       "filters": {
         "role": "Vai trò",
@@ -1876,18 +1876,25 @@
         "email": "Email",
         "role": "Vai trò",
         "status": "Trạng thái",
+        "mcp": "Truy cập MCP",
         "created": "Ngày tham gia",
         "actions": "Thao tác"
       },
       "statusActive": "Đang hoạt động",
       "statusDeactivated": "Đã vô hiệu hóa",
+      "mcpOn": "Bật",
+      "mcpOff": "Tắt",
+      "mcpNotInPlan": "Không có trong gói",
+      "mcpNotInPlanHint": "Gói miễn phí không bao gồm MCP. Nâng người dùng lên gói trả phí để cho phép.",
       "you": "Bạn",
       "lockedHint": "Bạn không thể thay đổi chính tài khoản của mình tại đây.",
       "actions": {
         "deactivate": "Vô hiệu hóa",
         "reactivate": "Kích hoạt lại",
         "delete": "Xóa",
-        "changeRole": "Đổi vai trò"
+        "changeRole": "Đổi vai trò",
+        "enableMcp": "Bật MCP",
+        "disableMcp": "Tắt MCP"
       },
       "deleteDialog": {
         "title": "Xóa người dùng này?",
@@ -1900,6 +1907,8 @@
         "roleUpdated": "Đã cập nhật vai trò",
         "activated": "Đã kích hoạt lại người dùng",
         "deactivated": "Đã vô hiệu hóa người dùng",
+        "mcpEnabled": "Đã bật truy cập MCP",
+        "mcpDisabled": "Đã tắt truy cập MCP",
         "deleted": "Đã xóa người dùng",
         "failed": "Đã có lỗi xảy ra. Vui lòng thử lại."
       },
