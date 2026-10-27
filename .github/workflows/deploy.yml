@@ -113,6 +113,7 @@ jobs:
             NEXT_PUBLIC_SENTRY_DSN=${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
             NEXT_PUBLIC_SENTRY_ENABLED=${{ vars.NEXT_PUBLIC_SENTRY_ENABLED }}
             NEXT_PUBLIC_SENTRY_ENVIRONMENT=${{ vars.NEXT_PUBLIC_SENTRY_ENVIRONMENT }}
+            NEXT_SERVER_ACTIONS_ENCRYPTION_KEY=${{ secrets.NEXT_SERVER_ACTIONS_ENCRYPTION_KEY }}
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/vocab-fe:${{ steps.bump.outputs.version }}
             ${{ secrets.DOCKERHUB_USERNAME }}/vocab-fe:latest

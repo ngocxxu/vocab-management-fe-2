@@ -53,6 +53,12 @@ ENV NEXT_PUBLIC_SENTRY_DSN=$NEXT_PUBLIC_SENTRY_DSN
 ENV NEXT_PUBLIC_SENTRY_ENABLED=$NEXT_PUBLIC_SENTRY_ENABLED
 ENV NEXT_PUBLIC_SENTRY_ENVIRONMENT=$NEXT_PUBLIC_SENTRY_ENVIRONMENT
 
+# Fixed Server Actions key. Next.js bakes it into the build output, so it is needed
+# at build time only. The builder stage is not shipped. See docs/server-actions-key.md.
+# Empty value is fine: Next.js then makes a random key for this build.
+ARG NEXT_SERVER_ACTIONS_ENCRYPTION_KEY
+ENV NEXT_SERVER_ACTIONS_ENCRYPTION_KEY=$NEXT_SERVER_ACTIONS_ENCRYPTION_KEY
+
 # Build the application
 RUN pnpm run build
 
