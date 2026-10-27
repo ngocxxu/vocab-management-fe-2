@@ -215,6 +215,7 @@
       "subjects": "Subjects",
       "notifications": "Notifications",
       "apiKeys": "API Keys",
+      "connectAi": "Connect AI",
       "more": "More",
       "primary": "Primary",
       "admin": "Admin"
@@ -1667,6 +1668,89 @@
       "failed": "Evaluation failed",
       "timeout": "This is taking longer than expected. Your answers are saved: check again in a moment.",
       "checkAgain": "Check again"
+    }
+  },
+  "connectAi": {
+    "title": "Connect AI tools with Vocab MCP",
+    "subtitle": "Use your Vocab words inside ChatGPT and Claude.",
+    "readiness": {
+      "plan": "Plan",
+      "access": "MCP access",
+      "server": "Server URL",
+      "ok": "Ready",
+      "locked": "Locked",
+      "disabled": "Off",
+      "missing": "Not set"
+    },
+    "banner": {
+      "locked": "MCP is included in paid plans. Upgrade to connect your AI tools.",
+      "disabled": "MCP access is turned off for your account. Ask an admin to turn it on.",
+      "upgrade": "See plans",
+      "feature": "MCP access"
+    },
+    "steps": {
+      "status": "Check status",
+      "server": "Copy server URL",
+      "connect": "Connect",
+      "tryIt": "Try it"
+    },
+    "status": {
+      "planOk": "Your plan includes MCP.",
+      "planLocked": "Your plan does not include MCP. Upgrade to connect.",
+      "accessOk": "MCP access is on for your account.",
+      "accessDisabled": "An admin turned MCP off for your account. Ask an admin to turn it on.",
+      "serverOk": "The server URL is set.",
+      "serverMissing": "The server URL is not set. Ask your admin to configure it.",
+      "ready": "You are ready. Go to the next step.",
+      "fixFirst": "Fix the items above first."
+    },
+    "server": {
+      "label": "Server URL",
+      "hint": "Copy this URL. You will paste it into ChatGPT or Claude in the Connect step.",
+      "missing": "The server URL is not set yet. Ask your admin to configure it."
+    },
+    "copy": {
+      "idle": "Copy",
+      "copied": "Copied",
+      "failed": "Copy failed. Select the text and copy it by hand."
+    },
+    "platforms": {
+      "chatgpt": "ChatGPT",
+      "claude": "Claude"
+    },
+    "chatgpt": {
+      "step1": "Open Plugins in ChatGPT (chatgpt.com/plugins), click the + button, then choose Add custom MCP server.",
+      "step2": "Paste the server URL. If asked, choose OAuth and sign in to Vocab.",
+      "step3": "Tick I understand and want to continue, click Create as a plugin, then install it.",
+      "note": "Your ChatGPT plan or workspace may need to allow custom MCP servers. Menu names change, so check the OpenAI docs if you cannot find them.",
+      "learnMore": "OpenAI docs: MCP"
+    },
+    "claude": {
+      "step1": "Open Customize, then Connectors.",
+      "step2": "Click Add custom connector, paste the server URL, then click Add.",
+      "step3": "Click Connect, sign in to Vocab, then approve access.",
+      "note": "On Team or Enterprise, an owner adds it first under Organization settings > Connectors. Then members click Connect on the connector labeled Custom.",
+      "learnMore": "Claude help: custom connectors"
+    },
+    "readOnly": "Only list_vocab (read your vocab) works today. Writing from AI tools is not available yet.",
+    "tryIt": {
+      "title": "Try this prompt after connecting",
+      "prompt": "List my recent vocab"
+    },
+    "troubleshoot": {
+      "title": "Something not working?",
+      "requiresPlan": {
+        "summary": "mcp_requires_plan (403)",
+        "body": "Your plan does not include MCP. Upgrade to connect."
+      },
+      "accessDisabled": {
+        "summary": "mcp_access_disabled (403)",
+        "body": "An admin turned MCP off for your account. Ask an admin to turn it on."
+      },
+      "unauthorized": {
+        "summary": "Tools stop working or ask you to sign in again",
+        "body": "Remove the connector, add it again, then sign in."
+      }
     }
   },
   "dashboard": {

@@ -31,7 +31,7 @@ function Progress({ label, current, total }: Readonly<{ label: string; current: 
   const t = useTranslations('trainer.fsrs.progress');
 
   return (
-    <div className="mx-auto w-full max-w-2xl space-y-2">
+    <div className="w-full space-y-2">
       <p className="text-sm font-medium text-muted-foreground">
         {t('counter', { label, current: Math.min(current + 1, total), total })}
       </p>

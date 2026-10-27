@@ -34,7 +34,7 @@ const FsrsSessionSummary: React.FC<FsrsSessionSummaryProps> = ({ results, pendin
   const missed = missedItems(results).length;
 
   return (
-    <div className="mx-auto w-full max-w-xl space-y-6 text-center">
+    <div className="w-full space-y-6 text-center">
       <div className="space-y-2">
         <h2 className="text-2xl font-bold text-foreground">{t('summary.complete')}</h2>
         <p className="text-muted-foreground">

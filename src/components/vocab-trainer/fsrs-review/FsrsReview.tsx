@@ -1,6 +1,7 @@
 'use client';
 
 import type { TSrsQuestionType } from '@/types/srs-settings';
+import { PAGE_CONTAINER_CLASS } from '@/components/shared/page-layout';
 import type { TFsrsReviewQueue, TFsrsReviewSummary } from '@/types/vocab-trainer';
 import { AltArrowLeft } from '@solar-icons/react/ssr';
 import { useTranslations } from 'next-intl';
@@ -59,7 +60,7 @@ const FsrsReview: React.FC<FsrsReviewProps> = ({ trainerId, trainerName, questio
   const handleStop = useCallback(() => router.push('/vocab-trainer'), [router]);
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:py-10">
+    <div className={PAGE_CONTAINER_CLASS}>
       <Button type="button" variant="ghost" size="sm" className="mb-6 -ml-2" onClick={handleStop}>
         <AltArrowLeft size={16} weight="BoldDuotone" className="mr-1" />
         {t('review.back')}

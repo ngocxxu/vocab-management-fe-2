@@ -1,4 +1,5 @@
 import React from 'react';
+import { PAGE_CONTAINER_CLASS } from '@/components/shared/page-layout';
 
 type SettingsPageShellProps = {
   title: string;
@@ -14,7 +15,7 @@ export const SettingsPageShell: React.FC<SettingsPageShellProps> = ({
   children,
 }) => (
   <div className="min-h-screen bg-background">
-    <div className="container mx-auto flex flex-col px-4 py-4 sm:py-8">
+    <div className={PAGE_CONTAINER_CLASS}>
       <div className="mb-4 flex items-start justify-between gap-4 sm:mb-8">
         <div>
           <h1 className="text-2xl font-bold text-foreground sm:text-3xl">{title}</h1>

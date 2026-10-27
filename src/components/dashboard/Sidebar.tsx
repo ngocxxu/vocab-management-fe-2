@@ -10,6 +10,7 @@ import {
   HomeSmile,
   Key,
   Library,
+  LinkRound,
   Power,
   ShieldUser,
   SquareAcademicCap,
@@ -32,6 +33,7 @@ const settingsMenuItems: MenuItem[] = [
   { id: 'subjects', path: '/subjects', labelKey: 'nav.subjects', icon: <Bookmark size={20} weight="BoldDuotone" /> },
   { id: 'notifications', path: '/notifications', labelKey: 'nav.notifications', icon: <Bell size={20} weight="BoldDuotone" /> },
   { id: 'api-keys', path: '/api-keys', labelKey: 'nav.apiKeys', icon: <Key size={20} weight="BoldDuotone" /> },
+  { id: 'connect-ai', path: '/connect-ai', labelKey: 'nav.connectAi', icon: <LinkRound size={20} weight="BoldDuotone" /> },
   { id: 'admin', path: '/admin', labelKey: 'nav.admin', icon: <ShieldUser size={20} weight="BoldDuotone" /> },
 ];
 

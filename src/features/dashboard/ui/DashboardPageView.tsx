@@ -1,3 +1,4 @@
+import { PAGE_CONTAINER_CLASS } from '@/components/shared/page-layout';
 import { SectionLabel } from '../components/SectionLabel';
 import { ChartsSkeleton } from '../components/skeletons/ChartsSkeleton';
 import { HeroCTASkeleton } from '../components/skeletons/HeroCTASkeleton';
@@ -17,8 +18,8 @@ export function DashboardPageView() {
   const t = useTranslations('dashboard.section');
 
   return (
-    <main className="flex-1 overflow-y-auto bg-background p-4 md:p-6 lg:p-8">
-      <div className="container mx-auto space-y-6 md:space-y-8">
+    <main className="flex-1 overflow-y-auto bg-background">
+      <div className={`${PAGE_CONTAINER_CLASS} space-y-6 md:space-y-8`}>
         <Suspense
           fallback={(
             <div className="animate-pulse space-y-6">

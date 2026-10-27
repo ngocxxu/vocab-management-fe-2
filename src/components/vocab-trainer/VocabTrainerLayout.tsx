@@ -1,4 +1,5 @@
 import type { VocabTrainerLayoutProps } from '@/types/vocab-trainer';
+import { PAGE_CONTAINER_CLASS } from '@/components/shared/page-layout';
 import React, { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import VocabTrainerContent from './VocabTrainerContent';
@@ -7,7 +8,7 @@ const VocabTrainerLayout: React.FC<VocabTrainerLayoutProps> = ({ initialData, in
   return (
     <Suspense fallback={(
       <div className="min-h-screen bg-background">
-        <div className="container mx-auto px-4 py-8">
+        <div className={PAGE_CONTAINER_CLASS}>
           <div className="flex items-center justify-center p-8">
             <Skeleton className="h-6 w-48" />
           </div>

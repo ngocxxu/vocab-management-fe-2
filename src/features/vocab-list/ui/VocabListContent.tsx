@@ -1,4 +1,5 @@
 import type { VocabListContentProps } from '@/types/vocab-list';
+import { PAGE_CONTAINER_CLASS } from '@/components/shared/page-layout';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import {
@@ -25,7 +26,7 @@ const VocabListContent = async ({
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
+      <div className={PAGE_CONTAINER_CLASS}>
         <Breadcrumb className="mb-6">
           <BreadcrumbList>
             <BreadcrumbItem>

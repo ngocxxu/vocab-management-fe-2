@@ -3,6 +3,7 @@
 import * as Sentry from '@sentry/nextjs';
 import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
+import { PAGE_CONTAINER_CLASS } from '@/components/shared/page-layout';
 import ErrorState from '@/shared/ui/ErrorState';
 
 type TErrorProps = {
@@ -21,8 +22,8 @@ export default function DashboardError({ error }: TErrorProps) {
   }, [error]);
 
   return (
-    <main className="flex-1 overflow-y-auto bg-background p-4 md:p-6 lg:p-8">
-      <div className="container mx-auto">
+    <main className="flex-1 overflow-y-auto bg-background">
+      <div className={PAGE_CONTAINER_CLASS}>
         <ErrorState message={error.message || t('loadDashboard')} />
       </div>
     </main>

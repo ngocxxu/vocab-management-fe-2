@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { PAGE_CONTAINER_CLASS } from '@/components/shared/page-layout';
 import { verifyUser } from '@/actions/auth';
 import { AdminNav, AdminPageHeader } from '@/features/admin';
 import { getExpiredSessionRedirect } from '@/utils/auth-error';
@@ -19,7 +20,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
 
   // Same gutter and width as the other app pages, so admin content does not sit against the sidebar.
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-4 sm:px-6 sm:py-8">
+    <div className={`${PAGE_CONTAINER_CLASS} gap-6`}>
       <AdminPageHeader />
       <AdminNav />
       {children}

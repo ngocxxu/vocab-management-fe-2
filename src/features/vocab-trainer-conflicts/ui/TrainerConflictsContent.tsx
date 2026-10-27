@@ -9,6 +9,7 @@ import { useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { deleteVocab } from '@/actions/vocabs';
 import { removeVocabFromTrainer } from '@/actions/vocab-trainers';
+import { PAGE_CONTAINER_CLASS } from '@/components/shared/page-layout';
 import { ETrainerMode } from '@/enum/vocab-trainer';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import {
@@ -95,7 +96,7 @@ export default function TrainerConflictsContent({ conflicts, loadFailed }: Train
   };
 
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-6 p-4 sm:p-6">
+    <div className={`${PAGE_CONTAINER_CLASS} space-y-6`}>
       <Button asChild variant="ghost" size="sm" className="-ml-2">
         <Link href="/vocab-list">
           <AltArrowLeft size={18} weight="BoldDuotone" />
