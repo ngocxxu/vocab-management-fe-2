@@ -15,7 +15,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
   const optionLabels = ['A', 'B', 'C', 'D'];
 
   return (
-    <div className="mx-auto max-w-6xl space-y-5 sm:space-y-8">
+    <div className="space-y-5 sm:space-y-8">
       <div className="space-y-3 text-center sm:space-y-6">
         <div className="inline-flex rounded-full bg-accent px-4 py-1.5 text-sm font-bold text-primary">
           {t('label', { number: questionNumber })}

@@ -24,7 +24,7 @@ const VocabExamHeader: React.FC<VocabExamHeaderProps> = ({
 
   return (
     <div className="space-y-6">
-      <div className="relative mx-auto max-w-4xl">
+      <div className="relative">
         <div className="rounded-2xl border border-border bg-card p-4 sm:p-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div className="flex items-start gap-4">
@@ -59,7 +59,7 @@ const VocabExamHeader: React.FC<VocabExamHeaderProps> = ({
         </div>
       </div>
 
-      <div className="mx-auto max-w-4xl">
+      <div>
         <div className="flex justify-between text-xs font-medium tracking-wide text-muted-foreground uppercase">
           <span>{t('progress')}</span>
           <span>

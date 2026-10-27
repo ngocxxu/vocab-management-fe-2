@@ -57,7 +57,7 @@ All colors live in `src/styles/global.css` as CSS custom properties. Never use T
 
 ## Typography
 
-**Font:** Lexend (Google Fonts, loaded via `next/font`)
+**UI font:** Lexend (Google Fonts, loaded via `next/font`). All UI text uses Lexend.
 
 ```css
 --font-sans: var(--font-lexend), 'Lexend', ui-sans-serif, system-ui, sans-serif;
@@ -66,6 +66,24 @@ All colors live in `src/styles/global.css` as CSS custom properties. Never use T
 Applied globally via `body { @apply font-sans antialiased; }`.
 
 Lexend is chosen for reading efficiency and fatigue reduction — appropriate for vocabulary study workflows.
+
+**Code font (second family):** JetBrains Mono (Google Fonts, loaded via `next/font`). Use it only for code, URLs, and copyable values, such as the MCP server URL and sample prompts. Never use it for UI text, labels, or headings.
+
+Load it in the route that needs it, with a CSS variable scoped to that route:
+
+```tsx
+const mono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-connect-mono', display: 'swap' });
+```
+
+Apply the variable where the value is shown, with the system mono stack as fallback:
+
+```css
+font-family: var(--font-connect-mono), ui-monospace, monospace;
+```
+
+Current use: the Connect AI page (`src/app/(app)/connect-ai/`), through `CopyField`.
+
+Lexend and JetBrains Mono are the limit: two font families. Adding a third needs a design decision first.
 
 ---
 

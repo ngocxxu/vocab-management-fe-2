@@ -1,4 +1,5 @@
 import type { VocabTrainerContentProps } from '@/types/vocab-trainer';
+import { PAGE_CONTAINER_CLASS } from '@/components/shared/page-layout';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import {
@@ -20,7 +21,7 @@ const VocabTrainerContent = async ({ initialData, initialLanguagesData, currentU
       suppressHydrationWarning
     >
       <div
-        className="container mx-auto px-4 py-8"
+        className={PAGE_CONTAINER_CLASS}
         suppressHydrationWarning
       >
         <Breadcrumb className="mb-6">

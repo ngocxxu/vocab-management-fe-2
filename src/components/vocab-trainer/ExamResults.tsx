@@ -1,6 +1,7 @@
 'use client';
 
 import { useLocale, useTranslations } from 'next-intl';
+import { PAGE_CONTAINER_CLASS } from '@/components/shared/page-layout';
 import { getQuestionTypeLabelKey } from '@/constants/vocab-trainer';
 import { EQuestionType } from '@/enum/vocab-trainer';
 import type { ExamResultsProps, TExamResult } from '@/types/vocab-trainer';
@@ -91,8 +92,8 @@ const ExamResults: React.FC<ExamResultsProps> = ({
   const avgPerQuestionText = formatAvgPerQuestion(timeElapsed, totalQuestions, t);
 
   return (
-    <div className="min-h-screen bg-background px-4 py-4 sm:px-6 sm:py-8">
-      <div className="mx-auto max-w-6xl space-y-5 sm:space-y-8">
+    <div className="min-h-screen bg-background">
+      <div className={`${PAGE_CONTAINER_CLASS} space-y-5 sm:space-y-8`}>
         <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <Button
             type="button"

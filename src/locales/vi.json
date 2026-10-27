@@ -215,6 +215,7 @@
       "subjects": "Chủ đề",
       "notifications": "Thông báo",
       "apiKeys": "Khóa API",
+      "connectAi": "Kết nối AI",
       "more": "Thêm",
       "primary": "Điều hướng chính",
       "admin": "Quản trị"
@@ -1667,6 +1668,89 @@
       "failed": "Chấm bài thất bại",
       "timeout": "Việc này lâu hơn dự kiến. Câu trả lời của bạn đã được lưu: hãy kiểm tra lại sau giây lát.",
       "checkAgain": "Kiểm tra lại"
+    }
+  },
+  "connectAi": {
+    "title": "Kết nối AI với Vocab MCP",
+    "subtitle": "Dùng từ vựng Vocab trong ChatGPT và Claude.",
+    "readiness": {
+      "plan": "Gói",
+      "access": "Quyền MCP",
+      "server": "URL máy chủ",
+      "ok": "Sẵn sàng",
+      "locked": "Bị khóa",
+      "disabled": "Đã tắt",
+      "missing": "Chưa đặt"
+    },
+    "banner": {
+      "locked": "MCP có trong các gói trả phí. Nâng cấp để kết nối công cụ AI.",
+      "disabled": "Quyền MCP của tài khoản đang bị tắt. Hãy nhờ quản trị viên bật lại.",
+      "upgrade": "Xem các gói",
+      "feature": "MCP"
+    },
+    "steps": {
+      "status": "Kiểm tra trạng thái",
+      "server": "Sao chép URL máy chủ",
+      "connect": "Kết nối",
+      "tryIt": "Thử ngay"
+    },
+    "status": {
+      "planOk": "Gói của bạn có MCP.",
+      "planLocked": "Gói của bạn không có MCP. Nâng cấp để kết nối.",
+      "accessOk": "Quyền MCP đang bật cho tài khoản của bạn.",
+      "accessDisabled": "Quản trị viên đã tắt MCP cho tài khoản của bạn. Hãy nhờ quản trị viên bật lại.",
+      "serverOk": "Đã có URL máy chủ.",
+      "serverMissing": "Chưa có URL máy chủ. Hãy nhờ quản trị viên cấu hình.",
+      "ready": "Bạn đã sẵn sàng. Chuyển sang bước tiếp theo.",
+      "fixFirst": "Hãy sửa các mục trên trước."
+    },
+    "server": {
+      "label": "URL máy chủ",
+      "hint": "Sao chép URL này. Bạn sẽ dán nó vào ChatGPT hoặc Claude ở bước Kết nối.",
+      "missing": "Chưa đặt URL máy chủ. Hãy nhờ quản trị viên cấu hình."
+    },
+    "copy": {
+      "idle": "Sao chép",
+      "copied": "Đã sao chép",
+      "failed": "Sao chép thất bại. Hãy chọn văn bản và sao chép thủ công."
+    },
+    "platforms": {
+      "chatgpt": "ChatGPT",
+      "claude": "Claude"
+    },
+    "chatgpt": {
+      "step1": "Mở Plugins trong ChatGPT (chatgpt.com/plugins), bấm nút +, rồi chọn Add custom MCP server.",
+      "step2": "Dán URL máy chủ. Nếu được hỏi, chọn OAuth và đăng nhập Vocab.",
+      "step3": "Tick I understand and want to continue, bấm Create as a plugin, rồi cài plugin.",
+      "note": "Gói ChatGPT hoặc workspace của bạn có thể cần cho phép MCP server tùy chỉnh. Tên mục menu có thể thay đổi. Nếu không tìm thấy, hãy xem tài liệu OpenAI.",
+      "learnMore": "Tài liệu OpenAI: MCP"
+    },
+    "claude": {
+      "step1": "Mở Customize, rồi chọn Connectors.",
+      "step2": "Bấm Add custom connector, dán URL máy chủ, rồi bấm Add.",
+      "step3": "Bấm Connect, đăng nhập Vocab, rồi cho phép truy cập.",
+      "note": "Với gói Team hoặc Enterprise, chủ tổ chức thêm connector trước trong Organization settings > Connectors. Sau đó thành viên bấm Connect ở connector có nhãn Custom.",
+      "learnMore": "Trợ giúp Claude: custom connectors"
+    },
+    "readOnly": "Hiện chỉ có list_vocab (đọc từ vựng). Ghi từ công cụ AI chưa có.",
+    "tryIt": {
+      "title": "Thử câu lệnh này sau khi kết nối",
+      "prompt": "Liệt kê các từ vựng gần đây của tôi"
+    },
+    "troubleshoot": {
+      "title": "Có lỗi?",
+      "requiresPlan": {
+        "summary": "mcp_requires_plan (403)",
+        "body": "Gói của bạn không có MCP. Nâng cấp để kết nối."
+      },
+      "accessDisabled": {
+        "summary": "mcp_access_disabled (403)",
+        "body": "Quản trị viên đã tắt MCP cho tài khoản của bạn. Hãy nhờ quản trị viên bật lại."
+      },
+      "unauthorized": {
+        "summary": "Công cụ ngừng hoạt động hoặc yêu cầu đăng nhập lại",
+        "body": "Xóa connector, thêm lại, rồi đăng nhập."
+      }
     }
   },
   "dashboard": {

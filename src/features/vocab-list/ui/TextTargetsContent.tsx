@@ -1,6 +1,7 @@
 'use client';
 
 import type { ResponseAPI } from '@/types';
+import { PAGE_CONTAINER_CLASS } from '@/components/shared/page-layout';
 import type { TTextTarget, TVocab } from '@/types/vocab-list';
 import type { TSubjectResponse } from '@/types/subject';
 import type { TWordTypeResponse } from '@/types/word-type';
@@ -138,7 +139,7 @@ const TextTargetsContent: React.FC<TextTargetsContentProps> = ({
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
+      <div className={PAGE_CONTAINER_CLASS}>
         <Breadcrumb className="mb-6">
           <BreadcrumbList>
             <BreadcrumbItem>

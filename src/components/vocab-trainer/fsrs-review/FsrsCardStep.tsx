@@ -113,7 +113,7 @@ const FsrsCardStep: React.FC<FsrsCardStepProps> = ({ trainerId, item, questionTy
   }, [revealed, isTyped, handleRate]);
 
   return (
-    <div className="mx-auto w-full max-w-2xl space-y-5">
+    <div className="w-full space-y-5">
       <div className="flex items-center justify-between gap-3 text-sm">
         <span className="font-medium text-muted-foreground">{t(directionLabelKey(item.direction))}</span>
         {item.isNew && <span className="rounded-full bg-primary/15 px-3 py-1 text-xs font-semibold text-primary">{t('card.new')}</span>}

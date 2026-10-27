@@ -26,6 +26,8 @@ export const Env = createEnv({
     NEXT_PUBLIC_POSTHOG_HOST: z.string().optional(),
     NEXT_PUBLIC_API_URL: z.string().optional(),
     NEXT_PUBLIC_SOCKET_URL: z.string().optional(),
+    // Public URL of the backend MCP endpoint (MCP_RESOURCE_URL). Shown on the Connect AI page; must be public HTTPS.
+    NEXT_PUBLIC_MCP_URL: z.string().optional(),
     // Browser capture switch. Only 'true' enables capture — resolved by
     // resolveSentry() in sentry-config.ts. Same reasoning as SENTRY_ENABLED
     // above: an unset Docker ARG arrives as '', which enum().optional()
@@ -48,6 +50,7 @@ export const Env = createEnv({
     NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
     NODE_ENV: process.env.NODE_ENV,
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    NEXT_PUBLIC_MCP_URL: process.env.NEXT_PUBLIC_MCP_URL,
     NESTJS_API_URL: process.env.NESTJS_API_URL,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     NEXT_PUBLIC_SOCKET_URL: process.env.NEXT_PUBLIC_SOCKET_URL,

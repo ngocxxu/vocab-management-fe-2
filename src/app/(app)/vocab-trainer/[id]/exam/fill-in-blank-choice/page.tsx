@@ -1,6 +1,7 @@
 'use client';
 
 import type { TQuestionAPI } from '@/types/vocab-trainer';
+import { PAGE_CONTAINER_CLASS } from '@/components/shared/page-layout';
 import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
 import React from 'react';
@@ -51,7 +52,7 @@ const FillInBlankChoiceExamPage: React.FC = () => {
 
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="mx-auto max-w-2xl space-y-6 px-4">
+        <div className={`${PAGE_CONTAINER_CLASS} space-y-6`}>
           <Alert variant="destructive">
             <AlertDescription>
               {errorMessage}

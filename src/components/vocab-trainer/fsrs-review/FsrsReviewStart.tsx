@@ -34,7 +34,7 @@ const FsrsReviewStart: React.FC<FsrsReviewStartProps> = ({ trainerName, summary,
 
   if (summary.ended) {
     return (
-      <div className="mx-auto w-full max-w-xl space-y-4 text-center">
+      <div className="w-full space-y-4 text-center">
         <h1 className="text-2xl font-bold text-foreground">{trainerName}</h1>
         <Alert>
           <AlertTitle>{t('start.endedTitle')}</AlertTitle>
@@ -49,7 +49,7 @@ const FsrsReviewStart: React.FC<FsrsReviewStartProps> = ({ trainerName, summary,
   }
 
   return (
-    <div className="mx-auto w-full max-w-xl space-y-6">
+    <div className="w-full space-y-6">
       <div className="space-y-1 text-center">
         <h1 className="text-2xl font-bold text-foreground">{trainerName}</h1>
         <p className="text-muted-foreground">{t('start.shortSessions')}</p>

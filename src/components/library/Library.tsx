@@ -1,6 +1,7 @@
 'use client';
 
 import { createLanguageFolder, deleteLanguageFolder } from '@/actions/language-folders';
+import { PAGE_CONTAINER_CLASS } from '@/components/shared/page-layout';
 import type { LibraryProps, TCreateLanguageFolder, TLanguageFolder } from '@/types/language-folder';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useMemo, useState, useTransition } from 'react';
@@ -141,7 +142,7 @@ const Library: React.FC<LibraryProps> = ({ initialData, initialLanguagesData, cu
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto flex flex-col gap-6 px-4 py-4 sm:gap-8 sm:py-6 md:gap-10 md:py-8">
+      <div className={`${PAGE_CONTAINER_CLASS} gap-6 sm:gap-8 md:gap-10`}>
         <LibraryHeader
           onCreateFolder={handleCreateFolder}
           userRole={user?.role}

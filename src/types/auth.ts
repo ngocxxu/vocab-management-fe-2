@@ -7,6 +7,7 @@ export type TUser = {
   createdAt: string;
   updatedAt: string;
   isActive: boolean;
+  mcpAccess?: boolean;
   avatar?: string;
   phone?: string;
 };

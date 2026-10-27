@@ -1,6 +1,7 @@
 'use client';
 
 import type { ColumnDef, RowSelectionState } from '@tanstack/react-table';
+import { PAGE_CONTAINER_CLASS } from '@/components/shared/page-layout';
 import type { TSubjectResponse } from '@/types/subject';
 import type { TVocab } from '@/types/vocab-list';
 import type { TVocabConflictListResponse } from '@/types/vocab-conflict';
@@ -447,7 +448,7 @@ export default function ConflictVocabulariesContent({
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
+      <div className={PAGE_CONTAINER_CLASS}>
         <Breadcrumb className="mb-6">
           <BreadcrumbList>
             <BreadcrumbItem>

@@ -1,3 +1,4 @@
+import { PAGE_CONTAINER_CLASS } from '@/components/shared/page-layout';
 import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
 import ConflictVocabulariesContent from '@/features/subject-conflict-vocabs/ui/ConflictVocabulariesContent';
@@ -30,7 +31,7 @@ export default async function ConflictVocabulariesPage({ searchParams }: PagePro
     <Suspense
       fallback={(
         <div className="min-h-screen bg-background">
-          <div className="container mx-auto px-4 py-8">
+          <div className={PAGE_CONTAINER_CLASS}>
             <Skeleton className="mb-6 h-5 w-64" />
             <Skeleton className="mb-4 h-10 w-full max-w-xl" />
             <Skeleton className="h-64 w-full" />

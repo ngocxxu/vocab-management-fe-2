@@ -1,3 +1,4 @@
+import { PAGE_CONTAINER_CLASS } from '@/components/shared/page-layout';
 import { NotificationsPageContent } from '@/components/notifications/NotificationsPageContent';
 import { getNotificationsPageData } from '@/features/notifications/services/server/getNotificationsPageData';
 import { getExpiredSessionRedirect, isUnauthorizedError } from '@/utils/auth-error';
@@ -16,7 +17,7 @@ export default async function NotificationsPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-4 sm:py-8">
+      <div className={PAGE_CONTAINER_CLASS}>
         <h1 className="text-2xl font-bold text-foreground sm:text-3xl">{t('title')}</h1>
         <p className="mt-2 text-muted-foreground">
           {t('subtitle')}

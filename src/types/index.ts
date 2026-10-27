@@ -14,6 +14,9 @@ export * from './api-key';
 // Export auth types
 export * from './auth';
 
+// Export Connect AI types
+export * from './connect-ai';
+
 // Export language types
 export * from './language';
 

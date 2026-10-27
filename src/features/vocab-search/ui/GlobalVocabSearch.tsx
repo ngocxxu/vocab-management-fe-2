@@ -1,6 +1,7 @@
 'use client';
 
 import type { TVocabSearchGroup } from '@/types/vocab-search';
+import { PAGE_CONTAINER_CLASS } from '@/components/shared/page-layout';
 import { CloseCircle, Magnifer, RefreshCircle } from '@solar-icons/react/ssr';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -126,7 +127,7 @@ const GlobalVocabSearch: React.FC<GlobalVocabSearchProps> = ({ initialQuery, ini
   const hasQueriedLength = initialQuery.trim().length >= MIN_SEMANTIC_QUERY_LENGTH;
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-4 p-4 md:p-6">
+    <div className={`${PAGE_CONTAINER_CLASS} gap-4`}>
       <div>
         <h1 className="text-2xl font-semibold text-foreground">{t('title')}</h1>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -194,7 +195,7 @@ const GlobalVocabSearch: React.FC<GlobalVocabSearchProps> = ({ initialQuery, ini
       )}
 
       {!isPending && initialGroups.length > 0 && (
-        <div className="flex animate-in flex-col gap-4 fade-in-0 duration-300">
+        <div className="flex animate-in flex-col gap-4 duration-300 fade-in-0">
           {initialGroups.map(group => (
             <GroupSection key={group.languageFolderId} group={group} query={initialQuery.trim()} />
           ))}

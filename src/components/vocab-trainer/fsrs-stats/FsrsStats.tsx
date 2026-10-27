@@ -1,6 +1,7 @@
 'use client';
 
 import type { TFsrsReviewStats } from '@/types/vocab-trainer';
+import { PAGE_CONTAINER_CLASS } from '@/components/shared/page-layout';
 import { AltArrowLeft } from '@solar-icons/react/ssr';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
@@ -35,7 +36,7 @@ const FsrsStats: React.FC<FsrsStatsProps> = ({ trainerId, trainerName, stats }) 
   const { trueRetention } = stats;
 
   return (
-    <div className="mx-auto w-full max-w-5xl space-y-6 px-4 py-6 sm:py-10">
+    <div className={`${PAGE_CONTAINER_CLASS} space-y-6`}>
       <div>
         <Button asChild variant="ghost" size="sm" className="mb-4 -ml-2">
           <Link href="/vocab-trainer">

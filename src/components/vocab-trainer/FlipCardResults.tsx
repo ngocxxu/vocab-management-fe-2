@@ -1,6 +1,7 @@
 'use client';
 
 import type { FlipCardResultsProps } from '@/types/vocab-trainer';
+import { PAGE_CONTAINER_CLASS } from '@/components/shared/page-layout';
 import { AltArrowLeft, Calendar, ChartSquare, CheckCircle, ClockCircle, CloseCircle, Target } from '@solar-icons/react/ssr';
 import { useLocale, useTranslations } from 'next-intl';
 import React from 'react';
@@ -44,8 +45,8 @@ const FlipCardResults: React.FC<FlipCardResultsProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-background px-4 py-4 sm:px-6 sm:py-8">
-      <div className="mx-auto max-w-6xl space-y-5 sm:space-y-8">
+    <div className="min-h-screen bg-background">
+      <div className={`${PAGE_CONTAINER_CLASS} space-y-5 sm:space-y-8`}>
         <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <Button
             type="button"

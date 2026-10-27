@@ -1,5 +1,6 @@
 'use client';
 
+import { PAGE_CONTAINER_CLASS } from '@/components/shared/page-layout';
 import type {
   ExamState,
   FlipCardExamProps,
@@ -235,8 +236,8 @@ const FlipCardExam: React.FC<FlipCardExamProps> = ({ trainerId, examData }) => {
   }
 
   return (
-    <div className="min-h-screen bg-background px-4 py-4 sm:px-6 sm:py-8">
-      <div className="mx-auto max-w-6xl space-y-5 sm:space-y-8">
+    <div className="min-h-screen bg-background">
+      <div className={`${PAGE_CONTAINER_CLASS} space-y-5 sm:space-y-8`}>
         <VocabExamHeader
           trainerName={trainerName || t('flipUntitled')}
           currentQuestion={currentCardIndex + 1}
@@ -244,7 +245,7 @@ const FlipCardExam: React.FC<FlipCardExamProps> = ({ trainerId, examData }) => {
           timeRemaining={timeRemaining}
         />
 
-        <div className="mx-auto max-w-4xl">
+        <div>
           <FlipCard
             question={currentQuestion}
             isFlipped={isFlipped}
