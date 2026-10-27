@@ -48,7 +48,8 @@ export const updateAdminUserSchema = z
   .object({
     role: z.enum(ADMIN_USER_ROLES).optional(),
     isActive: z.boolean().optional(),
+    mcpAccess: z.boolean().optional(),
   })
-  .refine(input => input.role !== undefined || input.isActive !== undefined, {
-    message: 'Provide role or isActive',
+  .refine(input => input.role !== undefined || input.isActive !== undefined || input.mcpAccess !== undefined, {
+    message: 'Provide role, isActive or mcpAccess',
   });

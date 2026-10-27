@@ -21,12 +21,13 @@ export function RoleOptions() {
 }
 
 /**
- * Explains why a row's controls are locked. The children ignore the pointer, so hovering a disabled
- * control still reaches the wrapper and shows the tooltip. Screen readers get the same hint as text.
+ * Explains why a row's controls are locked. The admin's own row wins over `hint`. The children ignore the pointer,
+ * so hovering a disabled control still reaches the wrapper and shows the tooltip. Screen readers get the same hint as text.
  */
-function LockedRow({ isSelf, children }: Readonly<{ isSelf: boolean; children: ReactNode }>) {
+function LockedRow({ isSelf, hint, children }: Readonly<{ isSelf: boolean; hint?: string; children: ReactNode }>) {
   const t = useTranslations('admin.users');
-  if (!isSelf) {
+  const reason = isSelf ? t('lockedHint') : hint;
+  if (!reason) {
     return <>{children}</>;
   }
 
@@ -35,10 +36,10 @@ function LockedRow({ isSelf, children }: Readonly<{ isSelf: boolean; children: R
       <TooltipTrigger asChild>
         <span className="inline-flex">
           <span className="pointer-events-none inline-flex">{children}</span>
-          <span className="sr-only">{t('lockedHint')}</span>
+          <span className="sr-only">{reason}</span>
         </span>
       </TooltipTrigger>
-      <TooltipContent>{t('lockedHint')}</TooltipContent>
+      <TooltipContent>{reason}</TooltipContent>
     </Tooltip>
   );
 }
@@ -90,6 +91,30 @@ export function RoleCell({ user, isSelf, isPending, onChangeRole }: Readonly<{
 export function StatusCell({ isActive }: Readonly<{ isActive: boolean }>) {
   const t = useTranslations('admin.users');
   return <Badge variant={isActive ? 'secondary' : 'outline'}>{isActive ? t('statusActive') : t('statusDeactivated')}</Badge>;
+}
+
+/** Shows whether the user may use the public MCP endpoint, with the control that switches it. */
+export function McpAccessCell({ user, isSelf, isPending, onToggleMcpAccess }: Readonly<{
+  user: TAdminUser;
+  isSelf: boolean;
+  isPending: boolean;
+  onToggleMcpAccess: () => void;
+}>) {
+  const t = useTranslations('admin.users');
+  // The plan decides who may use MCP: a GUEST cannot, so the switch has nothing to change.
+  const isNotInPlan = user.role === 'GUEST';
+  return (
+    <LockedRow isSelf={isSelf} hint={isNotInPlan ? t('mcpNotInPlanHint') : undefined}>
+      <div className="flex items-center gap-2">
+        {isNotInPlan
+          ? <Badge variant="outline">{t('mcpNotInPlan')}</Badge>
+          : <Badge variant={user.mcpAccess ? 'secondary' : 'outline'}>{user.mcpAccess ? t('mcpOn') : t('mcpOff')}</Badge>}
+        <Button variant="outline" size="sm" disabled={isSelf || isPending || isNotInPlan} onClick={onToggleMcpAccess}>
+          {user.mcpAccess ? t('actions.disableMcp') : t('actions.enableMcp')}
+        </Button>
+      </div>
+    </LockedRow>
+  );
 }
 
 export function ActionsCell({ user, isSelf, isPending, onToggleActive, onDelete }: Readonly<{
