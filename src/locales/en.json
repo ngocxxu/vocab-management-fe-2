@@ -1733,6 +1733,20 @@
       "learnMore": "Claude help: custom connectors"
     },
     "readOnly": "Only list_vocab (read your vocab) works today. Writing from AI tools is not available yet.",
+    "logo": {
+      "title": "Vocab logo",
+      "hint": "Some connector forms ask for an icon. Download the logo that fits your background, then upload it when you add the MCP server.",
+      "light": {
+        "label": "Light",
+        "alt": "Vocab logo for light backgrounds",
+        "download": "Download light logo"
+      },
+      "dark": {
+        "label": "Dark",
+        "alt": "Vocab logo for dark backgrounds",
+        "download": "Download dark logo"
+      }
+    },
     "tryIt": {
       "title": "Try this prompt after connecting",
       "prompt": "List my recent vocab"

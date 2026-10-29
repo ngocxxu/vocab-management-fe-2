@@ -60,6 +60,10 @@
 
   --color-ring: var(--ring);
 
+  /* Fixed panels behind the logo previews. They do not follow the theme: the light logo needs a light panel and the dark logo a dark panel. */
+  --color-logo-stage-light: #ffffff;
+  --color-logo-stage-dark: #202124;
+
   --color-chart-1: var(--chart-1);
 
   --color-chart-2: var(--chart-2);
