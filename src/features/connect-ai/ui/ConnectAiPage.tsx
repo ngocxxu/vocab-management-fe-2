@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 import { UpsellModal } from '@/components/premium';
 import { Button } from '@/shared/ui/button';
 import { CopyField } from './CopyField';
+import { LogoDownload } from './LogoDownload';
 import { PlatformGuide } from './PlatformGuide';
 
 type TConnectAiPageProps = Readonly<{
@@ -132,7 +133,12 @@ export function ConnectAiPage({ readiness, serverUrl }: TConnectAiPageProps) {
               )
             : <p role="status" className="text-sm text-muted-foreground">{t('server.missing')}</p>)}
 
-          {activeStep === 2 && <PlatformGuide />}
+          {activeStep === 2 && (
+            <>
+              <PlatformGuide />
+              <LogoDownload />
+            </>
+          )}
 
           {activeStep === 3 && (
             <>

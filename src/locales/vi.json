@@ -1733,6 +1733,20 @@
       "learnMore": "Trợ giúp Claude: custom connectors"
     },
     "readOnly": "Hiện chỉ có list_vocab (đọc từ vựng). Ghi từ công cụ AI chưa có.",
+    "logo": {
+      "title": "Logo Vocab",
+      "hint": "Một số form kết nối yêu cầu icon. Tải logo hợp với nền bạn dùng, rồi tải lên khi thêm máy chủ MCP.",
+      "light": {
+        "label": "Sáng",
+        "alt": "Logo Vocab cho nền sáng",
+        "download": "Tải logo sáng"
+      },
+      "dark": {
+        "label": "Tối",
+        "alt": "Logo Vocab cho nền tối",
+        "download": "Tải logo tối"
+      }
+    },
     "tryIt": {
       "title": "Thử câu lệnh này sau khi kết nối",
       "prompt": "Liệt kê các từ vựng gần đây của tôi"
