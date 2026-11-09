@@ -4,7 +4,7 @@ import type { TChatContext, TChatState, TConfirmRequest, TMessage, TToolActivity
 import React, { createContext, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import { io } from 'socket.io-client';
 import { toast } from 'sonner';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { getChatMessages, getChatUnreadCount, markChatRead } from '@/actions/chat';
 import { Env } from '@/libs/Env';
 import { refreshAccessTokenOnce } from '@/libs/auth-refresh-client';
@@ -137,6 +137,7 @@ export function ChatProvider({ children, initialUnreadCount = 0, initialMessages
     historyLoaded: (initialMessages?.length ?? 0) > 0,
   });
   const t = useTranslations('chat');
+  const locale = useLocale();
   const socketRef = useRef<ReturnType<typeof io> | null>(null);
   const inputFocusedRef = useRef(false);
   // `t` changes identity when the layout re-renders after revalidatePath. Keeping it out of the socket effect's deps stops a disconnect and reconnect on every render.
@@ -295,15 +296,28 @@ export function ChatProvider({ children, initialUnreadCount = 0, initialMessages
     };
   }, [fetchUnreadCount]);
 
-  const sendMessage = useCallback((message: string) => {
-    dispatch({ type: 'SEND_OPTIMISTIC', message });
-    socketRef.current?.emit('send_message', { message });
-  }, []);
+  const emitSendMessage = useCallback(
+    (message: string) => {
+      socketRef.current?.emit('send_message', { message, locale });
+    },
+    [locale],
+  );
 
-  const retryMessage = useCallback((messageId: string, message: string) => {
-    dispatch({ type: 'RETRY_MESSAGE', messageId });
-    socketRef.current?.emit('send_message', { message });
-  }, []);
+  const sendMessage = useCallback(
+    (message: string) => {
+      dispatch({ type: 'SEND_OPTIMISTIC', message });
+      emitSendMessage(message);
+    },
+    [emitSendMessage],
+  );
+
+  const retryMessage = useCallback(
+    (messageId: string, message: string) => {
+      dispatch({ type: 'RETRY_MESSAGE', messageId });
+      emitSendMessage(message);
+    },
+    [emitSendMessage],
+  );
 
   const confirmResponse = useCallback((requestId: string, confirmed: boolean) => {
     socketRef.current?.emit('confirm_response', { requestId, confirmed });

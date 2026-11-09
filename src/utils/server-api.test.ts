@@ -1,12 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const getAccessToken = vi.fn();
+const getLocaleCookie = vi.fn();
 const getRefreshToken = vi.fn();
 const setAuthCookies = vi.fn();
 const getOrRefresh = vi.fn();
 
 vi.mock('@/utils/auth-cookies', () => ({
   getAccessToken: () => getAccessToken(),
+  getLocaleCookie: () => getLocaleCookie(),
   getRefreshToken: () => getRefreshToken(),
   setAuthCookies: (...args: unknown[]) => setAuthCookies(...args),
 }));
@@ -22,6 +24,34 @@ const { languageFoldersApi } = await import('@/utils/server-api');
 
 const json = (status: number, body: unknown = {}) =>
   new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
+
+describe('serverApi Accept-Language header', () => {
+  const fetchMock = vi.fn();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.stubGlobal('fetch', fetchMock);
+    getAccessToken.mockResolvedValue('token');
+  });
+
+  it('sends the UI locale cookie as Accept-Language', async () => {
+    getLocaleCookie.mockResolvedValue('vi');
+    fetchMock.mockResolvedValueOnce(json(200, { items: [] }));
+
+    await languageFoldersApi.getMy();
+
+    expect(fetchMock.mock.calls[0]![1].headers['Accept-Language']).toBe('vi');
+  });
+
+  it('omits Accept-Language when the locale cookie is missing', async () => {
+    getLocaleCookie.mockResolvedValue(undefined);
+    fetchMock.mockResolvedValueOnce(json(200, { items: [] }));
+
+    await languageFoldersApi.getMy();
+
+    expect(fetchMock.mock.calls[0]![1].headers).not.toHaveProperty('Accept-Language');
+  });
+});
 
 describe('serverApi refresh on 401', () => {
   const fetchMock = vi.fn();
