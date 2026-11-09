@@ -8,6 +8,8 @@ vi.mock('@/utils/server-api', () => ({ configApi, cacheApi: {} }));
 
 // Stored values as the BE returns them. The expected results below are these literals, not recomputed.
 const STORED = {
+  'ai.provider': 'cloudflare',
+  'ai.model': '@cf/qwen/qwen3-30b-a3b-fp8',
   'ai.chat.provider': 'groq',
   'ai.chat.model': 'gemini-2.0-flash-lite',
   'ai.audio.provider': 'omniroute',
@@ -19,12 +21,14 @@ describe('readAiSettings', () => {
     vi.clearAllMocks();
   });
 
-  it('returns the stored value of each of the four keys', async () => {
+  it('returns the stored value of each of the six keys', async () => {
     configApi.getSystem.mockImplementation(async (key: keyof typeof STORED) => ({ key, value: STORED[key] }));
 
     const settings = await readAiSettings();
 
     expect(settings).toEqual({
+      'ai.provider': 'cloudflare',
+      'ai.model': '@cf/qwen/qwen3-30b-a3b-fp8',
       'ai.chat.provider': 'groq',
       'ai.chat.model': 'gemini-2.0-flash-lite',
       'ai.audio.provider': 'omniroute',
@@ -38,6 +42,8 @@ describe('readAiSettings', () => {
     const settings = await readAiSettings();
 
     expect(settings).toEqual({
+      'ai.provider': null,
+      'ai.model': null,
       'ai.chat.provider': null,
       'ai.chat.model': null,
       'ai.audio.provider': null,

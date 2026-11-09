@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { AI_MODEL_MAX_LENGTH, aiSettingInputSchema } from './ai-settings';
+import { AI_MODEL_MAX_LENGTH, aiModelCatalogInputSchema, aiSettingInputSchema } from './ai-settings';
 
 describe('aiSettingInputSchema', () => {
   it('accepts an allowed provider for a provider key', () => {
@@ -8,9 +8,19 @@ describe('aiSettingInputSchema', () => {
     expect(result.success && result.data).toEqual({ key: 'ai.chat.provider', value: 'groq' });
   });
 
-  it('rejects a provider outside the list the BE accepts, including cloudflare', () => {
-    expect(aiSettingInputSchema.safeParse({ key: 'ai.audio.provider', value: 'cloudflare' }).success).toBe(false);
+  it('accepts cloudflare for a provider key', () => {
+    const result = aiSettingInputSchema.safeParse({ key: 'ai.audio.provider', value: 'cloudflare' });
+
+    expect(result.success && result.data).toEqual({ key: 'ai.audio.provider', value: 'cloudflare' });
+  });
+
+  it('rejects a provider outside the list the BE accepts', () => {
     expect(aiSettingInputSchema.safeParse({ key: 'ai.chat.provider', value: 'OpenAI' }).success).toBe(false);
+  });
+
+  it('accepts the default provider and model keys', () => {
+    expect(aiSettingInputSchema.safeParse({ key: 'ai.provider', value: 'cloudflare' }).success).toBe(true);
+    expect(aiSettingInputSchema.safeParse({ key: 'ai.model', value: '@cf/qwen/qwen3-30b-a3b-fp8' }).success).toBe(true);
   });
 
   it('treats a null provider as a reset to the env default', () => {
@@ -39,11 +49,25 @@ describe('aiSettingInputSchema', () => {
     expect(aiSettingInputSchema.safeParse({ key: 'ai.chat.model', value: pastLimit }).success).toBe(false);
   });
 
-  it('rejects a key outside the four AI settings', () => {
-    expect(aiSettingInputSchema.safeParse({ key: 'ai.model', value: 'gemini-2.0-flash-lite' }).success).toBe(false);
+  it('rejects a key outside the AI settings', () => {
+    expect(aiSettingInputSchema.safeParse({ key: 'ai.embedding.model', value: 'text-embedding-004' }).success).toBe(false);
   });
 
   it('rejects a model name sent to a provider key', () => {
     expect(aiSettingInputSchema.safeParse({ key: 'ai.chat.provider', value: 'gpt-4o' }).success).toBe(false);
+  });
+});
+
+describe('aiModelCatalogInputSchema', () => {
+  it('accepts a catalog provider and kind', () => {
+    expect(aiModelCatalogInputSchema.safeParse({ provider: 'cloudflare', kind: 'audio' }).success).toBe(true);
+  });
+
+  it('rejects OmniRoute, which has no model list', () => {
+    expect(aiModelCatalogInputSchema.safeParse({ provider: 'omniroute', kind: 'text' }).success).toBe(false);
+  });
+
+  it('rejects an unknown kind', () => {
+    expect(aiModelCatalogInputSchema.safeParse({ provider: 'groq', kind: 'image' }).success).toBe(false);
   });
 });

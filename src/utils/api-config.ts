@@ -402,6 +402,7 @@ export const API_METHODS = {
     getSystem: (key: string) => ({ endpoint: `${API_ENDPOINTS.config}/system/${key}` }),
     setSystem: (key: string, value: string) => ({ endpoint: `${API_ENDPOINTS.config}/system/${key}`, data: { value } }),
     deleteSystem: (key: string) => ({ endpoint: `${API_ENDPOINTS.config}/system/${key}` }),
+    listModels: (provider: string, kind: string) => ({ endpoint: `${API_ENDPOINTS.config}/ai-models?${buildQueryString({ provider, kind })}` }),
   },
   // clear drops only the app's own cache prefixes. The BE whole-database flush (DELETE /cache/flush) is deliberately not wired.
   cache: {

@@ -1,8 +1,8 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { aiSettingInputSchema } from '@/libs/validations/ai-settings';
-import type { TAiSettingKey } from '@/types/admin';
+import { aiModelCatalogInputSchema, aiSettingInputSchema } from '@/libs/validations/ai-settings';
+import type { TAiCatalogKind, TAiCatalogProvider, TAiModelCatalog, TAiSettingKey } from '@/types/admin';
 import { isBackendNotFound } from '@/utils/backend-request-error';
 import { cacheApi, configApi } from '@/utils/server-api';
 import { requireAdmin } from './auth';
@@ -39,6 +39,21 @@ export async function saveAdminAiSetting(input: { key: TAiSettingKey; value: str
     revalidatePath(SYSTEM_PATH);
   } catch (error) {
     throw await toActionError(error, 'adminSaveAiSetting');
+  }
+}
+
+/** Models one provider reports, for the model suggestions. Read-only, so the page is not refreshed. */
+export async function listAdminAiModels(input: { provider: TAiCatalogProvider; kind: TAiCatalogKind }): Promise<TAiModelCatalog> {
+  await requireAdmin();
+  const parsedInput = aiModelCatalogInputSchema.safeParse(input);
+  if (!parsedInput.success) {
+    throw new Error(await translateError('adminInvalidInput'));
+  }
+
+  try {
+    return await configApi.listModels(parsedInput.data.provider, parsedInput.data.kind);
+  } catch (error) {
+    throw await toActionError(error, 'adminListAiModels');
   }
 }
 

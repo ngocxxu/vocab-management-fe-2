@@ -17,17 +17,11 @@ async function readSetting(key: TAiSettingKey): Promise<string | null> {
   }
 }
 
-/** The four AI settings, each a stored value or null for the env default. */
+/** The six AI settings, each a stored value or null for the env default. */
 export async function readAiSettings(): Promise<TAiSettings> {
-  // Promise.all keeps the order of AI_SETTING_KEYS, so the four values line up with the destructuring below.
-  const [chatProvider, chatModel, audioProvider, audioModel] = await Promise.all(AI_SETTING_KEYS.map(readSetting));
+  const entries = await Promise.all(AI_SETTING_KEYS.map(async key => [key, await readSetting(key)] as const));
 
-  return {
-    'ai.chat.provider': chatProvider ?? null,
-    'ai.chat.model': chatModel ?? null,
-    'ai.audio.provider': audioProvider ?? null,
-    'ai.audio.model': audioModel ?? null,
-  };
+  return Object.fromEntries(entries) as TAiSettings;
 }
 
 /** Everything the system page shows: the AI settings and the cache rows, read in parallel. */
