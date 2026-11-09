@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers';
 import { UNVERIFIED_TOKEN_COOKIE, VERIFY_EMAIL_PATH } from '@/constants/auth';
+import { LOCALE_COOKIE_NAME } from '@/i18n/config';
 
 const COOKIE_DOMAIN = process.env.COOKIE_DOMAIN;
 
@@ -49,6 +50,12 @@ export async function getUnverifiedAccessToken(): Promise<string | undefined> {
 export async function getAccessToken(): Promise<string | undefined> {
   const cookieStore = await cookies();
   return cookieStore.get('accessToken')?.value;
+}
+
+/** UI locale cookie (en or vi). Sent to the API as Accept-Language so AI replies use the same language. */
+export async function getLocaleCookie(): Promise<string | undefined> {
+  const cookieStore = await cookies();
+  return cookieStore.get(LOCALE_COOKIE_NAME)?.value;
 }
 
 export async function getRefreshToken(): Promise<string | undefined> {

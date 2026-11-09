@@ -65,7 +65,7 @@ import { Env } from '@/libs/Env';
 import { BackendRequestError } from '@/utils/backend-request-error';
 import { logger } from '@/libs/Logger';
 import { getRefreshLock, getRefreshLockKey, performRefresh } from '@/libs/refresh-lock';
-import { getAccessToken, getRefreshToken, setAuthCookies } from '@/utils/auth-cookies';
+import { getAccessToken, getLocaleCookie, getRefreshToken, setAuthCookies } from '@/utils/auth-cookies';
 import { API_ENDPOINTS, API_METHODS } from './api-config';
 
 class ServerAPI {
@@ -73,11 +73,13 @@ class ServerAPI {
 
   private async doFetch(endpoint: string, options: RequestInit, tokenOverride?: string): Promise<Response> {
     const token = tokenOverride ?? await getAccessToken();
+    const locale = await getLocaleCookie();
 
     return fetch(`${this.baseURL}${endpoint}`, {
       ...options,
       headers: {
         'Content-Type': 'application/json',
+        ...(locale && { 'Accept-Language': locale }),
         ...(token && { Authorization: `Bearer ${token}` }),
         ...options.headers,
       },
