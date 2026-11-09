@@ -18,6 +18,9 @@ import type {
   TAdminUserRole,
   TAdminUsersQuery,
   TAdminWordType,
+  TAiCatalogKind,
+  TAiCatalogProvider,
+  TAiModelCatalog,
   TAiSettingKey,
   TBroadcastHistoryItem,
   TBroadcastPayload,
@@ -705,7 +708,7 @@ export const notificationsApi = {
   },
 };
 
-// System config holds the four AI settings. The BE keeps them under ADMIN-only routes.
+// System config holds the six AI settings. The BE keeps them under ADMIN-only routes.
 export const configApi = {
   getSystem: (key: TAiSettingKey) => {
     const config = API_METHODS.config.getSystem(key);
@@ -718,6 +721,10 @@ export const configApi = {
   deleteSystem: (key: TAiSettingKey) => {
     const config = API_METHODS.config.deleteSystem(key);
     return serverApi.delete<TSystemConfig>(config.endpoint);
+  },
+  listModels: (provider: TAiCatalogProvider, kind: TAiCatalogKind) => {
+    const config = API_METHODS.config.listModels(provider, kind);
+    return serverApi.get<TAiModelCatalog>(config.endpoint);
   },
 };
 

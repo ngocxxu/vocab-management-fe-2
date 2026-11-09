@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { BackendRequestError } from '@/utils/backend-request-error';
-import { clearAdminCaches, saveAdminAiSetting } from './admin-system';
+import { clearAdminCaches, listAdminAiModels, saveAdminAiSetting } from './admin-system';
 
 const revalidatePath = vi.hoisted(() => vi.fn());
 const requireAdmin = vi.hoisted(() => vi.fn());
-const configApi = vi.hoisted(() => ({ setSystem: vi.fn(), deleteSystem: vi.fn() }));
+const configApi = vi.hoisted(() => ({ setSystem: vi.fn(), deleteSystem: vi.fn(), listModels: vi.fn() }));
 const cacheApi = vi.hoisted(() => ({ clear: vi.fn() }));
 
 vi.mock('next/cache', () => ({ revalidatePath }));
@@ -50,7 +50,7 @@ describe('admin system actions', () => {
     });
 
     it('rejects a provider outside the allowed list before calling the API', async () => {
-      await expect(saveAdminAiSetting({ key: 'ai.audio.provider', value: 'cloudflare' })).rejects.toThrow('adminInvalidInput');
+      await expect(saveAdminAiSetting({ key: 'ai.audio.provider', value: 'OpenAI' })).rejects.toThrow('adminInvalidInput');
 
       expect(configApi.setSystem).not.toHaveBeenCalled();
       expect(revalidatePath).not.toHaveBeenCalled();
@@ -70,6 +70,39 @@ describe('admin system actions', () => {
       await expect(saveAdminAiSetting({ key: 'ai.chat.provider', value: 'groq' })).rejects.toThrow('Forbidden');
 
       expect(configApi.setSystem).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('listAdminAiModels', () => {
+    it('returns the catalog the BE reports for the provider and kind', async () => {
+      const catalog = { provider: 'groq', kind: 'text', models: [{ id: 'openai/gpt-oss-120b', name: 'openai/gpt-oss-120b' }], degraded: false };
+      configApi.listModels.mockResolvedValue(catalog);
+
+      await expect(listAdminAiModels({ provider: 'groq', kind: 'text' })).resolves.toEqual(catalog);
+
+      expect(configApi.listModels).toHaveBeenCalledWith('groq', 'text');
+    });
+
+    it('rejects OmniRoute before calling the API', async () => {
+      const input = { provider: 'omniroute', kind: 'text' } as unknown as Parameters<typeof listAdminAiModels>[0];
+
+      await expect(listAdminAiModels(input)).rejects.toThrow('adminInvalidInput');
+
+      expect(configApi.listModels).not.toHaveBeenCalled();
+    });
+
+    it('reports a failed fetch under its own message', async () => {
+      configApi.listModels.mockRejectedValue(new Error('Bad gateway'));
+
+      await expect(listAdminAiModels({ provider: 'groq', kind: 'text' })).rejects.toThrow('adminListAiModels');
+    });
+
+    it('checks the admin role before listing', async () => {
+      requireAdmin.mockRejectedValue(new Error('Forbidden'));
+
+      await expect(listAdminAiModels({ provider: 'groq', kind: 'text' })).rejects.toThrow('Forbidden');
+
+      expect(configApi.listModels).not.toHaveBeenCalled();
     });
   });
 

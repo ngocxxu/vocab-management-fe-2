@@ -98,7 +98,8 @@
     "adminCleanupBroadcasts": "Could not clean up expired messages. Try again.",
     "adminSearchUsers": "Could not search users. Try again.",
     "adminSaveAiSetting": "Could not save the AI setting. Please try again.",
-    "adminClearCache": "Could not clear the app caches. Please try again."
+    "adminClearCache": "Could not clear the app caches. Please try again.",
+    "adminListAiModels": "Could not load the AI model list. Please try again."
   },
   "validation": {
     "emailRequired": "Email is required",
@@ -2217,7 +2218,7 @@
       }
     },
     "system": {
-      "description": "Choose the AI provider and model the app uses for chat and audio. Unset values use the server env default.",
+      "description": "Set the default AI provider and model. Chat and audio can use their own. Unset values use the server env default.",
       "loadError": "Could not load system settings. Please try again shortly.",
       "sections": {
         "ai": "AI settings",
@@ -2225,6 +2226,8 @@
       },
       "ai": {
         "fields": {
+          "defaultProvider": "Default provider",
+          "defaultModel": "Default model",
           "chatProvider": "Chat provider",
           "chatModel": "Chat model",
           "audioProvider": "Audio provider",
@@ -2235,7 +2238,14 @@
           "gemini": "Gemini",
           "openrouter": "OpenRouter",
           "groq": "Groq",
-          "omniroute": "OmniRoute"
+          "omniroute": "OmniRoute",
+          "cloudflare": "Cloudflare"
+        },
+        "modelList": {
+          "loading": "Loading model suggestions...",
+          "degraded": "Could not refresh the model list. Showing the last known models, or none.",
+          "pickProvider": "Set a provider in the row above to see model suggestions.",
+          "unsupported": "No model suggestions for this provider. Type a model id."
         },
         "save": "Save",
         "reset": "Reset to env default"

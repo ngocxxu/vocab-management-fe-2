@@ -1,4 +1,4 @@
-import type { ADMIN_USER_ROLES, ADMIN_USER_SORT_FIELDS, AI_SETTING_KEYS } from '@/constants/admin';
+import type { ADMIN_USER_ROLES, ADMIN_USER_SORT_FIELDS, AI_CATALOG_KINDS, AI_CATALOG_PROVIDERS, AI_SETTING_KEYS } from '@/constants/admin';
 
 // Mirrors the backend admin responses (GET /admin/stats, /admin/users). Keep in step with the BE DTOs.
 export type TAdminUserRole = (typeof ADMIN_USER_ROLES)[number];
@@ -172,8 +172,26 @@ export type TBroadcastHistoryItem = {
   recipientCount: number;
 };
 
-/** One of the four AI settings. Provider keys take a provider; model keys take a model name. */
+/** One of the six AI settings. Provider keys take a provider; model keys take a model name. */
 export type TAiSettingKey = (typeof AI_SETTING_KEYS)[number];
+
+export type TAiCatalogProvider = (typeof AI_CATALOG_PROVIDERS)[number];
+
+export type TAiCatalogKind = (typeof AI_CATALOG_KINDS)[number];
+
+/** One model a provider reports. The name is the id unless the provider gives a display name. */
+export type TAiModel = {
+  id: string;
+  name: string;
+};
+
+/** Reply to GET /config/ai-models. When `degraded` is true the provider could not be reached, so `models` is the last good list or empty. */
+export type TAiModelCatalog = {
+  provider: TAiCatalogProvider;
+  kind: TAiCatalogKind;
+  models: TAiModel[];
+  degraded: boolean;
+};
 
 /** Stored value of each AI setting. Null means unset, so the env default applies. */
 export type TAiSettings = Record<TAiSettingKey, string | null>;
