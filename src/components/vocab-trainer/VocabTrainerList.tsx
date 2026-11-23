@@ -23,14 +23,16 @@ import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { DataTable } from '@/shared/ui/table';
 import { getQuestionTypeLabelKey, QUESTION_TYPE_OPTIONS } from '@/constants/vocab-trainer';
 import { EFsrsDirection, EQuestionType, ETrainerMode } from '@/enum/vocab-trainer';
-import { createTrainerFormSchema, dateInputToEndsAt, endsAtToDateInput, FSRS_MAX_INTERVAL_DAYS } from '@/libs/validations/vocab-trainer';
+import { CLASSIC_MAX_REPEAT, CLASSIC_SPACING_DAYS, createTrainerFormSchema, dateInputToEndsAt, endsAtToDateInput, FSRS_MAX_INTERVAL_DAYS } from '@/libs/validations/vocab-trainer';
 import { useApiPagination, useBulkDelete, useDialogState } from '@/hooks';
 import { getExamCooldownRemainingSeconds } from '@/utils/exam-cooldown';
+import { buildCreateVocabTrainerPayload, buildUpdateVocabTrainerPayload } from '@/utils/vocab-trainer-payload';
 import AddVocabTrainerDialog from './AddVocabTrainerDialog';
 import CloneTrainerDialog from './CloneTrainerDialog';
 import ExamLauncher from './ExamLauncher';
 import FsrsTrainerActions from './FsrsTrainerActions';
 import FsrsTrainerStatus from './FsrsTrainerStatus';
+import ReminderPromptDialog from './ReminderPromptDialog';
 import VocabTrainerHeader from './VocabTrainerHeader';
 
 type FormData = TTrainerFormData;
@@ -46,6 +48,8 @@ const buildDefaultValues = (srsDefaults?: TSrsDefaults): FormData => ({
   setCountTime: 900,
   reminderDisabled: false,
   vocabAssignmentIds: [],
+  reminderSpacingDays: CLASSIC_SPACING_DAYS.default,
+  reminderMaxRepeat: CLASSIC_MAX_REPEAT.default,
   fsrsDirections: srsDefaults?.directions ?? ALL_DIRECTIONS,
   fsrsDesiredRetention: srsDefaults?.desiredRetention ?? SYSTEM_RETENTION,
   fsrsMaximumInterval: FSRS_MAX_INTERVAL_DAYS,
@@ -60,8 +64,6 @@ const QUESTION_TYPE_BADGE_CLASSES: Record<string, string> = {
   [EQuestionType.TRANSLATION_AUDIO]: 'bg-success/15 text-success',
   default: 'bg-muted text-muted-foreground',
 };
-
-const MAX_PASS_COUNT = 6;
 
 const STATUS_LABEL_KEYS: Record<string, string> = {
   PENDING: 'trainer.status.pending',
@@ -110,11 +112,15 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
   const [cloneTarget, setCloneTarget] = useState<TVocabTrainer | null>(null);
   // A deadline that is kept as it is stays valid after it has passed, so an ended trainer can still be renamed.
   const [originalEndsAt, setOriginalEndsAt] = useState('');
+  // Passes the trainer being edited already has: its max passes cannot go below this.
+  const [earnedPasses, setEarnedPasses] = useState(0);
+  // The trainer whose reminder question is open.
+  const [promptTrainer, setPromptTrainer] = useState<TVocabTrainer | null>(null);
   const schemaRef = useRef(createTrainerFormSchema());
 
   useEffect(() => {
-    schemaRef.current = createTrainerFormSchema({ originalEndsAt });
-  }, [originalEndsAt]);
+    schemaRef.current = createTrainerFormSchema({ originalEndsAt, earnedPasses });
+  }, [originalEndsAt, earnedPasses]);
 
   const form = useForm<FormData>({
     resolver: (values, context, options) => zodResolver(schemaRef.current)(values, context, options),
@@ -139,6 +145,7 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
 
   const resetForm = () => {
     setOriginalEndsAt('');
+    setEarnedPasses(0);
     form.reset(buildDefaultValues(srsDefaults));
   };
 
@@ -285,6 +292,7 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
 
       const endsAt = endsAtToDateInput(item.fsrsEndsAt);
       setOriginalEndsAt(endsAt);
+      setEarnedPasses(item.reminderRepeat ?? 0);
       form.reset({
         name: item.name,
         mode: item.mode ?? ETrainerMode.CLASSIC,
@@ -292,6 +300,8 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
         setCountTime: item.setCountTime,
         reminderDisabled: item.reminderDisabled,
         vocabAssignmentIds: item.vocabAssignments?.map(va => va.vocabId) || [],
+        reminderSpacingDays: item.reminderSpacingDays ?? CLASSIC_SPACING_DAYS.default,
+        reminderMaxRepeat: item.reminderMaxRepeat ?? CLASSIC_MAX_REPEAT.default,
         fsrsDirections: item.fsrsDirections?.length ? item.fsrsDirections : ALL_DIRECTIONS,
         fsrsDesiredRetention: item.fsrsDesiredRetention ?? SYSTEM_RETENTION,
         fsrsMaximumInterval: item.fsrsMaximumInterval ?? FSRS_MAX_INTERVAL_DAYS,
@@ -318,25 +328,11 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
       // Get the validated form data
       const formData = form.getValues();
 
-      // Prepare API data
-      const apiData = {
-        name: formData.name,
-        status: 'PENDING',
-        questionType: formData.questionType,
-        reminderTime: 0,
-        countTime: 0,
-        setCountTime: formData.setCountTime,
-        reminderDisabled: formData.reminderDisabled,
-        reminderRepeat: 0,
-        reminderLastRemind: new Date().toISOString(),
-        vocabAssignmentIds: formData.vocabAssignmentIds,
-      };
-
       const isFsrs = formData.mode === ETrainerMode.FSRS;
       const editingItem = dialogState.editMode ? dialogState.editingItem : null;
 
       if (editingItem) {
-        await updateVocabTrainer(editingItem.id, apiData);
+        await updateVocabTrainer(editingItem.id, buildUpdateVocabTrainerPayload(formData));
         if (isFsrs) {
           // Only what changed is sent: an unchanged deadline that has passed would be refused as "in the past".
           const settings = {
@@ -350,6 +346,7 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
           }
         }
       } else {
+        const apiData = buildCreateVocabTrainerPayload(formData);
         const created = await createVocabTrainer(isFsrs
           ? {
               ...apiData,
@@ -409,6 +406,11 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
           <div>
             <div className="font-semibold text-foreground">{row.original.name}</div>
             {row.original.mode === ETrainerMode.FSRS && <FsrsTrainerStatus trainer={row.original} />}
+            {row.original.reminderPromptPending && (
+              <Button variant="outline" size="sm" className="mt-1 h-7 rounded-lg" onClick={() => setPromptTrainer(row.original)}>
+                {t('trainer.prompt.openButton')}
+              </Button>
+            )}
           </div>
         );
       },
@@ -420,15 +422,17 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
       accessorKey: 'status',
       header: t('trainer.columns.status'),
       cell: ({ row }) => {
-        // Pass or fail and the six passes belong to Classic; a spaced repetition trainer never "passes".
+        // Pass or fail and the Passes belong to Classic; a spaced repetition trainer never "passes".
         if (row.original.mode === ETrainerMode.FSRS) {
           return <Badge className="bg-primary/15 text-primary">{t('trainer.spacedRepetition')}</Badge>;
         }
         const status = row.original.status;
         const passCount = row.original.reminderRepeat;
+        // The total comes from the trainer (max passes, T), not from a fixed number.
+        const maxPasses = row.original.reminderMaxRepeat;
         const statusLabel = STATUS_LABEL_KEYS[status] ? t(STATUS_LABEL_KEYS[status]) : status;
         const displayStatus = status === 'PASSED'
-          ? `${statusLabel} ${Number.isFinite(passCount) ? passCount : 0}/${MAX_PASS_COUNT}`
+          ? `${statusLabel} ${Number.isFinite(passCount) ? passCount : 0}/${maxPasses}`
           : statusLabel;
         const statusColors = {
           PENDING: 'bg-warning/20 text-warning-foreground',
@@ -552,7 +556,25 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
               onLanguageFoldersLoaded={setCachedLanguageFolders}
               userRole={user?.role}
               srsDefaults={srsDefaults}
+              earnedPasses={earnedPasses}
             />
+
+            {promptTrainer && (
+              <ReminderPromptDialog
+                trainer={promptTrainer}
+                open
+                onOpenChange={(open) => {
+                  if (!open) {
+                    setPromptTrainer(null);
+                  }
+                }}
+                onAnswered={() => {
+                  startTransition(() => {
+                    router.refresh();
+                  });
+                }}
+              />
+            )}
 
             <CloneTrainerDialog
               trainer={cloneTarget}

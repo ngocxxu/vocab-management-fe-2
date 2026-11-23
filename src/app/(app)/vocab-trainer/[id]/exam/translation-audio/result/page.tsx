@@ -5,8 +5,10 @@ import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
 import { ExamErrorState } from '@/shared/ui/shared';
+import ReminderPromptDialog from '@/components/vocab-trainer/ReminderPromptDialog';
 import TranslationAudioResults from '@/components/vocab-trainer/TranslationAudioResults';
 import { useExamJobResult } from '@/hooks/useExamJobResult';
+import { useTrainerAfterJob } from '@/hooks/useTrainerAfterJob';
 import {
   clearCachedAudioEvaluation,
   readCachedAudioEvaluation,
@@ -44,6 +46,8 @@ const TranslationAudioResultPage: React.FC = () => {
     readCached,
     writeCached,
   });
+  // Once the job is done, the trainer is reloaded: a completed trainer is gone and the page goes back to the list.
+  const afterJob = useTrainerAfterJob(trainerId, state.phase === 'completed');
 
   const loadResultData = useCallback(() => {
     const storageKey = `translation_audio_result_${trainerId}`;
@@ -74,16 +78,26 @@ const TranslationAudioResultPage: React.FC = () => {
     loadResultData();
   }, [loadResultData]);
 
-  const handleBackToTrainers = () => {
+  const handleBackToTrainers = useCallback(() => {
     const storageKey = `translation_audio_result_${trainerId}`;
     localStorage.removeItem(storageKey);
     if (jobId) {
       clearCachedAudioEvaluation(jobId);
     }
     router.push('/vocab-trainer');
-  };
+  }, [trainerId, jobId, router]);
 
-  if (state.phase === 'loading') {
+  // A 404 after completion means the trainer is done, not broken: leave without an error.
+  const isGone = afterJob.phase === 'gone';
+  useEffect(() => {
+    if (isGone) {
+      handleBackToTrainers();
+    }
+  }, [isGone, handleBackToTrainers]);
+
+  const isWaitingForTrainer = state.phase === 'completed' && (afterJob.phase === 'waiting' || isGone);
+
+  if (state.phase === 'loading' || isWaitingForTrainer) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="space-y-6 text-center">
@@ -123,6 +137,18 @@ const TranslationAudioResultPage: React.FC = () => {
           timeElapsed={timeElapsed}
           onBackToTrainers={handleBackToTrainers}
         />
+        {afterJob.isPromptOpen && afterJob.trainer && (
+          <ReminderPromptDialog
+            trainer={afterJob.trainer}
+            open
+            onOpenChange={(open) => {
+              if (!open) {
+                afterJob.dismissPrompt();
+              }
+            }}
+            onAnswered={afterJob.onTrainerChange}
+          />
+        )}
       </div>
     );
   }

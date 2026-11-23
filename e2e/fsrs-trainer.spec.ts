@@ -189,4 +189,4 @@ test('an ended trainer shows Cycle ended, the review page says so, and a new cyc
 
 // Not covered yet (needs overdue cards, which the API cannot create without waiting a day or writing to the database):
 // - a large backlog limits the session and the rest waits (a "Welcome back" notice)
-// - the reminder email arrives the next morning, and a Classic trainer still auto-deletes after 6 passes (manual checklist)
+// - the reminder email arrives the next morning, and a Classic trainer auto-deletes after its max passes (T, default 6) (manual checklist)

@@ -14,8 +14,17 @@ export type TVocabTrainer = {
   countTime: number;
   setCountTime: number;
   reminderDisabled: boolean;
+  /** Passes earned so far (Classic). */
   reminderRepeat: number;
   reminderLastRemind: string;
+  /** Classic: days from one attempt to the next reminder (X), 2 to 30. */
+  reminderSpacingDays: number;
+  /** Classic: Passes that complete the trainer (T), 3 to 20. Cannot go below `reminderRepeat`. */
+  reminderMaxRepeat: number;
+  /** Classic: the user must answer whether to keep reminders on (the fail streak reached the prompt limit). */
+  reminderPromptPending: boolean;
+  /** Classic: counted failed attempts in a row that ask the reminder question. Set by the backend. */
+  reminderFailStreakForPrompt: number;
   userId: string;
   vocabAssignments: TVocabAssignment[];
   results: TWordResults[];
@@ -137,6 +146,10 @@ export type TCreateVocabTrainer = {
   reminderRepeat: number;
   reminderLastRemind: string;
   vocabAssignmentIds: string[];
+  /** Classic only. The backend refuses them on an FSRS trainer. */
+  reminderSpacingDays?: number;
+  /** Classic only. The backend refuses them on an FSRS trainer. */
+  reminderMaxRepeat?: number;
   /** Fixed after creation. Without it the trainer is Classic. */
   mode?: ETrainerMode;
   fsrsDesiredRetention?: number;
@@ -146,6 +159,15 @@ export type TCreateVocabTrainer = {
   fsrsDirections?: EFsrsDirection[];
   fsrsEndsAt?: string | null;
 };
+
+/**
+ * What a trainer update sends. Status, Passes and the last-remind time are not here: the backend ignores them on update,
+ * and only an exam changes them.
+ */
+export type TUpdateVocabTrainer = Partial<Omit<TCreateVocabTrainer, 'status' | 'reminderRepeat' | 'reminderLastRemind'>>;
+
+/** Result of reloading a trainer. `gone` means the backend removed it: a completed trainer is deleted. */
+export type TTrainerReload = { kind: 'found'; trainer: TVocabTrainer } | { kind: 'gone' };
 
 /** Starts a new cycle from an FSRS trainer: the words, directions and settings are copied by the backend. */
 export type TCloneVocabTrainer = {
@@ -325,6 +347,10 @@ export type VocabTrainerFormData = {
   setCountTime: number;
   reminderDisabled: boolean;
   vocabAssignmentIds: string[];
+  /** Classic: days between reminders (X). */
+  reminderSpacingDays: number;
+  /** Classic: max passes (T). */
+  reminderMaxRepeat: number;
   fsrsDirections: EFsrsDirection[];
   fsrsDesiredRetention: number;
   fsrsMaximumInterval: number;
@@ -348,6 +374,8 @@ export type AddVocabTrainerDialogProps = {
   userRole?: string;
   /** What a new spaced repetition trainer starts from. */
   srsDefaults?: TSrsDefaults;
+  /** Passes the trainer being edited already has. Max passes cannot go below it. 0 for a new trainer. */
+  earnedPasses?: number;
 };
 
 export type QuickFilter = 'all' | 'recent' | 'difficult' | 'unstarted';

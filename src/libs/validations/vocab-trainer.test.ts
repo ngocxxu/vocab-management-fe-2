@@ -18,11 +18,20 @@ const fsrsForm = {
   setCountTime: 900,
   reminderDisabled: false,
   vocabAssignmentIds: ['v1'],
+  reminderSpacingDays: 2,
+  reminderMaxRepeat: 6,
   fsrsDirections: [EFsrsDirection.SOURCE_TO_TARGET, EFsrsDirection.TARGET_TO_SOURCE],
   fsrsDesiredRetention: 0.9,
   fsrsMaximumInterval: 36500,
   fsrsNewPerDay: null,
   fsrsEndsAt: '',
+};
+
+const classicForm = {
+  ...fsrsForm,
+  mode: ETrainerMode.CLASSIC,
+  questionType: EQuestionType.MULTIPLE_CHOICE,
+  fsrsDirections: [],
 };
 
 function messages(form: object, options = {}) {
@@ -73,6 +82,33 @@ describe('createTrainerFormSchema', () => {
 
   it('rejects a date that does not exist', () => {
     expect(messages({ ...fsrsForm, fsrsEndsAt: '2026-02-31' })).toEqual(['fsrsEndsAt: validation.dateInvalid']);
+  });
+});
+
+describe('createTrainerFormSchema, classic reminder settings', () => {
+  it('accepts spacing and max passes at both ends of their ranges', () => {
+    expect(messages({ ...classicForm, reminderSpacingDays: 2, reminderMaxRepeat: 3 })).toEqual([]);
+    expect(messages({ ...classicForm, reminderSpacingDays: 30, reminderMaxRepeat: 20 })).toEqual([]);
+  });
+
+  it('rejects spacing outside 2 to 30 whole days', () => {
+    expect(messages({ ...classicForm, reminderSpacingDays: 1 })).toEqual(['reminderSpacingDays: validation.spacingOutOfRange']);
+    expect(messages({ ...classicForm, reminderSpacingDays: 31 })).toEqual(['reminderSpacingDays: validation.spacingOutOfRange']);
+    expect(messages({ ...classicForm, reminderSpacingDays: 2.5 })).toEqual(['reminderSpacingDays: validation.spacingOutOfRange']);
+  });
+
+  it('rejects max passes outside 3 to 20', () => {
+    expect(messages({ ...classicForm, reminderMaxRepeat: 2 })).toEqual(['reminderMaxRepeat: validation.maxRepeatOutOfRange']);
+    expect(messages({ ...classicForm, reminderMaxRepeat: 21 })).toEqual(['reminderMaxRepeat: validation.maxRepeatOutOfRange']);
+  });
+
+  it('rejects max passes below the passes already earned, and allows them equal', () => {
+    expect(messages({ ...classicForm, reminderMaxRepeat: 3 }, { earnedPasses: 4 })).toEqual(['reminderMaxRepeat: validation.maxRepeatBelowEarned']);
+    expect(messages({ ...classicForm, reminderMaxRepeat: 4 }, { earnedPasses: 4 })).toEqual([]);
+  });
+
+  it('does not check the classic reminder fields of an FSRS trainer', () => {
+    expect(messages({ ...fsrsForm, reminderSpacingDays: 99, reminderMaxRepeat: 1 })).toEqual([]);
   });
 });
 
