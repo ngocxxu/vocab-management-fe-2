@@ -3,8 +3,8 @@
 import { RefreshCircle } from '@solar-icons/react/ssr';
 import { useTranslations } from 'next-intl';
 import React, { useEffect, useMemo, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/shared/ui/button';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/shared/ui/dialog';
 import type { TVocab } from '@/types/vocab-list';
 import { getVocabsByIds } from '@/actions';
 import type {
@@ -13,6 +13,7 @@ import type {
 import { ETrainerMode } from '@/enum/vocab-trainer';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/shared/ui/alert-dialog';
 import { removedVocabIds } from '@/utils/trainer-word-removal';
+import ClassicReminderFields from './ClassicReminderFields';
 import ClassicSettingsFields, { ClassicCardSummary } from './ClassicSettingsFields';
 import FsrsSettingsFields, { FsrsCardSummary } from './FsrsSettingsFields';
 import TrainerBasicInfoForm from './TrainerBasicInfoForm';
@@ -33,6 +34,7 @@ const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({
   editingItem,
   userRole,
   srsDefaults,
+  earnedPasses = 0,
 }) => {
   const t = useTranslations('trainer.dialog');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -161,7 +163,12 @@ const AddVocabTrainerDialog: React.FC<AddVocabTrainerDialogProps> = ({
                     wordsWithoutTranslation={wordsWithoutTranslation}
                   />
                 )
-              : <ClassicSettingsFields />}
+              : (
+                  <>
+                    <ClassicSettingsFields />
+                    <ClassicReminderFields earnedPasses={earnedPasses} />
+                  </>
+                )}
           </div>
         </div>
 

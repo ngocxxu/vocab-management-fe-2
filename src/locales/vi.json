@@ -16,6 +16,8 @@
     "updateVocabulary": "Không thể cập nhật từ vựng",
     "updateVocabularies": "Không thể cập nhật các từ vựng",
     "updateVocabTrainer": "Không thể cập nhật trình luyện từ",
+    "answerReminderPrompt": "Không thể trả lời câu hỏi nhắc nhở",
+    "reloadVocabTrainer": "Không thể tải trình luyện từ",
     "updateTextTarget": "Không thể cập nhật mục tiêu văn bản",
     "updateSubject": "Không thể cập nhật chủ đề",
     "updateSpacedRepetitionSettings": "Không thể cập nhật cài đặt ôn tập lặp lại ngắt quãng",
@@ -133,6 +135,9 @@
     "trainerNameTooLong": "Tối đa 200 ký tự",
     "retentionOutOfRange": "Tỷ lệ ghi nhớ phải từ 70% đến 97%",
     "maximumIntervalOutOfRange": "Nhập số ngày nguyên từ 1 đến 36500",
+    "spacingOutOfRange": "Nhập số ngày nguyên từ 2 đến 30",
+    "maxRepeatOutOfRange": "Nhập số lần đạt nguyên từ 3 đến 20",
+    "maxRepeatBelowEarned": "Số lần đạt tối đa không được thấp hơn số lần đã đạt",
     "checkValues": "Kiểm tra lại các giá trị rồi thử lại",
     "invalidForm": "Dữ liệu biểu mẫu không hợp lệ",
     "newPasswordRequired": "Mật khẩu mới là bắt buộc",
@@ -1444,7 +1449,13 @@
       "timeLimit": "Giới hạn thời gian",
       "timeLimitAria": "Giới hạn thời gian",
       "minutes": "{count} phút",
-      "cardSummary": "{count} từ · <strong>{time}</strong> thời gian giới hạn"
+      "cardSummary": "{count} từ · <strong>{time}</strong> thời gian giới hạn",
+      "reminderTitle": "Lịch nhắc",
+      "spacingLabel": "Số ngày giữa các lần nhắc",
+      "spacingHint": "Số ngày từ một lần làm đến lần nhắc tiếp theo: {min} đến {max}.",
+      "maxRepeatLabel": "Số lần đạt tối đa",
+      "maxRepeatHint": "Số lần đạt để hoàn thành bài kiểm tra: {min} đến {max}.",
+      "earnedFloor": "Số lần đạt tối đa không được thấp hơn số lần đã đạt: {count}."
     },
     "fsrs": {
       "rating": {
@@ -1669,6 +1680,16 @@
       "failed": "Chấm bài thất bại",
       "timeout": "Việc này lâu hơn dự kiến. Câu trả lời của bạn đã được lưu: hãy kiểm tra lại sau giây lát.",
       "checkAgain": "Kiểm tra lại"
+    },
+    "prompt": {
+      "openButton": "Câu hỏi nhắc nhở",
+      "title": "Giữ nhắc nhở không?",
+      "description": "{name}: bạn đã làm sai {count} lần liên tiếp. Có sẽ giữ nhắc nhở và đặt lại số lần sai. Không sẽ tắt nhắc nhở.",
+      "yes": "Có, giữ nhắc nhở",
+      "no": "Không, tắt nhắc nhở",
+      "toastOn": "Nhắc nhở vẫn được bật.",
+      "toastOff": "Đã tắt nhắc nhở.",
+      "saveFailed": "Không lưu được câu trả lời. Vui lòng thử lại."
     }
   },
   "connectAi": {

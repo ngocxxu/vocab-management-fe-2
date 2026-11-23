@@ -8,7 +8,9 @@ import { useParams, useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ExamErrorState } from '@/shared/ui/shared';
 import ExamResults from '@/components/vocab-trainer/ExamResults';
+import ReminderPromptDialog from '@/components/vocab-trainer/ReminderPromptDialog';
 import { useExamJobResult } from '@/hooks/useExamJobResult';
+import { useTrainerAfterJob } from '@/hooks/useTrainerAfterJob';
 import {
   clearCachedFillInBlankEvaluation,
   readCachedFillInBlankEvaluation,
@@ -48,6 +50,8 @@ const FillInBlankResultPage: React.FC = () => {
     readCached,
     writeCached,
   });
+  // Once the job is done, the trainer is reloaded: a completed trainer is gone and the page goes back to the list.
+  const afterJob = useTrainerAfterJob(trainerId, state.phase === 'completed');
 
   const loadResultData = useCallback(() => {
     const storageKey = `fill_in_blank_result_${trainerId}`;
@@ -95,16 +99,26 @@ const FillInBlankResultPage: React.FC = () => {
     [state.data],
   );
 
-  const handleBackToTrainers = () => {
+  const handleBackToTrainers = useCallback(() => {
     const storageKey = `fill_in_blank_result_${trainerId}`;
     localStorage.removeItem(storageKey);
     if (jobId) {
       clearCachedFillInBlankEvaluation(jobId);
     }
     router.push('/vocab-trainer');
-  };
+  }, [trainerId, jobId, router]);
 
-  if (state.phase === 'loading') {
+  // A 404 after completion means the trainer is done, not broken: leave without an error.
+  const isGone = afterJob.phase === 'gone';
+  useEffect(() => {
+    if (isGone) {
+      handleBackToTrainers();
+    }
+  }, [isGone, handleBackToTrainers]);
+
+  const isWaitingForTrainer = state.phase === 'completed' && (afterJob.phase === 'waiting' || isGone);
+
+  if (state.phase === 'loading' || isWaitingForTrainer) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="space-y-6 text-center">
@@ -149,6 +163,18 @@ const FillInBlankResultPage: React.FC = () => {
           onRetryExam={() => router.push(`/vocab-trainer/${trainerId}/exam/fill-in-blank`)}
           questionType={EQuestionType.FILL_IN_THE_BLANK}
         />
+        {afterJob.isPromptOpen && afterJob.trainer && (
+          <ReminderPromptDialog
+            trainer={afterJob.trainer}
+            open
+            onOpenChange={(open) => {
+              if (!open) {
+                afterJob.dismissPrompt();
+              }
+            }}
+            onAnswered={afterJob.onTrainerChange}
+          />
+        )}
       </div>
     );
   }

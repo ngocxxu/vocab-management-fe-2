@@ -22,8 +22,10 @@ import { Alert, AlertDescription } from '@/shared/ui/alert';
 import { Button } from '@/shared/ui/button';
 import { getExamUrl } from '@/constants/vocab-trainer';
 import { markExamCooldownNow } from '@/utils/exam-cooldown';
+import { useTrainerAfterJob } from '@/hooks/useTrainerAfterJob';
 import ExamResults from './ExamResults';
 import QuestionCard from './QuestionCard';
+import ReminderPromptDialog from './ReminderPromptDialog';
 import VocabExamHeader from './VocabExamHeader';
 
 const VocabExam: React.FC<VocabExamProps> = ({ trainerId, examData }) => {
@@ -126,19 +128,37 @@ const VocabExam: React.FC<VocabExamProps> = ({ trainerId, examData }) => {
     return () => clearInterval(timer);
   }, [examState, handleSubmit]);
 
+  // After a submit the trainer is reloaded, so a reminder question that is now pending can open over the results.
+  // The hook is shared with the AI result pages. A trainer the submit completed is gone: the results stay, no redirect.
+  const afterSubmit = useTrainerAfterJob(trainerId, examState === 'completed');
+
   // Show results if exam is completed
   if (examState === 'completed' && examResults) {
     return (
-      <ExamResults
-        trainerId={trainerId}
-        results={examResults}
-        questions={questions}
-        selectedAnswers={selectedAnswers}
-        timeElapsed={timeElapsed}
-        onBackToTrainers={handleBackToTrainers}
-        onRetryExam={() => router.push(getExamUrl(trainerId, examData.questionType ?? EQuestionType.MULTIPLE_CHOICE))}
-        questionType={examData.questionType ?? EQuestionType.MULTIPLE_CHOICE}
-      />
+      <>
+        <ExamResults
+          trainerId={trainerId}
+          results={examResults}
+          questions={questions}
+          selectedAnswers={selectedAnswers}
+          timeElapsed={timeElapsed}
+          onBackToTrainers={handleBackToTrainers}
+          onRetryExam={() => router.push(getExamUrl(trainerId, examData.questionType ?? EQuestionType.MULTIPLE_CHOICE))}
+          questionType={examData.questionType ?? EQuestionType.MULTIPLE_CHOICE}
+        />
+        {afterSubmit.isPromptOpen && afterSubmit.trainer && (
+          <ReminderPromptDialog
+            trainer={afterSubmit.trainer}
+            open
+            onOpenChange={(open) => {
+              if (!open) {
+                afterSubmit.dismissPrompt();
+              }
+            }}
+            onAnswered={afterSubmit.onTrainerChange}
+          />
+        )}
+      </>
     );
   }
 

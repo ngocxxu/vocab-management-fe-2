@@ -12,11 +12,13 @@ import type {
   TFsrsReviewQueue,
   TFsrsReviewSummary,
   TQuestionAPI,
+  TTrainerReload,
   TUpdateFsrsSettings,
+  TUpdateVocabTrainer,
   TVocabTrainer,
 } from '@/types/vocab-trainer';
 import { revalidatePath } from 'next/cache';
-import { BackendRequestError } from '@/utils/backend-request-error';
+import { BackendRequestError, isBackendNotFound } from '@/utils/backend-request-error';
 import { vocabTrainerApi } from '@/utils/server-api';
 import { toActionError } from './utils';
 
@@ -37,7 +39,7 @@ export async function createVocabTrainer(trainerData: TCreateVocabTrainer) {
   }
 }
 
-export async function updateVocabTrainer(id: string, trainerData: Partial<TCreateVocabTrainer>) {
+export async function updateVocabTrainer(id: string, trainerData: TUpdateVocabTrainer) {
   if (!id || typeof id !== 'string') {
     throw new Error('Trainer ID is required');
   }
@@ -51,6 +53,39 @@ export async function updateVocabTrainer(id: string, trainerData: Partial<TCreat
     return result;
   } catch (error) {
     throw await toActionError(error, 'updateVocabTrainer');
+  }
+}
+
+/**
+ * Reloads a trainer after its AI job. A 404 is not an error here: the backend deletes a trainer when its cycle
+ * completes, so `gone` means the goal was met.
+ */
+export async function reloadVocabTrainer(id: string): Promise<TTrainerReload> {
+  assertTrainerId(id);
+
+  try {
+    return { kind: 'found', trainer: await vocabTrainerApi.getById(id) };
+  } catch (error) {
+    if (isBackendNotFound(error)) {
+      return { kind: 'gone' };
+    }
+    throw await toActionError(error, 'reloadVocabTrainer');
+  }
+}
+
+/** Answers the reminder question. `true` keeps reminders on and resets the fail streak; `false` turns them off. */
+export async function answerReminderPrompt(id: string, continueReminders: boolean): Promise<TVocabTrainer> {
+  assertTrainerId(id);
+  if (typeof continueReminders !== 'boolean') {
+    throw new TypeError('The answer must be true or false');
+  }
+
+  try {
+    const result = await vocabTrainerApi.answerReminderPrompt(id, continueReminders);
+    revalidatePath('/vocab-trainer');
+    return result;
+  } catch (error) {
+    throw await toActionError(error, 'answerReminderPrompt');
   }
 }
 

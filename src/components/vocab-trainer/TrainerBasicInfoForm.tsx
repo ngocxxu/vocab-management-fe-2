@@ -10,9 +10,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+} from '@/shared/ui/form';
+import { Input } from '@/shared/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { UserRole } from '@/constants/auth';
 import { FSRS_QUESTION_TYPE_OPTIONS, QUESTION_TYPE_OPTIONS } from '@/constants/vocab-trainer';
 import { EQuestionType, ETrainerMode } from '@/enum/vocab-trainer';

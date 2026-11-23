@@ -15,6 +15,7 @@ import type {
   TFsrsAnswerInput,
   TFsrsQueueParams,
   TUpdateFsrsSettings,
+  TUpdateVocabTrainer,
 } from '@/types/vocab-trainer';
 
 // Query parameters types
@@ -274,7 +275,11 @@ export const API_METHODS = {
     },
     getById: (id: string) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}` }),
     create: (trainerData: TCreateVocabTrainer) => ({ endpoint: API_ENDPOINTS.vocabTrainers, data: trainerData }),
-    update: (id: string, trainerData: Partial<TCreateVocabTrainer>) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}`, data: trainerData }),
+    update: (id: string, trainerData: TUpdateVocabTrainer) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}`, data: trainerData }),
+    answerReminderPrompt: (id: string, continueReminders: boolean) => ({
+      endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}/reminder-prompt`,
+      data: { continueReminders },
+    }),
     delete: (id: string) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}` }),
     getExam: (id: string) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}/exam` }),
     submitExam: (id: string, testData: TFormTestVocabTrainerUnion) => ({ endpoint: `${API_ENDPOINTS.vocabTrainers}/${id}/exam`, data: testData }),

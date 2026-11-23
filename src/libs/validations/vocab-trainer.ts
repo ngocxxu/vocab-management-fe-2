@@ -5,6 +5,12 @@ import { SRS_MAX_RETENTION, SRS_MIN_RETENTION } from './srs-settings';
 
 // Same bounds as the backend; the backend checks them again.
 export const FSRS_MAX_INTERVAL_DAYS = 36500;
+/**
+ * Classic reminder ranges (the backend's PASS_RULES). `default` is the starting value of a new trainer.
+ * Spacing is X, the days from one attempt to the next reminder. Max passes is T, the Passes that complete the trainer.
+ */
+export const CLASSIC_SPACING_DAYS = { min: 2, max: 30, default: 2 } as const;
+export const CLASSIC_MAX_REPEAT = { min: 3, max: 20, default: 6 } as const;
 /** The backend limit of a trainer name when starting a new cycle. */
 const MAX_TRAINER_NAME_LENGTH = 200;
 
@@ -82,10 +88,29 @@ export function suggestNewPerDay(cardCount: number, endsAtInput: string, now: Da
 type TrainerFormSchemaOptions = {
   /** The deadline the trainer already has. Keeping it as it is must stay valid even after it has passed. */
   originalEndsAt?: string;
+  /** Passes the trainer already has. Classic max passes (T) cannot go below it. 0 for a new trainer. */
+  earnedPasses?: number;
   now?: Date;
 };
 
-export function createTrainerFormSchema({ originalEndsAt = '', now = new Date() }: TrainerFormSchemaOptions = {}) {
+type IssueAdder = (path: string, message: string) => void;
+
+function isWholeNumberInRange(value: number, range: { min: number; max: number }): boolean {
+  return Number.isInteger(value) && value >= range.min && value <= range.max;
+}
+
+function checkClassicReminders(value: { reminderSpacingDays: number; reminderMaxRepeat: number }, earnedPasses: number, issue: IssueAdder): void {
+  if (!isWholeNumberInRange(value.reminderSpacingDays, CLASSIC_SPACING_DAYS)) {
+    issue('reminderSpacingDays', 'validation.spacingOutOfRange');
+  }
+  if (!isWholeNumberInRange(value.reminderMaxRepeat, CLASSIC_MAX_REPEAT)) {
+    issue('reminderMaxRepeat', 'validation.maxRepeatOutOfRange');
+  } else if (value.reminderMaxRepeat < earnedPasses) {
+    issue('reminderMaxRepeat', 'validation.maxRepeatBelowEarned');
+  }
+}
+
+export function createTrainerFormSchema({ originalEndsAt = '', earnedPasses = 0, now = new Date() }: TrainerFormSchemaOptions = {}) {
   const today = toDateInput(now);
 
   return z
@@ -96,6 +121,10 @@ export function createTrainerFormSchema({ originalEndsAt = '', now = new Date() 
       setCountTime: z.number().min(1, 'validation.timeTooShort'),
       reminderDisabled: z.boolean(),
       vocabAssignmentIds: z.array(z.string()).min(1, 'validation.vocabularyRequired'),
+      /** Classic only: days from one attempt to the next reminder (X). */
+      reminderSpacingDays: z.number(),
+      /** Classic only: Passes that complete the trainer (T). */
+      reminderMaxRepeat: z.number(),
       fsrsDirections: z.array(z.enum(EFsrsDirection)),
       fsrsDesiredRetention: z.number(),
       fsrsMaximumInterval: z.number(),
@@ -105,10 +134,15 @@ export function createTrainerFormSchema({ originalEndsAt = '', now = new Date() 
       fsrsEndsAt: z.string(),
     })
     .superRefine((value, ctx) => {
+      const issue: IssueAdder = (path, message) => ctx.addIssue({ code: 'custom', path: [path], message });
+
+      if (value.mode === ETrainerMode.CLASSIC) {
+        checkClassicReminders(value, earnedPasses, issue);
+        return;
+      }
       if (value.mode !== ETrainerMode.FSRS) {
         return;
       }
-      const issue = (path: string, message: string) => ctx.addIssue({ code: 'custom', path: [path], message });
 
       if (!isFsrsQuestionType(value.questionType)) {
         issue('questionType', 'validation.questionTypeNotFsrs');

@@ -16,6 +16,8 @@
     "updateVocabulary": "Failed to update vocabulary",
     "updateVocabularies": "Failed to update vocabularies",
     "updateVocabTrainer": "Failed to update vocab trainer",
+    "answerReminderPrompt": "Failed to answer the reminder question",
+    "reloadVocabTrainer": "Failed to load the vocab trainer",
     "updateTextTarget": "Failed to update text target",
     "updateSubject": "Failed to update subject",
     "updateSpacedRepetitionSettings": "Failed to update spaced repetition settings",
@@ -133,6 +135,9 @@
     "trainerNameTooLong": "Use at most 200 characters",
     "retentionOutOfRange": "Retention must be between 70% and 97%",
     "maximumIntervalOutOfRange": "Enter a whole number of days from 1 to 36500",
+    "spacingOutOfRange": "Enter a whole number of days from 2 to 30",
+    "maxRepeatOutOfRange": "Enter a whole number of passes from 3 to 20",
+    "maxRepeatBelowEarned": "Max passes cannot be below the passes already earned",
     "checkValues": "Check the values and try again",
     "invalidForm": "Invalid form data",
     "newPasswordRequired": "New password is required",
@@ -1444,7 +1449,13 @@
       "timeLimit": "Time Limit",
       "timeLimitAria": "Time limit",
       "minutes": "{count, plural, one {# minute} other {# minutes}}",
-      "cardSummary": "{count, plural, one {# word} other {# words}} · <strong>{time}</strong> time limit"
+      "cardSummary": "{count, plural, one {# word} other {# words}} · <strong>{time}</strong> time limit",
+      "reminderTitle": "Reminder schedule",
+      "spacingLabel": "Days between reminders",
+      "spacingHint": "Days from one attempt to the next reminder: {min} to {max}.",
+      "maxRepeatLabel": "Max passes",
+      "maxRepeatHint": "Passes that complete the test: {min} to {max}.",
+      "earnedFloor": "Max passes cannot go below the passes already earned: {count}."
     },
     "fsrs": {
       "rating": {
@@ -1669,6 +1680,16 @@
       "failed": "Evaluation failed",
       "timeout": "This is taking longer than expected. Your answers are saved: check again in a moment.",
       "checkAgain": "Check again"
+    },
+    "prompt": {
+      "openButton": "Reminder question",
+      "title": "Keep reminders on?",
+      "description": "{name}: you failed the last {count} attempts in a row. Yes keeps reminders on and resets the count. No turns reminders off.",
+      "yes": "Yes, keep reminders on",
+      "no": "No, turn reminders off",
+      "toastOn": "Reminders stay on.",
+      "toastOff": "Reminders are turned off.",
+      "saveFailed": "Could not save your answer. Try again."
     }
   },
   "connectAi": {

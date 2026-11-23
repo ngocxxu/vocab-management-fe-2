@@ -58,6 +58,7 @@ import type {
   TFsrsReviewStats,
   TFsrsReviewSummary,
   TUpdateFsrsSettings,
+  TUpdateVocabTrainer,
   TVocabTrainer,
 } from '@/types/vocab-trainer';
 import type { TWordTypeResponse } from '@/types/word-type';
@@ -436,7 +437,7 @@ export const vocabTrainerApi = {
     const config = API_METHODS.vocabTrainers.create(trainerData);
     return serverApi.post<TVocabTrainer>(config.endpoint, config.data);
   },
-  update: (id: string, trainerData: Partial<TCreateVocabTrainer>) => {
+  update: (id: string, trainerData: TUpdateVocabTrainer) => {
     if (!id || typeof id !== 'string') {
       throw new Error('Trainer ID is required');
     }
@@ -445,6 +446,11 @@ export const vocabTrainerApi = {
     }
     const config = API_METHODS.vocabTrainers.update(id, trainerData);
     return serverApi.put<TVocabTrainer>(config.endpoint, config.data);
+  },
+  /** Answers the reminder question. With no question pending the backend returns the trainer unchanged. */
+  answerReminderPrompt: (id: string, continueReminders: boolean) => {
+    const config = API_METHODS.vocabTrainers.answerReminderPrompt(id, continueReminders);
+    return serverApi.patch<TVocabTrainer>(config.endpoint, config.data);
   },
   delete: (id: string) => {
     if (!id || typeof id !== 'string') {
