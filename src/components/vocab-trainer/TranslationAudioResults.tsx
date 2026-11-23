@@ -45,15 +45,17 @@ const TranslationAudioResults: React.FC<TranslationAudioResultsProps> = ({
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="rounded-xl border border-border bg-muted p-4 text-center">
-                <div className="mb-2 flex items-center justify-center gap-2 text-muted-foreground">
-                  <ClockCircle size={20} weight="BoldDuotone" />
-                  <span className="text-sm font-medium">{t('timeTaken')}</span>
+              {timeElapsed !== undefined && (
+                <div className="rounded-xl border border-border bg-muted p-4 text-center">
+                  <div className="mb-2 flex items-center justify-center gap-2 text-muted-foreground">
+                    <ClockCircle size={20} weight="BoldDuotone" />
+                    <span className="text-sm font-medium">{t('timeTaken')}</span>
+                  </div>
+                  <p className="font-mono text-2xl font-bold text-foreground">
+                    {formatTime(timeElapsed)}
+                  </p>
                 </div>
-                <p className="font-mono text-2xl font-bold text-foreground">
-                  {formatTime(timeElapsed)}
-                </p>
-              </div>
+              )}
 
               <div className="flex justify-center pt-4">
                 <Button

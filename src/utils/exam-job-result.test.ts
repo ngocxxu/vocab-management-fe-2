@@ -16,8 +16,14 @@ describe('applyExamJobProgress', () => {
     expect(state.phase).toBe('loading');
   });
 
-  it('keeps waiting when the server no longer knows the job', () => {
-    expect(applyExamJobProgress(loading(), { status: 'unknown' }, hasResults).phase).toBe('loading');
+  it('shows the check-later phase at once when the server no longer knows the job', () => {
+    expect(applyExamJobProgress(loading(), { status: 'unknown' }, hasResults)).toEqual({ phase: 'timeout' });
+  });
+
+  it('keeps a completed result when a late unknown status arrives', () => {
+    const completed = applyExamJobProgress(loading(), { status: 'completed', data: { results: [{ status: 'PASSED' }] } }, hasResults);
+
+    expect(applyExamJobProgress(completed, { status: 'unknown' }, hasResults)).toBe(completed);
   });
 
   it('completes with the data when the job completed', () => {
@@ -56,6 +62,13 @@ describe('applyExamJobProgress', () => {
     expect(after).toBe(failed);
   });
 
+  it('never moves a failed job back to waiting by itself', () => {
+    const failed = applyExamJobProgress(loading(), { status: 'failed', error: 'x' }, hasResults);
+
+    expect(applyExamJobProgress(failed, { status: 'evaluating' }, hasResults)).toBe(failed);
+    expect(applyExamJobProgress(failed, { status: 'unknown' }, hasResults)).toBe(failed);
+  });
+
   it('still accepts the result when it arrives after the timeout', () => {
     const timedOut = timeoutExamJob(loading());
 
@@ -82,9 +95,15 @@ describe('retryExamJob', () => {
     expect(retryExamJob(timeoutExamJob(loading())).phase).toBe('loading');
   });
 
-  it('does not reopen a failed job', () => {
-    const failed = applyExamJobProgress(loading(), { status: 'failed' }, hasResults);
+  it('goes back to waiting when the user retries a failed job', () => {
+    const failed = applyExamJobProgress(loading(), { status: 'failed', error: 'x' }, hasResults);
 
-    expect(retryExamJob(failed)).toBe(failed);
+    expect(retryExamJob(failed)).toEqual({ phase: 'loading' });
+  });
+
+  it('does not reopen a completed job', () => {
+    const completed = applyExamJobProgress(loading(), { status: 'completed', data: { results: [{ status: 'PASSED' }] } }, hasResults);
+
+    expect(retryExamJob(completed)).toBe(completed);
   });
 });

@@ -11,7 +11,8 @@ import {
   SquareAcademicCap,
 } from '@solar-icons/react/ssr';
 import { CircleFill } from '@/components/ui/circle-fill';
-import { ENotificationReminderKind } from '@/types/notification';
+import { getFillInBlankResultUrl, getTranslationAudioResultUrl } from '@/constants/vocab-trainer';
+import { ENotificationExamKind, ENotificationReminderKind } from '@/types/notification';
 import { startOfDay } from '@/utils/date';
 
 type TReminderTarget
@@ -31,6 +32,27 @@ export function getReminderTarget(data: TNotificationData | undefined): TReminde
 
   const questionType = typeof data?.questionType === 'string' ? data.questionType as EQuestionType : undefined;
   return questionType ? { trainerId, isFsrs: false, questionType } : null;
+}
+
+/**
+ * Where an AI grading bell leads: the saved result page of its exam. Both kinds open it, because a failed grading
+ * shows its Chấm lại button there. Null when the data is not an exam bell or lacks what the route needs.
+ */
+export function getExamBellResultUrl(data: TNotificationData | undefined): string | null {
+  const isExamBell = data?.kind === ENotificationExamKind.GRADED || data?.kind === ENotificationExamKind.GRADING_FAILED;
+  const trainerId = typeof data?.trainerId === 'string' ? data.trainerId : undefined;
+  if (!isExamBell || !trainerId) {
+    return null;
+  }
+  // The BE sends the exam type in its own lowercase form, which is not the FE EQuestionType enum value.
+  if (data?.examType === 'fill-in-blank') {
+    return getFillInBlankResultUrl(trainerId);
+  }
+  if (data?.examType === 'translation-audio') {
+    return getTranslationAudioResultUrl(trainerId);
+  }
+
+  return null;
 }
 
 /** Translator for the `notifications` namespace. Kept as a plain type so these helpers stay hook-free. */
@@ -67,6 +89,13 @@ export const formatNotificationMessage = (notification: TNotification, t: TNotif
       }
 
     case 'VOCAB_TRAINER':
+      // AI grading bells are CREATE rows too: their kind decides the copy, not the action (#17).
+      if (data?.kind === ENotificationExamKind.GRADED) {
+        return t('message.examGraded', { name: trainerName });
+      }
+      if (data?.kind === ENotificationExamKind.GRADING_FAILED) {
+        return t('message.examGradingFailed', { name: trainerName });
+      }
       switch (action) {
         case 'CREATE':
           return t('message.trainerComplete', { name: trainerName });

@@ -27,6 +27,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/shared/ui/tooltip';
 import FillInBlankCard from './FillInBlankCard';
 import VocabExamHeader from './VocabExamHeader';
 
+const MAX_QUESTION_CONTENT_LENGTH = 500;
+
 const FillInBlankExam: React.FC<FillInBlankExamProps> = ({ trainerId, examData }) => {
   const t = useTranslations();
   const router = useRouter();
@@ -82,6 +84,7 @@ const FillInBlankExam: React.FC<FillInBlankExamProps> = ({ trainerId, examData }
         return {
           userAnswer,
           systemAnswer: question.correctAnswer,
+          content: question.content.trim().slice(0, MAX_QUESTION_CONTENT_LENGTH),
         };
       });
 
@@ -113,7 +116,8 @@ const FillInBlankExam: React.FC<FillInBlankExamProps> = ({ trainerId, examData }
       }
 
       if (jobId) {
-        const resultData = { jobId, timeElapsed, questions, answers: Array.from(currentAnswers.entries()) };
+        // Only the job pointer. The result, the question text and the answers come from the backend by trainer id.
+        const resultData = { jobId, timeElapsed };
         const storageKey = `fill_in_blank_result_${trainerId}`;
         localStorage.setItem(storageKey, JSON.stringify(resultData));
         markExamCooldownNow();

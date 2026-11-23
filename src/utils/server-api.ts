@@ -60,6 +60,7 @@ import type {
   TUpdateFsrsSettings,
   TUpdateVocabTrainer,
   TVocabTrainer,
+  TVocabTrainerRegrade,
 } from '@/types/vocab-trainer';
 import type { TWordTypeResponse } from '@/types/word-type';
 import { Env } from '@/libs/Env';
@@ -489,6 +490,10 @@ export const vocabTrainerApi = {
   deleteBulk: (ids: string[]) => {
     const config = API_METHODS.vocabTrainers.deleteBulk(ids);
     return serverApi.post(config.endpoint, config.data);
+  },
+  regradeExam: (id: string) => {
+    const config = API_METHODS.vocabTrainers.regradeExam(id);
+    return serverApi.post<TVocabTrainerRegrade>(config.endpoint, {});
   },
   clone: (id: string, data: TCloneVocabTrainer) => {
     const config = API_METHODS.vocabTrainers.clone(id, data);

@@ -16,6 +16,7 @@ import type {
   TUpdateFsrsSettings,
   TUpdateVocabTrainer,
   TVocabTrainer,
+  TVocabTrainerRegrade,
 } from '@/types/vocab-trainer';
 import { revalidatePath } from 'next/cache';
 import { BackendRequestError, isBackendNotFound } from '@/utils/backend-request-error';
@@ -73,7 +74,20 @@ export async function reloadVocabTrainer(id: string): Promise<TTrainerReload> {
   }
 }
 
-/** Answers the reminder question. `true` keeps reminders on and resets the fail streak; `false` turns them off. */
+/** Regrades the latest submit whose grading failed. Returns the trainer and the id of the regrade job to wait for. */
+export async function regradeVocabTrainerExam(id: string): Promise<TVocabTrainerRegrade> {
+  assertTrainerId(id);
+
+  try {
+    const result = await vocabTrainerApi.regradeExam(id);
+    revalidatePath('/vocab-trainer');
+    return result;
+  } catch (error) {
+    throw await toActionError(error, 'regradeVocabTrainerExam');
+  }
+}
+
+/** Answers the reminder question.`true` keeps reminders on and resets the fail streak; `false` turns them off. */
 export async function answerReminderPrompt(id: string, continueReminders: boolean): Promise<TVocabTrainer> {
   assertTrainerId(id);
   if (typeof continueReminders !== 'boolean') {

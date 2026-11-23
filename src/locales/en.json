@@ -1174,6 +1174,8 @@
       "vocabRemind": "Reminder: Review vocabulary \"{name}\"",
       "vocabFallback": "Vocabulary \"{name}\" {action}",
       "trainerComplete": "Trainer \"{name}\" has been completed",
+      "examGraded": "Result ready for \"{name}\"",
+      "examGradingFailed": "Grading failed for \"{name}\". Tap to try again.",
       "trainerUpdate": "Trainer \"{name}\" has been updated",
       "trainerDelete": "Trainer \"{name}\" has been deleted",
       "trainerRemind": "Reminder: Complete trainer \"{name}\"",
@@ -1423,6 +1425,7 @@
       "correct": "Correct",
       "incorrect": "Incorrect",
       "notAnswered": "Not answered",
+      "questionTextMissing": "Question text was not saved for this result.",
       "yourAnswer": "Your answer",
       "correctAnswer": "Correct answer",
       "aiExplanation": "AI Explanation",
@@ -1678,8 +1681,19 @@
       "audioTitle": "Evaluating your translation...",
       "wait": "This may take a few moments. Please wait.",
       "failed": "Evaluation failed",
-      "timeout": "This is taking longer than expected. Your answers are saved: check again in a moment.",
+      "timeout": "Still grading. Check the list again in a few minutes.",
+      "noResult": "No graded result for this exam yet.",
       "checkAgain": "Check again"
+    },
+    "regrade": {
+      "button": "Regrade",
+      "busy": "Sending request...",
+      "remaining": "{count} regrades left.",
+      "exhausted": "No regrades left for this submit. Take the exam again to get a new result.",
+      "started": "Regrade started.",
+      "error": "Could not regrade now. Try again later.",
+      "badge": "Grading failed",
+      "preview": "View result"
     },
     "prompt": {
       "openButton": "Reminder question",

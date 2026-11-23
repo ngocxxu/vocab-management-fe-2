@@ -33,6 +33,7 @@ import ExamLauncher from './ExamLauncher';
 import FsrsTrainerActions from './FsrsTrainerActions';
 import FsrsTrainerStatus from './FsrsTrainerStatus';
 import ReminderPromptDialog from './ReminderPromptDialog';
+import TrainerResultActions from './TrainerResultActions';
 import VocabTrainerHeader from './VocabTrainerHeader';
 
 type FormData = TTrainerFormData;
@@ -489,6 +490,7 @@ const VocabTrainerList: React.FC<VocabTrainerListProps> = ({ initialData, initia
           {_row.original.mode === ETrainerMode.FSRS
             ? <FsrsTrainerActions trainer={_row.original} onExtend={handleEdit} onStartNewCycle={setCloneTarget} />
             : <ExamLauncher trainerId={_row.original.id} questionType={_row.original.questionType} />}
+          <TrainerResultActions trainer={_row.original} />
           <Button
             variant="ghost"
             size="icon"

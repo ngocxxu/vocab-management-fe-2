@@ -35,7 +35,8 @@ type TUseExamJobResultOptions<TData> = {
  * Waits for the result of a grading job and never waits forever.
  * The result can come from the socket event, from the local cache (the event may have landed before this page
  * listened) or from polling the job status (the socket may be down). After EXAM_JOB_TIMEOUT_MS the phase is
- * `timeout`; `retry()` waits again without re-submitting the exam.
+ * `timeout`; an `unknown` job shows `timeout` at once. `retry()` waits again without re-submitting the exam. After a
+ * failure, pass the regrade's new `jobId` first: `retry()` on the failed job would read the same failure again.
  */
 export const useExamJobResult = <TData>({ trainerId, jobId, socketEvent, isValid, readCached, writeCached }: TUseExamJobResultOptions<TData>) => {
   const { socket } = useSocket();

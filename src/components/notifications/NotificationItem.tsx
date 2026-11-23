@@ -16,6 +16,7 @@ import {
   formatNotificationListDate,
   formatNotificationMessage,
   formatTimeAgo,
+  getExamBellResultUrl,
   getNotificationIcon,
   getNotificationIconBg,
   getReminderTarget,
@@ -45,6 +46,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
   const isVocabTrainerRemind = notification.type === ENotificationType.VOCAB_TRAINER && notification.action === ENotificationAction.REMIND;
   const isFsrsReminder = notification.data?.kind === ENotificationReminderKind.FSRS_DUE;
   const reminderTarget = isVocabTrainerRemind ? getReminderTarget(notification.data) : null;
+  const examResultUrl = getExamBellResultUrl(notification.data);
 
   const handleMarkAsRead = async () => {
     if (!isRead && onMarkAsRead) {
@@ -59,9 +61,18 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
     }
   };
 
+  const handleOpenExamResult = async (url: string) => {
+    await handleMarkAsRead();
+    router.push(url);
+  };
+
   // A Reminder with unusable data stays unread, whether opened by the row or by its button.
   const handleRowClick = () => {
     if (isVocabTrainerRemind && !reminderTarget) {
+      return;
+    }
+    if (examResultUrl) {
+      void handleOpenExamResult(examResultUrl);
       return;
     }
     void handleMarkAsRead();
