@@ -351,12 +351,13 @@ const VocabSelectionForm: React.FC<VocabSelectionFormProps> = ({
           <FormItem>
             <FormLabel className="sr-only">{t('vocabularies')}</FormLabel>
             <FormControl>
+              {/* The table's own search is hidden and the filter input above drives the query. Do not pass searchValue or
+                  onSearchChangeAction here: the table would re-send its stale debounced value on every keystroke and clear
+                  the filter input. */}
               <DataTable<TVocab, unknown>
                 columns={columns}
                 data={data}
                 searchPlaceholder={t('searchPlaceholder')}
-                searchValue={filters.globalFilter}
-                onSearchChangeAction={value => handleFilterChange('globalFilter', value)}
                 showSearch={false}
                 showPagination={true}
                 pageSize={pagination.pageSize}
