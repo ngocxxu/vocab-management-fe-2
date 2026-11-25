@@ -24,6 +24,21 @@ export function getQuestionTypeLabelKey(questionType: EQuestionType): string | u
 
 export const getReviewUrl = (trainerId: string): string => `/vocab-trainer/${trainerId}/review`;
 
+export const getTranslationAudioResultUrl = (trainerId: string): string => `/vocab-trainer/${trainerId}/exam/translation-audio/result`;
+
+export const getFillInBlankResultUrl = (trainerId: string): string => `/vocab-trainer/${trainerId}/exam/fill-in-blank/result`;
+
+/** The page that shows a saved, AI-graded result for this question type. Null when the type has no saved-result page. */
+export const getStoredResultUrl = (trainerId: string, questionType: EQuestionType): string | null => {
+  if (questionType === EQuestionType.TRANSLATION_AUDIO) {
+    return getTranslationAudioResultUrl(trainerId);
+  }
+  if (questionType === EQuestionType.FILL_IN_THE_BLANK) {
+    return getFillInBlankResultUrl(trainerId);
+  }
+  return null;
+};
+
 export const getExamUrl = (trainerId: string, questionType: EQuestionType): string => {
   if (questionType === EQuestionType.FLIP_CARD) {
     return `/vocab-trainer/${trainerId}/exam/flip-card`;

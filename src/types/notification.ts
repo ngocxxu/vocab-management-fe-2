@@ -16,6 +16,12 @@ export enum ENotificationReminderKind {
   FSRS_DUE = 'FSRS_DUE',
 }
 
+/** Bell from an AI grading finish. Matches the `kind` the BE puts in `data` (#17). */
+export enum ENotificationExamKind {
+  GRADED = 'EXAM_GRADED',
+  GRADING_FAILED = 'EXAM_GRADING_FAILED',
+}
+
 export type NotificationType = ENotificationType;
 
 export enum ENotificationAction {

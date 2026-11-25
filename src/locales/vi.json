@@ -1174,6 +1174,8 @@
       "vocabRemind": "Nhắc nhở: Ôn từ vựng \"{name}\"",
       "vocabFallback": "Từ vựng \"{name}\" {action}",
       "trainerComplete": "Bộ luyện tập \"{name}\" đã hoàn thành",
+      "examGraded": "Kết quả bài \"{name}\" đã có",
+      "examGradingFailed": "Chấm bài \"{name}\" bị lỗi. Chạm để chấm lại.",
       "trainerUpdate": "Bộ luyện tập \"{name}\" đã được cập nhật",
       "trainerDelete": "Bộ luyện tập \"{name}\" đã bị xóa",
       "trainerRemind": "Nhắc nhở: Hoàn thành bộ luyện tập \"{name}\"",
@@ -1423,6 +1425,7 @@
       "correct": "Đúng",
       "incorrect": "Sai",
       "notAnswered": "Chưa trả lời",
+      "questionTextMissing": "Không lưu nội dung câu hỏi cho kết quả này.",
       "yourAnswer": "Đáp án của bạn",
       "correctAnswer": "Đáp án đúng",
       "aiExplanation": "Giải thích từ AI",
@@ -1678,8 +1681,19 @@
       "audioTitle": "Đang chấm bản dịch của bạn...",
       "wait": "Việc này có thể mất vài giây. Vui lòng chờ.",
       "failed": "Chấm bài thất bại",
-      "timeout": "Việc này lâu hơn dự kiến. Câu trả lời của bạn đã được lưu: hãy kiểm tra lại sau giây lát.",
+      "timeout": "Đang chấm, xem lại trong danh sách sau ít phút.",
+      "noResult": "Chưa có kết quả chấm cho bài này.",
       "checkAgain": "Kiểm tra lại"
+    },
+    "regrade": {
+      "button": "Chấm lại",
+      "busy": "Đang gửi yêu cầu...",
+      "remaining": "Còn {count} lượt chấm lại.",
+      "exhausted": "Đã hết lượt chấm lại cho bài làm này. Hãy làm lại bài để có kết quả mới.",
+      "started": "Đã bắt đầu chấm lại.",
+      "error": "Không thể chấm lại lúc này. Thử lại sau.",
+      "badge": "Chấm lỗi",
+      "preview": "Xem kết quả"
     },
     "prompt": {
       "openButton": "Câu hỏi nhắc nhở",

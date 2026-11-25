@@ -14,17 +14,21 @@ const ExamErrorState: React.FC<ExamErrorStateProps> = ({
   fallbackMessage,
   onRetry,
   retryLabel,
+  retryDisabled = false,
+  hint,
+  tone = 'error',
 }) => {
   const t = useTranslations('shared');
   const errorMessage = error || fallbackMessage || t('examErrorFallback');
   const content = (
     <>
-      <Alert variant="destructive">
+      <Alert variant={tone === 'error' ? 'destructive' : 'default'}>
         <AlertDescription>{errorMessage}</AlertDescription>
       </Alert>
+      {hint && <p className="text-center text-sm text-muted-foreground">{hint}</p>}
       <div className="flex justify-center gap-3">
         {onRetry && (
-          <Button onClick={onRetry}>
+          <Button onClick={onRetry} disabled={retryDisabled}>
             {retryLabel}
           </Button>
         )}

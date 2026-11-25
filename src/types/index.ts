@@ -157,6 +157,12 @@ export type ExamErrorStateProps = {
   /** Shown as a primary action next to the back button, for errors that checking again can fix. */
   onRetry?: () => void;
   retryLabel?: string;
+  /** Disables the retry action, e.g. while a regrade is being sent. */
+  retryDisabled?: boolean;
+  /** Extra line under the message, e.g. how many regrades are left. */
+  hint?: string;
+  /** `info` is for a wait that is not a failure, so it is not shown in red. */
+  tone?: 'error' | 'info';
 };
 
 export type SocketContextType = {

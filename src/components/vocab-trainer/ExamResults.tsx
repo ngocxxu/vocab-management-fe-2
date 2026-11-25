@@ -89,7 +89,7 @@ const ExamResults: React.FC<ExamResultsProps> = ({
   const accuracyPercentage = scorePercentage;
   const scoreStrokeDashoffset = CIRCLE_CIRCUMFERENCE * (1 - scorePercentage / 100);
   const scorePassed = scorePercentage >= PASS_TARGET_PERCENT;
-  const avgPerQuestionText = formatAvgPerQuestion(timeElapsed, totalQuestions, t);
+  const avgPerQuestionText = timeElapsed === null ? t('trainer.results.avgNone') : formatAvgPerQuestion(timeElapsed, totalQuestions, t);
 
   return (
     <div className="min-h-screen bg-background">
@@ -261,7 +261,7 @@ const ExamResults: React.FC<ExamResultsProps> = ({
                 </div>
               </div>
               <p className="text-4xl font-bold text-foreground">
-                {formatDurationColon(timeElapsed)}
+                {timeElapsed === null ? '—' : formatDurationColon(timeElapsed)}
               </p>
               <p className="mt-1 text-sm text-muted-foreground italic">
                 {t('trainer.results.efficiency')}
@@ -294,11 +294,14 @@ const ExamResults: React.FC<ExamResultsProps> = ({
                 : (selectedAnswers.get(index)?.trim() === question.correctAnswer);
               const explanation = result?.data?.explanation;
               const correctAnswer = result?.systemSelected?.trim() || question?.correctAnswer?.trim() || '—';
-              const questionContent = parseContentWithQuotedHighlight(question.content);
+              // No stored text (old rows): say so. Never show a guessed question.
+              const questionContent = question.content
+                ? parseContentWithQuotedHighlight(question.content)
+                : <span className="font-normal text-muted-foreground italic">{t('trainer.results.questionTextMissing')}</span>;
 
               return (
                 <Card
-                  key={question.id ?? `q-${question.content.slice(0, 50)}`}
+                  key={question.id ?? `q-${index}`}
                   className="border border-border bg-card"
                 >
                   <CardContent className="space-y-4 p-5">

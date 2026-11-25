@@ -39,9 +39,20 @@ export type TVocabTrainer = {
   fsrsEndsAt: string | null;
   /** Only on the response of create/update: words that got no card because they have no translation yet. */
   fsrsSkippedVocabIds?: string[];
+  /** Time of the latest AI-graded submit; null when there is none. Set by the backend on list and detail reads. */
+  lastSubmittedAt?: string | null;
+  /** Grading state of the latest AI-graded submit. Only `grading_failed` can be regraded. */
+  gradingStatus?: TGradingStatus | null;
+  /** Regrades the latest submit has used (0 to 2). */
+  regradeCount?: number;
   updatedAt: string;
   createdAt: string;
 };
+
+export type TGradingStatus = 'grading' | 'graded' | 'grading_failed';
+
+/** Response of the regrade route: the trainer, and the id of the regrade job to wait for. */
+export type TVocabTrainerRegrade = TVocabTrainer & { jobId?: string };
 
 export type TVocabAssignment = {
   id: string;
@@ -56,6 +67,13 @@ export type TWordResults = {
   status: string;
   userSelected: string;
   systemSelected: string;
+  /**
+   * Stored with the result: an explanation (fill-in-blank) or the transcript and report (translation audio).
+   * Fill-in-blank also stores `content`, the question text. It is null (or missing) on rows graded before it was stored.
+   */
+  data?: { explanation?: string; transcript?: string; markdownReport?: string; content?: string | null } | null;
+  /** When the backend wrote the result (the grading time). */
+  createdAt?: string;
 };
 
 export type TQuestion = {
@@ -74,7 +92,7 @@ export type TFormInputsVocabTrainer = {
 
 export type TWordTestSelect = { systemSelected: string; userSelected: string };
 
-export type TWordTestInput = { userAnswer: string; systemAnswer: string };
+export type TWordTestInput = { userAnswer: string; systemAnswer: string; content?: string };
 
 export type TFormTestVocabTrainer = {
   id: string;
@@ -285,7 +303,8 @@ export type TranslationAudioResultsProps = {
   trainerId: string;
   transcript?: string;
   markdownReport?: string;
-  timeElapsed: number;
+  /** Only known while the result comes from this session's job. Stored results do not keep it. */
+  timeElapsed?: number;
   onBackToTrainers: () => void;
 };
 
@@ -324,12 +343,16 @@ export type VocabExamHeaderProps = {
   level?: string;
 };
 
+/** A question as the results view reads it. `content` is null when no question text was stored for it (fill-in-blank rows graded before #17). */
+export type TExamResultsQuestion = Pick<TQuestion, 'id' | 'correctAnswer'> & { content: string | null };
+
 export type ExamResultsProps = {
   trainerId: string;
   results: TExamSubmitResponse;
-  questions: TQuestion[];
+  questions: TExamResultsQuestion[];
   selectedAnswers: Map<number, string>;
-  timeElapsed: number;
+  /** Seconds the exam took. Null when it is not known (a saved result): the duration shows a dash. */
+  timeElapsed: number | null;
   onBackToTrainers: () => void;
   jobId?: string;
   completedAt?: string | Date;

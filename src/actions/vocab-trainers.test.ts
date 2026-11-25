@@ -1,12 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { TVocabTrainer } from '@/types/vocab-trainer';
 import { BackendRequestError } from '@/utils/backend-request-error';
-import { answerReminderPrompt, reloadVocabTrainer, submitReviewAnswer } from './vocab-trainers';
+import { answerReminderPrompt, regradeVocabTrainerExam, reloadVocabTrainer, submitReviewAnswer } from './vocab-trainers';
 
-const { submitReviewAnswerApi, getTrainerApi, answerReminderPromptApi } = vi.hoisted(() => ({
+const { submitReviewAnswerApi, getTrainerApi, answerReminderPromptApi, regradeExamApi } = vi.hoisted(() => ({
   submitReviewAnswerApi: vi.fn(),
   getTrainerApi: vi.fn(),
   answerReminderPromptApi: vi.fn(),
+  regradeExamApi: vi.fn(),
 }));
 
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }));
@@ -16,8 +17,30 @@ vi.mock('@/utils/server-api', () => ({
     submitReviewAnswer: submitReviewAnswerApi,
     getById: getTrainerApi,
     answerReminderPrompt: answerReminderPromptApi,
+    regradeExam: regradeExamApi,
   },
 }));
+
+describe('regradeVocabTrainerExam', () => {
+  beforeEach(() => {
+    regradeExamApi.mockReset();
+  });
+
+  it('returns the trainer and the regrade job id to wait for', async () => {
+    regradeExamApi.mockResolvedValue({ id: 'trainer-1', regradeCount: 1, jobId: 'job-2' });
+
+    const result = await regradeVocabTrainerExam('trainer-1');
+
+    expect(regradeExamApi).toHaveBeenCalledWith('trainer-1');
+    expect(result.jobId).toBe('job-2');
+    expect(result.regradeCount).toBe(1);
+  });
+
+  it('rejects an empty trainer id without calling the backend', async () => {
+    await expect(regradeVocabTrainerExam('')).rejects.toThrow();
+    expect(regradeExamApi).not.toHaveBeenCalled();
+  });
+});
 
 const answer = { cardId: 'card-1', answerId: 'answer-1', rating: 'GOOD', questionType: 'FLIP_CARD' } as const;
 const errorBody = (statusCode: number, message: string | string[]) => ({
