@@ -4,6 +4,7 @@ import en from '@/locales/en.json';
 import vi from '@/locales/vi.json';
 import { describe, expect, it } from 'vitest';
 import { QUESTION_TYPE_OPTIONS } from '@/constants/vocab-trainer';
+import { TOGGLEABLE_COLUMNS } from '@/constants/vocab-list';
 import { FSRS_MAX_INTERVAL_DAYS } from '@/libs/validations/vocab-trainer';
 import { SRS_MAX_RETENTION, SRS_MIN_RETENTION } from '@/libs/validations/srs-settings';
 import { isLocale } from './config';
@@ -75,6 +76,15 @@ describe('constant label keys', () => {
       const key = option.labelKey.replace(/^questionTypes\./, '');
       expect(en.questionTypes, `en missing ${key}`).toHaveProperty(key);
       expect(vi.questionTypes, `vi missing ${key}`).toHaveProperty(key);
+    }
+  });
+});
+
+describe('column menu label keys', () => {
+  it('every column menu labelKey exists under vocabList in both locales', () => {
+    for (const column of TOGGLEABLE_COLUMNS) {
+      expect(en.vocabList, `en missing ${column.labelKey}`).toHaveProperty(column.labelKey);
+      expect(vi.vocabList, `vi missing ${column.labelKey}`).toHaveProperty(column.labelKey);
     }
   });
 });
