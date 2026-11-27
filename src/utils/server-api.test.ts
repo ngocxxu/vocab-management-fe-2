@@ -20,7 +20,7 @@ vi.mock('@/libs/refresh-lock', () => ({
 vi.mock('@/libs/Env', () => ({ Env: { NESTJS_API_URL: 'http://be.test' } }));
 vi.mock('@/libs/Logger', () => ({ logger: { debug: vi.fn(), error: vi.fn(), info: vi.fn() } }));
 
-const { languageFoldersApi } = await import('@/utils/server-api');
+const { languageFoldersApi, vocabApi } = await import('@/utils/server-api');
 
 const json = (status: number, body: unknown = {}) =>
   new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
@@ -96,5 +96,72 @@ describe('serverApi refresh on 401', () => {
     await languageFoldersApi.getMy();
 
     expect(getOrRefresh).not.toHaveBeenCalled();
+  });
+});
+
+describe('serverApi CSV import and export', () => {
+  const fetchMock = vi.fn();
+  const csvFile = new File(['word,meaning\napple,táo'], 'words.csv', { type: 'text/csv' });
+  const importParams = { languageFolderId: 'folder-1', sourceLanguageCode: 'en', targetLanguageCode: 'vi' };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.stubGlobal('fetch', fetchMock);
+    getAccessToken.mockResolvedValue('old-access');
+    getRefreshToken.mockResolvedValue('refresh');
+    getLocaleCookie.mockResolvedValue(undefined);
+    fetchMock.mockReset();
+    getOrRefresh.mockReset();
+  });
+
+  it('sends the file as multipart without forcing a JSON content type', async () => {
+    fetchMock.mockResolvedValueOnce(json(200, { created: 1, updated: 0, failed: 0, totalProcessed: 1 }));
+
+    await vocabApi.importCsv(csvFile, importParams);
+
+    const init = fetchMock.mock.calls[0]![1];
+    expect(init.body).toBeInstanceOf(FormData);
+    expect(init.headers).not.toHaveProperty('Content-Type');
+  });
+
+  it('refreshes once on 401 and retries the import with the same file', async () => {
+    const summary = { created: 1, updated: 0, failed: 0, totalProcessed: 1 };
+    fetchMock.mockResolvedValueOnce(json(401)).mockResolvedValueOnce(json(200, summary));
+    getOrRefresh.mockResolvedValue({ access_token: 'new-access', refresh_token: 'new-refresh' });
+
+    await expect(vocabApi.importCsv(csvFile, importParams)).resolves.toEqual(summary);
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock.mock.calls[1]![1].headers.Authorization).toBe('Bearer new-access');
+    expect(fetchMock.mock.calls[1]![1].body).toBe(fetchMock.mock.calls[0]![1].body);
+  });
+
+  it('rejects with the backend error body so the real reason can be shown', async () => {
+    const errorBody = {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'CSV header is missing',
+      timestamp: '2026-11-27T00:00:00.000Z',
+      path: '/api/v1/vocabs/import/csv',
+    };
+    fetchMock.mockResolvedValueOnce(json(400, errorBody));
+
+    await expect(vocabApi.importCsv(csvFile, importParams)).rejects.toMatchObject({
+      name: 'BackendRequestError',
+      statusCode: 400,
+      body: errorBody,
+    });
+  });
+
+  it('refreshes once on 401 when exporting the CSV', async () => {
+    fetchMock
+      .mockResolvedValueOnce(new Response('', { status: 401 }))
+      .mockResolvedValueOnce(new Response('word\napple\n', { status: 200, headers: { 'content-type': 'text/csv' } }));
+    getOrRefresh.mockResolvedValue({ access_token: 'new-access', refresh_token: 'new-refresh' });
+
+    const response = await vocabApi.exportCsv({ userId: 'user-1' });
+
+    expect(await response.text()).toBe('word\napple\n');
+    expect(fetchMock.mock.calls[1]![1].headers.Authorization).toBe('Bearer new-access');
   });
 });

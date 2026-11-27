@@ -40,6 +40,7 @@ import {
 } from '@/shared/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
+import { extractSubjectName, getVisibleDataEntries, isNothingSaved } from '../utils/import-result';
 
 const FormSchema = z.object({
   file: z.instanceof(File, { message: 'validation.fileRequired' }),
@@ -70,14 +71,6 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
       file: undefined,
     },
   });
-
-  const extractSubjectName = useCallback((error: string): string | null => {
-    const match = /Subject '([^']+)' not found/.exec(error);
-    if (match) {
-      return match[1] || null;
-    }
-    return null;
-  }, []);
 
   const handleCreateSubject = async (subjectName: string) => {
     if (creatingSubjects.has(subjectName) || createdSubjects.has(subjectName)) {
@@ -120,6 +113,8 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
   const onSubmit = async (data: FormData) => {
     setIsUploading(true);
     setImportResult(null);
+    setCreatingSubjects(new Set());
+    setCreatedSubjects(new Set());
 
     try {
       let fileToUpload = data.file;
@@ -140,6 +135,7 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
       if (result.failed === 0) {
         // Complete success
         toast.success(t('importSuccess', { created: result.created, updated: result.updated }));
+        setShowErrorDialog(false);
         onImportSuccess();
         startTransition(() => {
           router.refresh();
@@ -148,11 +144,11 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
         form.reset();
       } else if (result.created > 0 || result.updated > 0) {
         // Partial success
-        toast.warning(t('importPartial', { created: result.created, updated: result.updated, failed: result.failed }));
+        toast.warning(t('importPartial', { created: result.created, updated: result.updated, problems: result.failed }));
         setShowErrorDialog(true);
       } else {
-        // Complete failure
-        toast.error(t('importFailedRows', { failed: result.failed }));
+        // Nothing was saved: the user fixes the problems (for example, creates a missing subject) and imports again
+        toast.error(t('nothingImported'));
         setShowErrorDialog(true);
       }
     } catch (error: unknown) {
@@ -199,12 +195,10 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
     setCreatedSubjects(new Set());
   };
 
-  const handleRetry = () => {
-    setShowErrorDialog(false);
-    setImportResult(null);
-    setCreatingSubjects(new Set());
-    setCreatedSubjects(new Set());
-  };
+  // Submits the file still held in the form, so the user does not pick it again after fixing the problems.
+  const handleImportAgain = () => form.handleSubmit(onSubmit)();
+
+  const nothingSaved = importResult !== null && isNothingSaved(importResult);
 
   return (
     <>
@@ -277,7 +271,7 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
               {t('resultsTitle')}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              {t('resultsDescription')}
+              {nothingSaved ? t('nothingImported') : t('resultsDescription')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           {importResult && (
@@ -300,13 +294,13 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
                 <div className="flex items-center gap-2">
                   <DangerCircle size={16} weight="BoldDuotone" className="text-destructive" />
                   <span className="text-sm font-medium">
-                    {t('failedLabel')}
+                    {t('problemsLabel')}
                     {importResult.failed}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium">
-                    {t('totalLabel')}
+                    {t('rowsInFileLabel')}
                     {importResult.totalProcessed}
                   </span>
                 </div>
@@ -340,17 +334,17 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
 
                           return (
                             <tr key={`${error.row}-${index}`} className="border-b hover:bg-muted/20">
-                              <td className="px-4 py-2 font-medium">{error.row}</td>
+                              <td className="px-4 py-2 font-medium">{error.row > 0 ? error.row : '—'}</td>
                               <td className="px-4 py-2 break-words text-destructive">{error.error}</td>
                               <td className="px-4 py-2 break-words">
-                                {Object.entries(error.data).map(([key, value]) => (
+                                {getVisibleDataEntries(error.data).map(([key, value]) => (
                                   <div key={key} className="text-xs">
                                     <span className="font-medium">
                                       {key}
                                       :
                                     </span>
                                     {' '}
-                                    {String(value)}
+                                    {value}
                                   </div>
                                 ))}
                               </td>
@@ -397,7 +391,7 @@ const ImportVocabDialog: React.FC<ImportVocabDialogProps> = ({
             </div>
           )}
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={handleRetry}>{t('tryAgain')}</AlertDialogCancel>
+            <AlertDialogCancel onClick={handleImportAgain} disabled={isUploading || creatingSubjects.size > 0}>{t('importAgain')}</AlertDialogCancel>
             <AlertDialogAction onClick={handleClose}>{t('close')}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
