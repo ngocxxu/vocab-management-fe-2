@@ -44,7 +44,7 @@ import type {
 import type { TSrsSettings, TUpdateSrsSettings } from '@/types/srs-settings';
 import type { TSubjectResponse } from '@/types/subject';
 import type { TVocabConflictListResponse, TVocabTrainerConflict } from '@/types/vocab-conflict';
-import type { TBulkVocabUpdateItem, TCreateTextTarget, TCreateVocab, TTextTarget, TUpdateTextTarget, TVocab } from '@/types/vocab-list';
+import type { TBulkVocabUpdateItem, TCreateTextTarget, TCreateVocab, TCsvImportResponse, TTextTarget, TUpdateTextTarget, TVocab } from '@/types/vocab-list';
 import type { TSemanticSearchGroupedParams, TSemanticSearchParams, TVocabSearchGroup } from '@/types/vocab-search';
 import type {
   TCloneVocabTrainer,
@@ -77,10 +77,13 @@ class ServerAPI {
     const token = tokenOverride ?? await getAccessToken();
     const locale = await getLocaleCookie();
 
+    // fetch sets the multipart Content-Type, with its boundary, by itself. A JSON type would break the upload.
+    const isMultipart = options.body instanceof FormData;
+
     return fetch(`${this.baseURL}${endpoint}`, {
       ...options,
       headers: {
-        'Content-Type': 'application/json',
+        ...(isMultipart ? {} : { 'Content-Type': 'application/json' }),
         ...(locale && { 'Accept-Language': locale }),
         ...(token && { Authorization: `Bearer ${token}` }),
         ...options.headers,
@@ -125,34 +128,35 @@ class ServerAPI {
     return refreshedToken ? this.doFetch(endpoint, options, refreshedToken) : response;
   }
 
-  private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-    if (!endpoint || typeof endpoint !== 'string') {
-      throw new Error('Endpoint must be a non-empty string');
-    }
-
-    const response = await this.fetchWithRefresh(endpoint, options);
-
-    // 1. Handle Response Content
+  /** Reads the body by its content type. A 204 or empty body becomes `{}`; a body that cannot be parsed becomes null. */
+  private async readBody<T>(response: Response): Promise<T | string | null> {
     // Check if the response is JSON based on headers or empty body (204)
     const contentType = response.headers.get('content-type');
     const isJson = contentType?.includes('application/json');
     const contentLength = response.headers.get('content-length');
     const isEmpty = response.status === 204 || contentLength === '0';
 
-    let data: T | string | null;
-
     try {
       if (isEmpty) {
-        data = {} as T;
-      } else if (isJson) {
-        data = await response.json();
-      } else {
-        data = await response.text();
+        return {} as T;
       }
+      if (isJson) {
+        return await response.json();
+      }
+      return await response.text();
     } catch {
       // Fallback if parsing fails
-      data = null;
+      return null;
     }
+  }
+
+  private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+    if (!endpoint || typeof endpoint !== 'string') {
+      throw new Error('Endpoint must be a non-empty string');
+    }
+
+    const response = await this.fetchWithRefresh(endpoint, options);
+    const data = await this.readBody<T>(response);
 
     if (!response.ok) {
       const error = new BackendRequestError(response.statusText, response.status, data);
@@ -167,6 +171,25 @@ class ServerAPI {
     }
 
     return data as T;
+  }
+
+  /**
+   * For what `request` cannot send or return: a multipart upload, and a binary CSV download.
+   * Same token refresh as the JSON calls. A non-2xx answer throws BackendRequestError with the backend body.
+   */
+  async requestRaw(endpoint: string, options: RequestInit = {}): Promise<Response> {
+    const response = await this.fetchWithRefresh(endpoint, options);
+    if (response.ok) {
+      return response;
+    }
+
+    const error = new BackendRequestError(response.statusText, response.status, await this.readBody<unknown>(response));
+    if (response.status === 401) {
+      logger.debug(`[API] ${options.method || 'GET'} ${endpoint}: unauthenticated`);
+    } else {
+      logger.error(`[API Error] ${options.method || 'GET'} ${endpoint}:`, { error });
+    }
+    throw error;
   }
 
   get<T>(endpoint: string) {
@@ -321,39 +344,15 @@ export const vocabApi = {
     const queryString = new URLSearchParams(params).toString();
     const endpoint = `${API_ENDPOINTS.vocabs}/import/csv?${queryString}`;
 
-    const token = await getAccessToken();
-    const response = await fetch(`${serverApi.baseURL}${endpoint}`, {
-      method: 'POST',
-      body: formData,
-      headers: {
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`CSV import failed: ${response.status} ${response.statusText}`);
-    }
-
-    return response.json();
+    const response = await serverApi.requestRaw(endpoint, { method: 'POST', body: formData });
+    return response.json() as Promise<TCsvImportResponse>;
   },
   exportCsv: async (params: VocabQueryParams): Promise<Response> => {
     const { buildQueryString } = await import('./api-config');
     const queryString = buildQueryString(params);
     const endpoint = `${API_ENDPOINTS.vocabs}/export/csv?${queryString}`;
 
-    const token = await getAccessToken();
-    const response = await fetch(`${serverApi.baseURL}${endpoint}`, {
-      method: 'GET',
-      headers: {
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`CSV export failed: ${response.status} ${response.statusText}`);
-    }
-
-    return response;
+    return serverApi.requestRaw(endpoint, { method: 'GET' });
   },
   generateTextTarget: (data: { textSource: string; sourceLanguageCode: string; targetLanguageCode: string }) => {
     const config = API_METHODS.vocabs.generateTextTarget(data);
